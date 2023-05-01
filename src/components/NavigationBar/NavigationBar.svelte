@@ -21,6 +21,7 @@
 		highlighted="true"
 		link={LINK.discord}
 		label="Join our Discord!"
+		noredirect="true"
 	/>
 </div>
 

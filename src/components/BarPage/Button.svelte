@@ -1,9 +1,14 @@
 <script>
-    export let link;
-    export let label;
+    export let link = false;
+    export let label = "Page";
+    export let noredirect = false;
 </script>
 
-<a href={link} target="_blank" style="text-decoration: none;">
+<a
+    href={link}
+    target={noredirect ? "_blank" : "_self"}
+    style="text-decoration: none;"
+>
     <button class="button">
         {@html label}
     </button>

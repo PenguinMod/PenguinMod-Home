@@ -1,11 +1,16 @@
 <script>
-    export let highlighted;
-    export let link;
-    export let label;
+    export let highlighted = false;
+    export let link = false;
+    export let label = "Button";
+    export let noredirect = false;
 </script>
 
 {#if link}
-    <a href={link} target="_blank" style="text-decoration: none;">
+    <a
+        href={link}
+        target={noredirect ? "_blank" : "_self"}
+        style="text-decoration: none;"
+    >
         <button class={highlighted ? "button button-highlight" : "button"}>
             {@html label}
         </button>

@@ -1,13 +1,43 @@
 <script>
+    import { onMount } from "svelte";
+
     export let placeholder;
     export let text = "";
 
+    let searchBar;
+
     // Icons
     import SearchSVG from "../../icons/Search/icon.svelte";
+
+    // Functions
+    function search(query) {
+        if (typeof query !== "string") {
+            query = searchBar.value;
+        }
+        if (query === "") {
+            location.href = location.origin;
+            return;
+        }
+        location.href =
+            location.origin + `/search?q=${encodeURIComponent(query)}`;
+    }
+    function enterCheck(event) {
+        if (event.key === "Enter") {
+            search(searchBar.value);
+        }
+    }
+
+    onMount(() => {
+        const params = new URLSearchParams(location.search);
+        const searchQuery = params.get("q");
+        if (searchBar && searchQuery) {
+            searchBar.value = searchQuery;
+        }
+    });
 </script>
 
 <div class="search">
-    <button class="search-button">
+    <button class="search-button" on:click={search}>
         <SearchSVG
             width="30px"
             height="20px"
@@ -16,7 +46,13 @@
             style="margin-bottom:5px; margin-top: 5px;"
         />
     </button>
-    <input class="search-bar" value={text} {placeholder} />
+    <input
+        bind:this={searchBar}
+        class="search-bar"
+        value={text}
+        {placeholder}
+        on:keypress={enterCheck}
+    />
 </div>
 
 <style>
