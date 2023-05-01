@@ -47,6 +47,7 @@
 		font-size: 0.75rem;
 		font-weight: bold;
 		min-width: 800px;
+		z-index: 1000;
 	}
 
 	.logo {
