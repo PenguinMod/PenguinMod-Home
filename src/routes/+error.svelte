@@ -1,12 +1,40 @@
 <script>
     import { page } from "$app/stores";
+
+    // Components
+    import NavigationBar from "../components/NavigationBar/NavigationBar.svelte";
+    import NavigationMargin from "../components/NavigationBar/NavMargin.svelte";
+
+    // Icons
+    import PenguinConfusedSVG from "../icons/Penguin/confused.svelte";
 </script>
 
 <head>
     <title>PenguinMod - {$page.status}</title>
 </head>
 
-<h1>Whoops!</h1>
-<p>Something's not quite right. Maybe you should <a href="../">go back?</a></p>
+<NavigationBar />
+<NavigationMargin />
 
-<p>Error: {$page.status} - {$page.error.message}</p>
+<div class="center-div">
+    <PenguinConfusedSVG height="12rem" />
+
+    <h1>Whoops!</h1>
+    <p>
+        Something's not quite right. Maybe you should <a href="../">go back?</a>
+    </p>
+
+    <p>Error: {$page.status} - {$page.error.message}</p>
+</div>
+
+<style>
+    * {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    .center-div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+</style>
