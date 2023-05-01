@@ -3,7 +3,7 @@
     export let label;
 </script>
 
-<a href={link} target="_blank">
+<a href={link} target="_blank" style="text-decoration: none;">
     <button class="button">
         {@html label}
     </button>

@@ -21,17 +21,20 @@
     .button {
         margin-left: 0.25rem;
         margin-right: 0.25rem;
-        padding: 0.75rem 1rem;
+        padding: 1rem 1rem;
         font-weight: 600;
-        font-size: 0.85rem;
+        font-size: 1.1rem;
         border: 0px;
         border-radius: 4px;
-        outline-width: 1px;
+        outline-width: 2px;
         outline-style: solid;
-        outline-color: rgba(0, 0, 0, 0.15);
+        outline-color: rgba(0, 195, 255, 0.35);
         color: white;
-        background-color: transparent;
+        background-color: #00c3ff;
         cursor: pointer;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
     }
     .button-highlight {
         outline: 0px;

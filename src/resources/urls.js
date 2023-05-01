@@ -10,6 +10,11 @@ export default {
     editor: "https://penguinmod.site/editor.html",
 
     /**
+     * PenguinMod's credits page
+     */
+    credits: "https://penguinmod.site/credits.html",
+
+    /**
      * PenguinMod's project page
      */
     projects: "https://projects.penguinmod.site/",
@@ -30,7 +35,22 @@ export default {
     packager: "https://penguinmod.site/PenguinMod-Packager/",
 
     /**
+     * PenguinMod's unofficial wiki
+     */
+    wiki: "https://penguinmod.fandom.com/wiki/Penguinmod",
+
+    /**
      * PenguinMod's Discord invite
      */
     discord: "https://discord.gg/NZ9MBMYTZh",
+
+    /**
+     * Scratch's website
+     */
+    scratch: "https://scratch.mit.edu",
+
+    /**
+     * TurboWarp's website
+     */
+    turbowarp: "https://turbowarp.org",
 }
