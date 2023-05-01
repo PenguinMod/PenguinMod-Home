@@ -37,7 +37,7 @@ export default {
     /**
      * PenguinMod's unofficial wiki
      */
-    wiki: "https://penguinmod.fandom.com/wiki/Penguinmod",
+    wiki: "https://penguinmod.fandom.com/f",
 
     /**
      * PenguinMod's Discord invite
