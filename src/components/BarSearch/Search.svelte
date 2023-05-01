@@ -51,6 +51,7 @@
         class="search-bar"
         value={text}
         {placeholder}
+        name="search"
         on:keypress={enterCheck}
     />
 </div>
