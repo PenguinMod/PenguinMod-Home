@@ -9,6 +9,7 @@
     import NavigationMargin from "../../components/NavigationBar/NavMargin.svelte";
     import LoadingSpinner from "../../components/LoadingSpinner/Spinner.svelte";
     import Project from "../../components/Project/Project.svelte";
+    import Button from "../../components/Button/Button.svelte";
 
     // Icons
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
@@ -56,14 +57,29 @@
 <div class="main">
     <NavigationMargin />
 
-    <div class="section section-info">
+    <div class="section-info">
         <div>
             <h1>Search</h1>
             <p>Searching for {searchQuery}</p>
         </div>
     </div>
 
-    <div class="section section-projects">
+    <div class="section-searchType">
+        <Button
+            label="Projects"
+            link={searchQuery.startsWith("studio:")
+                ? `?q=${searchQuery.replace("studio:", "")}`
+                : `?q=${searchQuery}`}
+        />
+        <Button
+            label="Studios"
+            link={searchQuery.startsWith("studio:")
+                ? `?q=${searchQuery}`
+                : `?q=studio:${searchQuery}`}
+        />
+    </div>
+
+    <div class="section-projects">
         {#if projects[0] !== "notfound"}
             {#each projects as project}
                 <Project {...project} />
@@ -95,9 +111,6 @@
         min-width: 1000px;
     }
 
-    .section {
-        margin: 8px;
-    }
     .section-info {
         background: #00c3ffad;
         height: 8.5rem;
@@ -110,7 +123,6 @@
         margin: 0;
         text-align: center;
     }
-
     .section-projects {
         margin: 0;
         width: 100%;
@@ -118,5 +130,18 @@
         flex-direction: row;
         justify-content: center;
         flex-wrap: wrap;
+    }
+    .section-searchType {
+        background: #b4eeff;
+        height: 6rem;
+        color: white;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin: 0;
+        text-align: center;
+        display: none;
     }
 </style>
