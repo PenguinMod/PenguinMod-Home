@@ -1,4 +1,6 @@
 <script>
+    import { onMount } from "svelte";
+
     // Static values
     import LINK from "../resources/urls.js";
 
@@ -6,6 +8,26 @@
     import NavigationBar from "../components/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "../components/NavigationBar/NavMargin.svelte";
     import Button from "../components/Button/Button.svelte";
+    import ContentCategory from "../components/ContentCategory/Component.svelte";
+    import LoadingSpinner from "../components/LoadingSpinner/Spinner.svelte";
+    import UserDisplay from "../components/UserDisplay/Display.svelte";
+
+    let ghcommits = [];
+    let updates = [];
+
+    onMount(() => {
+        fetch(`${LINK.basicApi}commits`).then((res) => {
+            res.json().then((commits) => {
+                ghcommits = commits;
+            });
+        });
+        fetch(LINK.updateReaderApi).then((res) => {
+            res.json().then((updatess) => {
+                // currently multiple updates are not supported
+                updates = [updatess];
+            });
+        });
+    });
 </script>
 
 <head>
@@ -17,7 +39,7 @@
 <div class="main">
     <NavigationMargin />
 
-    <div class="section section-info">
+    <div class="section-info">
         <div style="margin-left: 8rem;">
             <h1>Block-based coding with tons of capabilities</h1>
             <h1>
@@ -46,9 +68,10 @@
         </video>
     </div>
 
-    <div class="section section-links">
+    <div class="section-links">
         <Button label="Project Packager" link={LINK.packager} />
         <Button label="Credits" link={LINK.credits} />
+        <Button label="GitHub" link={LINK.github} />
         <Button label="Community Wiki" link={LINK.wiki} />
     </div>
 
@@ -61,6 +84,51 @@
                 work yet.
             </i>
         </p>
+    </div>
+
+    <div class="section-categories">
+        <ContentCategory
+            header="What's new?"
+            seemore={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
+        >
+            <div class="category-content">
+                {#if updates.length > 0}
+                    {#each updates as update}
+                        <UserDisplay
+                            link={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
+                            userLink={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
+                            text={update.cleanContent}
+                            author={update.authorName}
+                            image={update.authorImage}
+                        />
+                        <img
+                            src={update.image}
+                            alt="Update Screenshot"
+                            class="update-image"
+                        />
+                    {/each}
+                {:else}
+                    <LoadingSpinner />
+                {/if}
+            </div>
+        </ContentCategory>
+        <ContentCategory header="Recent changes" seemore={LINK.github}>
+            <div class="category-content">
+                {#if ghcommits.length > 0}
+                    {#each ghcommits as commit}
+                        <UserDisplay
+                            link={commit.html_url}
+                            userLink={commit.author.html_url}
+                            text={commit.commit.message}
+                            author={commit.author.login}
+                            image={commit.author.avatar_url}
+                        />
+                    {/each}
+                {:else}
+                    <LoadingSpinner />
+                {/if}
+            </div>
+        </ContentCategory>
     </div>
 </div>
 
@@ -77,9 +145,6 @@
         min-width: 1000px;
     }
 
-    .section {
-        margin: 8px;
-    }
     .section-info {
         background: #00c3ffad;
         height: 24rem;
@@ -107,11 +172,32 @@
         color: white;
     }
 
+    .section-categories {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin: 0px;
+    }
+
     .example-video {
         border-radius: 6px;
         outline-style: solid;
         outline-width: 6px;
         outline-color: rgba(255, 255, 255, 0.35);
         margin-right: 8rem;
+    }
+
+    .category-content {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .update-image {
+        margin-top: 4px;
+        width: 100%;
+        height: 100%;
     }
 </style>

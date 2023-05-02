@@ -5,7 +5,6 @@
     export let id;
     export let name;
     export let owner;
-    export let featured;
 
     const projectLink = `${LINK.base}#${id}`;
     const projectAuthorLink = `${LINK.projects}?user=${owner}`;

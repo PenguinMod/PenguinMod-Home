@@ -37,7 +37,7 @@ export default {
     /**
      * PenguinMod's unofficial wiki
      */
-    wiki: "https://penguinmod.fandom.com/f",
+    wiki: "https://penguinmod.fandom.com/wiki/Penguinmod",
 
     /**
      * PenguinMod's Discord invite
@@ -53,4 +53,19 @@ export default {
      * TurboWarp's website
      */
     turbowarp: "https://turbowarp.org",
+
+    /**
+     * PenguinMod's github page
+     */
+    github: "https://github.com/PenguinMod/",
+
+    /**
+     * PenguinMod's basic API
+     */
+    basicApi: "https://pmbasicapi.jeremygamer13.repl.co/",
+
+    /**
+     * PenguinMod's update reader API
+     */
+    updateReaderApi: "https://pmupdatereader.jeremygamer13.repl.co/",
 }
