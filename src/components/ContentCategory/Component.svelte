@@ -1,9 +1,11 @@
 <script>
     export let header = false;
     export let seemore = false;
+    export let style = "";
+    export let stylec = "";
 </script>
 
-<div class="section">
+<div class="section" {style}>
     {#if header}
         <div class="header">
             <p style="margin-block: 6px;"><b>{header}</b></p>
@@ -12,7 +14,7 @@
             {/if}
         </div>
     {/if}
-    <div class="container"><slot /></div>
+    <div style={stylec} class="container"><slot /></div>
 </div>
 
 <style>

@@ -1,5 +1,6 @@
 <script>
     import { onMount } from "svelte";
+    import ProjectApi from "../resources/projectapi.js";
 
     // Static values
     import LINK from "../resources/urls.js";
@@ -11,9 +12,15 @@
     import ContentCategory from "../components/ContentCategory/Component.svelte";
     import LoadingSpinner from "../components/LoadingSpinner/Spinner.svelte";
     import UserDisplay from "../components/UserDisplay/Display.svelte";
+    import Project from "../components/Project/Project.svelte";
 
     let ghcommits = [];
     let updates = [];
+
+    let projects = {
+        featuredweek: [],
+        today: [],
+    };
 
     onMount(() => {
         fetch(`${LINK.basicApi}commits`).then((res) => {
@@ -26,6 +33,10 @@
                 // currently multiple updates are not supported
                 updates = [updatess];
             });
+        });
+
+        ProjectApi.getProjects().then((projs) => {
+            projects.today = projs;
         });
     });
 </script>
@@ -130,8 +141,44 @@
             </div>
         </ContentCategory>
     </div>
-    <div style="display:flex;flex-direction:column;align-items:center">
-        <a href="/search?q=all%3Aprojects">All projects</a>
+    <div style="height:32px;" />
+    <div class="section-projects">
+        <ContentCategory
+            header="Featured projects of the Week"
+            seemore={`/search?q=featured%3Aprojects`}
+            style="width:65%;"
+            stylec="height: 244px;"
+        >
+            <div class="project-list">
+                {#if projects.today.length > 0}
+                    {#each projects.today as project}
+                        {#if Date.now() - project.date <= 604800000 && project.featured === true}
+                            <Project {...project} />
+                        {/if}
+                    {/each}
+                {:else}
+                    <LoadingSpinner />
+                {/if}
+            </div>
+        </ContentCategory>
+        <ContentCategory
+            header="Today's projects"
+            seemore={`/search?q=all%3Aprojects`}
+            style="width:65%;"
+            stylec="height: 244px;"
+        >
+            <div class="project-list">
+                {#if projects.today.length > 0}
+                    {#each projects.today as project}
+                        {#if Date.now() - project.date <= 86400000}
+                            <Project {...project} />
+                        {/if}
+                    {/each}
+                {:else}
+                    <LoadingSpinner />
+                {/if}
+            </div>
+        </ContentCategory>
     </div>
     <div style="height:32px;" />
 </div>
@@ -185,6 +232,15 @@
         margin: 0px;
     }
 
+    .section-projects {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin: 0px;
+    }
+
     .example-video {
         border-radius: 6px;
         outline-style: solid;
@@ -203,5 +259,10 @@
         margin-top: 4px;
         width: 100%;
         height: 100%;
+    }
+
+    .project-list {
+        display: flex;
+        flex-direction: row;
     }
 </style>

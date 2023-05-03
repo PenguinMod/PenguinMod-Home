@@ -4,6 +4,25 @@ class ProjectApi {
         this.username = username;
     }
 
+    static getProjects() {
+        return new Promise((resolve, reject) => {
+            const url = `https://projects.penguinmod.site/api/projects/paged?length=100`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((projects) => {
+                        resolve(projects.flat(Infinity));
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+
     setPrivateCode(p) {
         this.privateCode = p;
     }
