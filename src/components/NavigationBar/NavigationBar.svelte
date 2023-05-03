@@ -14,7 +14,6 @@
 	</a>
 	<div style="margin-right: 12px;" />
 	<BarPage label="Create" link={LINK.editor} />
-	<BarPage label="More Projects" link={LINK.projects} />
 	<BarSearch placeholder="Search for projects..." />
 	<BarPage label="My Stuff" link="/mystuff" />
 	<BarButton
