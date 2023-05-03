@@ -23,11 +23,14 @@
         const query = params.get("q");
         searchQuery = query;
 
-        const api = `${
+        let api = `${
             LINK.projects
         }api/projects/paged?length=100&includes=${encodeURIComponent(
             searchQuery
         )}`;
+        if (searchQuery.trim() === "all:projects") {
+            api = `${LINK.projects}api/projects/paged?length=100`;
+        }
         fetch(api)
             .then((response) => {
                 response
