@@ -104,8 +104,10 @@
                 <LoadingSpinner />
             </div>
         {:else if loggedIn === false}
-            <p>Please log in to view your PenguinMod projects.</p>
-            <Button label="Sign In" on:click={askForLogin} />
+            <div class="login-prompt">
+                <p>Please log in to view your PenguinMod projects.</p>
+                <Button label="Sign In" on:click={askForLogin} />
+            </div>
         {:else if projects[0] !== "notfound"}
             {#each projects as project}
                 <Project
@@ -115,6 +117,23 @@
                     date={project.date}
                     style="padding:8px;height:auto"
                     showdate="true"
+                    dotsmenu="true"
+                    dotsoptions={[
+                        {
+                            name: `Edit ${project.remix ? "Remix" : "Project"}`,
+                            href: `/edit?id=${project.id}`,
+                            color: project.remix ? "remix" : null,
+                        },
+                        {
+                            name: `Delete ${
+                                project.remix ? "Remix" : "Project"
+                            }`,
+                            callback: () => {
+                                deleteProject(project.id, project.name);
+                            },
+                            color: "red",
+                        },
+                    ]}
                 >
                     <div class="inside-project">
                         {#if project.hidden}
@@ -122,18 +141,6 @@
                         {:else if !project.accepted}
                             <p><i>(unapproved)</i></p>
                         {/if}
-                        <div style="display:flex;flex-direction:row">
-                            <Button
-                                label="Edit"
-                                link={"/edit?id=" + project.id}
-                                color={project.remix ? "remix" : false}
-                            />
-                            <Button
-                                label="Delete"
-                                color="red"
-                                on:click={deleteProject(project.id)}
-                            />
-                        </div>
                     </div>
                 </Project>
             {:else}
@@ -200,5 +207,13 @@
         flex-direction: column;
         align-items: center;
         width: 100%;
+    }
+
+    .login-prompt {
+        display: flex;
+        flex-direction: column;
+        margin-top: 16px;
+        margin-bottom: 16px;
+        align-items: center;
     }
 </style>
