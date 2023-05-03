@@ -130,6 +130,10 @@
             </div>
         </ContentCategory>
     </div>
+    <div style="display:flex;flex-direction:column;align-items:center">
+        <a href="/search?q=all%3Aprojects">All projects</a>
+    </div>
+    <div style="height:32px;" />
 </div>
 
 <style>
