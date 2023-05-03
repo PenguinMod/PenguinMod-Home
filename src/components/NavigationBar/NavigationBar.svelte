@@ -16,7 +16,7 @@
 	<BarPage label="Create" link={LINK.editor} />
 	<BarPage label="More Projects" link={LINK.projects} />
 	<BarSearch placeholder="Search for projects..." />
-	<BarPage label="My Stuff" link={LINK.mystuff} />
+	<BarPage label="My Stuff" link="/mystuff" />
 	<BarButton
 		highlighted="true"
 		link={LINK.discord}

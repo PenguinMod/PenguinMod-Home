@@ -4,13 +4,22 @@
 
     export let id;
     export let name;
+    export let showdate = false;
     export let owner;
+    export let date = 0;
+    export let style = "";
+
+    function unixToDisplayDate(unix) {
+        return `${new Date(Number(unix)).toDateString()} at ${new Date(
+            Number(unix)
+        ).toLocaleTimeString()}`;
+    }
 
     const projectLink = `${LINK.base}#${id}`;
     const projectAuthorLink = `${LINK.projects}?user=${owner}`;
 </script>
 
-<div class="project">
+<div class="project" {style}>
     <a href={projectLink} class="project-image">
         <img
             src={`${LINK.projects}api/pmWrapper/iconUrl?id=${id}`}
@@ -27,8 +36,15 @@
     </a>
     <div class="project-meta">
         <a href={projectLink} class="text">{name}</a>
-        <a href={projectAuthorLink} class="text author">{owner}</a>
+        {#if showdate}
+            <a href={projectLink} class="text author date">
+                {unixToDisplayDate(date)}
+            </a>
+        {:else}
+            <a href={projectAuthorLink} class="text author">{owner}</a>
+        {/if}
     </div>
+    <slot />
 </div>
 
 <style>
@@ -78,5 +94,8 @@
     .author {
         color: #575e75;
         font-weight: normal;
+    }
+    .date {
+        font-size: 10px;
     }
 </style>

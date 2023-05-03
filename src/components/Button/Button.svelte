@@ -1,4 +1,6 @@
 <script>
+    import { createEventDispatcher } from "svelte";
+
     export let highlighted = false;
     export let link = false;
     export let label = "Button";
@@ -7,6 +9,12 @@
     // extras
     export let icon = false;
     export let color = false;
+
+    const dispatch = createEventDispatcher();
+
+    function event() {
+        dispatch("click");
+    }
 </script>
 
 {#if link}
@@ -18,6 +26,7 @@
         <button
             class={(highlighted ? "button button-highlight" : "button") +
                 (color ? ` ${color}` : "")}
+            on:click={event}
         >
             {#if icon}
                 <img src={`/${icon}`} alt={icon} style="margin-right:6px;" />
@@ -30,6 +39,7 @@
     <button
         class={(highlighted ? "button button-highlight" : "button") +
             (color ? ` ${color}` : "")}
+        on:click={event}
     >
         {#if icon}
             <img src={`/${icon}`} alt={icon} style="margin-right:6px;" />
@@ -77,5 +87,9 @@
     .orange {
         background-color: #ffab00;
         outline-color: rgba(255, 171, 0, 0.35);
+    }
+    .red {
+        background-color: #ff5151;
+        outline-color: rgba(255, 81, 81, 0.35);
     }
 </style>
