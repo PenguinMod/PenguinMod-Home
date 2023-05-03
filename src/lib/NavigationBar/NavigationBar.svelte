@@ -3,9 +3,9 @@
 	import LINK from "../../resources/urls.js";
 
 	// Components
-	import BarButton from "../../components/BarButton/Button.svelte";
-	import BarPage from "../../components/BarPage/Button.svelte";
-	import BarSearch from "../../components/BarSearch/Search.svelte";
+	import BarButton from "$lib/BarButton/Button.svelte";
+	import BarPage from "$lib/BarPage/Button.svelte";
+	import BarSearch from "$lib/BarSearch/Search.svelte";
 </script>
 
 <div class="bar">

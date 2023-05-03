@@ -1,8 +1,8 @@
 <script>
     // Components
-    import NavigationBar from "../../components/NavigationBar/NavigationBar.svelte";
-    import NavigationMargin from "../../components/NavigationBar/NavMargin.svelte";
-    import LoadingSpinner from "../../components/LoadingSpinner/Spinner.svelte";
+    import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
+    import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
+    import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
 </script>
 
 <head>

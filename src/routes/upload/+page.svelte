@@ -3,9 +3,9 @@
     import LINK from "../../resources/urls.js";
 
     // Components
-    import NavigationBar from "../../components/NavigationBar/NavigationBar.svelte";
-    import NavigationMargin from "../../components/NavigationBar/NavMargin.svelte";
-    import Button from "../../components/Button/Button.svelte";
+    import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
+    import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
+    import Button from "$lib/Button/Button.svelte";
 </script>
 
 <head>

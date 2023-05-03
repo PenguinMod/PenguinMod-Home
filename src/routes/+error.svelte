@@ -2,8 +2,8 @@
     import { page } from "$app/stores";
 
     // Components
-    import NavigationBar from "../components/NavigationBar/NavigationBar.svelte";
-    import NavigationMargin from "../components/NavigationBar/NavMargin.svelte";
+    import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
+    import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
 
     // Icons
     import PenguinConfusedSVG from "../icons/Penguin/confused.svelte";
