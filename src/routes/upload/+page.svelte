@@ -12,6 +12,7 @@
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
+    import ClickableProject from "$lib/ClickableProject/Project.svelte";
     import Button from "$lib/Button/Button.svelte";
 
     let loggedIn = null;
@@ -82,7 +83,7 @@
                     console.warn("Cannot post message", e);
                 }
             }
-            // when WE get a post
+            // when WE get a post from PM
             window.addEventListener("message", (e) => {
                 if (e.origin !== importLocation) {
                     return;
@@ -193,8 +194,6 @@
                 }
             });
     }
-    function openRemixMenu() {}
-    function openUpdateMenu() {}
 
     Authentication.onLogout(() => {
         loggedIn = false;
@@ -215,6 +214,91 @@
                 loggedIn = false;
             });
     });
+
+    let canRemix = [];
+    let otherProjects = [];
+    let remixPageOpen = false;
+    let updatePageOpen = false;
+
+    function openRemixMenu() {
+        canRemix = [];
+        remixPageOpen = true;
+        ProjectApi.getProjects().then((projects) => {
+            canRemix = projects;
+        });
+    }
+    function openUpdateMenu() {
+        otherProjects = [];
+        updatePageOpen = true;
+        ProjectClient.getMyProjects().then((projects) => {
+            otherProjects = projects;
+        });
+    }
+
+    let _window = { location: { origin: null } };
+    function generateExportEditPageForId(id) {
+        const origin = String(_window.location.origin);
+        return `${origin}/edit?id=${id}&external=${origin}`;
+    }
+
+    onMount(() => {
+        _window = window;
+        // when WE get a post from edit site
+        window.addEventListener("message", (e) => {
+            if (!e.origin.startsWith(location.origin)) {
+                return;
+            }
+            const data = e.data && e.data.p4;
+            if (!data) {
+                return;
+            }
+
+            // send data
+            if (data.type === "validate") {
+                e.source.postMessage(
+                    {
+                        p4: {
+                            type: "image",
+                            uri: projectImage,
+                        },
+                    },
+                    e.origin
+                );
+                e.source.postMessage(
+                    {
+                        p4: {
+                            type: "project",
+                            uri: projectData,
+                            name: projectName,
+                        },
+                    },
+                    e.origin
+                );
+                e.source.postMessage(
+                    {
+                        p4: {
+                            type: "metadata",
+                            meta: {
+                                title: components.projectName.value,
+                                instructions:
+                                    components.projectInstructions.value,
+                                notes: components.projectNotes.value,
+                            },
+                        },
+                    },
+                    e.origin
+                );
+                e.source.postMessage(
+                    {
+                        p4: {
+                            type: "finished",
+                        },
+                    },
+                    e.origin
+                );
+            }
+        });
+    });
 </script>
 
 <head>
@@ -230,6 +314,40 @@
         <div class="external-loading">
             <LoadingSpinner />
             <p>Importing, please wait...</p>
+            <p>(you may need to switch tabs and come back)</p>
+        </div>
+    {/if}
+
+    {#if updatePageOpen}
+        <div class="front-card-page">
+            <div class="card-page">
+                <div class="card-header">
+                    <h1>Select a project</h1>
+                </div>
+                <div class="card-projects">
+                    {#each otherProjects as project}
+                        <ClickableProject
+                            id={project.id}
+                            name={project.name}
+                            owner={project.owner}
+                            date={project.date}
+                            showdate={true}
+                            on:click={window.open(
+                                generateExportEditPageForId(project.id),
+                                "_blank"
+                            )}
+                        />
+                    {/each}
+                </div>
+                <div style="display:flex;flex-direction:row;padding:1em">
+                    <Button
+                        label="Cancel"
+                        on:click={() => {
+                            updatePageOpen = false;
+                        }}
+                    />
+                </div>
+            </div>
         </div>
     {/if}
 
@@ -466,5 +584,40 @@
         align-items: center;
         justify-content: center;
         color: white;
+    }
+
+    .front-card-page {
+        background: rgba(0, 0, 0, 0.5);
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .card-page {
+        box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.25);
+        background: white;
+        border-radius: 16px;
+        width: 85%;
+        height: 80%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .card-header {
+        width: 97.5%;
+        border-bottom: #00000030 1px solid;
+        text-align: center;
+    }
+    .card-projects {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        flex-wrap: wrap;
+        overflow: auto;
     }
 </style>

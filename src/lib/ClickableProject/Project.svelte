@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from "svelte";
+    import { onMount, createEventDispatcher } from "svelte";
     import HTMLUtility from "../../resources/html.js";
 
     // Static values
@@ -14,19 +14,11 @@
     export let dotsmenu = false;
     export let dotsoptions = [];
 
-    export let linkOverride = false;
-    export let openNewtab = false;
-
     function unixToDisplayDate(unix) {
         return `${new Date(Number(unix)).toDateString()} at ${new Date(
             Number(unix)
         ).toLocaleTimeString()}`;
     }
-
-    const projectLink = linkOverride ? linkOverride : `${LINK.base}#${id}`;
-    const projectAuthorLink = linkOverride
-        ? linkOverride
-        : `/profile?user=${owner}`;
 
     let dropdownMenu;
     function showDropdown(pointer) {
@@ -42,6 +34,12 @@
             }
         });
     });
+
+    const dispatch = createEventDispatcher();
+
+    function event() {
+        dispatch("click");
+    }
 </script>
 
 {#if dotsoptions.length > 0}
@@ -70,65 +68,49 @@
     </div>
 {/if}
 
-<div class="project" {style}>
+<button class="project" {style} on:click={event}>
     {#if dotsmenu}
         <button class="dots-menu" on:click={showDropdown}>
             <img class="dots-icon" src="/dots.svg" alt="..." />
         </button>
     {/if}
-    <a
-        href={projectLink}
-        target={openNewtab ? "_blank" : "_self"}
-        class="project-image"
-    >
+    <div class="project-image">
         <img
             src={`${LINK.projects}api/pmWrapper/iconUrl?id=${id}`}
             alt="Project Thumbnail"
             class="project-image"
         />
-    </a>
-    <a
-        href={projectAuthorLink}
-        target={openNewtab ? "_blank" : "_self"}
-        class="project-author"
-    >
+    </div>
+    <div class="project-author">
         <img
             src={`${LINK.projects}api/pmWrapper/scratchUserImage?username=${owner}`}
             alt="Project Author"
             class="project-author"
         />
-    </a>
+    </div>
     <div class="project-meta">
-        <a
-            href={projectLink}
-            target={openNewtab ? "_blank" : "_self"}
-            class="text"
-        >
+        <div class="text">
             {name}
-        </a>
+        </div>
         {#if showdate}
-            <a
-                href={projectLink}
-                target={openNewtab ? "_blank" : "_self"}
-                class="text author date"
-            >
+            <div class="text author date">
                 {unixToDisplayDate(date)}
-            </a>
+            </div>
         {:else}
-            <a
-                href={projectAuthorLink}
-                target={openNewtab ? "_blank" : "_self"}
-                class="text author"
-            >
+            <div class="text author">
                 {owner}
-            </a>
+            </div>
         {/if}
     </div>
     <slot />
-</div>
+</button>
 
 <style>
     .project {
+        font-size: 16px;
+        appearance: none;
+        box-sizing: unset;
+        background: transparent;
         width: 204px;
         height: 204px;
         padding: 8px 8px 2px;
@@ -141,6 +123,11 @@
         flex-direction: row;
         flex-wrap: wrap;
         position: relative;
+        text-align: left;
+        cursor: pointer;
+    }
+    .project:focus {
+        outline: 4px rgba(0, 0, 0, 0.35) solid;
     }
     .project-image {
         width: 204px;

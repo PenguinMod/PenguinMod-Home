@@ -12,8 +12,10 @@
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import Button from "$lib/Button/Button.svelte";
+    import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
 
     let loggedIn = null;
+    let loadingExternal = false;
 
     let projectId;
     let projectName = "Project";
@@ -37,6 +39,7 @@
     onMount(async () => {
         const params = new URLSearchParams(location.search);
         const projId = params.get("id");
+        const importLocation = params.get("external");
         projectId = projId;
         if (!projectId) {
             kickOut();
@@ -73,6 +76,72 @@
                 loggedIn = false;
                 kickOut();
             });
+
+        if (importLocation) {
+            // load project from parent window
+            loadingExternal = true;
+
+            // get parent window
+            const opener = window.opener || window.parent;
+            if (!opener || opener === window) {
+                // exit if not found
+                loadingExternal = false;
+                console.warn(
+                    "External import stopped; parent window not found"
+                );
+                return;
+            }
+            // wrapper to handle errors & be easier
+            function post(data) {
+                try {
+                    opener.postMessage(
+                        {
+                            p4: data,
+                        },
+                        importLocation
+                    );
+                } catch (e) {
+                    console.warn("Cannot post message", e);
+                }
+            }
+            // when WE get a post
+            window.addEventListener("message", (e) => {
+                if (e.origin !== importLocation) {
+                    return;
+                }
+                const data = e.data && e.data.p4;
+                if (!data) {
+                    return;
+                }
+
+                // metadata: { title, instructions, notes }
+                if (data.type === "metadata") {
+                    projectName = data.meta.title;
+                    projectMetadata.instructions = data.meta.instructions;
+                    projectMetadata.notes = data.meta.notes;
+                }
+                // image: uri of thumbnail image
+                if (data.type === "image") {
+                    newProjectImage = data.uri;
+                }
+                // project: uri of project data
+                if (data.type === "project") {
+                    newProjectData = data.uri;
+                    projectInputName.innerText = `Imported ${data.name} from PenguinMod`;
+                }
+
+                // we done here
+                if (data.type === "finished") {
+                    loadingExternal = false;
+                }
+                // something bad happenedd!!!!!!!!!!!
+                if (data.type === "error") {
+                    loadingExternal = false;
+                    alert("Failed to import the full project; " + data.error);
+                }
+            });
+            post({ type: "validate" });
+        }
     });
 
     function updateProject() {
@@ -167,6 +236,14 @@
 
 <div class="main" style={loggedIn ? "" : "display:none"}>
     <NavigationMargin />
+
+    {#if loadingExternal}
+        <div class="external-loading">
+            <LoadingSpinner />
+            <p>Importing, please wait...</p>
+            <p>(you may need to switch tabs and come back)</p>
+        </div>
+    {/if}
 
     <div class="section-info">
         <div>
@@ -359,5 +436,19 @@
         width: 0px;
         height: 0px;
         display: block;
+    }
+
+    .external-loading {
+        background: rgba(0, 0, 0, 0.75);
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
     }
 </style>
