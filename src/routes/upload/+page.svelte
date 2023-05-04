@@ -204,6 +204,8 @@
         Authentication.usernameFromCode(privateCode)
             .then((username) => {
                 if (username) {
+                    ProjectClient.setUsername(username);
+                    ProjectClient.setPrivateCode(privateCode);
                     loggedIn = true;
                     return;
                 }
