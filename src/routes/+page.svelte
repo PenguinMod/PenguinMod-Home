@@ -123,7 +123,7 @@
                 {/if}
             </div>
         </ContentCategory>
-        <ContentCategory header="Recent changes" seemore={LINK.github}>
+        <ContentCategory header="Recent commits" seemore={LINK.github}>
             <div class="category-content">
                 {#if ghcommits.length > 0}
                     {#each ghcommits as commit}
