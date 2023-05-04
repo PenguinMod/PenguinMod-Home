@@ -1,18 +1,32 @@
 <script>
+    import { createEventDispatcher } from "svelte";
+
     export let link = false;
     export let label = "Page";
     export let noredirect = false;
+
+    const dispatch = createEventDispatcher();
+
+    function event() {
+        dispatch("click");
+    }
 </script>
 
-<a
-    href={link}
-    target={noredirect ? "_blank" : "_self"}
-    style="text-decoration: none;"
->
-    <button class="button">
+{#if !link}
+    <button class="button" on:click={event}>
         {@html label}
     </button>
-</a>
+{:else}
+    <a
+        href={link}
+        target={noredirect ? "_blank" : "_self"}
+        style="text-decoration: none;"
+    >
+        <button class="button" on:click={event}>
+            {@html label}
+        </button>
+    </a>
+{/if}
 
 <style>
     .button {

@@ -31,6 +31,7 @@
     }
     onMount(() => {
         window.addEventListener("mousedown", (e) => {
+            if (!dropdownMenu) return;
             if (!HTMLUtility.isDescendantOf(dropdownMenu, e.target)) {
                 dropdownMenu.style.display = "none";
             }

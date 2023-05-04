@@ -22,6 +22,24 @@ class ProjectApi {
                 });
         })
     }
+    static getUserProjects(user) {
+        return new Promise((resolve, reject) => {
+            const url = `https://projects.penguinmod.site/api/projects/paged?length=100&user=${user}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((projects) => {
+                        resolve(projects.flat(Infinity));
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
 
     static getProjectMeta(id) {
         return new Promise((resolve, reject) => {

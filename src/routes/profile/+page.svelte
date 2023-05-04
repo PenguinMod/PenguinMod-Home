@@ -1,0 +1,181 @@
+<script>
+    import { onMount } from "svelte";
+    import ProjectApi from "../../resources/projectapi.js";
+
+    // Static values
+    import LINK from "../../resources/urls.js";
+
+    // Components
+    import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
+    import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
+    import Button from "$lib/Button/Button.svelte";
+    import ContentCategory from "$lib/ContentCategory/Component.svelte";
+    import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
+    import Project from "$lib/Project/Project.svelte";
+
+    // Icons
+    import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
+
+    let user;
+    const projects = {
+        all: [],
+        featured: [],
+    };
+
+    onMount(() => {
+        const params = new URLSearchParams(location.search);
+        const query = params.get("user");
+        user = query;
+
+        ProjectApi.getUserProjects(user).then((projs) => {
+            projects.all = projs;
+            projects.featured = projs.filter((p) => p.featured);
+            if (projects.all.length <= 0) {
+                projects.all = ["none"];
+            }
+            if (projects.featured.length <= 0) {
+                projects.featured = ["none"];
+            }
+        });
+    });
+</script>
+
+<head>
+    <title>PenguinMod - {user ? user : "Profile"}</title>
+</head>
+
+<NavigationBar />
+
+<div class="main">
+    <NavigationMargin />
+
+    {#if user}
+        <div class="section-user">
+            <div class="subuser-section">
+                <div class="user-username">
+                    <img
+                        src={`${LINK.projects}api/pmWrapper/scratchUserImage?username=${user}`}
+                        alt="Profile"
+                        style="margin-right:8px;border-radius:4px"
+                    />
+                    <h1>{user}</h1>
+                </div>
+                <Button
+                    label="View on Scratch"
+                    link={`https://scratch.mit.edu/users/${user}/`}
+                />
+            </div>
+        </div>
+    {/if}
+    <div class="section-projects">
+        <ContentCategory
+            header="Featured projects"
+            style="width:65%;"
+            stylec="height: 244px;"
+        >
+            <div class="project-list">
+                {#if projects.featured.length > 0}
+                    {#if projects.featured[0] !== "none"}
+                        {#each projects.featured as project}
+                            <Project {...project} />
+                        {/each}
+                    {:else}
+                        <div class="none-found">
+                            <PenguinConfusedSVG height="10rem" />
+                            <p>
+                                Nothing was found. Did you misspell something or
+                                does the user not exist?
+                            </p>
+                        </div>
+                    {/if}
+                {:else}
+                    <LoadingSpinner />
+                {/if}
+            </div>
+        </ContentCategory>
+        <ContentCategory
+            header="All projects"
+            seemore={`/search?q=all%3Aprojects`}
+            style="width:65%;"
+            stylec="height: 244px;"
+        >
+            <div class="project-list">
+                {#if projects.all.length > 0}
+                    {#if projects.all[0] !== "none"}
+                        {#each projects.all as project}
+                            <Project {...project} />
+                        {/each}
+                    {:else}
+                        <div class="none-found">
+                            <PenguinConfusedSVG height="10rem" />
+                            <p>
+                                Nothing was found. Did you misspell something or
+                                does the user not exist?
+                            </p>
+                        </div>
+                    {/if}
+                {:else}
+                    <LoadingSpinner />
+                {/if}
+            </div>
+        </ContentCategory>
+    </div>
+</div>
+
+<style>
+    * {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    .main {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        min-width: 1000px;
+    }
+
+    .section-projects {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin: 0px;
+    }
+    .section-user {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin: 0px;
+        margin-top: 6px;
+    }
+
+    .project-list {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .none-found {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+    }
+
+    .subuser-section {
+        width: 65.5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .user-username {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+</style>

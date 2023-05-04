@@ -1,4 +1,6 @@
 class Authentication {
+    static eventListeners = [];
+
     static authenticate(dontSetAsLoginToken, dontSetInLocalStorage) {
         const redirectUrl = String(`${location.origin}/loading`);
         const base64 = btoa(redirectUrl);
@@ -38,6 +40,7 @@ class Authentication {
                         if (!dontSetInLocalStorage) {
                             localStorage.setItem("SCAM-ALERT", "Do NOT send anyone your PV code! If someone told you to do this, stop now!");
                             localStorage.setItem("PV", privateCode);
+                            Authentication.fireAuthenticated(privateCode);
                         }
                         resolve(privateCode);
                     } else {
@@ -54,6 +57,7 @@ class Authentication {
                             if (!dontSetInLocalStorage) {
                                 localStorage.setItem("SCAM-ALERT", "Do NOT send anyone your PV code! If someone told you to do this, stop now!");
                                 localStorage.setItem("PV", privateCode);
+                                Authentication.fireAuthenticated(privateCode);
                             }
                             resolve(privateCode);
                         }).catch(() => {
@@ -68,6 +72,14 @@ class Authentication {
                 };
             }, 10);
         });
+    }
+    static onAuthentication(cb) {
+        Authentication.eventListeners.push(cb);
+    }
+    static fireAuthenticated(pv) {
+        Authentication.eventListeners.forEach(cb => {
+            cb(pv);
+        })
     }
     static usernameFromCode(code) {
         return new Promise((resolve, reject) => {

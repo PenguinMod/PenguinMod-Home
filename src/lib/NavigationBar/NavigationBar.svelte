@@ -1,4 +1,7 @@
 <script>
+	import { onMount } from "svelte";
+	import Authentication from "../../resources/authentication.js";
+
 	// Static values
 	import LINK from "../../resources/urls.js";
 
@@ -6,6 +9,42 @@
 	import BarButton from "$lib/BarButton/Button.svelte";
 	import BarPage from "$lib/BarPage/Button.svelte";
 	import BarSearch from "$lib/BarSearch/Search.svelte";
+
+	let loggedIn = null;
+
+	function loggedInCheck() {
+		const privateCode = localStorage.getItem("PV");
+		if (!privateCode) {
+			loggedIn = false;
+			return;
+		}
+		Authentication.usernameFromCode(privateCode)
+			.then((username) => {
+				if (username) {
+					loggedIn = true;
+					return;
+				}
+				loggedIn = false;
+			})
+			.catch(() => {
+				loggedIn = false;
+			});
+	}
+	Authentication.onAuthentication(loggedInCheck);
+
+	function logout() {
+		localStorage.removeItem("PV");
+		location.reload();
+	}
+	function login() {
+		Authentication.authenticate().then(() => {
+			setTimeout(() => {
+				location.reload();
+			}, 1000);
+		});
+	}
+
+	onMount(loggedInCheck);
 </script>
 
 <div class="bar">
@@ -22,6 +61,11 @@
 		label="Join our Discord!"
 		noredirect="true"
 	/>
+	{#if loggedIn === false}
+		<BarPage label="Sign in" on:click={login} />
+	{:else if loggedIn === true}
+		<BarPage label="Logout" on:click={logout} />
+	{/if}
 </div>
 
 <style>
