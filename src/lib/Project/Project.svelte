@@ -21,7 +21,7 @@
     }
 
     const projectLink = `${LINK.base}#${id}`;
-    const projectAuthorLink = `${LINK.projects}?user=${owner}`;
+    const projectAuthorLink = `/profile?user=${owner}`;
 
     let dropdownMenu;
     function showDropdown(pointer) {
