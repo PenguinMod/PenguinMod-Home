@@ -150,12 +150,14 @@
         projectData = projectUri;
     }
 
+    let remixProjectId;
     function uploadProject() {
         ProjectClient.uploadProject({
             title: components.projectName.value,
             instructions: components.projectInstructions.value,
             notes: components.projectNotes.value,
             image: projectImage,
+            remix: remixProjectId,
             project: projectData,
         })
             .then((projectId) => {
@@ -299,6 +301,18 @@
             }
         });
     });
+
+    let remixingProjectName;
+    function selectToRemixProject(id) {
+        remixProjectId = Number(id);
+        if (isNaN(remixProjectId)) {
+            remixProjectId = 1;
+        }
+        ProjectApi.getProjectMeta(remixProjectId).then((meta) => {
+            remixingProjectName = meta.name;
+        });
+        remixPageOpen = false;
+    }
 </script>
 
 <head>
@@ -344,6 +358,36 @@
                         label="Cancel"
                         on:click={() => {
                             updatePageOpen = false;
+                        }}
+                    />
+                </div>
+            </div>
+        </div>
+    {/if}
+
+    {#if remixPageOpen}
+        <div class="front-card-page">
+            <div class="card-page">
+                <div class="card-header">
+                    <h1>Select a project</h1>
+                </div>
+                <div class="card-projects">
+                    {#each canRemix as project}
+                        <ClickableProject
+                            id={project.id}
+                            name={project.name}
+                            owner={project.owner}
+                            date={project.date}
+                            showdate={true}
+                            on:click={selectToRemixProject(project.id)}
+                        />
+                    {/each}
+                </div>
+                <div style="display:flex;flex-direction:row;padding:1em">
+                    <Button
+                        label="Cancel"
+                        on:click={() => {
+                            remixPageOpen = false;
                         }}
                     />
                 </div>
@@ -416,23 +460,30 @@
             </div>
             <div style="display:flex;flex-direction:row;margin-top:48px">
                 {#if loggedIn === true && projectData}
-                    <Button
-                        label="Upload"
-                        icon="upload.svg"
-                        on:click={uploadProject}
-                    />
-                    <Button
-                        label="Remix"
-                        color="remix"
-                        icon="remix.svg"
-                        on:click={openRemixMenu}
-                    />
-                    <Button
-                        label="Update"
-                        color="orange"
-                        icon="update.svg"
-                        on:click={openUpdateMenu}
-                    />
+                    <div>
+                        {#if remixingProjectName}
+                            <p>Remixing {remixingProjectName}</p>
+                        {/if}
+                        <div style="display:flex;flex-direction:row">
+                            <Button
+                                label="Upload"
+                                icon="upload.svg"
+                                on:click={uploadProject}
+                            />
+                            <Button
+                                label="Remix"
+                                color="remix"
+                                icon="remix.svg"
+                                on:click={openRemixMenu}
+                            />
+                            <Button
+                                label="Update"
+                                color="orange"
+                                icon="update.svg"
+                                on:click={openUpdateMenu}
+                            />
+                        </div>
+                    </div>
                 {:else}
                     <div>
                         {#if loggedIn === false}
@@ -619,5 +670,6 @@
         width: 100%;
         flex-wrap: wrap;
         overflow: auto;
+        height: 100%;
     }
 </style>
