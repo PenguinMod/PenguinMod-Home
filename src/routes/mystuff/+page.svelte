@@ -5,9 +5,6 @@
 
     const ProjectClient = new ProjectApi();
 
-    // Static values
-    import LINK from "../../resources/urls.js";
-
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
@@ -28,6 +25,10 @@
         projects = [];
         ProjectClient.getMyProjects()
             .then((projectss) => {
+                if (projectss.length <= 0) {
+                    projects = ["notfound"];
+                    return;
+                }
                 projects = projectss;
             })
             .catch((err) => {

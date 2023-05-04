@@ -23,6 +23,43 @@ class ProjectApi {
         })
     }
 
+    static getProjectMeta(id) {
+        return new Promise((resolve, reject) => {
+            const url = `https://projects.penguinmod.site/api/projects/getPublished?id=${id}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((project) => {
+                        resolve(project);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+    static getProjectRemixes(id) {
+        return new Promise((resolve, reject) => {
+            const url = `https://projects.penguinmod.site/api/pmWrapper/remixes?id=${id}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((projects) => {
+                        resolve(projects);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+
     setPrivateCode(p) {
         this.privateCode = p;
     }
@@ -51,6 +88,36 @@ class ProjectApi {
     deleteProject(id) {
         return new Promise((resolve, reject) => {
             fetch(`https://projects.penguinmod.site/api/projects/delete?passcode=${this.privateCode}&approver=${this.username}&id=${id}`).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+    updateProject(id, newData) {
+        newData.id = id;
+        newData.requestor = this.username;
+        newData.passcode = this.privateCode;
+        if (typeof newData.newMeta === "object") {
+            newData.newMeta = JSON.stringify(newData.newMeta);
+        }
+        return new Promise((resolve, reject) => {
+            fetch(
+                `https://projects.penguinmod.site/api/projects/update`,
+                {
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newData),
+                    method: "POST"
+                }
+            ).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);
