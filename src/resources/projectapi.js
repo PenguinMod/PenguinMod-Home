@@ -150,5 +150,31 @@ class ProjectApi {
             })
         })
     }
+    uploadProject(data) {
+        data.author = this.username;
+        data.passcode = this.privateCode;
+        return new Promise((resolve, reject) => {
+            fetch(
+                `https://projects.penguinmod.site/api/projects/publish`,
+                {
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                    method: "POST"
+                }
+            ).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve(json.published);
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
 }
 export default ProjectApi;

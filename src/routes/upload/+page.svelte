@@ -1,21 +1,160 @@
 <script>
+    import { onMount } from "svelte";
+    import Authentication from "../../resources/authentication.js";
+    import ProjectApi from "../../resources/projectapi.js";
+
+    const ProjectClient = new ProjectApi();
+
     // Static values
     import LINK from "../../resources/urls.js";
 
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
+    import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import Button from "$lib/Button/Button.svelte";
+
+    let loggedIn = null;
+    let loadingExternal = false;
+
+    let projectName = "Project";
+    let projectImage;
+    let projectData;
+
+    let projectInputName;
+
+    const components = {
+        projectName: null,
+        projectInstructions: null,
+        projectNotes: null,
+    };
+
+    onMount(() => {
+        const params = new URLSearchParams(location.search);
+        const projName = params.get("name");
+        const importLocation = params.get("external");
+        if (projName) {
+            projectName = projName;
+        }
+
+        const privateCode = localStorage.getItem("PV");
+        if (!privateCode) {
+            loggedIn = false;
+        }
+        Authentication.usernameFromCode(privateCode)
+            .then((username) => {
+                if (username) {
+                    ProjectClient.setUsername(username);
+                    ProjectClient.setPrivateCode(privateCode);
+                    loggedIn = true;
+                    return;
+                }
+                loggedIn = false;
+            })
+            .catch(() => {
+                loggedIn = false;
+            });
+
+        if (importLocation) {
+            // load project from parent window
+            loadingExternal = true;
+        }
+    });
+
+    function filePicked(input) {
+        return new Promise((resolve, reject) => {
+            if (!input) return reject("NoInput");
+            if (!input.files) return reject("NoFiles");
+            const file = input.files[0];
+            if (!file) return reject("NoFile");
+            const fileReader = new FileReader();
+            fileReader.onload = (e) => {
+                resolve(e.target.result);
+            };
+            fileReader.onerror = reject;
+            fileReader.readAsDataURL(file);
+        });
+    }
+
+    async function imageFilePicked(input) {
+        input = input.target;
+        const imageUrl = await filePicked(input);
+        projectImage = imageUrl;
+    }
+    async function projectFilePicked(input) {
+        input = input.target;
+        const file = input.files[0];
+        if (!file) return;
+        projectInputName.innerText = `Using ${file.name} (${
+            file.size / 125000
+        } MB)`;
+        const projectUri = await filePicked(input);
+        projectData = projectUri;
+    }
+
+    function uploadProject() {
+        ProjectClient.uploadProject({
+            title: components.projectName.value,
+            instructions: components.projectInstructions.value,
+            notes: components.projectNotes.value,
+            image: projectImage,
+            project: projectData,
+        })
+            .then((projectId) => {
+                window.open(`${LINK.base}#${projectId}`);
+            })
+            .catch((err) => {
+                switch (err) {
+                    case "TooManyRequests":
+                        return alert(
+                            "You can only upload projects every 8 minutes."
+                        );
+                    case "MissingProjectData":
+                        return alert(
+                            "Failed to send project data. Your project may be too large."
+                        );
+                    case "Reauthenticate":
+                        return alert(
+                            "You were logged out. Please log-in again."
+                        );
+                    case "FeatureDisabledForThisAccount":
+                        return alert("You can't upload projects here.");
+                    case "PublishDisabled":
+                        return alert(
+                            "Some maintenance is occurring, so you are not able to upload at this time."
+                        );
+                    case "FormatError":
+                        return alert(
+                            "Some values are not right. Check that all required fields are filled."
+                        );
+                    case "FormatErrorRemixMustBeProjectIdAsNumber":
+                        return alert(
+                            "Remix Format Error. Report to PenguinMod."
+                        );
+                    default:
+                        return alert(err);
+                }
+            });
+    }
+    function openRemixMenu() {}
+    function openUpdateMenu() {}
 </script>
 
 <head>
-    <title>PenguinMod - Home</title>
+    <title>PenguinMod - Upload</title>
 </head>
 
 <NavigationBar />
 
 <div class="main">
     <NavigationMargin />
+
+    {#if loadingExternal}
+        <div class="external-loading">
+            <LoadingSpinner />
+            <p>Importing, please wait...</p>
+        </div>
+    {/if}
 
     <div class="section-info">
         <h1>Upload</h1>
@@ -28,31 +167,76 @@
             >
                 <div style="width:50%;">
                     <p class="important notmargin">Project Title</p>
-                    <input type="text" placeholder="My Project" />
+                    <input
+                        type="text"
+                        placeholder="My Project"
+                        bind:this={components.projectName}
+                        value={projectName}
+                    />
                     <p class="important notmargin" style="margin-top:24px">
                         Instructions
                     </p>
                     <textarea
                         placeholder="Tell others how to use or play your project..."
+                        bind:this={components.projectInstructions}
                     />
                     <p class="important notmargin">Notes and Credits</p>
                     <textarea
                         placeholder="List people that were apart of the creation of this project..."
+                        bind:this={components.projectNotes}
                     />
+                    <input
+                        id="FILERI"
+                        type="file"
+                        class="hidden-picker"
+                        accept=".pm,.sb3,.sb2,.sb,.goobert"
+                        on:change={projectFilePicked}
+                    />
+                    <label
+                        class="file-picker"
+                        for="FILERI"
+                        style="width:90%"
+                        bind:this={projectInputName}
+                    >
+                        Use a different project file
+                    </label>
                 </div>
                 <div style="width:50%;">
                     <img
-                        src="/empty-project.png"
+                        src={projectImage ? projectImage : "/empty-project.png"}
                         style="border-width:1px;border-style:solid;border-color:rgba(0, 0, 0, 0.1);width:100%;"
                         alt="Project Thumbnail"
                     />
-                    <button class="image-picker">Use my own image</button>
+                    <input
+                        id="FILEPI"
+                        type="file"
+                        class="hidden-picker"
+                        accept=".png,.jpg,.jpeg,.gif"
+                        on:change={imageFilePicked}
+                    />
+                    <label class="file-picker" for="FILEPI">
+                        Use my own image
+                    </label>
                 </div>
             </div>
             <div style="display:flex;flex-direction:row;margin-top:48px">
-                <Button label="Upload" icon="upload.svg" />
-                <Button label="Remix" color="remix" icon="remix.svg" />
-                <Button label="Update" color="orange" icon="update.svg" />
+                <Button
+                    label="Upload"
+                    icon="upload.svg"
+                    on:click={uploadProject}
+                />
+                <Button
+                    label="Remix"
+                    color="remix"
+                    icon="remix.svg"
+                    on:click={openRemixMenu}
+                />
+                <Button
+                    label="Update"
+                    color="orange"
+                    icon="update.svg"
+                    on:click={openUpdateMenu}
+                />
             </div>
         </div>
     </div>
@@ -117,6 +301,7 @@
         justify-content: center;
         width: 100%;
         margin: 0;
+        text-align: center;
     }
 
     .card {
@@ -142,7 +327,8 @@
         margin-block: 0;
     }
 
-    .image-picker {
+    .file-picker {
+        display: block;
         background-color: #00c3ff;
         color: white;
         border-radius: 1000px;
@@ -152,8 +338,29 @@
         outline: 0;
         cursor: pointer;
         font-weight: bold;
+        text-align: center;
     }
-    .image-picker:focus {
+    .file-picker:focus {
         outline: 4px solid rgba(0, 195, 255, 0.3);
+    }
+
+    .hidden-picker {
+        width: 0px;
+        height: 0px;
+        display: block;
+    }
+
+    .external-loading {
+        background: rgba(0, 0, 0, 0.75);
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
     }
 </style>
