@@ -58,6 +58,63 @@
         if (importLocation) {
             // load project from parent window
             loadingExternal = true;
+
+            // get parent window
+            const opener = window.opener || window.parent;
+            if (!opener || opener === window) {
+                // exit if not found
+                loadingExternal = false;
+                console.warn(
+                    "External import stopped; parent window not found"
+                );
+                return;
+            }
+            // wrapper to handle errors & be easier
+            function post(data) {
+                try {
+                    opener.postMessage(
+                        {
+                            p4: data,
+                        },
+                        importLocation
+                    );
+                } catch (e) {
+                    console.warn("Cannot post message", e);
+                }
+            }
+            // when WE get a post
+            window.addEventListener("message", (e) => {
+                if (e.origin !== importLocation) {
+                    return;
+                }
+                const data = e.data && e.data.p4;
+                if (!data) {
+                    return;
+                }
+
+                // userinfo: token, darkmode, remixid
+                if (data.type === "userinfo") {
+                }
+                // image: uri of thumbnail image
+                if (data.type === "image") {
+                    projectImage = data.uri;
+                }
+                // project: uri of project data
+                if (data.type === "project") {
+                    projectData = data.uri;
+                }
+
+                // we done here
+                if (data.type === "finished") {
+                    loadingExternal = false;
+                }
+                // something bad happenedd!!!!!!!!!!!
+                if (data.type === "error") {
+                    loadingExternal = false;
+                    alert("Failed to import the full project; " + data.error);
+                }
+            });
+            post({ type: "validate" });
         }
     });
 
