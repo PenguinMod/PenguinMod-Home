@@ -295,7 +295,7 @@
                 </div>
             </div>
             <div style="display:flex;flex-direction:row;margin-top:48px">
-                {#if loggedIn === true}
+                {#if loggedIn === true && projectData}
                     <Button
                         label="Upload"
                         icon="upload.svg"
@@ -317,6 +317,8 @@
                     <div>
                         {#if loggedIn === false}
                             <p>Please log-in to upload a project.</p>
+                        {:else if !projectData}
+                            <p>You must select a project file to upload.</p>
                         {/if}
                         <div style="display:flex;flex-direction:row">
                             <Button
