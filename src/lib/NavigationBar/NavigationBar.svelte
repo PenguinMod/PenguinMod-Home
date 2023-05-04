@@ -34,14 +34,11 @@
 
 	function logout() {
 		localStorage.removeItem("PV");
-		location.reload();
+		Authentication.fireLogout();
+		loggedIn = false;
 	}
 	function login() {
-		Authentication.authenticate().then(() => {
-			setTimeout(() => {
-				location.reload();
-			}, 1000);
-		});
+		Authentication.authenticate();
 	}
 
 	onMount(loggedInCheck);

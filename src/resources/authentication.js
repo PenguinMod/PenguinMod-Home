@@ -74,11 +74,23 @@ class Authentication {
         });
     }
     static onAuthentication(cb) {
-        Authentication.eventListeners.push(cb);
+        Authentication.eventListeners.push({ callback: cb, type: "LOGIN" });
+    }
+    static onLogout(cb) {
+        Authentication.eventListeners.push({ callback: cb, type: "LOGOUT" });
     }
     static fireAuthenticated(pv) {
-        Authentication.eventListeners.forEach(cb => {
-            cb(pv);
+        Authentication.eventListeners.forEach(thinkle => {
+            if (thinkle.type === "LOGIN") {
+                thinkle.callback(pv);
+            }
+        })
+    }
+    static fireLogout() {
+        Authentication.eventListeners.forEach(thinkle => {
+            if (thinkle.type === "LOGOUT") {
+                thinkle.callback();
+            }
         })
     }
     static usernameFromCode(code) {

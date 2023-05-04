@@ -148,6 +148,15 @@
         const projectUri = await filePicked(input);
         newProjectData = projectUri;
     }
+
+    // we dont need to add an "onAuthenticate" event
+    // because you cant sign in on the /edit page,
+    // signing out or going on it while signed out
+    // just kicks you to the /mystuff page
+    Authentication.onLogout(() => {
+        loggedIn = false;
+        kickOut();
+    });
 </script>
 
 <head>

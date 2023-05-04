@@ -92,7 +92,7 @@
                     return;
                 }
 
-                // userinfo: token, darkmode, remixid
+                // userinfo: token, remixid
                 if (data.type === "userinfo") {
                 }
                 // image: uri of thumbnail image
@@ -195,6 +195,24 @@
     }
     function openRemixMenu() {}
     function openUpdateMenu() {}
+
+    Authentication.onLogout(() => {
+        loggedIn = false;
+    });
+    Authentication.onAuthentication((privateCode) => {
+        loggedIn = null;
+        Authentication.usernameFromCode(privateCode)
+            .then((username) => {
+                if (username) {
+                    loggedIn = true;
+                    return;
+                }
+                loggedIn = false;
+            })
+            .catch(() => {
+                loggedIn = false;
+            });
+    });
 </script>
 
 <head>
@@ -277,23 +295,48 @@
                 </div>
             </div>
             <div style="display:flex;flex-direction:row;margin-top:48px">
-                <Button
-                    label="Upload"
-                    icon="upload.svg"
-                    on:click={uploadProject}
-                />
-                <Button
-                    label="Remix"
-                    color="remix"
-                    icon="remix.svg"
-                    on:click={openRemixMenu}
-                />
-                <Button
-                    label="Update"
-                    color="orange"
-                    icon="update.svg"
-                    on:click={openUpdateMenu}
-                />
+                {#if loggedIn === true}
+                    <Button
+                        label="Upload"
+                        icon="upload.svg"
+                        on:click={uploadProject}
+                    />
+                    <Button
+                        label="Remix"
+                        color="remix"
+                        icon="remix.svg"
+                        on:click={openRemixMenu}
+                    />
+                    <Button
+                        label="Update"
+                        color="orange"
+                        icon="update.svg"
+                        on:click={openUpdateMenu}
+                    />
+                {:else}
+                    <div>
+                        {#if loggedIn === false}
+                            <p>Please log-in to upload a project.</p>
+                        {/if}
+                        <div style="display:flex;flex-direction:row">
+                            <Button
+                                label="Upload"
+                                color="gray"
+                                icon="upload.svg"
+                            />
+                            <Button
+                                label="Remix"
+                                color="gray"
+                                icon="remix.svg"
+                            />
+                            <Button
+                                label="Update"
+                                color="gray"
+                                icon="update.svg"
+                            />
+                        </div>
+                    </div>
+                {/if}
             </div>
         </div>
     </div>
