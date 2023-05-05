@@ -226,17 +226,6 @@
             <Button label="Approve Project" on:click={approveProject} />
         </div>
     </div>
-
-    <div
-        style="width:100%;display:flex;flex-direction:row;justify-content: center;"
-    >
-        <p>
-            <i>
-                This page is still in development, some features likely will not
-                work yet.
-            </i>
-        </p>
-    </div>
 </div>
 
 <style>

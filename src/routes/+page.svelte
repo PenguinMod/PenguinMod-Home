@@ -86,17 +86,6 @@
         <Button label="Community Wiki" link={LINK.wiki} />
     </div>
 
-    <div
-        style="width:100%;display:flex;flex-direction:row;justify-content: center;"
-    >
-        <p>
-            <i>
-                This page is still in development, some features likely will not
-                work yet.
-            </i>
-        </p>
-    </div>
-
     <div class="section-categories">
         <ContentCategory
             header="What's new?"
