@@ -184,6 +184,9 @@
         width: 100%;
         min-width: 1000px;
     }
+    :global(body.dark-mode) .main {
+        color: white;
+    }
 
     .section-info {
         background: #00c3ffad;

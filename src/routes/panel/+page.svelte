@@ -104,6 +104,11 @@
         projectMenuOpen = false;
         projectIdSelection.value = id;
     }
+    function featureProject(id, name) {
+        const usure = confirm("Feature " + name + " ?");
+        if (!usure) return;
+        ProjectClient.featureProject(id).catch((err) => alert(err));
+    }
 
     let sendWebhook = true;
     function approveProject() {
@@ -168,6 +173,18 @@
                                         deleteProject(project.id, project.name);
                                     },
                                     color: "red",
+                                },
+                                {
+                                    name: `Feature ${
+                                        project.remix ? "Remix" : "Project"
+                                    }`,
+                                    callback: () => {
+                                        featureProject(
+                                            project.id,
+                                            project.name
+                                        );
+                                    },
+                                    color: "orange",
                                 },
                             ]}
                         >
@@ -244,6 +261,10 @@
         border-color: rgba(0, 162, 255, 0.35);
         outline: none;
     }
+    :global(body.dark-mode) input[type="number"] {
+        background-color: transparent;
+        color: white;
+    }
 
     .main {
         position: absolute;
@@ -251,6 +272,9 @@
         top: 0px;
         width: 100%;
         min-width: 1000px;
+    }
+    :global(body.dark-mode) .main {
+        color: white;
     }
 
     .section-info {
@@ -303,6 +327,9 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+    }
+    :global(body.dark-mode) .card-page {
+        background: #1f1f1f;
     }
     .card-header {
         width: 97.5%;

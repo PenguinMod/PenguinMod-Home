@@ -135,6 +135,10 @@
         min-width: 1000px;
     }
 
+    :global(body.dark-mode) .main {
+        color: white;
+    }
+
     .section-projects {
         display: flex;
         flex-direction: column;

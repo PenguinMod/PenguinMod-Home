@@ -229,6 +229,9 @@
         align-items: center;
         width: 100%;
     }
+    :global(body.dark-mode) .inside-project {
+        color: white;
+    }
 
     .login-prompt {
         display: flex;
@@ -236,5 +239,9 @@
         margin-top: 16px;
         margin-bottom: 16px;
         align-items: center;
+    }
+
+    :global(body.dark-mode) a {
+        color: dodgerblue;
     }
 </style>

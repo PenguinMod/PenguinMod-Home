@@ -167,6 +167,10 @@
         color: #575e75;
         font-weight: normal;
     }
+    :global(body.dark-mode) .author {
+        color: #9ba0b1;
+        font-weight: normal;
+    }
     .date {
         font-size: 10px;
     }

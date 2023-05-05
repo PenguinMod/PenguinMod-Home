@@ -545,12 +545,24 @@
         outline: none;
     }
 
+    :global(body.dark-mode) input[type="text"] {
+        background-color: transparent;
+        color: white;
+    }
+    :global(body.dark-mode) textarea {
+        background-color: transparent;
+        color: white;
+    }
+
     .main {
         position: absolute;
         left: 0px;
         top: 0px;
         width: 100%;
         min-width: 1000px;
+    }
+    :global(body.dark-mode) .main {
+        color: white;
     }
 
     .section-info {
@@ -647,6 +659,9 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+    }
+    :global(body.dark-mode) .card-page {
+        background: #1f1f1f;
     }
     .card-header {
         width: 97.5%;

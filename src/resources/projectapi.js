@@ -234,5 +234,23 @@ class ProjectApi {
             })
         })
     }
+    featureProject(id, webhook) {
+        const url = `https://projects.penguinmod.site/api/projects/feature?passcode=${this.privateCode}&approver=${this.username}&webhook=${webhook}&id=${id}`;
+        return new Promise((resolve, reject) => {
+            fetch(url).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
 }
 export default ProjectApi;

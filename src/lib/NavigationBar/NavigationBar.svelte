@@ -41,6 +41,14 @@
 		Authentication.authenticate();
 	}
 
+	function switchTheme() {
+		if (localStorage.getItem("darkmode")) {
+			localStorage.removeItem("darkmode");
+		} else {
+			localStorage.setItem("darkmode", true);
+		}
+	}
+
 	onMount(loggedInCheck);
 </script>
 
@@ -49,6 +57,11 @@
 		<img class="logo-image" src="/navicon.png" alt="PenguinMod" />
 	</a>
 	<div style="margin-right: 12px;" />
+	<BarPage
+		label="<img src='moon.svg' alt='ThemeSwitcher'>"
+		style="padding:0.5rem"
+		on:click={switchTheme}
+	/>
 	<BarPage label="Create" link={LINK.editor} />
 	<BarSearch placeholder="Search for projects..." />
 	<BarPage label="My Stuff" link="/mystuff" />

@@ -3,6 +3,7 @@
 
     export let link = false;
     export let label = "Page";
+    export let style = "";
     export let noredirect = false;
 
     const dispatch = createEventDispatcher();
@@ -13,7 +14,7 @@
 </script>
 
 {#if !link}
-    <button class="button" on:click={event}>
+    <button class="button" on:click={event} {style}>
         {@html label}
     </button>
 {:else}
@@ -22,7 +23,7 @@
         target={noredirect ? "_blank" : "_self"}
         style="text-decoration: none;"
     >
-        <button class="button" on:click={event}>
+        <button class="button" on:click={event} {style}>
             {@html label}
         </button>
     </a>
@@ -41,6 +42,9 @@
         color: white;
         background-color: transparent;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .button:hover {
         background-color: rgba(0, 0, 0, 0.1);
