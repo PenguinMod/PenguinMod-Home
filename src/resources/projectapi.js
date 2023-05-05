@@ -22,6 +22,26 @@ class ProjectApi {
                 });
         })
     }
+    static getUnapprovedProjects() {
+        return new Promise((resolve, reject) => {
+            const url = `https://projects.penguinmod.site/api/projects/getAll`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((projects) => {
+                        const projs = Object.values(projects)
+                        const projectsFiltered = projs.filter(p => !p.accepted).filter(p => !p.hidden)
+                        resolve(projectsFiltered);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
     static getUserProjects(user) {
         return new Promise((resolve, reject) => {
             const url = `https://projects.penguinmod.site/api/projects/paged?length=100&user=${user}`;
@@ -70,6 +90,25 @@ class ProjectApi {
                     }
                     res.json().then((projects) => {
                         resolve(projects);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+
+    static isAdmin(username) {
+        return new Promise((resolve, reject) => {
+            const url = `https://projects.penguinmod.site/api/users/isAdmin?username=${username}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((result) => {
+                        resolve(result.admin);
                     });
                 })
                 .catch((err) => {
@@ -168,6 +207,25 @@ class ProjectApi {
                         return;
                     }
                     resolve(json.published);
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+
+    approveProject(id, webhook) {
+        const url = `https://projects.penguinmod.site/api/projects/approve?passcode=${this.privateCode}&approver=${this.username}&webhook=${webhook}&id=${id}`;
+        return new Promise((resolve, reject) => {
+            fetch(url).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
                 }).catch(err => {
                     reject(err);
                 })

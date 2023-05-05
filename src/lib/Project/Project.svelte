@@ -48,7 +48,11 @@
     <div bind:this={dropdownMenu} class="dropdown-options">
         {#each dotsoptions as option}
             {#if option.href}
-                <a href={option.href} class="dropdown-redirect">
+                <a
+                    href={option.href}
+                    target={option.newtab ? "_blank" : "_self"}
+                    class="dropdown-redirect"
+                >
                     <button
                         class={"dropdown-option dropdown-option-" +
                             (option.color ? option.color : "default")}
