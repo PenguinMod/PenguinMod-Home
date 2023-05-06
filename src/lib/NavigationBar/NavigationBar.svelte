@@ -58,7 +58,7 @@
 	</a>
 	<div style="margin-right: 12px;" />
 	<BarPage
-		label="<img src='moon.svg' alt='ThemeSwitcher'>"
+		label="<img src='/moon.svg' alt='ThemeSwitcher'>"
 		style="padding:0.5rem"
 		on:click={switchTheme}
 	/>

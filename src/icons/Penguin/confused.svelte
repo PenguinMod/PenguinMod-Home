@@ -215,3 +215,9 @@
         </g>
     </g>
 </svg>
+
+<style>
+    * {
+        user-select: none;
+    }
+</style>
