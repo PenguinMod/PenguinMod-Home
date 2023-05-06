@@ -23,6 +23,12 @@
     };
 
     onMount(() => {
+        const projectId = Number(location.hash.replace("#", ""));
+        if (!isNaN(projectId) && projectId != 0) {
+            location.href = `https://studio.penguinmod.site/#${projectId}`;
+            return;
+        }
+
         fetch(`${LINK.basicApi}commits`).then((res) => {
             res.json().then((commits) => {
                 ghcommits = commits;
