@@ -7,7 +7,7 @@ export default {
     /**
      * PenguinMod's editor page
      */
-    editor: "https://studio.penguinmod.site/editor.html",
+    editor: "https://studio.penguinmod.site/",
 
     /**
      * PenguinMod's credits page
