@@ -2,17 +2,17 @@ export default {
     /**
      * PenguinMod's normal page
      */
-    base: "https://home.penguinmod.site/",
+    base: "https://studio.penguinmod.site/",
 
     /**
      * PenguinMod's editor page
      */
-    editor: "https://studio.penguinmod.site/",
+    editor: "https://studio.penguinmod.site/editor.html",
 
     /**
      * PenguinMod's credits page
      */
-    credits: "https://penguinmod.site/credits.html",
+    credits: "https://studio.penguinmod.site/credits.html",
 
     /**
      * PenguinMod's project page
@@ -32,7 +32,7 @@ export default {
     /**
      * PenguinMod's packager page
      */
-    packager: "https://penguinmod.site/PenguinMod-Packager/",
+    packager: "https://studio.penguinmod.site/PenguinMod-Packager/",
 
     /**
      * PenguinMod's unofficial wiki
