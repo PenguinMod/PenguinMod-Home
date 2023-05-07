@@ -2,12 +2,12 @@ export default {
     /**
      * PenguinMod's normal page
      */
-    base: "https://penguinmod.site/",
+    base: "https://home.penguinmod.site/",
 
     /**
      * PenguinMod's editor page
      */
-    editor: "https://penguinmod.site/editor.html",
+    editor: "https://studio.penguinmod.site/editor.html",
 
     /**
      * PenguinMod's credits page
