@@ -28,6 +28,9 @@
 
             for (var i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
+                if (String(key).toLowerCase().trim() === "pv") {
+                    continue;
+                }
                 const value = localStorage.getItem(localStorage.key(i));
                 e.source.postMessage(
                     {
