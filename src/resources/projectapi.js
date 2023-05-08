@@ -252,5 +252,70 @@ class ProjectApi {
             })
         })
     }
+
+    toggleVoteProject(id, type) {
+        type = String(type).toLowerCase().trim();
+        switch (type) {
+            case 'feature':
+            case 'features':
+            case 'featured':
+            case 'vote':
+            case 'voted':
+                type = 'votes';
+                break;
+            case 'love':
+            case 'loved':
+            case 'like':
+            case 'liked':
+            case 'likes':
+                type = 'loves';
+                break;
+            default:
+                type = 'votes';
+        }
+        const url = `https://projects.penguinmod.site/api/projects/toggleProjectVote`;
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                headers: { "Content-Type": "application/json" },
+                method: "POST",
+                body: JSON.stringify({
+                    id: id,
+                    type: type,
+                    user: this.username,
+                    passcode: this.privateCode
+                })
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve(json.state);
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+    getVoteStates(id) {
+        const url = `https://projects.penguinmod.site/api/projects/getProjectVote?user=${this.username}&passcode=${this.privateCode}&id=${id}`;
+        return new Promise((resolve, reject) => {
+            fetch(url).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve(json);
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
 }
 export default ProjectApi;
