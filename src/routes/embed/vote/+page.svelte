@@ -94,6 +94,7 @@
         const privateCode = localStorage.getItem("PV");
         if (!privateCode) {
             loggedIn = false;
+            updateVoteStates();
             return;
         }
         Authentication.usernameFromCode(privateCode)
