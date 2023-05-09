@@ -45,21 +45,20 @@
 					setInterval(loop, 5);
 					loop();
 				}
-				return;
-			}
-
-			const body = document.getElementById("PAGE_BODY");
-			const loop = () => {
-				const darkmode = localStorage.getItem("darkmode");
-				body.setAttribute("class", darkmode ? "dark-mode" : "");
-				if (darkmode) {
-					body.style.background = "#111";
-					return;
+			} else {
+				const body = document.getElementById("PAGE_BODY");
+				const loop = () => {
+					const darkmode = localStorage.getItem("darkmode");
+					body.setAttribute("class", darkmode ? "dark-mode" : "");
+					if (darkmode) {
+						body.style.background = "#111";
+						return;
+					}
+					body.style.background = "";
 				}
-				body.style.background = "";
+				setInterval(loop, 5);
+				loop();
 			}
-			setInterval(loop, 5);
-			loop();
 		</script>
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
