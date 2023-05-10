@@ -32,6 +32,17 @@
         projectNotes: null,
     };
 
+    function floatTo2Decimals(number) {
+        const num = Number(number);
+        if (isNaN(num)) return 0;
+        const str = String(num);
+        if (!str.includes(".")) return num;
+        const split = str.split(".");
+        if (split[1].length <= 2) return num;
+        const newNumber = split[0] + "." + split[1].substring(0, 2);
+        return Number(newNumber);
+    }
+
     function kickOut() {
         location.href = location.origin + "/mystuff";
     }
@@ -211,11 +222,11 @@
         input = input.target;
         const file = input.files[0];
         if (!file) return;
-        projectInputName.innerText = `Using ${file.name} (${
-            file.size / 125000
-        } MB)`;
         const projectUri = await filePicked(input);
         newProjectData = projectUri;
+        projectInputName.innerText = `Using ${file.name} (${floatTo2Decimals(
+            file.size / 1250000
+        )} MB)`;
     }
 
     // we dont need to add an "onAuthenticate" event
