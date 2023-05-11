@@ -14,11 +14,13 @@
     import UserDisplay from "$lib/UserDisplay/Display.svelte";
     import Project from "$lib/Project/Project.svelte";
 
+    // Icons
+    import PenguinConfusedSVG from "../icons/Penguin/confused.svelte";
+
     let ghcommits = [];
     let updates = [];
 
     let projects = {
-        featuredweek: [],
         today: [],
     };
 
@@ -151,6 +153,17 @@
                             <Project {...project} />
                         {/if}
                     {/each}
+                    {#if projects.today.filter((proj) => Date.now() - proj.date <= 604800000 && proj.featured === true).length <= 0}
+                        <div
+                            style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                        >
+                            <PenguinConfusedSVG width="8rem" />
+                            <p>
+                                Nothing found. You can help feature projects by
+                                clicking the yellow checkmark below them.
+                            </p>
+                        </div>
+                    {/if}
                 {:else}
                     <LoadingSpinner />
                 {/if}
