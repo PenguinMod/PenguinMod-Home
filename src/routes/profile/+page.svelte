@@ -95,7 +95,6 @@
         </ContentCategory>
         <ContentCategory
             header="All projects"
-            seemore={`/search?q=all%3Aprojects`}
             style="width:65%;"
             stylec="height: 244px;"
         >
