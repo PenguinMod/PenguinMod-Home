@@ -1,5 +1,6 @@
 <script>
     import { onMount } from "svelte";
+    import Authentication from "../resources/authentication.js";
     import ProjectApi from "../resources/projectapi.js";
 
     // Static values
@@ -16,6 +17,8 @@
 
     // Icons
     import PenguinConfusedSVG from "../icons/Penguin/confused.svelte";
+
+    let loggedIn = null;
 
     let ghcommits = [];
     let updates = [];
@@ -47,6 +50,45 @@
             projects.today = projs;
         });
     });
+
+    // login code below
+
+    onMount(async () => {
+        const privateCode = localStorage.getItem("PV");
+        if (!privateCode) {
+            loggedIn = false;
+            return;
+        }
+        Authentication.usernameFromCode(privateCode)
+            .then((username) => {
+                if (username) {
+                    loggedIn = true;
+                    return;
+                }
+                loggedIn = false;
+            })
+            .catch(() => {
+                loggedIn = false;
+            });
+    });
+
+    Authentication.onLogout(() => {
+        loggedIn = false;
+    });
+    Authentication.onAuthentication((privateCode) => {
+        loggedIn = null;
+        Authentication.usernameFromCode(privateCode)
+            .then((username) => {
+                if (username) {
+                    loggedIn = true;
+                    return;
+                }
+                loggedIn = false;
+            })
+            .catch(() => {
+                loggedIn = false;
+            });
+    });
 </script>
 
 <head>
@@ -58,41 +100,43 @@
 <div class="main">
     <NavigationMargin />
 
-    <div class="section-info">
-        <div style="margin-left: 8rem;">
-            <h1>Block-based coding with tons of capabilities</h1>
-            <h1>
-                Built off of
-                <a href={LINK.turbowarp} target="_blank">TurboWarp</a>
-                and
-                <a href={LINK.scratch} target="_blank">Scratch</a>
-            </h1>
-            <Button
-                label="<img src='/tryit.svg' width='32px' style='margin-right:8px'></img> Try it out"
-                highlighted="true"
-                link={LINK.editor}
-            />
+    {#if loggedIn === false}
+        <div class="section-info">
+            <div style="margin-left: 8rem;">
+                <h1>Block-based coding with tons of capabilities</h1>
+                <h1>
+                    Built off of
+                    <a href={LINK.turbowarp} target="_blank">TurboWarp</a>
+                    and
+                    <a href={LINK.scratch} target="_blank">Scratch</a>
+                </h1>
+                <Button
+                    label="<img src='/tryit.svg' width='32px' style='margin-right:8px'></img> Try it out"
+                    highlighted="true"
+                    link={LINK.editor}
+                />
+            </div>
+
+            <video
+                width="426.666667"
+                height="240"
+                autoplay="true"
+                muted="true"
+                loop="true"
+                class="example-video"
+            >
+                <source src="/example.mp4" type="video/mp4" />
+                <track kind="captions" />
+            </video>
         </div>
 
-        <video
-            width="426.666667"
-            height="240"
-            autoplay="true"
-            muted="true"
-            loop="true"
-            class="example-video"
-        >
-            <source src="/example.mp4" type="video/mp4" />
-            <track kind="captions" />
-        </video>
-    </div>
-
-    <div class="section-links">
-        <Button label="Project Packager" link={LINK.packager} />
-        <Button label="Credits" link={LINK.credits} />
-        <Button label="GitHub" link={LINK.github} />
-        <Button label="Community Wiki" link={LINK.wiki} />
-    </div>
+        <div class="section-links">
+            <Button label="Project Packager" link={LINK.packager} />
+            <Button label="Credits" link={LINK.credits} />
+            <Button label="GitHub" link={LINK.github} />
+            <Button label="Community Wiki" link={LINK.wiki} />
+        </div>
+    {/if}
 
     <div class="section-categories">
         <ContentCategory
@@ -188,7 +232,19 @@
             </div>
         </ContentCategory>
     </div>
-    <div style="height:32px;" />
+
+    {#if loggedIn !== false}
+        <div class="section-links" style="background:transparent">
+            <Button label="Project Packager" link={LINK.packager} />
+            <Button label="Credits" link={LINK.credits} />
+            <Button label="GitHub" link={LINK.github} />
+            <Button label="Community Wiki" link={LINK.wiki} />
+        </div>
+        <div style="height:8px;" />
+    {/if}
+    {#if loggedIn === false}
+        <div style="height:32px;" />
+    {/if}
 </div>
 
 <style>
