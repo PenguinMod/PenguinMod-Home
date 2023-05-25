@@ -16,6 +16,7 @@
 
     let loggedIn = null;
     let loadingExternal = false;
+    let guidelinePageOpen = false;
 
     let projectId;
     let projectName = "Project";
@@ -256,6 +257,43 @@
         </div>
     {/if}
 
+    {#if guidelinePageOpen}
+        <div class="front-card-page">
+            <div class="card-page">
+                <div class="card-header">
+                    <h1>Guidelines</h1>
+                </div>
+                <div class="card-projects">
+                    <iframe
+                        title="Guidelines Page"
+                        src="https://studio.penguinmod.site/PenguinMod-Guidelines/PROJECTS"
+                    />
+                </div>
+                <a
+                    href="https://studio.penguinmod.site/PenguinMod-Guidelines/PROJECTS"
+                    style="margin-top:6px;color:dodgerblue"
+                    target="_blank"
+                >
+                    Open in new tab
+                </a>
+                <p class="only-in-dark-mode">
+                    <i>
+                        This page is not in Dark Mode because it is an external
+                        website.
+                    </i>
+                </p>
+                <div style="display:flex;flex-direction:row;padding:1em">
+                    <Button
+                        label="Close"
+                        on:click={() => {
+                            guidelinePageOpen = false;
+                        }}
+                    />
+                </div>
+            </div>
+        </div>
+    {/if}
+
     <div class="section-info">
         <div>
             <h1 style="margin-block:8px">Edit</h1>
@@ -338,6 +376,15 @@
                 />
             </div>
         </div>
+        <div style="height:16px" />
+        <button
+            class="guidelines-link"
+            on:click={() => {
+                guidelinePageOpen = true;
+            }}
+        >
+            Project Uploading & Updating Guidelines
+        </button>
     </div>
 </div>
 
@@ -369,6 +416,15 @@
     input[type="text"]:focus {
         border-color: rgba(0, 162, 255, 0.35);
         outline: none;
+    }
+
+    :global(body.dark-mode) input[type="text"] {
+        background-color: transparent;
+        color: white;
+    }
+    :global(body.dark-mode) textarea {
+        background-color: transparent;
+        color: white;
     }
 
     .main {
@@ -453,5 +509,62 @@
         align-items: center;
         justify-content: center;
         color: white;
+    }
+
+    .front-card-page {
+        background: rgba(0, 0, 0, 0.5);
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .card-page {
+        box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.25);
+        background: white;
+        border-radius: 16px;
+        width: 85%;
+        height: 80%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    :global(body.dark-mode) .card-page {
+        background: #1f1f1f;
+    }
+    .only-in-dark-mode {
+        display: none;
+    }
+    :global(body.dark-mode) .only-in-dark-mode {
+        display: inline;
+    }
+    .card-header {
+        width: 97.5%;
+        border-bottom: #00000030 1px solid;
+        text-align: center;
+    }
+    .card-projects {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        flex-wrap: wrap;
+        overflow: auto;
+        height: 100%;
+    }
+
+    .guidelines-link {
+        background: transparent;
+        border: 0;
+        color: dodgerblue;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+    iframe {
+        width: 100%;
+        border: 0;
     }
 </style>

@@ -151,6 +151,7 @@
         height: 152px;
         border-radius: 4px;
         overflow: hidden;
+        object-fit: cover;
     }
     .project-author {
         width: 32px;

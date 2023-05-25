@@ -189,7 +189,7 @@
                             "You were logged out. Please log-in again."
                         );
                     case "FeatureDisabledForThisAccount":
-                        return alert("You can't upload projects here.");
+                        return alert("You are not allowed to upload projects.");
                     case "PublishDisabled":
                         return alert(
                             "Some maintenance is occurring, so you are not able to upload at this time."
@@ -230,8 +230,10 @@
 
     let canRemix = [];
     let otherProjects = [];
+
     let remixPageOpen = false;
     let updatePageOpen = false;
+    let guidelinePageOpen = false;
 
     function openRemixMenu() {
         canRemix = [];
@@ -406,6 +408,43 @@
         </div>
     {/if}
 
+    {#if guidelinePageOpen}
+        <div class="front-card-page">
+            <div class="card-page">
+                <div class="card-header">
+                    <h1>Guidelines</h1>
+                </div>
+                <div class="card-projects">
+                    <iframe
+                        title="Guidelines Page"
+                        src="https://studio.penguinmod.site/PenguinMod-Guidelines/PROJECTS"
+                    />
+                </div>
+                <a
+                    href="https://studio.penguinmod.site/PenguinMod-Guidelines/PROJECTS"
+                    style="margin-top:6px;color:dodgerblue"
+                    target="_blank"
+                >
+                    Open in new tab
+                </a>
+                <p class="only-in-dark-mode">
+                    <i>
+                        This page is not in Dark Mode because it is an external
+                        website.
+                    </i>
+                </p>
+                <div style="display:flex;flex-direction:row;padding:1em">
+                    <Button
+                        label="Close"
+                        on:click={() => {
+                            guidelinePageOpen = false;
+                        }}
+                    />
+                </div>
+            </div>
+        </div>
+    {/if}
+
     <div class="section-info">
         <h1>Upload</h1>
     </div>
@@ -523,6 +562,15 @@
                 {/if}
             </div>
         </div>
+        <div style="height:16px" />
+        <button
+            class="guidelines-link"
+            on:click={() => {
+                guidelinePageOpen = true;
+            }}
+        >
+            Project Uploading & Updating Guidelines
+        </button>
     </div>
 </div>
 
@@ -674,6 +722,12 @@
     :global(body.dark-mode) .card-page {
         background: #1f1f1f;
     }
+    .only-in-dark-mode {
+        display: none;
+    }
+    :global(body.dark-mode) .only-in-dark-mode {
+        display: inline;
+    }
     .card-header {
         width: 97.5%;
         border-bottom: #00000030 1px solid;
@@ -686,5 +740,17 @@
         flex-wrap: wrap;
         overflow: auto;
         height: 100%;
+    }
+
+    .guidelines-link {
+        background: transparent;
+        border: 0;
+        color: dodgerblue;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+    iframe {
+        width: 100%;
+        border: 0;
     }
 </style>
