@@ -107,9 +107,11 @@
                     return;
                 }
                 loggedIn = false;
+                updateVoteStates();
             })
             .catch(() => {
                 loggedIn = false;
+                updateVoteStates();
             });
     });
     onMount(() => {
