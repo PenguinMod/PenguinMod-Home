@@ -18,7 +18,6 @@
     let projects = [];
     let error = null;
     let loggedIn = null;
-    let isAdmin = false;
 
     function loggedInChange(username, privateCode) {
         if (username) ProjectClient.setUsername(username);
@@ -37,9 +36,6 @@
                     "An error occurred. We couldn't get your uploaded projects.";
                 console.error(err);
             });
-        ProjectApi.isAdmin(username).then((isAdminn) => {
-            isAdmin = isAdminn;
-        });
     }
     function deleteProject(id, name) {
         const code = prompt(
@@ -180,14 +176,6 @@
             </div>
         {/if}
     </div>
-
-    {#if isAdmin && loggedIn}
-        <div
-            style="width:100%;display:flex;flex-direction:row;justify-content:center;margin-top:8px"
-        >
-            <a href="/panel">Admin Panel</a>
-        </div>
-    {/if}
 </div>
 
 <style>
