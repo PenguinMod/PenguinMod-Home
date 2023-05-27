@@ -183,9 +183,9 @@
 
     {#if isAdmin && loggedIn}
         <div
-            style="width:100%;display:flex;flex-direction:row;justify-content: center;"
+            style="width:100%;display:flex;flex-direction:row;justify-content:center;margin-top:8px"
         >
-            <a href="/panel"> Admin Panel </a>
+            <a href="/panel">Admin Panel</a>
         </div>
     {/if}
 </div>
