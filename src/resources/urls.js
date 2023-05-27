@@ -68,4 +68,9 @@ export default {
      * PenguinMod's update reader API
      */
     updateReaderApi: "https://pmupdatereader.jeremygamer13.repl.co/",
+    
+    /**
+     * The admin panel for pm projects api
+     */
+    adminPanel: "https://penguinmod.site/panel"
 }
