@@ -23,6 +23,9 @@
 			.then((username) => {
 				if (username) {
 					loggedIn = true;
+					ProjectApi.isAdmin(username).then((isAdminn) => {
+					    isAdmin = isAdminn;
+					});
 					return;
 				}
 				loggedIn = false;
@@ -30,9 +33,6 @@
 			.catch(() => {
 				loggedIn = false;
 			});
-		ProjectApi.isAdmin(username).then((isAdminn) => {
-		    isAdmin = isAdminn;
-		});
 	}
 	Authentication.onAuthentication(loggedInCheck);
 
