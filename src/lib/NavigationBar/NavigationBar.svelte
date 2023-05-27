@@ -11,6 +11,7 @@
 	import BarSearch from "$lib/BarSearch/Search.svelte";
 
 	let loggedIn = null;
+    	let isAdmin = false;
 
 	function loggedInCheck() {
 		const privateCode = localStorage.getItem("PV");
@@ -29,6 +30,9 @@
 			.catch(() => {
 				loggedIn = false;
 			});
+		ProjectApi.isAdmin(username).then((isAdminn) => {
+		    isAdmin = isAdminn;
+		});
 	}
 	Authentication.onAuthentication(loggedInCheck);
 
@@ -65,6 +69,9 @@
 	<BarPage label="Create" link={LINK.editor} />
 	<BarSearch placeholder="Search for projects..." />
 	<BarPage label="My Stuff" link="/mystuff" />
+	{#if isAdmin && loggedIn}
+		<BarPage label="Admin Panel" link="/panel" />
+	{/if}
 	<BarButton
 		highlighted="true"
 		link={LINK.discord}
