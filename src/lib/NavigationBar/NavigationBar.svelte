@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from "svelte";
 	import Authentication from "../../resources/authentication.js";
+    	import ProjectApi from "../../resources/projectapi.js";
 
 	// Static values
 	import LINK from "../../resources/urls.js";
