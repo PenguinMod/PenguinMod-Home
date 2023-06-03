@@ -81,7 +81,7 @@
                 projects = projectss;
             });
         } else {
-            ProjectApi.getUnapprovedProjects().then((projectss) => {
+            ProjectClient.getUnapprovedProjects().then((projectss) => {
                 projects = projectss;
             });
         }
@@ -122,6 +122,8 @@
                 alert(err);
             });
     }
+
+    let guidelinePageOpen = false;
 </script>
 
 <head>
@@ -214,6 +216,43 @@
         </div>
     {/if}
 
+    {#if guidelinePageOpen}
+        <div class="front-card-page">
+            <div class="card-page">
+                <div class="card-header">
+                    <h1>Guidelines</h1>
+                </div>
+                <div class="card-projects">
+                    <iframe
+                        title="Guidelines Page"
+                        src="https://studio.penguinmod.site/PenguinMod-Guidelines/PROJECTS"
+                    />
+                </div>
+                <a
+                    href="https://studio.penguinmod.site/PenguinMod-Guidelines/PROJECTS"
+                    style="margin-top:6px;color:dodgerblue"
+                    target="_blank"
+                >
+                    Open in new tab
+                </a>
+                <p class="only-in-dark-mode">
+                    <i>
+                        This page is not in Dark Mode because it is an external
+                        website.
+                    </i>
+                </p>
+                <div style="display:flex;flex-direction:row;padding:1em">
+                    <Button
+                        label="Close"
+                        on:click={() => {
+                            guidelinePageOpen = false;
+                        }}
+                    />
+                </div>
+            </div>
+        </div>
+    {/if}
+
     <div class="section-info">
         <div>
             <h1 style="margin-block:8px">Admin Panel</h1>
@@ -242,6 +281,15 @@
             <div style="height:8px" />
             <Button label="Approve Project" on:click={approveProject} />
         </div>
+
+        <button
+            class="guidelines-link"
+            on:click={() => {
+                guidelinePageOpen = true;
+            }}
+        >
+            Project Uploading & Updating Guidelines
+        </button>
     </div>
 </div>
 
@@ -328,6 +376,12 @@
         flex-direction: column;
         align-items: center;
     }
+    .only-in-dark-mode {
+        display: none;
+    }
+    :global(body.dark-mode) .only-in-dark-mode {
+        display: inline;
+    }
     :global(body.dark-mode) .card-page {
         background: #1f1f1f;
     }
@@ -351,5 +405,18 @@
     .date {
         opacity: 0.5;
         font-size: 12px;
+    }
+
+    .guidelines-link {
+        background: transparent;
+        border: 0;
+        color: dodgerblue;
+        text-decoration: underline;
+        cursor: pointer;
+        margin-top: 16px;
+    }
+    iframe {
+        width: 100%;
+        border: 0;
     }
 </style>

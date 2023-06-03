@@ -22,25 +22,11 @@ class ProjectApi {
                 });
         })
     }
+    /**
+     * @deprecated Cannot be used statically anymore.
+     */
     static getUnapprovedProjects() {
-        return new Promise((resolve, reject) => {
-            const url = `https://projects.penguinmod.site/api/projects/getAll`;
-            fetch(url)
-                .then((res) => {
-                    if (!res.ok) {
-                        res.text().then(reject);
-                        return;
-                    }
-                    res.json().then((projects) => {
-                        const projs = Object.values(projects)
-                        const projectsFiltered = projs.filter(p => !p.accepted).filter(p => !p.hidden)
-                        resolve(projectsFiltered);
-                    });
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        })
+        throw new Error("Unapproved Projects can only be viewed in a client")
     }
     static getUserProjects(user) {
         return new Promise((resolve, reject) => {
@@ -135,6 +121,25 @@ class ProjectApi {
                     }
                     res.json().then((projects) => {
                         resolve(projects);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+    getUnapprovedProjects() {
+        return new Promise((resolve, reject) => {
+            const url = `https://projects.penguinmod.site/api/projects/getUnapproved?user=${this.username}&passcode=${this.privateCode}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((projects) => {
+                        const shown = projects.filter(p => !p.hidden);
+                        resolve(shown);
                     });
                 })
                 .catch((err) => {
