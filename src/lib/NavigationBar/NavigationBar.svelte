@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from "svelte";
 	import Authentication from "../../resources/authentication.js";
-    	import ProjectApi from "../../resources/projectapi.js";
+	import ProjectApi from "../../resources/projectapi.js";
 
 	// Static values
 	import LINK from "../../resources/urls.js";
@@ -12,7 +12,7 @@
 	import BarSearch from "$lib/BarSearch/Search.svelte";
 
 	let loggedIn = null;
-    	let isAdmin = false;
+	let isAdmin = false;
 
 	function loggedInCheck() {
 		const privateCode = localStorage.getItem("PV");
@@ -25,7 +25,7 @@
 				if (username) {
 					loggedIn = true;
 					ProjectApi.isAdmin(username).then((isAdminn) => {
-					    isAdmin = isAdminn;
+						isAdmin = isAdminn;
 					});
 					return;
 				}
@@ -90,6 +90,9 @@
 	:root {
 		--penguinmod-color: #00c3ff;
 	}
+	:global(body.dark-mode) {
+		--penguinmod-color: #009ccc;
+	}
 
 	.bar {
 		position: fixed;
@@ -108,7 +111,7 @@
 		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 		font-size: 0.75rem;
 		font-weight: bold;
-		min-width: 800px;
+		min-width: 1000px;
 		z-index: 1000;
 	}
 

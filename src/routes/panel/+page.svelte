@@ -353,6 +353,9 @@
         align-items: center;
         margin-top: 32px;
     }
+    :global(body.dark-mode) .card {
+        border-color: rgba(255, 255, 255, 0.3);
+    }
 
     .front-card-page {
         background: rgba(0, 0, 0, 0.5);

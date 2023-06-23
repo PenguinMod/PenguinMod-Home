@@ -93,7 +93,7 @@
         />
     </div>
     <div class="project-meta">
-        <div class="text">
+        <div class="text" title={name}>
             {name}
         </div>
         {#if showdate}
@@ -151,6 +151,12 @@
         max-width: 164px;
         float: left;
         margin-left: 8px;
+    }
+    :global(body.dark-mode) .project {
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    :global(body.dark-mode) .project:focus {
+        outline: 4px rgba(255, 255, 255, 0.15) solid;
     }
 
     .text {

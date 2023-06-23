@@ -6,7 +6,7 @@
     export let image;
 </script>
 
-<div class="display">
+<div class="display" title={author + ": " + text}>
     <a href={userLink} class="display-author">
         <img src={image} alt="Display Author" class="display-author" />
     </a>
@@ -50,5 +50,8 @@
     .author {
         color: #575e75;
         font-weight: normal;
+    }
+    :global(body.dark-mode) .author {
+        color: #9ba0b1;
     }
 </style>

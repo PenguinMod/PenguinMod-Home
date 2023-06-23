@@ -43,4 +43,7 @@
         background-color: white;
         color: #00c3ff;
     }
+    :global(body.dark-mode) .button-highlight {
+        color: #009ccc;
+    }
 </style>

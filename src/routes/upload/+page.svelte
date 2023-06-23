@@ -652,6 +652,9 @@
         align-items: center;
         margin-top: 32px;
     }
+    :global(body.dark-mode) .card {
+        border-color: rgba(255, 255, 255, 0.3);
+    }
 
     .important {
         font-weight: bold;

@@ -43,4 +43,11 @@
         margin: 6px;
         overflow: auto;
     }
+
+    :global(body.dark-mode) .section {
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    :global(body.dark-mode) .header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
 </style>

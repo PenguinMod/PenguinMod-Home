@@ -107,6 +107,7 @@
             href={projectLink}
             target={openNewtab ? "_blank" : "_self"}
             class="text"
+            title={name}
         >
             {name}
         </a>
@@ -165,6 +166,9 @@
         max-width: 164px;
         float: left;
         margin-left: 8px;
+    }
+    :global(body.dark-mode) .project {
+        border-color: rgba(255, 255, 255, 0.3);
     }
 
     .text {

@@ -15,6 +15,29 @@ export default {
     credits: "https://studio.penguinmod.site/credits.html",
 
     /**
+     * PenguinMod's privacy policy page
+     */
+    privacy: "https://studio.penguinmod.site/privacy.html",
+
+    /**
+     * PenguinMod's guideline pages for services
+     */
+    guidelines: {
+        /**
+         * PenguinMod's project uploading guidelines
+         */
+        projects: "https://studio.penguinmod.site/PenguinMod-Guidelines/PROJECTS"
+    },
+
+    /**
+     * Donation pages for sites
+     */
+    donate: {
+        scratch: "https://www.scratchfoundation.org/donate",
+        turbowarp: "https://github.com/sponsors/GarboMuffin"
+    },
+
+    /**
      * PenguinMod's project page
      */
     projects: "https://projects.penguinmod.site/",
@@ -68,7 +91,7 @@ export default {
      * PenguinMod's update reader API
      */
     updateReaderApi: "https://pmupdatereader.jeremygamer13.repl.co/",
-    
+
     /**
      * The admin panel for pm projects api
      */

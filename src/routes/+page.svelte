@@ -22,6 +22,8 @@
 
     let ghcommits = [];
     let updates = [];
+    let ghcommitsFailed = false;
+    let ghcommitsLoaded = false;
 
     let projects = {
         today: [],
@@ -34,11 +36,20 @@
             return;
         }
 
-        fetch(`${LINK.basicApi}commits`).then((res) => {
-            res.json().then((commits) => {
-                ghcommits = commits;
+        fetch(`${LINK.basicApi}commits`)
+            .then((res) => {
+                res.json()
+                    .then((commits) => {
+                        ghcommits = commits;
+                        ghcommitsLoaded = true;
+                    })
+                    .catch(() => {
+                        ghcommitsFailed = true;
+                    });
+            })
+            .catch(() => {
+                ghcommitsFailed = true;
             });
-        });
         fetch(LINK.updateReaderApi).then((res) => {
             res.json().then((updatess) => {
                 // currently multiple updates are not supported
@@ -176,6 +187,14 @@
                             image={commit.author.avatar_url}
                         />
                     {/each}
+                {:else if ghcommitsFailed}
+                    <p>Failed to load commits.</p>
+                {:else if ghcommitsLoaded}
+                    <p style="text-align: center;">
+                        GitHub failed to provide commits.
+                        <br />
+                        Please try again later.
+                    </p>
                 {:else}
                     <LoadingSpinner />
                 {/if}
@@ -233,23 +252,85 @@
         </ContentCategory>
     </div>
 
-    {#if loggedIn !== false}
-        <div class="section-links" style="background:transparent">
-            <Button label="Project Packager" link={LINK.packager} />
-            <Button label="Credits" link={LINK.credits} />
-            <Button label="GitHub" link={LINK.github} />
-            <Button label="Community Wiki" link={LINK.wiki} />
+    <div class="footer">
+        <p>
+            PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch
+            Team, or the Scratch Foundation.
+        </p>
+        <div class="footer-list">
+            <div class="footer-section">
+                <p>Website</p>
+                <a href={LINK.editor}>Editor</a>
+                <a href={LINK.credits}>Credits</a>
+                <a href={LINK.github}>Source</a>
+                <a href={LINK.packager}>Packager</a>
+            </div>
+            <div class="footer-section">
+                <p>Community</p>
+                <a target="_blank" href={LINK.discord}>Discord</a>
+                <a target="_blank" href={LINK.wiki}>Wiki</a>
+            </div>
+            <div class="footer-section">
+                <p>Info</p>
+                <a target="_blank" href={LINK.privacy}>Privacy Policy</a>
+                <a target="_blank" href={LINK.guidelines.projects}
+                    >Uploading Guidelines</a
+                >
+            </div>
+            <div class="footer-section">
+                <p>Donate</p>
+                <a target="_blank" href={LINK.donate.scratch}>Scratch</a>
+                <a target="_blank" href={LINK.donate.turbowarp}>TurboWarp</a>
+            </div>
         </div>
-        <div style="height:8px;" />
-    {/if}
-    {#if loggedIn === false}
-        <div style="height:32px;" />
-    {/if}
+    </div>
 </div>
 
 <style>
     * {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    .footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 24px 0px 48px;
+        border-top: rgba(0, 0, 0, 0.3) 1px solid;
+        background: #00c3ff15;
+        font-weight: bold;
+        margin-top: 4px;
+        /* border-top-left-radius: 20%; */
+        /* border-top-right-radius: 20%; */
+    }
+    .footer a {
+        color: dodgerblue;
+        font-weight: normal;
+        margin: 2px 0px;
+    }
+    .footer a:active {
+        color: rgb(15, 77, 139);
+    }
+    .footer-list {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+    }
+    .footer-section {
+        display: flex;
+        flex-direction: column;
+        margin: 0px 32px;
+        font-size: 14px;
+    }
+    :global(body.dark-mode) .footer {
+        /* border-top: rgba(255, 255, 255, 0.1) 1px solid; */
+        border-top: rgba(255, 255, 255, 0.3) 1px solid;
+        /* background: transparent; */
+        /* background: #0059ff15; */
+        /* border-top-left-radius: 20%; */
+        /* border-top-right-radius: 20%; */
     }
 
     .main {
