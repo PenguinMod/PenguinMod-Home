@@ -11,6 +11,10 @@
     import Button from "$lib/Button/Button.svelte";
     import Project from "$lib/Project/Project.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
+    // translations
+    import LocalizedText from "$lib/LocalizedText/Node.svelte";
+    import TranslationHandler from "../../resources/translations.js";
+    import Language from "../../resources/language.js";
 
     // Icons
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
@@ -18,6 +22,14 @@
     let projects = [];
     let error = null;
     let loggedIn = null;
+
+    let currentLang = "en";
+    onMount(() => {
+        Language.forceUpdate();
+    });
+    Language.onChange((lang) => {
+        currentLang = lang;
+    });
 
     function loggedInChange(username, privateCode) {
         if (username) ProjectClient.setUsername(username);
@@ -32,14 +44,17 @@
                 projects = projectss;
             })
             .catch((err) => {
-                error =
-                    "An error occurred. We couldn't get your uploaded projects.";
+                error = TranslationHandler.text("mystuff.error", currentLang);
                 console.error(err);
             });
     }
     function deleteProject(id, name) {
         const code = prompt(
-            `Delete ${name}? This CANNOT be undone!\nType "${id}" to delete this project.`
+            String(
+                TranslationHandler.text("mystuff.confirm.delete", currentLang)
+            )
+                .replace("$2", id)
+                .replace("$1", name)
         );
         if (String(code).replace(/[^0-9]*/gim, "") !== String(id)) {
             return;
@@ -115,7 +130,13 @@
     <NavigationMargin />
 
     <div class="section-info">
-        <h1>My Stuff</h1>
+        <h1>
+            <LocalizedText
+                text="My Stuff"
+                key="mystuff.title"
+                lang={currentLang}
+            />
+        </h1>
     </div>
 
     <div class="section-projects">
@@ -125,8 +146,20 @@
             </div>
         {:else if loggedIn === false}
             <div class="login-prompt">
-                <p>Please log in to view your PenguinMod projects.</p>
-                <Button label="Sign In" on:click={askForLogin} />
+                <p>
+                    <LocalizedText
+                        text="Please log in to view your PenguinMod projects."
+                        key="mystuff.login"
+                        lang={currentLang}
+                    />
+                </p>
+                <Button on:click={askForLogin}>
+                    <LocalizedText
+                        text="Sign In"
+                        key="navigation.login"
+                        lang={currentLang}
+                    />
+                </Button>
             </div>
         {:else if projects[0] !== "notfound"}
             {#each projects as project}
@@ -140,14 +173,28 @@
                     dotsmenu="true"
                     dotsoptions={[
                         {
-                            name: `Edit ${project.remix ? "Remix" : "Project"}`,
+                            name: project.remix
+                                ? TranslationHandler.text(
+                                      "project.menu.remix.edit",
+                                      currentLang
+                                  )
+                                : TranslationHandler.text(
+                                      "project.menu.project.edit",
+                                      currentLang
+                                  ),
                             href: `/edit?id=${project.id}`,
                             color: project.remix ? "remix" : null,
                         },
                         {
-                            name: `Delete ${
-                                project.remix ? "Remix" : "Project"
-                            }`,
+                            name: project.remix
+                                ? TranslationHandler.text(
+                                      "project.menu.remix.delete",
+                                      currentLang
+                                  )
+                                : TranslationHandler.text(
+                                      "project.menu.project.delete",
+                                      currentLang
+                                  ),
                             callback: () => {
                                 deleteProject(project.id, project.name);
                             },
@@ -157,9 +204,25 @@
                 >
                     <div class="inside-project">
                         {#if project.hidden}
-                            <p><i>(hidden)</i></p>
+                            <p>
+                                <i>
+                                    <LocalizedText
+                                        text="(hidden)"
+                                        key="project.status.hidden"
+                                        lang={currentLang}
+                                    />
+                                </i>
+                            </p>
                         {:else if !project.accepted}
-                            <p><i>(unapproved)</i></p>
+                            <p>
+                                <i>
+                                    <LocalizedText
+                                        text="(unapproved)"
+                                        key="project.status.unapproved"
+                                        lang={currentLang}
+                                    />
+                                </i>
+                            </p>
                         {/if}
                     </div>
                 </Project>
@@ -172,7 +235,13 @@
         {:else}
             <div>
                 <PenguinConfusedSVG height="12rem" />
-                <p>Nothing was found.</p>
+                <p>
+                    <LocalizedText
+                        text="Nothing was found."
+                        key="generic.notfound"
+                        lang={currentLang}
+                    />
+                </p>
             </div>
         {/if}
     </div>

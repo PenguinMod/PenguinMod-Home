@@ -14,11 +14,29 @@
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import ClickableProject from "$lib/ClickableProject/Project.svelte";
     import Button from "$lib/Button/Button.svelte";
+    // translations
+    import LocalizedText from "$lib/LocalizedText/Node.svelte";
+    import TranslationHandler from "../../resources/translations.js";
+    import Language from "../../resources/language.js";
+
+    let projectName = "";
+    let currentLang = "en";
+    onMount(() => {
+        Language.forceUpdate();
+    });
+    Language.onChange((lang) => {
+        currentLang = lang;
+        if (projectName === "") {
+            projectName = TranslationHandler.text(
+                "uploading.project.title.default",
+                currentLang
+            );
+        }
+    });
 
     let loggedIn = null;
     let loadingExternal = false;
 
-    let projectName = "Project";
     let projectImage;
     let projectData;
 
@@ -156,9 +174,12 @@
         if (!file) return;
         const projectUri = await filePicked(input);
         projectData = projectUri;
-        projectInputName.innerText = `Using ${file.name} (${floatTo2Decimals(
-            file.size / 1250000
-        )} MB)`;
+        projectInputName.innerText = TranslationHandler.text(
+            "uploading.project.ownfile.picked",
+            currentLang
+        )
+            .replace("$2", floatTo2Decimals(file.size / 1250000))
+            .replace("$1", file.name);
     }
 
     let remixProjectId;
@@ -175,36 +196,20 @@
                 window.open(`${LINK.base}#${projectId}`);
             })
             .catch((err) => {
-                switch (err) {
-                    case "TooManyRequests":
-                        return alert(
-                            "You can only upload projects every 8 minutes."
-                        );
-                    case "MissingProjectData":
-                        return alert(
-                            "Failed to send project data. Your project may be too large."
-                        );
-                    case "Reauthenticate":
-                        return alert(
-                            "You were logged out. Please log-in again."
-                        );
-                    case "FeatureDisabledForThisAccount":
-                        return alert("You are not allowed to upload projects.");
-                    case "PublishDisabled":
-                        return alert(
-                            "Some maintenance is occurring, so you are not able to upload at this time."
-                        );
-                    case "FormatError":
-                        return alert(
-                            "Some values are not right. Check that all required fields are filled."
-                        );
-                    case "FormatErrorRemixMustBeProjectIdAsNumber":
-                        return alert(
-                            "Remix Format Error. Report to PenguinMod."
-                        );
-                    default:
-                        return alert(err);
-                }
+                const message = TranslationHandler.text(
+                    `uploading.error.${String(err).toLowerCase()}`,
+                    currentLang
+                );
+                if (!message)
+                    return alert(
+                        String(
+                            TranslationHandler.text(
+                                "uploading.error.unknown",
+                                currentLang
+                            )
+                        ).replace("$1", err)
+                    );
+                alert(message);
             });
     }
 
@@ -340,8 +345,12 @@
     {#if loadingExternal}
         <div class="external-loading">
             <LoadingSpinner />
-            <p>Importing, please wait...</p>
-            <p>(you may need to switch tabs and come back)</p>
+            <p style="text-align: center;">
+                {@html TranslationHandler.text(
+                    "project.importing",
+                    currentLang
+                )}
+            </p>
         </div>
     {/if}
 
@@ -349,7 +358,13 @@
         <div class="front-card-page">
             <div class="card-page">
                 <div class="card-header">
-                    <h1>Select a project</h1>
+                    <h1>
+                        <LocalizedText
+                            text="Select a project"
+                            key="uploading.project.selector"
+                            lang={currentLang}
+                        />
+                    </h1>
                 </div>
                 <div class="card-projects">
                     {#each otherProjects as project}
@@ -368,11 +383,16 @@
                 </div>
                 <div style="display:flex;flex-direction:row;padding:1em">
                     <Button
-                        label="Cancel"
                         on:click={() => {
                             updatePageOpen = false;
                         }}
-                    />
+                    >
+                        <LocalizedText
+                            text="Cancel"
+                            key="uploading.project.selector.cancel"
+                            lang={currentLang}
+                        />
+                    </Button>
                 </div>
             </div>
         </div>
@@ -382,7 +402,13 @@
         <div class="front-card-page">
             <div class="card-page">
                 <div class="card-header">
-                    <h1>Select a project</h1>
+                    <h1>
+                        <LocalizedText
+                            text="Select a project"
+                            key="uploading.project.selector"
+                            lang={currentLang}
+                        />
+                    </h1>
                 </div>
                 <div class="card-projects">
                     {#each canRemix as project}
@@ -398,11 +424,16 @@
                 </div>
                 <div style="display:flex;flex-direction:row;padding:1em">
                     <Button
-                        label="Cancel"
                         on:click={() => {
                             remixPageOpen = false;
                         }}
-                    />
+                    >
+                        <LocalizedText
+                            text="Cancel"
+                            key="uploading.project.selector.cancel"
+                            lang={currentLang}
+                        />
+                    </Button>
                 </div>
             </div>
         </div>
@@ -412,7 +443,13 @@
         <div class="front-card-page">
             <div class="card-page">
                 <div class="card-header">
-                    <h1>Guidelines</h1>
+                    <h1>
+                        <LocalizedText
+                            text="Guidelines"
+                            key="uploading.guidelines.title"
+                            lang={currentLang}
+                        />
+                    </h1>
                 </div>
                 <div class="card-projects">
                     <iframe
@@ -425,28 +462,52 @@
                     style="margin-top:6px;color:dodgerblue"
                     target="_blank"
                 >
-                    Open in new tab
+                    <LocalizedText
+                        text="Open in new tab"
+                        key="uploading.guidelines.newtab"
+                        lang={currentLang}
+                    />
                 </a>
                 <p class="only-in-dark-mode">
                     <i>
-                        This page is not in Dark Mode because it is an external
-                        website.
+                        <LocalizedText
+                            text="This page is not in Dark Mode because it is an external website."
+                            key="uploading.guidelines.darkmode"
+                            lang={currentLang}
+                        />
                     </i>
+                </p>
+                <p style={currentLang !== "en" ? "" : "display: none;"}>
+                    {@html TranslationHandler.text(
+                        "uploading.guidelines.nottranslated",
+                        currentLang
+                    )}
                 </p>
                 <div style="display:flex;flex-direction:row;padding:1em">
                     <Button
-                        label="Close"
                         on:click={() => {
                             guidelinePageOpen = false;
                         }}
-                    />
+                    >
+                        <LocalizedText
+                            text="Close"
+                            key="uploading.project.selector.close"
+                            lang={currentLang}
+                        />
+                    </Button>
                 </div>
             </div>
         </div>
     {/if}
 
     <div class="section-info">
-        <h1>Upload</h1>
+        <h1>
+            <LocalizedText
+                text="Upload"
+                key="uploading.title"
+                lang={currentLang}
+            />
+        </h1>
     </div>
 
     <div class="full">
@@ -455,23 +516,48 @@
                 style="display:flex;flex-direction:row;justify-content: space-between;"
             >
                 <div style="width:50%;">
-                    <p class="important notmargin">Project Title</p>
+                    <p class="important notmargin">
+                        <LocalizedText
+                            text="Project Title"
+                            key="uploading.project.title"
+                            lang={currentLang}
+                        />
+                    </p>
                     <input
                         type="text"
-                        placeholder="My Project"
+                        placeholder={TranslationHandler.text(
+                            "uploading.project.title.default",
+                            currentLang
+                        )}
                         bind:this={components.projectName}
                         value={projectName}
                     />
                     <p class="important notmargin" style="margin-top:24px">
-                        Instructions
+                        <LocalizedText
+                            text="Instructions"
+                            key="uploading.project.instructions"
+                            lang={currentLang}
+                        />
                     </p>
                     <textarea
-                        placeholder="Tell others how to use or play your project..."
+                        placeholder={TranslationHandler.text(
+                            "uploading.project.instructions.default",
+                            currentLang
+                        )}
                         bind:this={components.projectInstructions}
                     />
-                    <p class="important notmargin">Notes and Credits</p>
+                    <p class="important notmargin">
+                        <LocalizedText
+                            text="Notes and Credits"
+                            key="uploading.project.notes"
+                            lang={currentLang}
+                        />
+                    </p>
                     <textarea
-                        placeholder="List people that were apart of the creation of this project..."
+                        placeholder={TranslationHandler.text(
+                            "uploading.project.notes.default",
+                            currentLang
+                        )}
                         bind:this={components.projectNotes}
                     />
                     <input
@@ -487,7 +573,11 @@
                         style="width:90%"
                         bind:this={projectInputName}
                     >
-                        Use a different project file
+                        <LocalizedText
+                            text="Use a different project file"
+                            key="uploading.project.ownfile"
+                            lang={currentLang}
+                        />
                     </label>
                 </div>
                 <div style="width:50%;">
@@ -504,7 +594,11 @@
                         on:change={imageFilePicked}
                     />
                     <label class="file-picker" for="FILEPI">
-                        Use my own image
+                        <LocalizedText
+                            text="Use my own image"
+                            key="uploading.project.ownimage"
+                            lang={currentLang}
+                        />
                     </label>
                 </div>
             </div>
@@ -512,51 +606,88 @@
                 {#if loggedIn === true && projectData}
                     <div>
                         {#if remixingProjectName}
-                            <p>Remixing {remixingProjectName}</p>
+                            <p>
+                                {String(
+                                    TranslationHandler.text(
+                                        "uploading.remix.selected",
+                                        currentLang
+                                    )
+                                ).replace("$1", remixingProjectName)}
+                            </p>
                         {/if}
                         <div style="display:flex;flex-direction:row">
+                            <Button icon="upload.svg" on:click={uploadProject}>
+                                <LocalizedText
+                                    text="Upload"
+                                    key="uploading.type.upload"
+                                    lang={currentLang}
+                                />
+                            </Button>
                             <Button
-                                label="Upload"
-                                icon="upload.svg"
-                                on:click={uploadProject}
-                            />
-                            <Button
-                                label="Remix"
                                 color="remix"
                                 icon="remix.svg"
                                 on:click={openRemixMenu}
-                            />
+                            >
+                                <LocalizedText
+                                    text="Remix"
+                                    key="uploading.type.remix"
+                                    lang={currentLang}
+                                />
+                            </Button>
                             <Button
-                                label="Update"
                                 color="orange"
                                 icon="update.svg"
                                 on:click={openUpdateMenu}
-                            />
+                            >
+                                <LocalizedText
+                                    text="Update"
+                                    key="uploading.type.update"
+                                    lang={currentLang}
+                                />
+                            </Button>
                         </div>
                     </div>
                 {:else}
                     <div>
                         {#if loggedIn === false}
-                            <p>Please log-in to upload a project.</p>
+                            <p>
+                                <LocalizedText
+                                    text="Please log-in to upload a project."
+                                    key="uploading.project.mustlogin"
+                                    lang={currentLang}
+                                />
+                            </p>
                         {:else if !projectData}
-                            <p>You must select a project file to upload.</p>
+                            <p>
+                                <LocalizedText
+                                    text="You must select a project file to upload."
+                                    key="uploading.project.mustselect"
+                                    lang={currentLang}
+                                />
+                            </p>
                         {/if}
                         <div style="display:flex;flex-direction:row">
-                            <Button
-                                label="Upload"
-                                color="gray"
-                                icon="upload.svg"
-                            />
-                            <Button
-                                label="Remix"
-                                color="gray"
-                                icon="remix.svg"
-                            />
-                            <Button
-                                label="Update"
-                                color="gray"
-                                icon="update.svg"
-                            />
+                            <Button color="gray" icon="upload.svg">
+                                <LocalizedText
+                                    text="Upload"
+                                    key="uploading.type.upload"
+                                    lang={currentLang}
+                                />
+                            </Button>
+                            <Button color="gray" icon="remix.svg">
+                                <LocalizedText
+                                    text="Remix"
+                                    key="uploading.type.remix"
+                                    lang={currentLang}
+                                />
+                            </Button>
+                            <Button color="gray" icon="update.svg">
+                                <LocalizedText
+                                    text="Update"
+                                    key="uploading.type.update"
+                                    lang={currentLang}
+                                />
+                            </Button>
                         </div>
                     </div>
                 {/if}
@@ -569,7 +700,11 @@
                 guidelinePageOpen = true;
             }}
         >
-            Project Uploading & Updating Guidelines
+            <LocalizedText
+                text="Project Uploading & Updating Guidelines"
+                key="uploading.guidelines.button"
+                lang={currentLang}
+            />
         </button>
     </div>
 </div>

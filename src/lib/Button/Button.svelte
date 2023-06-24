@@ -3,7 +3,7 @@
 
     export let highlighted = false;
     export let link = false;
-    export let label = "Button";
+    export let label = "";
     export let noredirect = false;
 
     // extras
@@ -32,6 +32,7 @@
                 <img src={`/${icon}`} alt={icon} style="margin-right:6px;" />
             {/if}
             {@html label}
+            <slot />
         </button>
     </a>
 {/if}
@@ -45,6 +46,7 @@
             <img src={`/${icon}`} alt={icon} style="margin-right:6px;" />
         {/if}
         {@html label}
+        <slot />
     </button>
 {/if}
 

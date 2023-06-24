@@ -1,7 +1,7 @@
 <script>
     export let highlighted = false;
     export let link = false;
-    export let label = "Button";
+    export let label = "";
     export let noredirect = false;
 </script>
 
@@ -13,12 +13,14 @@
     >
         <button class={highlighted ? "button button-highlight" : "button"}>
             {@html label}
+            <slot />
         </button>
     </a>
 {/if}
 {#if !link}
     <button class={highlighted ? "button button-highlight" : "button"}>
         {@html label}
+        <slot />
     </button>
 {/if}
 

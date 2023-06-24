@@ -2,20 +2,21 @@
     import { createEventDispatcher } from "svelte";
 
     export let link = false;
-    export let label = "Page";
+    export let label = "";
     export let style = "";
     export let noredirect = false;
 
     const dispatch = createEventDispatcher();
 
-    function event() {
-        dispatch("click");
+    function event(...args) {
+        dispatch("click", ...args);
     }
 </script>
 
 {#if !link}
     <button class="button" on:click={event} {style}>
         {@html label}
+        <slot />
     </button>
 {:else}
     <a
@@ -25,6 +26,7 @@
     >
         <button class="button" on:click={event} {style}>
             {@html label}
+            <slot />
         </button>
     </a>
 {/if}

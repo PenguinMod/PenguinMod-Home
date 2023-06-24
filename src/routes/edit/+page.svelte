@@ -13,13 +13,31 @@
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import Button from "$lib/Button/Button.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
+    // translations
+    import LocalizedText from "$lib/LocalizedText/Node.svelte";
+    import TranslationHandler from "../../resources/translations.js";
+    import Language from "../../resources/language.js";
+
+    let projectName = "";
+    let currentLang = "en";
+    onMount(() => {
+        Language.forceUpdate();
+    });
+    Language.onChange((lang) => {
+        currentLang = lang;
+        if (projectName === "") {
+            projectName = TranslationHandler.text(
+                "uploading.project.title.default",
+                currentLang
+            );
+        }
+    });
 
     let loggedIn = null;
     let loadingExternal = false;
     let guidelinePageOpen = false;
 
     let projectId;
-    let projectName = "Project";
     let projectMetadata;
 
     let newProjectImage;
@@ -139,7 +157,12 @@
                 // project: uri of project data
                 if (data.type === "project") {
                     newProjectData = data.uri;
-                    projectInputName.innerText = `Imported ${data.name} from PenguinMod`;
+                    projectInputName.innerText = String(
+                        TranslationHandler.text(
+                            "uploading.project.ownfile.imported",
+                            currentLang
+                        )
+                    ).replace("$1", data.name);
                 }
 
                 // we done here
@@ -160,13 +183,16 @@
         if (projectMetadata.featured) {
             const code = projectId;
             const continueEdit = prompt(
-                `Editing this project will cause it to become unapproved and unfeatured again. Are you sure you want to continue?\nType "${code}" to continue.`
+                TranslationHandler.text(
+                    "editing.confirm.featured",
+                    currentLang
+                ).replace("$1", code)
             );
             if (continueEdit.trim().replace(/[^0-9]*/gim, "") !== String(code))
                 return;
         } else if (projectMetadata.accepted) {
             const continueEdit = confirm(
-                "Editing this project will cause it to become unapproved again. Are you sure you want to continue?"
+                TranslationHandler.text("editing.confirm.normal", currentLang)
             );
             if (!continueEdit) return;
         }
@@ -195,7 +221,21 @@
         ProjectClient.updateProject(projectId, data)
             .then(kickOut)
             .catch((err) => {
-                alert(`Uh oh! An error occurred: ${err}`);
+                const message = TranslationHandler.text(
+                    `uploading.error.${String(err).toLowerCase()}`,
+                    currentLang
+                );
+                if (!message)
+                    return alert(
+                        String(
+                            TranslationHandler.text(
+                                "uploading.error.unknown",
+                                currentLang
+                            )
+                        ).replace("$1", err)
+                    );
+                alert(message);
+                // alert(`Uh oh! An error occurred: ${err}`);
             });
     }
 
@@ -225,9 +265,12 @@
         if (!file) return;
         const projectUri = await filePicked(input);
         newProjectData = projectUri;
-        projectInputName.innerText = `Using ${file.name} (${floatTo2Decimals(
-            file.size / 1250000
-        )} MB)`;
+        projectInputName.innerText = TranslationHandler.text(
+            "uploading.project.ownfile.picked",
+            currentLang
+        )
+            .replace("$2", floatTo2Decimals(file.size / 1250000))
+            .replace("$1", file.name);
     }
 
     // we dont need to add an "onAuthenticate" event
@@ -252,8 +295,12 @@
     {#if loadingExternal}
         <div class="external-loading">
             <LoadingSpinner />
-            <p>Importing, please wait...</p>
-            <p>(you may need to switch tabs and come back)</p>
+            <p style="text-align: center;">
+                {@html TranslationHandler.text(
+                    "project.importing",
+                    currentLang
+                )}
+            </p>
         </div>
     {/if}
 
@@ -261,7 +308,13 @@
         <div class="front-card-page">
             <div class="card-page">
                 <div class="card-header">
-                    <h1>Guidelines</h1>
+                    <h1>
+                        <LocalizedText
+                            text="Guidelines"
+                            key="uploading.guidelines.title"
+                            lang={currentLang}
+                        />
+                    </h1>
                 </div>
                 <div class="card-projects">
                     <iframe
@@ -274,21 +327,39 @@
                     style="margin-top:6px;color:dodgerblue"
                     target="_blank"
                 >
-                    Open in new tab
+                    <LocalizedText
+                        text="Open in new tab"
+                        key="uploading.guidelines.newtab"
+                        lang={currentLang}
+                    />
                 </a>
                 <p class="only-in-dark-mode">
                     <i>
-                        This page is not in Dark Mode because it is an external
-                        website.
+                        <LocalizedText
+                            text="This page is not in Dark Mode because it is an external website."
+                            key="uploading.guidelines.darkmode"
+                            lang={currentLang}
+                        />
                     </i>
+                </p>
+                <p style={currentLang !== "en" ? "" : "display: none;"}>
+                    {@html TranslationHandler.text(
+                        "uploading.guidelines.nottranslated",
+                        currentLang
+                    )}
                 </p>
                 <div style="display:flex;flex-direction:row;padding:1em">
                     <Button
-                        label="Close"
                         on:click={() => {
                             guidelinePageOpen = false;
                         }}
-                    />
+                    >
+                        <LocalizedText
+                            text="Close"
+                            key="uploading.project.selector.close"
+                            lang={currentLang}
+                        />
+                    </Button>
                 </div>
             </div>
         </div>
@@ -296,8 +367,21 @@
 
     <div class="section-info">
         <div>
-            <h1 style="margin-block:8px">Edit</h1>
-            <p style="margin-block:8px">Editing {projectName}</p>
+            <h1 style="margin-block:8px">
+                <LocalizedText
+                    text="Edit"
+                    key="editing.header"
+                    lang={currentLang}
+                />
+            </h1>
+            <p style="margin-block:8px">
+                {String(
+                    TranslationHandler.text(
+                        "editing.header.detail",
+                        currentLang
+                    )
+                ).replace("$1", projectName)}
+            </p>
         </div>
     </div>
 
@@ -307,26 +391,51 @@
                 style="display:flex;flex-direction:row;justify-content: space-between;"
             >
                 <div style="width:50%;">
-                    <p class="important notmargin">Project Title</p>
+                    <p class="important notmargin">
+                        <LocalizedText
+                            text="Project Title"
+                            key="uploading.project.title"
+                            lang={currentLang}
+                        />
+                    </p>
                     <input
                         type="text"
-                        placeholder="My Project"
+                        placeholder={TranslationHandler.text(
+                            "uploading.project.title.default",
+                            currentLang
+                        )}
                         bind:this={components.projectName}
                         value={projectName}
                     />
                     <p class="important notmargin" style="margin-top:24px">
-                        Instructions
+                        <LocalizedText
+                            text="Instructions"
+                            key="uploading.project.instructions"
+                            lang={currentLang}
+                        />
                     </p>
                     <textarea
-                        placeholder="Tell others how to use or play your project..."
+                        placeholder={TranslationHandler.text(
+                            "uploading.project.instructions.default",
+                            currentLang
+                        )}
                         bind:this={components.projectInstructions}
                         value={projectMetadata
                             ? projectMetadata.instructions
                             : ""}
                     />
-                    <p class="important notmargin">Notes and Credits</p>
+                    <p class="important notmargin">
+                        <LocalizedText
+                            text="Notes and Credits"
+                            key="uploading.project.notes"
+                            lang={currentLang}
+                        />
+                    </p>
                     <textarea
-                        placeholder="List people that were apart of the creation of this project..."
+                        placeholder={TranslationHandler.text(
+                            "uploading.project.notes.default",
+                            currentLang
+                        )}
                         bind:this={components.projectNotes}
                         value={projectMetadata ? projectMetadata.notes : ""}
                     />
@@ -343,7 +452,11 @@
                         style="width:90%"
                         bind:this={projectInputName}
                     >
-                        Use a different project file
+                        <LocalizedText
+                            text="Use a different project file"
+                            key="uploading.project.ownfile"
+                            lang={currentLang}
+                        />
                     </label>
                 </div>
                 <div style="width:50%;">
@@ -364,16 +477,22 @@
                         on:change={imageFilePicked}
                     />
                     <label class="file-picker" for="FILEPI">
-                        Use my own image
+                        <LocalizedText
+                            text="Use my own image"
+                            key="uploading.project.ownimage"
+                            lang={currentLang}
+                        />
                     </label>
                 </div>
             </div>
             <div style="display:flex;flex-direction:row;margin-top:48px">
-                <Button
-                    label="Update"
-                    icon="update.svg"
-                    on:click={updateProject}
-                />
+                <Button icon="update.svg" on:click={updateProject}>
+                    <LocalizedText
+                        text="Update"
+                        key="uploading.type.update"
+                        lang={currentLang}
+                    />
+                </Button>
             </div>
         </div>
         <div style="height:16px" />
@@ -383,7 +502,11 @@
                 guidelinePageOpen = true;
             }}
         >
-            Project Uploading & Updating Guidelines
+            <LocalizedText
+                text="Project Uploading & Updating Guidelines"
+                key="uploading.guidelines.button"
+                lang={currentLang}
+            />
         </button>
     </div>
 </div>

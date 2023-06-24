@@ -10,6 +10,10 @@
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import Project from "$lib/Project/Project.svelte";
     import Button from "$lib/Button/Button.svelte";
+    // translations
+    import LocalizedText from "$lib/LocalizedText/Node.svelte";
+    import TranslationHandler from "../../resources/translations.js";
+    import Language from "../../resources/language.js";
 
     // Icons
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
@@ -49,10 +53,18 @@
                 requestFailed = true;
             });
     });
+
+    let currentLang = "en";
+    onMount(() => {
+        Language.forceUpdate();
+    });
+    Language.onChange((lang) => {
+        currentLang = lang;
+    });
 </script>
 
 <head>
-    <title>PenguinMod - Home</title>
+    <title>PenguinMod - Search</title>
 </head>
 
 <NavigationBar />
@@ -62,8 +74,18 @@
 
     <div class="section-info">
         <div>
-            <h1>Search</h1>
-            <p>Searching for {searchQuery}</p>
+            <h1>
+                <LocalizedText
+                    text="Search"
+                    key="search.title"
+                    lang={currentLang}
+                />
+            </h1>
+            <p>
+                {String(
+                    TranslationHandler.text("search.query", currentLang)
+                ).replace("$1", searchQuery)}
+            </p>
         </div>
     </div>
 
@@ -95,7 +117,13 @@
         {:else}
             <div>
                 <PenguinConfusedSVG height="12rem" />
-                <p>Nothing was found.</p>
+                <p>
+                    <LocalizedText
+                        text="Nothing was found."
+                        key="generic.notfound"
+                        lang={currentLang}
+                    />
+                </p>
             </div>
         {/if}
     </div>

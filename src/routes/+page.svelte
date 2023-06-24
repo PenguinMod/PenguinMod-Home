@@ -14,6 +14,10 @@
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import UserDisplay from "$lib/UserDisplay/Display.svelte";
     import Project from "$lib/Project/Project.svelte";
+    // translations
+    import LocalizedText from "$lib/LocalizedText/Node.svelte";
+    import TranslationHandler from "../resources/translations.js";
+    import Language from "../resources/language.js";
 
     // Icons
     import PenguinConfusedSVG from "../icons/Penguin/confused.svelte";
@@ -24,9 +28,11 @@
     let updates = [];
     let ghcommitsFailed = false;
     let ghcommitsLoaded = false;
+    let projectsLoaded = false;
 
     let projects = {
         today: [],
+        featured: [],
     };
 
     onMount(() => {
@@ -57,8 +63,12 @@
             });
         });
 
-        ProjectApi.getProjects().then((projs) => {
+        ProjectApi.getMaxProjects(15, false, true).then((projs) => {
             projects.today = projs;
+        });
+        ProjectApi.getMaxProjects(15, true, false).then((projs) => {
+            projects.featured = projs;
+            projectsLoaded = true;
         });
     });
 
@@ -100,6 +110,16 @@
                 loggedIn = false;
             });
     });
+
+    let langDecided = false;
+    let currentLang = "en";
+    onMount(() => {
+        Language.forceUpdate();
+    });
+    Language.onChange((lang) => {
+        currentLang = lang;
+        langDecided = true;
+    });
 </script>
 
 <head>
@@ -114,18 +134,31 @@
     {#if loggedIn === false}
         <div class="section-info">
             <div style="margin-left: 8rem;">
-                <h1>Block-based coding with tons of capabilities</h1>
                 <h1>
-                    Built off of
-                    <a href={LINK.turbowarp} target="_blank">TurboWarp</a>
-                    and
-                    <a href={LINK.scratch} target="_blank">Scratch</a>
+                    <LocalizedText
+                        text="Block-based coding with tons of capabilities"
+                        key="home.introduction1"
+                        lang={currentLang}
+                    />
+                </h1>
+                <h1>
+                    <LocalizedText
+                        text="Built off of TurboWarp and Scratch"
+                        key="home.introduction2"
+                        lang={currentLang}
+                    />
                 </h1>
                 <Button
-                    label="<img src='/tryit.svg' width='32px' style='margin-right:8px'></img> Try it out"
+                    label="<img src='/tryit.svg' width='32px' style='margin-right:8px'></img>"
                     highlighted="true"
                     link={LINK.editor}
-                />
+                >
+                    <LocalizedText
+                        text="Try it out"
+                        key="home.tryout"
+                        lang={currentLang}
+                    />
+                </Button>
             </div>
 
             <video
@@ -141,17 +174,73 @@
             </video>
         </div>
 
+        {#if langDecided && currentLang != "en" && loggedIn === false}
+            <div class="section-language-warning">
+                <img
+                    src="/warning.png"
+                    draggable="false"
+                    style="height: 24px; margin-right: 6px"
+                    alt="Warning"
+                />
+                <p>
+                    <LocalizedText
+                        text="PenguinMod is made by English-speaking developers. Expect minor issues and sorry for any translation errors."
+                        key="translation.warning"
+                        lang={currentLang}
+                    />
+                </p>
+            </div>
+        {/if}
+
         <div class="section-links">
-            <Button label="Project Packager" link={LINK.packager} />
-            <Button label="Credits" link={LINK.credits} />
+            <Button link={LINK.packager}>
+                <LocalizedText
+                    text="Packager"
+                    key="home.footer.sections.website.packager"
+                    lang={currentLang}
+                />
+            </Button>
+            <Button link={LINK.credits}>
+                <LocalizedText
+                    text="Credits"
+                    key="home.footer.sections.website.credits"
+                    lang={currentLang}
+                />
+            </Button>
             <Button label="GitHub" link={LINK.github} />
-            <Button label="Community Wiki" link={LINK.wiki} />
+            <Button link={LINK.wiki}>
+                <LocalizedText
+                    text="Wiki"
+                    key="home.footer.sections.community.wiki"
+                    lang={currentLang}
+                />
+            </Button>
+        </div>
+    {/if}
+    {#if langDecided && currentLang != "en" && loggedIn !== false}
+        <div class="section-language-warning">
+            <img
+                src="/warning.png"
+                draggable="false"
+                style="height: 24px; margin-right: 6px"
+                alt="Warning"
+            />
+            <p>
+                <LocalizedText
+                    text="PenguinMod is made by English-speaking developers. Expect minor issues and sorry for any translation errors."
+                    key="translation.warning"
+                    lang={currentLang}
+                />
+            </p>
         </div>
     {/if}
 
     <div class="section-categories">
         <ContentCategory
-            header="What's new?"
+            header={TranslationHandler.text(
+                "home.sections.whatsnew",
+                currentLang
+            )}
             seemore={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
         >
             <div class="category-content">
@@ -166,7 +255,7 @@
                         />
                         <img
                             src={update.image}
-                            alt="Update Screenshot"
+                            alt="Screenshot"
                             class="update-image"
                         />
                     {/each}
@@ -175,7 +264,13 @@
                 {/if}
             </div>
         </ContentCategory>
-        <ContentCategory header="Recent commits" seemore={LINK.github}>
+        <ContentCategory
+            header={TranslationHandler.text(
+                "home.sections.githubcommits",
+                currentLang
+            )}
+            seemore={LINK.github}
+        >
             <div class="category-content">
                 {#if ghcommits.length > 0}
                     {#each ghcommits as commit}
@@ -188,12 +283,20 @@
                         />
                     {/each}
                 {:else if ghcommitsFailed}
-                    <p>Failed to load commits.</p>
+                    <p>
+                        <LocalizedText
+                            text="Failed to load commits."
+                            key="home.sections.githubcommits.failed.generic"
+                            lang={currentLang}
+                        />
+                    </p>
                 {:else if ghcommitsLoaded}
                     <p style="text-align: center;">
-                        GitHub failed to provide commits.
-                        <br />
-                        Please try again later.
+                        <LocalizedText
+                            text="GitHub failed to provide commits. Please try again later."
+                            key="home.sections.githubcommits.failed.provide"
+                            lang={currentLang}
+                        />
                     </p>
                 {:else}
                     <LoadingSpinner />
@@ -204,36 +307,42 @@
     <div style="height:32px;" />
     <div class="section-projects">
         <ContentCategory
-            header="Featured projects of the Week"
+            header={TranslationHandler.text(
+                "home.sections.weeklyfeatured",
+                currentLang
+            )}
             seemore={`/search?q=featured%3Aprojects`}
             style="width:65%;"
             stylec="height: 244px;"
         >
             <div class="project-list">
-                {#if projects.today.length > 0}
-                    {#each projects.today as project}
-                        {#if project.featured === true}
-                            <Project {...project} />
-                        {/if}
+                {#if projects.featured.length > 0}
+                    {#each projects.featured as project}
+                        <Project {...project} />
                     {/each}
-                    {#if projects.today.filter((proj) => proj.featured === true).length <= 0}
-                        <div
-                            style="display:flex;flex-direction:column;align-items: center;width: 100%;"
-                        >
-                            <PenguinConfusedSVG width="8rem" />
-                            <p>
-                                Nothing found. You can help feature projects by
-                                clicking the yellow checkmark below them.
-                            </p>
-                        </div>
-                    {/if}
+                {:else if projectsLoaded === true}
+                    <div
+                        style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                    >
+                        <PenguinConfusedSVG width="8rem" />
+                        <p>
+                            <LocalizedText
+                                text="Nothing found. You can help feature projects by clicking the yellow checkmark below them."
+                                key="home.none.featured"
+                                lang={currentLang}
+                            />
+                        </p>
+                    </div>
                 {:else}
                     <LoadingSpinner />
                 {/if}
             </div>
         </ContentCategory>
         <ContentCategory
-            header="Today's projects"
+            header={TranslationHandler.text(
+                "home.sections.todaysprojects",
+                currentLang
+            )}
             seemore={`/search?q=all%3Aprojects`}
             style="width:65%;"
             stylec="height: 244px;"
@@ -252,31 +361,99 @@
 
     <div class="footer">
         <p>
-            PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch
-            Team, or the Scratch Foundation.
+            <LocalizedText
+                text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
+                key="home.footer.notaffiliated"
+                dontlink={true}
+                lang={currentLang}
+            />
         </p>
         <div class="footer-list">
             <div class="footer-section">
-                <p>Website</p>
-                <a href={LINK.editor}>Editor</a>
-                <a href={LINK.credits}>Credits</a>
-                <a href={LINK.github}>Source</a>
-                <a href={LINK.packager}>Packager</a>
+                <p>
+                    <LocalizedText
+                        text="Website"
+                        key="home.footer.sections.website"
+                        lang={currentLang}
+                    />
+                </p>
+                <a href={LINK.editor}>
+                    <LocalizedText
+                        text="Editor"
+                        key="home.footer.sections.website.editor"
+                        lang={currentLang}
+                    />
+                </a>
+                <a href={LINK.credits}>
+                    <LocalizedText
+                        text="Credits"
+                        key="home.footer.sections.website.credits"
+                        lang={currentLang}
+                    />
+                </a>
+                <a href={LINK.github}>
+                    <LocalizedText
+                        text="Source"
+                        key="home.footer.sections.website.source"
+                        lang={currentLang}
+                    />
+                </a>
+                <a href={LINK.packager}>
+                    <LocalizedText
+                        text="Packager"
+                        key="home.footer.sections.website.packager"
+                        lang={currentLang}
+                    />
+                </a>
             </div>
             <div class="footer-section">
-                <p>Community</p>
+                <p>
+                    <LocalizedText
+                        text="Community"
+                        key="home.footer.sections.community"
+                        lang={currentLang}
+                    />
+                </p>
                 <a target="_blank" href={LINK.discord}>Discord</a>
-                <a target="_blank" href={LINK.wiki}>Wiki</a>
+                <a target="_blank" href={LINK.wiki}>
+                    <LocalizedText
+                        text="Wiki"
+                        key="home.footer.sections.community.wiki"
+                        lang={currentLang}
+                    />
+                </a>
             </div>
             <div class="footer-section">
-                <p>Info</p>
-                <a target="_blank" href={LINK.privacy}>Privacy Policy</a>
-                <a target="_blank" href={LINK.guidelines.projects}
-                    >Uploading Guidelines</a
-                >
+                <p>
+                    <LocalizedText
+                        text="Info"
+                        key="home.footer.sections.info"
+                        lang={currentLang}
+                    />
+                </p>
+                <a target="_blank" href={LINK.privacy}>
+                    <LocalizedText
+                        text="Privacy Policy"
+                        key="home.footer.sections.info.privacy"
+                        lang={currentLang}
+                    />
+                </a>
+                <a target="_blank" href={LINK.guidelines.projects}>
+                    <LocalizedText
+                        text="Uploading Guidelines"
+                        key="home.footer.sections.info.guidelines"
+                        lang={currentLang}
+                    />
+                </a>
             </div>
             <div class="footer-section">
-                <p>Donate</p>
+                <p>
+                    <LocalizedText
+                        text="Donate"
+                        key="home.footer.sections.donate"
+                        lang={currentLang}
+                    />
+                </p>
                 <a target="_blank" href={LINK.donate.scratch}>Scratch</a>
                 <a target="_blank" href={LINK.donate.turbowarp}>TurboWarp</a>
             </div>
@@ -385,6 +562,28 @@
         justify-content: center;
         width: 100%;
         margin: 0px;
+    }
+    .section-language-warning {
+        background: #ffd00073;
+        color: black;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0px;
+        text-align: center;
+    }
+    .section-language-warning > img {
+        filter: brightness(0);
+    }
+    :global(body.dark-mode) .section-language-warning {
+        color: white;
+    }
+    :global(body.dark-mode) .section-language-warning > img {
+        filter: brightness(1);
     }
 
     .example-video {

@@ -12,6 +12,10 @@
     import ContentCategory from "$lib/ContentCategory/Component.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import Project from "$lib/Project/Project.svelte";
+    // translations
+    import LocalizedText from "$lib/LocalizedText/Node.svelte";
+    import TranslationHandler from "../../resources/translations.js";
+    import Language from "../../resources/language.js";
 
     // Icons
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
@@ -38,6 +42,14 @@
             }
         });
     });
+
+    let currentLang = "en";
+    onMount(() => {
+        Language.forceUpdate();
+    });
+    Language.onChange((lang) => {
+        currentLang = lang;
+    });
 </script>
 
 <head>
@@ -60,16 +72,23 @@
                     />
                     <h1>{user}</h1>
                 </div>
-                <Button
-                    label="View on Scratch"
-                    link={`https://scratch.mit.edu/users/${user}/`}
-                />
+                <Button link={`https://scratch.mit.edu/users/${user}/`}>
+                    <LocalizedText
+                        text="View on Scratch"
+                        key="profile.scratchprofile"
+                        dontlink={true}
+                        lang={currentLang}
+                    />
+                </Button>
             </div>
         </div>
     {/if}
     <div class="section-projects">
         <ContentCategory
-            header="Featured projects"
+            header={TranslationHandler.text(
+                "profile.projects.featured",
+                currentLang
+            )}
             style="width:65%;"
             stylec="height: 244px;"
         >
@@ -83,8 +102,11 @@
                         <div class="none-found">
                             <PenguinConfusedSVG height="10rem" />
                             <p>
-                                Nothing was found. Did you misspell something or
-                                does the user not exist?
+                                <LocalizedText
+                                    text="Nothing was found. Did you misspell something or does the user not exist?"
+                                    key="generic.notfoundonuser"
+                                    lang={currentLang}
+                                />
                             </p>
                         </div>
                     {/if}
@@ -94,7 +116,10 @@
             </div>
         </ContentCategory>
         <ContentCategory
-            header="All projects"
+            header={TranslationHandler.text(
+                "profile.projects.all",
+                currentLang
+            )}
             style="width:65%;"
             stylec="height: 244px;"
         >
@@ -108,8 +133,11 @@
                         <div class="none-found">
                             <PenguinConfusedSVG height="10rem" />
                             <p>
-                                Nothing was found. Did you misspell something or
-                                does the user not exist?
+                                <LocalizedText
+                                    text="Nothing was found. Did you misspell something or does the user not exist?"
+                                    key="generic.notfoundonuser"
+                                    lang={currentLang}
+                                />
                             </p>
                         </div>
                     {/if}

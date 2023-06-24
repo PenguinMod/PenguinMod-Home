@@ -22,6 +22,24 @@ class ProjectApi {
                 });
         })
     }
+    static getMaxProjects(count, onlyFeatured, hideFeatured) {
+        return new Promise((resolve, reject) => {
+            const url = `https://projects.penguinmod.site/api/projects/max?amount=${count}` + (onlyFeatured ? '&featured=true' : '') + (hideFeatured ? '&hidefeatured=true' : '');
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((projects) => {
+                        resolve(projects);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
     /**
      * @deprecated Cannot be used statically anymore.
      */
