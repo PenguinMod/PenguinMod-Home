@@ -212,11 +212,11 @@
             <div class="project-list">
                 {#if projects.today.length > 0}
                     {#each projects.today as project}
-                        {#if Date.now() - project.date <= 604800000 && project.featured === true}
+                        {#if project.featured === true}
                             <Project {...project} />
                         {/if}
                     {/each}
-                    {#if projects.today.filter((proj) => Date.now() - proj.date <= 604800000 && proj.featured === true).length <= 0}
+                    {#if projects.today.filter((proj) => proj.featured === true).length <= 0}
                         <div
                             style="display:flex;flex-direction:column;align-items: center;width: 100%;"
                         >
@@ -241,9 +241,7 @@
             <div class="project-list">
                 {#if projects.today.length > 0}
                     {#each projects.today as project}
-                        {#if Date.now() - project.date <= 86400000}
-                            <Project {...project} />
-                        {/if}
+                        <Project {...project} />
                     {/each}
                 {:else}
                     <LoadingSpinner />
