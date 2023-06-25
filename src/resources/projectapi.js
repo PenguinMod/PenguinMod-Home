@@ -102,6 +102,25 @@ class ProjectApi {
         })
     }
 
+    static getProjectFile(id) {
+        return new Promise((resolve, reject) => {
+            const url = `https://projects.penguinmod.site/api/projects/getPublished?type=file&id=${id}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.blob().then((blob) => {
+                        resolve(blob);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+
     static isAdmin(username) {
         return new Promise((resolve, reject) => {
             const url = `https://projects.penguinmod.site/api/users/isAdmin?username=${username}`;

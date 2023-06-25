@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
+    import JSZip from "jszip";
 
     const ProjectClient = new ProjectApi();
 
@@ -123,6 +124,76 @@
             });
     }
 
+    let inspectMenuOpen = false;
+    const inspectMenuDetails = {
+        downloading: false,
+        error: false,
+        errorText: false,
+        extensions: [],
+        extensionData: {},
+        extensionUrls: {},
+    };
+    let _resettingInspectMenu = true;
+    function resetInspectMenu() {
+        _resettingInspectMenu = false;
+        setTimeout(() => {
+            _resettingInspectMenu = true;
+        }, 10);
+    }
+    function openInspectMenu() {
+        inspectMenuOpen = true;
+        inspectMenuDetails.downloading = true;
+        inspectMenuDetails.error = false;
+        setTimeout(() => {
+            if (!inspectMenuOpen) return; // dont download if we closed
+            const id = Number(projectIdSelection.value);
+            ProjectApi.getProjectFile(id)
+                .then((blob) => {
+                    JSZip.loadAsync(blob)
+                        .then(async (zip) => {
+                            const project = await zip
+                                .file("project.json")
+                                .async("string");
+                            const json = JSON.parse(project);
+                            const extensionList = json.extensions;
+                            inspectMenuDetails.extensions = extensionList;
+                            const extensionData = json.extensionURLs
+                                ? json.extensionURLs
+                                : {};
+                            inspectMenuDetails.extensionData = extensionData;
+                            inspectMenuDetails.extensionUrls = JSON.parse(
+                                JSON.stringify(extensionData)
+                            );
+                            inspectMenuDetails.downloading = false;
+                            // get all urls
+                            for (const extensionId of extensionList) {
+                                if (!extensionData[extensionId]) {
+                                    extensionData[extensionId] =
+                                        "(Core Extension)";
+                                    continue;
+                                }
+                                fetch(extensionData[extensionId]).then(
+                                    (res) => {
+                                        res.text().then((code) => {
+                                            extensionData[extensionId] = code;
+                                            resetInspectMenu();
+                                        });
+                                    }
+                                );
+                            }
+                        })
+                        .catch((err) => {
+                            inspectMenuDetails.error = true;
+                            inspectMenuDetails.errorText = err;
+                        });
+                })
+                .catch((err) => {
+                    inspectMenuDetails.error = true;
+                    inspectMenuDetails.errorText = err;
+                });
+        }, 1000);
+    }
+
     let guidelinePageOpen = false;
 </script>
 
@@ -216,6 +287,66 @@
         </div>
     {/if}
 
+    {#if inspectMenuOpen}
+        <div class="front-card-page">
+            <div class="card-page big-card-page">
+                <div class="card-header">
+                    <h1>Inspect Extensions</h1>
+                </div>
+                <div class="card-projects" style="display:block">
+                    {#if inspectMenuDetails.downloading}
+                        <p style="width:100%;text-align:center;">
+                            Downloading project, this might take a bit...
+                        </p>
+                    {:else if _resettingInspectMenu}
+                        {#each inspectMenuDetails.extensions as extensionId}
+                            <p>
+                                {extensionId}:
+                                <a
+                                    href={inspectMenuDetails.extensionUrls[
+                                        extensionId
+                                    ]}
+                                    target="_blank"
+                                >
+                                    {String(
+                                        inspectMenuDetails.extensionUrls[
+                                            extensionId
+                                        ]
+                                    ).length > 456
+                                        ? "Extension URL is too long"
+                                        : String(
+                                              inspectMenuDetails.extensionUrls[
+                                                  extensionId
+                                              ]
+                                          )}
+                                </a>
+                            </p>
+                            <textarea
+                                value={inspectMenuDetails.extensionData[
+                                    extensionId
+                                ]}
+                                style="width:90%;height:256px;font-family:monospace"
+                            />
+                        {/each}
+                    {/if}
+                    {#if inspectMenuDetails.error}
+                        <p style="width:100%;text-align:center;color:red">
+                            {inspectMenuDetails.errorText}
+                        </p>
+                    {/if}
+                </div>
+                <div style="display:flex;flex-direction:row;padding:1em">
+                    <Button
+                        label="Close"
+                        on:click={() => {
+                            inspectMenuOpen = false;
+                        }}
+                    />
+                </div>
+            </div>
+        </div>
+    {/if}
+
     {#if guidelinePageOpen}
         <div class="front-card-page">
             <div class="card-page">
@@ -272,6 +403,12 @@
             >
                 <Button on:click={() => openMenu(false)} label="Unapproved" />
                 <Button on:click={() => openMenu(true)} label="Approved" />
+            </div>
+            <div style="height:24px" />
+            <div
+                style="display: flex; flex-direction: column; align-items: center;"
+            >
+                <Button label="Inspect Extensions" on:click={openInspectMenu} />
             </div>
             <div style="height:24px" />
             <label>
@@ -378,6 +515,10 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+    }
+    .big-card-page {
+        width: 95%;
+        height: 89.25%;
     }
     .only-in-dark-mode {
         display: none;
