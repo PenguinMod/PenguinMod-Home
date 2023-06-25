@@ -111,7 +111,7 @@ class ProjectApi {
                         res.text().then(reject);
                         return;
                     }
-                    res.blob().then((blob) => {
+                    res.arrayBuffer().then((blob) => {
                         resolve(blob);
                     });
                 })
