@@ -150,7 +150,7 @@
             <button class="feature" on:click={vote}>
                 <img src="/feature.svg" alt="Vote to Feature" />
             </button>
-            <p>{votes + Number(userVotedThisSession)}</p>
+            <p>{votes + ((!userVotedThisSession && userVoted) ? Number(userVotedThisSession) : -1)}</p>
         </div>
         <div title="Project views" class="parent view-text">
             <button class="view">
