@@ -19,7 +19,7 @@
 
     let userLiked = false;
     let userVoted = false;
-    let userVotedThisSession = false;
+    let userVotedOnLoad = false;
 
     let loaded = false;
     let loggedIn = null;
@@ -47,7 +47,6 @@
         ProjectClient.toggleVoteProject(projectId, "feature")
             .then((featured) => {
                 userVoted = featured;
-                userVotedThisSession = featured;
             })
             .catch((err) => alert(String(err)));
     }
@@ -81,12 +80,12 @@
             .then((states) => {
                 userLiked = states.loved;
                 userVoted = states.voted;
+                userVotedOnLoad = userVoted;
                 loaded = true;
             })
             .catch(() => {
                 userLiked = false;
                 userVoted = false;
-                userVotedThisSession = false;
                 loaded = true;
             });
     }
@@ -151,10 +150,7 @@
                 <img src="/feature.svg" alt="Vote to Feature" />
             </button>
             <p>
-                {votes +
-                    (!userVotedThisSession && userVoted
-                        ? -1
-                        : Number(userVotedThisSession))}
+                {votes - Number(userVotedOnLoad) + Number(userVoted)}
             </p>
         </div>
         <div title="Project views" class="parent view-text">
