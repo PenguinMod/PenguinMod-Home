@@ -4,6 +4,7 @@
 // you can find the actual language translations in the src/translations folder
 
 import en from '../translations/en.json';
+import id from '../translations/id.json';
 import test from '../translations/test.json';
 
 // to add a language, the first part is the language code (ex: "es-419") or top level (ex: "en-US" goes to "en")
@@ -11,6 +12,7 @@ import test from '../translations/test.json';
 // its easy to just duplicate the "en": en, line and then change accordingly
 const languages = {
     "en": en,
+    "id": id,
     
     // "test": test,
 };
