@@ -82,8 +82,8 @@
 	function openLanguageMenu(event) {
 		event = event.detail;
 		languageMenu.style.display = "";
-		languageMenu.style.left = `${event.x}px`;
-		languageMenu.style.top = `${event.y + 8}px`;
+		languageMenu.style.left = `4px`;
+		languageMenu.style.top = `3rem`;
 	}
 	function langName(lang) {
 		return Translations.text("lang.name", lang);
@@ -240,31 +240,34 @@
 		width: 192px;
 		max-height: 300px;
 		overflow: auto;
-		border-radius: 4px;
 		background: white;
-		outline: 4px solid rgba(0, 0, 0, 0.15);
+		box-shadow: 0px 0px 8px black;
+		outline: #222 1px solid;
 		z-index: 9999999;
 	}
 	.languageOption {
 		width: 100%;
-		margin: 4px 0px;
+		/* margin: 4px 0px; */
 		/* border-radius: 4px; */
 		background: white;
 		border: 0;
-		font-size: 16px;
+		font-size: 1rem;
+		text-align: left;
 		cursor: pointer;
 	}
 	.languageCount {
-		width: 100%;
-		text-align: center;
+		/* width: 100%; */
+		/* text-align: center; */
 		font-weight: bold;
 		font-size: 12px;
+		margin-left: 4px;
 		margin-bottom: 0px;
 		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	}
 
 	:global(body.dark-mode) .languageSelect {
 		background: #222;
+		outline: white 1px solid;
 	}
 	:global(body.dark-mode) .languageOption {
 		color: white;
@@ -272,7 +275,7 @@
 	}
 
 	.languageOption:hover {
-		background: var(--penguinmod-color) !important;
+		background: dodgerblue !important;
 		color: white;
 	}
 </style>
