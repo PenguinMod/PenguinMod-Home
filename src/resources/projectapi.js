@@ -6,7 +6,7 @@ class ProjectApi {
 
     static getProjects() {
         return new Promise((resolve, reject) => {
-            const url = `http://164.152.109.189:8080/api/projects/paged?length=100`;
+            const url = `https://projects.penguinmod.site/api/projects/paged?length=100`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -24,7 +24,7 @@ class ProjectApi {
     }
     static getMaxProjects(count, onlyFeatured, hideFeatured) {
         return new Promise((resolve, reject) => {
-            const url = `http://164.152.109.189:8080/api/projects/max?amount=${count}` + (onlyFeatured ? '&featured=true' : '') + (hideFeatured ? '&hidefeatured=true' : '');
+            const url = `https://projects.penguinmod.site/api/projects/max?amount=${count}` + (onlyFeatured ? '&featured=true' : '') + (hideFeatured ? '&hidefeatured=true' : '');
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -48,7 +48,7 @@ class ProjectApi {
     }
     static getUserProjects(user) {
         return new Promise((resolve, reject) => {
-            const url = `http://164.152.109.189:8080/api/projects/paged?length=100&user=${user}`;
+            const url = `https://projects.penguinmod.site/api/projects/paged?length=100&user=${user}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -67,7 +67,7 @@ class ProjectApi {
 
     static getProjectMeta(id) {
         return new Promise((resolve, reject) => {
-            const url = `http://164.152.109.189:8080/api/projects/getPublished?id=${id}`;
+            const url = `https://projects.penguinmod.site/api/projects/getPublished?id=${id}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -85,7 +85,7 @@ class ProjectApi {
     }
     static getProjectRemixes(id) {
         return new Promise((resolve, reject) => {
-            const url = `http://164.152.109.189:8080/api/pmWrapper/remixes?id=${id}`;
+            const url = `https://projects.penguinmod.site/api/pmWrapper/remixes?id=${id}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -104,7 +104,7 @@ class ProjectApi {
 
     static getProjectFile(id) {
         return new Promise((resolve, reject) => {
-            const url = `http://164.152.109.189:8080/api/projects/getPublished?type=file&id=${id}`;
+            const url = `https://projects.penguinmod.site/api/projects/getPublished?type=file&id=${id}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -123,7 +123,7 @@ class ProjectApi {
 
     static isAdmin(username) {
         return new Promise((resolve, reject) => {
-            const url = `http://164.152.109.189:8080/api/users/isAdmin?username=${username}`;
+            const url = `https://projects.penguinmod.site/api/users/isAdmin?username=${username}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -149,7 +149,7 @@ class ProjectApi {
 
     getMyProjects() {
         return new Promise((resolve, reject) => {
-            const url = `http://164.152.109.189:8080/api/users/getMyProjects?user=${this.username}&code=${this.privateCode}&sorted=true`;
+            const url = `https://projects.penguinmod.site/api/users/getMyProjects?user=${this.username}&code=${this.privateCode}&sorted=true`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -167,7 +167,7 @@ class ProjectApi {
     }
     getUnapprovedProjects() {
         return new Promise((resolve, reject) => {
-            const url = `http://164.152.109.189:8080/api/projects/getUnapproved?user=${this.username}&passcode=${this.privateCode}`;
+            const url = `https://projects.penguinmod.site/api/projects/getUnapproved?user=${this.username}&passcode=${this.privateCode}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -186,7 +186,7 @@ class ProjectApi {
     }
     deleteProject(id) {
         return new Promise((resolve, reject) => {
-            fetch(`http://164.152.109.189:8080/api/projects/delete?passcode=${this.privateCode}&approver=${this.username}&id=${id}`).then(res => {
+            fetch(`https://projects.penguinmod.site/api/projects/delete?passcode=${this.privateCode}&approver=${this.username}&id=${id}`).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);
@@ -210,7 +210,7 @@ class ProjectApi {
         }
         return new Promise((resolve, reject) => {
             fetch(
-                `http://164.152.109.189:8080/api/projects/update`,
+                `https://projects.penguinmod.site/api/projects/update`,
                 {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(newData),
@@ -236,7 +236,7 @@ class ProjectApi {
         data.passcode = this.privateCode;
         return new Promise((resolve, reject) => {
             fetch(
-                `http://164.152.109.189:8080/api/projects/publish`,
+                `https://projects.penguinmod.site/api/projects/publish`,
                 {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data),
@@ -259,7 +259,7 @@ class ProjectApi {
     }
 
     approveProject(id, webhook) {
-        const url = `http://164.152.109.189:8080/api/projects/approve?passcode=${this.privateCode}&approver=${this.username}&webhook=${webhook}&id=${id}`;
+        const url = `https://projects.penguinmod.site/api/projects/approve?passcode=${this.privateCode}&approver=${this.username}&webhook=${webhook}&id=${id}`;
         return new Promise((resolve, reject) => {
             fetch(url).then(res => {
                 res.json().then(json => {
@@ -277,7 +277,7 @@ class ProjectApi {
         })
     }
     featureProject(id, webhook) {
-        const url = `http://164.152.109.189:8080/api/projects/feature?passcode=${this.privateCode}&approver=${this.username}&webhook=${webhook}&id=${id}`;
+        const url = `https://projects.penguinmod.site/api/projects/feature?passcode=${this.privateCode}&approver=${this.username}&webhook=${webhook}&id=${id}`;
         return new Promise((resolve, reject) => {
             fetch(url).then(res => {
                 res.json().then(json => {
@@ -315,7 +315,7 @@ class ProjectApi {
             default:
                 type = 'votes';
         }
-        const url = `http://164.152.109.189:8080/api/projects/toggleProjectVote`;
+        const url = `https://projects.penguinmod.site/api/projects/toggleProjectVote`;
         return new Promise((resolve, reject) => {
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
@@ -342,7 +342,7 @@ class ProjectApi {
         })
     }
     getVoteStates(id) {
-        const url = `http://164.152.109.189:8080/api/projects/getProjectVote?user=${this.username}&passcode=${this.privateCode}&id=${id}`;
+        const url = `https://projects.penguinmod.site/api/projects/getProjectVote?user=${this.username}&passcode=${this.privateCode}&id=${id}`;
         return new Promise((resolve, reject) => {
             fetch(url).then(res => {
                 res.json().then(json => {
