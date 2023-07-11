@@ -40,12 +40,12 @@ export default {
     /**
      * PenguinMod's project page
      */
-    projects: "https://projects.penguinmod.site/",
+    projects: "http://164.152.109.189:8080/",
 
     /**
      * PenguinMod's my stuff page
      */
-    mystuff: "https://projects.penguinmod.site/mystuff",
+    mystuff: "http://164.152.109.189:8080/mystuff",
 
     /**
      * PenguinMod's home page

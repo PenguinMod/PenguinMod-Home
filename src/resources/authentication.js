@@ -44,7 +44,7 @@ class Authentication {
                         }
                         resolve(privateCode);
                     } else {
-                        fetch(`https://projects.penguinmod.site/api/users/login?privateCode=${privateCode}`).then(res => {
+                        fetch(`http://164.152.109.189:8080/api/users/login?privateCode=${privateCode}`).then(res => {
                             if (!res.ok) {
                                 setTimeout(() => {
                                     login.close();
@@ -95,7 +95,7 @@ class Authentication {
     }
     static usernameFromCode(code) {
         return new Promise((resolve, reject) => {
-            fetch(`https://projects.penguinmod.site/api/users/usernameFromCode?privateCode=${code}`).then(r => r.json().then(j => {
+            fetch(`http://164.152.109.189:8080/api/users/usernameFromCode?privateCode=${code}`).then(r => r.json().then(j => {
                 if (j.username == null) return reject(j.error);
                 resolve(j.username)
             }).catch(reject)).catch(reject)
