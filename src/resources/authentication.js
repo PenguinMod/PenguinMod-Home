@@ -70,7 +70,7 @@ class Authentication {
                 } catch {
                     cantAccessAnymore = true;
                 };
-            }, 10);
+            }, 50);
         });
     }
     static onAuthentication(cb) {
