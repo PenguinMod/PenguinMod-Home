@@ -148,13 +148,15 @@
 		/>
 	</BarPage>
 	<BarSearch placeholder={searchBar} />
-	<BarPage link="/mystuff">
-		<LocalizedText
-			text="My Stuff"
-			key="navigation.mystuff"
-			lang={currentLang}
-		/>
-	</BarPage>
+	{#if loggedIn === true}
+		<BarPage link="/mystuff">
+			<LocalizedText
+				text="My Stuff"
+				key="navigation.mystuff"
+				lang={currentLang}
+			/>
+		</BarPage>
+	{/if}
 	{#if isAdmin && loggedIn}
 		<BarPage label="Admin Panel" link="/panel" />
 	{/if}
