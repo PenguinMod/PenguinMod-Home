@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import Authentication from "../resources/authentication.js";
     import ProjectApi from "../resources/projectapi.js";
+    import censor from "../resources/basiccensorship.js";
 
     // Static values
     import LINK from "../resources/urls.js";
@@ -29,6 +30,7 @@
     let ghcommitsFailed = false;
     let ghcommitsLoaded = false;
     let projectsLoaded = false;
+    let projectsFailed = false;
 
     let projects = {
         today: [],
@@ -66,10 +68,14 @@
         ProjectApi.getMaxProjects(15, false, true).then((projs) => {
             projects.today = projs;
         });
-        ProjectApi.getMaxProjects(15, true, false).then((projs) => {
-            projects.featured = projs;
-            projectsLoaded = true;
-        });
+        ProjectApi.getMaxProjects(15, true, false)
+            .then((projs) => {
+                projects.featured = projs;
+                projectsLoaded = true;
+            })
+            .catch(() => {
+                projectsFailed = true;
+            });
     });
 
     // login code below
@@ -277,7 +283,7 @@
                         <UserDisplay
                             link={commit.html_url}
                             userLink={commit.author.html_url}
-                            text={commit.commit.message}
+                            text={censor(commit.commit.message)}
                             author={commit.author.login}
                             image={commit.author.avatar_url}
                         />
@@ -333,6 +339,20 @@
                             />
                         </p>
                     </div>
+                {:else if projectsFailed === true}
+                    <div
+                        style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                    >
+                        <img
+                            src="/penguins/server.svg"
+                            alt="Server Penguin"
+                            style="width: 15rem"
+                        />
+                        <p>
+                            Whoops! Our server's having some problems. Try again
+                            later.
+                        </p>
+                    </div>
                 {:else}
                     <LoadingSpinner />
                 {/if}
@@ -352,6 +372,20 @@
                     {#each projects.today as project}
                         <Project {...project} />
                     {/each}
+                {:else if projectsFailed === true}
+                    <div
+                        style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                    >
+                        <img
+                            src="/penguins/server.svg"
+                            alt="Server Penguin"
+                            style="width: 15rem"
+                        />
+                        <p>
+                            Whoops! Our server's having some problems. Try again
+                            later.
+                        </p>
+                    </div>
                 {:else}
                     <LoadingSpinner />
                 {/if}
@@ -540,10 +574,6 @@
         width: 100%;
         padding: 0.5rem 0;
         margin: 0px;
-    }
-
-    .section-info a {
-        color: white;
     }
 
     .section-categories {

@@ -33,7 +33,7 @@ class ProjectApi {
                     }
                     res.json().then((projects) => {
                         resolve(projects);
-                    });
+                    }).catch(reject);
                 })
                 .catch((err) => {
                     reject(err);
