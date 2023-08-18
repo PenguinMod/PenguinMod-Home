@@ -71,25 +71,64 @@
 
     let projectMenuOpen = false;
     let projects = [];
+    let projectPage = 0;
+    let lastProjectPage = false;
 
     let approvedProjectNames = [];
 
+    function incrementPageAndAddToMenu(approved) {
+        projectPage += 1;
+        // todo: not this thats for sure
+        //       just do one of them and then await it idk
+        //       gonna do that later
+        //       (aka in like 3 months when i finally look at this code again)
+        console.log(projectPage);
+        if (approved) {
+            ProjectApi.getProjects(projectPage).then((projectss) => {
+                projects.push(...projectss);
+                projects = projects;
+                if (projectss.length <= 0) {
+                    lastProjectPage = true;
+                }
+            });
+        } else {
+            ProjectClient.getUnapprovedProjects(projectPage).then(
+                (projectss) => {
+                    projects.push(...projectss);
+                    projects = projects;
+                    if (projectss.length <= 0) {
+                        lastProjectPage = true;
+                    }
+                }
+            );
+        }
+    }
+    let projectPageType = true;
     function openMenu(approved) {
+        projectPageType = approved;
         projects = [];
+        projectPage = 0;
+        lastProjectPage = false;
         projectMenuOpen = true;
         if (approved) {
-            ProjectApi.getProjects().then((projectss) => {
+            ProjectApi.getProjects(projectPage).then((projectss) => {
                 projects = projectss;
             });
         } else {
-            ProjectClient.getUnapprovedProjects().then((projectss) => {
-                projects = projectss;
-            });
+            ProjectClient.getUnapprovedProjects(projectPage).then(
+                (projectss) => {
+                    projects = projectss;
+                }
+            );
         }
         // get approved projects anyways cuz we need to update list
-        ProjectApi.getProjects().then((projects) => {
-            approvedProjectNames = projects.map((p) => p.name);
-        });
+        // todo: getProjects is paged breh what we do?
+        //       add a new endpoint containing all project names with tons of compression propably :idk_man:
+        //       remember: network usage is key here since that makes us loose money :()
+
+        // ProjectApi.getProjects().then((projects) => {
+        //     approvedProjectNames = projects.map((p) => p.name);
+        // });
     }
     function deleteProject(id, name) {
         const code = prompt(
@@ -274,6 +313,14 @@
                             {/if}
                         </Project>
                     {/each}
+                    {#if !lastProjectPage}
+                        <!-- yes this looks weird, no i wont fix it soon -->
+                        <Button
+                            label="More"
+                            on:click={() =>
+                                incrementPageAndAddToMenu(projectPageType)}
+                        />
+                    {/if}
                 </div>
                 <div style="display:flex;flex-direction:row;padding:1em">
                     <Button

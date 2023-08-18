@@ -68,7 +68,7 @@
                     <img
                         src={`${LINK.projects}api/pmWrapper/scratchUserImage?username=${user}`}
                         alt="Profile"
-                        style="margin-right:8px;border-radius:4px"
+                        style="margin-right:8px;border-radius:4px;height:128px;"
                     />
                     <h1>{user}</h1>
                 </div>
@@ -91,6 +91,7 @@
             )}
             style="width:65%;"
             stylec="height: 244px;"
+            seemore={`/search?q=user-featured%3A${user}`}
         >
             <div class="project-list">
                 {#if projects.featured.length > 0}
@@ -122,6 +123,7 @@
             )}
             style="width:65%;"
             stylec="height: 244px;"
+            seemore={`/search?q=user%3A${user}`}
         >
             <div class="project-list">
                 {#if projects.all.length > 0}

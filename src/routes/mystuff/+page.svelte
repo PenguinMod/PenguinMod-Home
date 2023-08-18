@@ -22,6 +22,8 @@
     let projects = [];
     let error = null;
     let loggedIn = null;
+    let page = 0;
+    let pageIsLast = false;
 
     let currentLang = "en";
     onMount(() => {
@@ -30,6 +32,20 @@
     Language.onChange((lang) => {
         currentLang = lang;
     });
+
+    function fetchNewProjects() {
+        ProjectClient.getMyProjects(page).then((projectss) => {
+            if (projectss.length <= 0) {
+                pageIsLast = true;
+                return;
+            }
+            if (projectss.length < 20) {
+                pageIsLast = true;
+            }
+            projects.push(...projectss);
+            projects = projects;
+        });
+    }
 
     function loggedInChange(username, privateCode) {
         if (username) ProjectClient.setUsername(username);
@@ -245,6 +261,23 @@
             </div>
         {/if}
     </div>
+
+    {#if projects[0] !== "notfound"}
+        {#if !pageIsLast && projects.length > 0}
+            <div style="height: 16px;" />
+            <div class="more-projects-wrapper">
+                <Button
+                    label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
+                    on:click={() => {
+                        page += 1;
+                        fetchNewProjects();
+                    }}
+                />
+            </div>
+        {/if}
+    {/if}
+
+    <div style="height: 16px;" />
 </div>
 
 <style>
@@ -296,6 +329,13 @@
         margin-top: 16px;
         margin-bottom: 16px;
         align-items: center;
+    }
+
+    .more-projects-wrapper {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
     }
 
     :global(body.dark-mode) a {

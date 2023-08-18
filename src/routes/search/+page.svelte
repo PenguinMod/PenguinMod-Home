@@ -21,28 +21,38 @@
     let searchQuery = "...";
     let projects = [];
     let requestFailed = false;
+    let page = 0;
+    let pageIsLast = false;
 
-    onMount(() => {
-        const params = new URLSearchParams(location.search);
-        const query = params.get("q");
-        searchQuery = query;
-
-        let api = `${
-            LINK.projects
-        }api/projects/paged?length=100&includes=${encodeURIComponent(
-            searchQuery
-        )}`;
+    const fetchNewProjects = () => {
+        let api = "";
         if (searchQuery.trim() === "all:projects") {
-            api = `${LINK.projects}api/projects/paged?length=100`;
+            api = `${LINK.projects}api/projects/search?page=${page}`;
+        } else {
+            // todo: parse tags & apply properly
+            const tags = searchQuery.split(" ");
+            const realQuery = tags[tags.length - 1];
+            api = `${
+                LINK.projects
+            }api/projects/search?page=${page}&includes=${encodeURIComponent(
+                realQuery
+            )}`;
         }
+
         fetch(api)
             .then((response) => {
                 response
                     .json()
-                    .then((pages) => {
-                        projects = pages.flat(Infinity);
-                        if (pages.length <= 0) {
+                    .then((projectListResult) => {
+                        const result = projectListResult.projects;
+                        projects.push(...result);
+                        projects = projects;
+                        if (projects.length <= 0) {
                             projects = ["notfound"];
+                            pageIsLast = true;
+                        }
+                        if (result.length < 20) {
+                            pageIsLast = true;
                         }
                     })
                     .catch(() => {
@@ -52,6 +62,14 @@
             .catch(() => {
                 requestFailed = true;
             });
+    };
+
+    onMount(() => {
+        const params = new URLSearchParams(location.search);
+        const query = params.get("q");
+        searchQuery = query;
+
+        fetchNewProjects();
     });
 
     let currentLang = "en";
@@ -127,6 +145,23 @@
             </div>
         {/if}
     </div>
+
+    {#if projects[0] !== "notfound"}
+        {#if !pageIsLast && projects.length > 0}
+            <div style="height: 16px;" />
+            <div class="more-projects-wrapper">
+                <Button
+                    label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
+                    on:click={() => {
+                        page += 1;
+                        fetchNewProjects();
+                    }}
+                />
+            </div>
+        {/if}
+    {/if}
+
+    <div style="height: 16px;" />
 </div>
 
 <style>
@@ -174,5 +209,12 @@
         margin: 0;
         text-align: center;
         display: none;
+    }
+
+    .more-projects-wrapper {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
     }
 </style>

@@ -4,23 +4,23 @@ class ProjectApi {
         this.username = username;
     }
 
-    static getProjects() {
+    static getProjects(page) {
         return new Promise((resolve, reject) => {
-            const url = `https://projects.penguinmod.site/api/projects/paged?length=100`;
+            const url = `https://projects.penguinmod.site/api/projects/getApproved?page=${page}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
                         return;
                     }
-                    res.json().then((projects) => {
-                        resolve(projects.flat(Infinity));
+                    res.json().then((projectList) => {
+                        resolve(projectList.projects);
                     });
                 })
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
     static getMaxProjects(count, onlyFeatured, hideFeatured) {
         return new Promise((resolve, reject) => {
@@ -46,17 +46,22 @@ class ProjectApi {
     static getUnapprovedProjects() {
         throw new Error("Unapproved Projects can only be viewed in a client")
     }
-    static getUserProjects(user) {
+    /**
+     * @param {string} user username
+     * @param {number} page page
+     * @returns Array of projects
+     */
+    static getUserProjects(user, page) {
         return new Promise((resolve, reject) => {
-            const url = `https://projects.penguinmod.site/api/projects/paged?length=100&user=${user}`;
+            const url = `https://projects.penguinmod.site/api/projects/search?page=${page}&user=${user}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
                         return;
                     }
-                    res.json().then((projects) => {
-                        resolve(projects.flat(Infinity));
+                    res.json().then((projectList) => {
+                        resolve(projectList.projects);
                     });
                 })
                 .catch((err) => {
@@ -92,8 +97,8 @@ class ProjectApi {
                         res.text().then(reject);
                         return;
                     }
-                    res.json().then((projects) => {
-                        resolve(projects);
+                    res.json().then((projectList) => {
+                        resolve(projectList.projects);
                     });
                 })
                 .catch((err) => {
@@ -147,17 +152,17 @@ class ProjectApi {
         this.username = u;
     }
 
-    getMyProjects() {
+    getMyProjects(page) {
         return new Promise((resolve, reject) => {
-            const url = `https://projects.penguinmod.site/api/users/getMyProjects?user=${this.username}&code=${this.privateCode}&sorted=true`;
+            const url = `https://projects.penguinmod.site/api/users/getMyProjects?page=${page}&user=${this.username}&code=${this.privateCode}&sorted=true`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
                         return;
                     }
-                    res.json().then((projects) => {
-                        resolve(projects);
+                    res.json().then((projectList) => {
+                        resolve(projectList.projects);
                     });
                 })
                 .catch((err) => {
@@ -165,16 +170,17 @@ class ProjectApi {
                 });
         })
     }
-    getUnapprovedProjects() {
+    getUnapprovedProjects(page) {
         return new Promise((resolve, reject) => {
-            const url = `https://projects.penguinmod.site/api/projects/getUnapproved?user=${this.username}&passcode=${this.privateCode}`;
+            const url = `https://projects.penguinmod.site/api/projects/getUnapproved?page=${page}&user=${this.username}&passcode=${this.privateCode}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
                         return;
                     }
-                    res.json().then((projects) => {
+                    res.json().then((projectList) => {
+                        const projects = projectList.projects;
                         const shown = projects.filter(p => !p.hidden);
                         resolve(shown);
                     });
