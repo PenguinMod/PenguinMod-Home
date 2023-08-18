@@ -590,7 +590,7 @@
                         id="FILEPI"
                         type="file"
                         class="hidden-picker"
-                        accept=".png,.jpg,.jpeg,.gif"
+                        accept=".png"
                         on:change={imageFilePicked}
                     />
                     <label class="file-picker" for="FILEPI">
