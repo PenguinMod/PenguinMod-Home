@@ -139,23 +139,40 @@
 
 <div class="main">
     {#if loaded}
-        <div title="Like this project" class="parent like-text">
+        <div title="Like this project" class="parent button-text">
             <button class="like" on:click={love}>
-                <img src="/heart.svg" alt="Like" />
+                <img
+                    src="/heart.svg"
+                    alt="Like"
+                    class="button-image"
+                    draggable="false"
+                    data-activated={userLiked}
+                />
             </button>
             <p>{likes + Number(userLiked)}</p>
         </div>
-        <div title="Vote to Feature this project" class="parent feature-text">
+        <div title="Vote to Feature this project" class="parent button-text">
             <button class="feature" on:click={vote}>
-                <img src="/feature.svg" alt="Vote to Feature" />
+                <img
+                    src="/feature.svg"
+                    alt="Vote to Feature"
+                    class="button-image"
+                    draggable="false"
+                    data-activated={userVoted}
+                />
             </button>
             <p>
                 {votes - Number(userVotedOnLoad) + Number(userVoted)}
             </p>
         </div>
-        <div title="Project views" class="parent view-text">
+        <div title="Project views" class="parent button-text">
             <button class="view">
-                <img src="/view.svg" alt="View Count" />
+                <img
+                    src="/view.svg"
+                    alt="View Count"
+                    class="button-image"
+                    draggable="false"
+                />
             </button>
             <p>{views}</p>
         </div>
@@ -180,9 +197,10 @@
         left: 0px;
         top: 0px;
     }
+
     button {
         border-radius: 12px;
-        border: 0;
+        border: 1px solid rgba(0, 0, 0, 0.7);
         cursor: pointer;
         width: 64px;
         height: 64px;
@@ -190,7 +208,35 @@
         flex-direction: row;
         align-items: center;
         justify-content: center;
+        background: transparent;
     }
+    :global(body.dark-mode) button {
+        border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+    button:active {
+        opacity: 0.5;
+    }
+
+    .button-text {
+        color: rgba(0, 0, 0, 0.7);
+    }
+    :global(body.dark-mode) .button-text {
+        color: rgba(255, 255, 255, 0.7);
+    }
+    .button-image {
+        width: 90%;
+        user-select: none;
+        filter: brightness(0);
+        opacity: 0.7;
+    }
+    :global(body.dark-mode) .button-image {
+        filter: saturate(0) brightness(255);
+        opacity: 0.7;
+    }
+    .button-image[data-activated="true"] {
+        filter: saturate(1) brightness(1) !important;
+    }
+
     img {
         width: 100%;
     }
@@ -206,7 +252,7 @@
         font-size: 24px;
     }
 
-    .like-text {
+    /* .like-text {
         color: rgb(255, 106, 200);
     }
     .view-text {
@@ -214,7 +260,7 @@
     }
     .feature-text {
         color: rgb(255, 229, 107);
-    }
+    } */
 
     .like {
         background: rgba(255, 106, 200, 0.25);
