@@ -73,8 +73,9 @@
         if (projName) {
             projectName = projName;
         }
-        if (!isNaN(Number(remixId))) {
-            remixProjectId = Number(remixId);
+        const remixNumber = Number(remixId);
+        if (!isNaN(remixNumber) && remixNumber > 0) {
+            remixProjectId = remixNumber;
             ProjectApi.getProjectMeta(remixProjectId).then((meta) => {
                 remixingProjectName = meta.name;
             });
