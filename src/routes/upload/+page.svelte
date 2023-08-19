@@ -41,6 +41,8 @@
     let projectData;
 
     let projectInputName;
+    let remixingProjectName;
+    let remixProjectId;
 
     let projectPageType = "remix";
     let projectPage = 0;
@@ -66,9 +68,16 @@
     onMount(() => {
         const params = new URLSearchParams(location.search);
         const projName = params.get("name");
+        const remixId = params.get("remix");
         const importLocation = params.get("external");
         if (projName) {
             projectName = projName;
+        }
+        if (!isNaN(Number(remixId))) {
+            remixProjectId = Number(remixId);
+            ProjectApi.getProjectMeta(remixProjectId).then((meta) => {
+                remixingProjectName = meta.name;
+            });
         }
 
         const privateCode = localStorage.getItem("PV");
@@ -186,7 +195,6 @@
             .replace("$1", file.name);
     }
 
-    let remixProjectId;
     function uploadProject() {
         ProjectClient.uploadProject({
             title: components.projectName.value,
@@ -356,7 +364,6 @@
         });
     });
 
-    let remixingProjectName;
     function selectToRemixProject(id) {
         remixProjectId = Number(id);
         if (isNaN(remixProjectId)) {
