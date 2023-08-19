@@ -24,17 +24,46 @@
     let page = 0;
     let pageIsLast = false;
 
+    const validTagPrefixes = ["studio", "user", "featured"];
+    const tagFilterFunction = (word) => {
+        const startsWithTag = validTagPrefixes.some((value) => {
+            return String(word).startsWith(`${value}:`);
+        });
+        if (startsWithTag) {
+            // ex: "studio: abc" should count as searching for abc ONLY
+            return !String(word).endsWith(":");
+        }
+    };
+
     const fetchNewProjects = () => {
         let api = "";
         if (searchQuery.trim() === "all:projects") {
             api = `${LINK.projects}api/projects/search?page=${page}`;
         } else {
             // todo: parse tags & apply properly
-            const tags = searchQuery.split(" ");
-            const realQuery = tags[tags.length - 1];
+            const split = searchQuery.split(" ");
+            const textContent = split.filter((...args) => {
+                return !tagFilterFunction(...args);
+            });
+            const tags = split.filter(tagFilterFunction);
+            const realQuery = textContent.join(" ");
+
+            // add to query params
+            let queryExtra = "";
+            for (const tag of tags) {
+                if (tag.startsWith("user")) {
+                    queryExtra += `&user=${tag.replace("user:", "")}`;
+                }
+                if (tag.startsWith("featured")) {
+                    const value = tag.replace("featured:", "");
+                    const exclude = value === "false" || value === "exclude";
+                    queryExtra += `&featured=${exclude ? "exclude" : "true"}`;
+                }
+            }
+
             api = `${
                 LINK.projects
-            }api/projects/search?page=${page}&includes=${encodeURIComponent(
+            }api/projects/search?page=${page}${queryExtra}&includes=${encodeURIComponent(
                 realQuery
             )}`;
         }

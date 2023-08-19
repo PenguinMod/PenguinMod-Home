@@ -91,7 +91,7 @@
             )}
             style="width:65%;"
             stylec="height: 244px;"
-            seemore={`/search?q=user-featured%3A${user}`}
+            seemore={`/search?q=user%3A${user} featured%3Atrue`}
         >
             <div class="project-list">
                 {#if projects.featured.length > 0}

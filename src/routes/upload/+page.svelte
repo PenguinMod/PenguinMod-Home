@@ -42,6 +42,10 @@
 
     let projectInputName;
 
+    let projectPageType = "remix";
+    let projectPage = 0;
+    let lastProjectPage = false;
+
     const components = {
         projectName: null,
         projectInstructions: null,
@@ -240,15 +244,47 @@
     let updatePageOpen = false;
     let guidelinePageOpen = false;
 
+    function incrementPageAndAddToMenu(pageType) {
+        projectPage += 1;
+        // todo: not this thats for sure
+        //       just do one of them and then await it idk
+        //       gonna do that later
+        //       (aka in like 3 months when i finally look at this code again)
+        console.log(projectPage);
+        if (pageType === "remix") {
+            ProjectApi.getProjects(projectPage).then((projectss) => {
+                canRemix.push(...projectss);
+                canRemix = canRemix;
+                if (projectss.length <= 0) {
+                    lastProjectPage = true;
+                }
+            });
+        } else {
+            ProjectClient.getMyProjects(projectPage).then((projectss) => {
+                otherProjects.push(...projectss);
+                otherProjects = otherProjects;
+                if (projectss.length <= 0) {
+                    lastProjectPage = true;
+                }
+            });
+        }
+    }
+
     function openRemixMenu() {
         canRemix = [];
+        projectPage = 0;
+        lastProjectPage = false;
+        projectPageType = "remix";
         remixPageOpen = true;
-        ProjectApi.getProjects().then((projects) => {
+        ProjectApi.getProjects(projectPage).then((projects) => {
             canRemix = projects;
         });
     }
     function openUpdateMenu() {
         otherProjects = [];
+        projectPage = 0;
+        lastProjectPage = false;
+        projectPageType = "update";
         updatePageOpen = true;
         ProjectClient.getMyProjects().then((projects) => {
             otherProjects = projects;
@@ -380,6 +416,14 @@
                             )}
                         />
                     {/each}
+                    {#if !lastProjectPage}
+                        <!-- todo: should this really look the way it does? -->
+                        <Button
+                            label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
+                            on:click={() =>
+                                incrementPageAndAddToMenu(projectPageType)}
+                        />
+                    {/if}
                 </div>
                 <div style="display:flex;flex-direction:row;padding:1em">
                     <Button
@@ -421,6 +465,14 @@
                             on:click={selectToRemixProject(project.id)}
                         />
                     {/each}
+                    {#if !lastProjectPage}
+                        <!-- todo: should this really look the way it does? -->
+                        <Button
+                            label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
+                            on:click={() =>
+                                incrementPageAndAddToMenu(projectPageType)}
+                        />
+                    {/if}
                 </div>
                 <div style="display:flex;flex-direction:row;padding:1em">
                     <Button
