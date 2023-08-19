@@ -44,6 +44,8 @@
     let remixingProjectName;
     let remixProjectId;
 
+    let remixedInURL = false;
+
     let projectPageType = "remix";
     let projectPage = 0;
     let lastProjectPage = false;
@@ -75,6 +77,7 @@
         }
         const remixNumber = Number(remixId);
         if (!isNaN(remixNumber) && remixNumber > 0) {
+            remixedInURL = true;
             remixProjectId = remixNumber;
             ProjectApi.getProjectMeta(remixProjectId).then((meta) => {
                 remixingProjectName = meta.name;
@@ -683,17 +686,19 @@
                                     lang={currentLang}
                                 />
                             </Button>
-                            <Button
-                                color="remix"
-                                icon="remix.svg"
-                                on:click={openRemixMenu}
-                            >
-                                <LocalizedText
-                                    text="Remix"
-                                    key="uploading.type.remix"
-                                    lang={currentLang}
-                                />
-                            </Button>
+                            {#if !remixedInURL}
+                                <Button
+                                    color="remix"
+                                    icon="remix.svg"
+                                    on:click={openRemixMenu}
+                                >
+                                    <LocalizedText
+                                        text="Remix"
+                                        key="uploading.type.remix"
+                                        lang={currentLang}
+                                    />
+                                </Button>
+                            {/if}
                             <Button
                                 color="orange"
                                 icon="update.svg"
@@ -734,13 +739,15 @@
                                     lang={currentLang}
                                 />
                             </Button>
-                            <Button color="gray" icon="remix.svg">
-                                <LocalizedText
-                                    text="Remix"
-                                    key="uploading.type.remix"
-                                    lang={currentLang}
-                                />
-                            </Button>
+                            {#if !remixedInURL}
+                                <Button color="gray" icon="remix.svg">
+                                    <LocalizedText
+                                        text="Remix"
+                                        key="uploading.type.remix"
+                                        lang={currentLang}
+                                    />
+                                </Button>
+                            {/if}
                             <Button color="gray" icon="update.svg">
                                 <LocalizedText
                                     text="Update"
