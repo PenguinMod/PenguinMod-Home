@@ -121,7 +121,7 @@
         const projId = numberCast(params.get("id"));
         projectId = projId;
         ProjectApi.getProjectMeta(projId).then((data) => {
-            likes = numberCast(data.likes);
+            likes = numberCast(data.loves);
             votes = numberCast(data.votes);
             views = numberCast(data.views);
         });
