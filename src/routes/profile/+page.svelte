@@ -66,7 +66,7 @@
             <div class="subuser-section">
                 <div class="user-username">
                     <img
-                        src={`${LINK.projects}api/pmWrapper/scratchUserImage?username=${user}`}
+                        src={`https://trampoline.turbowarp.org/avatars/by-username/${user}`}
                         alt="Profile"
                         style="margin-right:8px;border-radius:4px;height:128px;"
                     />
