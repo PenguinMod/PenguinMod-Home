@@ -1,76 +1,42 @@
 class Authentication {
     static eventListeners = [];
 
-    static authenticate(dontSetAsLoginToken, dontSetInLocalStorage) {
-        const redirectUrl = String(`${location.origin}/loading`);
+    static authenticate() {
+        const redirectUrl = 'https://projects.penguinmod.site/api/users/login';
         const base64 = btoa(redirectUrl);
         return new Promise((resolve, reject) => {
-            const login = window.open(
+            let login;
+
+            const handleMessageReciever = (event) => {
+                if (event.origin !== 'https://projects.penguinmod.site') {
+                    return;
+                }
+                const data = event.data && event.data.a2;
+                if (!data) {
+                    return;
+                }
+
+                const privateCode = data.pv;
+                window.removeEventListener("message", handleMessageReciever);
+                login.close();
+
+                localStorage.setItem("SCAM-ALERT", "Do NOT send anyone your PV code! If someone told you to do this, stop now!");
+                localStorage.setItem("PV", privateCode);
+                Authentication.fireAuthenticated(privateCode);
+                resolve(privateCode);
+            };
+
+            window.addEventListener("message", handleMessageReciever);
+
+            login = window.open(
                 `https://auth.itinerary.eu.org/auth/?redirect=${base64}&name=PenguinMod`,
                 "Scratch Authentication",
                 `scrollbars=yes,resizable=yes,status=no,location=yes,toolbar=no,menubar=no,width=1024,height=512,left=200,top=200`
             );
             if (!login) {
+                window.removeEventListener("message", handleMessageReciever);
                 reject("PopupBlocked");
             };
-            let cantAccessAnymore = false;
-            let finished = false;
-            let interval = null;
-            interval = setInterval(() => {
-                if (login?.closed && (!finished)) {
-                    clearInterval(interval);
-                    try {
-                        login.close();
-                    } catch {
-                        // oh no
-                    };
-                    reject("PopupClosed");
-                };
-                try {
-                    const query = login.location.search;
-                    if (!cantAccessAnymore) return;
-                    const parameters = new URLSearchParams(query);
-                    const privateCode = parameters.get("privateCode");
-                    finished = true;
-                    clearInterval(interval);
-                    if (dontSetAsLoginToken) {
-                        setTimeout(() => {
-                            login.close();
-                        }, 500);
-                        if (!dontSetInLocalStorage) {
-                            localStorage.setItem("SCAM-ALERT", "Do NOT send anyone your PV code! If someone told you to do this, stop now!");
-                            localStorage.setItem("PV", privateCode);
-                            Authentication.fireAuthenticated(privateCode);
-                        }
-                        resolve(privateCode);
-                    } else {
-                        fetch(`https://projects.penguinmod.site/api/users/login?privateCode=${privateCode}`).then(res => {
-                            if (!res.ok) {
-                                setTimeout(() => {
-                                    login.close();
-                                }, 500);
-                                return reject("error logging in");
-                            }
-                            setTimeout(() => {
-                                login.close();
-                            }, 500);
-                            if (!dontSetInLocalStorage) {
-                                localStorage.setItem("SCAM-ALERT", "Do NOT send anyone your PV code! If someone told you to do this, stop now!");
-                                localStorage.setItem("PV", privateCode);
-                                Authentication.fireAuthenticated(privateCode);
-                            }
-                            resolve(privateCode);
-                        }).catch(() => {
-                            setTimeout(() => {
-                                login.close();
-                            }, 500);
-                            return reject("error logging in");
-                        })
-                    }
-                } catch {
-                    cantAccessAnymore = true;
-                };
-            }, 50);
         });
     }
     static onAuthentication(cb) {
