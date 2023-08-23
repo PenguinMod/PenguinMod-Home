@@ -45,12 +45,13 @@
 	function logout() {
 		const pv = localStorage.getItem("PV");
 		Authentication.usernameFromCode(pv).then(username => {
-			// should we do anything in the case that this fails?
-			fetch(`${LINK.projects}api/users/logout?user=${username}&code=${pv}`);
+			fetch(`${LINK.projects}api/users/logout?user=${username}&code=${pv}`).then((res) => {
+				if (!res.ok) return;
+				localStorage.removeItem("PV");
+				Authentication.fireLogout();
+				loggedIn = false;
+			});
 		});
-		localStorage.removeItem("PV");
-		Authentication.fireLogout();
-		loggedIn = false;
 	}
 	function login() {
 		Authentication.authenticate();
