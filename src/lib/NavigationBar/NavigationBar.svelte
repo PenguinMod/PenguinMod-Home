@@ -43,6 +43,11 @@
 	Authentication.onAuthentication(loggedInCheck);
 
 	function logout() {
+		const pv = localStorage.getItem("PV");
+		Authentication.usernameFromCode(pv).then(username => {
+			// should we do anything in the case that this fails?
+			fetch(`${LINK.projects}api/users/logout?user=${username}&code=${pv}`);
+		});
 		localStorage.removeItem("PV");
 		Authentication.fireLogout();
 		loggedIn = false;
