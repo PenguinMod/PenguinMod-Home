@@ -97,7 +97,7 @@
         class="project-author"
     >
         <img
-            src={`${LINK.projects}api/pmWrapper/scratchUserImage?username=${owner}`}
+            src={`https://trampoline.turbowarp.org/avatars/by-username/${owner}`}
             alt="Project Author"
             class="project-author"
         />
