@@ -8,6 +8,7 @@
     export let id;
     export let name;
     export let showdate = false;
+    export let featured = false;
     export let owner;
     export let date = 0;
     export let style = "";
@@ -72,7 +73,7 @@
     </div>
 {/if}
 
-<button class="project" {style} on:click={event}>
+<button class="project" data-featured={featured} {style} on:click={event}>
     {#if dotsmenu}
         <button class="dots-menu" on:click={showDropdown}>
             <img class="dots-icon" src="/dots.svg" alt="..." />
@@ -110,6 +111,17 @@
 </button>
 
 <style>
+    /* animations */
+    @keyframes gradient {
+        0% {
+            background-position: 0% 0%;
+        }
+        100% {
+            background-position: 100% 100%;
+        }
+    }
+
+    /* stuff */
     .project {
         font-size: 16px;
         appearance: none;
@@ -152,11 +164,29 @@
         float: left;
         margin-left: 8px;
     }
-    :global(body.dark-mode) .project {
+    :global(body.dark-mode) .project[data-featured="false"] {
         border-color: rgba(255, 255, 255, 0.3);
     }
-    :global(body.dark-mode) .project:focus {
+    :global(body.dark-mode) .project[data-featured="false"]:focus {
         outline: 4px rgba(255, 255, 255, 0.15) solid;
+    }
+    :global(body.dark-mode) .project[data-featured="true"]:focus {
+        outline: 4px rgba(255, 255, 255, 0.35) solid;
+    }
+
+    /* featured projects */
+    .project[data-featured="true"] {
+        background-color: #ffc400;
+        background: linear-gradient(
+            145deg,
+            rgba(255, 196, 0, 1) 0%,
+            rgba(255, 196, 0, 1) 45%,
+            rgba(255, 255, 255, 1) 50%,
+            rgba(255, 196, 0, 1) 54%,
+            rgba(255, 196, 0, 1) 100%
+        );
+        background-size: 300% 300%;
+        animation: gradient 3s ease infinite;
     }
 
     .text {
@@ -179,6 +209,14 @@
     }
     .date {
         font-size: 10px;
+    }
+
+    /* featured projects */
+    .project[data-featured="true"] .text {
+        color: rgb(0, 0, 0);
+    }
+    .project[data-featured="true"] .author {
+        color: black;
     }
 
     .dots-menu {
