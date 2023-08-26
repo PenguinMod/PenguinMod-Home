@@ -13,7 +13,7 @@ import test from '../translations/test.json';
 const languages = {
     "en": en,
     "id": id,
-    
+
     // "test": test,
 };
 

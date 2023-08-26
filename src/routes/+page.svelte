@@ -349,8 +349,11 @@
                             style="width: 15rem"
                         />
                         <p>
-                            Whoops! Our server's having some problems. Try again
-                            later.
+                            <LocalizedText
+                                text="Whoops! Our server's having some problems. Try again later."
+                                key="home.server.error"
+                                lang={currentLang}
+                            />
                         </p>
                     </div>
                 {:else}
@@ -381,10 +384,11 @@
                             alt="Server Penguin"
                             style="width: 15rem"
                         />
-                        <p>
-                            Whoops! Our server's having some problems. Try again
-                            later.
-                        </p>
+                            <LocalizedText
+                                text="Whoops! Our server's having some problems. Try again later."
+                                key="home.server.error"
+                                lang={currentLang}
+                            />
                     </div>
                 {:else}
                     <LoadingSpinner />
