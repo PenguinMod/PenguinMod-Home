@@ -420,6 +420,7 @@
                             name={project.name}
                             owner={project.owner}
                             date={project.date}
+                            featured={project.featured}
                             showdate={true}
                             on:click={window.open(
                                 generateExportEditPageForId(project.id),
@@ -472,6 +473,7 @@
                             name={project.name}
                             owner={project.owner}
                             date={project.date}
+                            featured={project.featured}
                             showdate={true}
                             on:click={selectToRemixProject(project.id)}
                         />
