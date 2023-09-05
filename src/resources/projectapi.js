@@ -188,6 +188,99 @@ class ProjectApi {
                 });
         })
     }
+    getMyMessages(page) {
+        return new Promise((resolve, reject) => {
+            const url = `https://projects.penguinmod.site/api/users/getMessages?page=${page}&username=${this.username}&passcode=${this.privateCode}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((messageList) => {
+                        resolve(messageList.items);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+    getMessageCount() {
+        return new Promise((resolve, reject) => {
+            const url = `https://projects.penguinmod.site/api/users/getMessageCount?username=${this.username}&passcode=${this.privateCode}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.text().then((count) => {
+                        resolve(Number(count));
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+    readMessages(id) {
+        return new Promise((resolve, reject) => {
+            const data = {
+                username: this.username,
+                passcode: this.privateCode,
+            };
+            if (typeof id !== 'undefined') {
+                data.id = String(id);
+            }
+            const url = `https://projects.penguinmod.site/api/users/markMessagesAsRead`;
+            fetch(url, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            })
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then(() => {
+                        resolve();
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+    disputeMessage(id, text) {
+        return new Promise((resolve, reject) => {
+            const data = {
+                username: this.username,
+                passcode: this.privateCode,
+                id,
+                text
+            };
+            const url = `https://projects.penguinmod.site/api/users/dispute`;
+            fetch(url, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            })
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then(() => {
+                        resolve();
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
     getUnapprovedProjects(page) {
         return new Promise((resolve, reject) => {
             const url = `https://projects.penguinmod.site/api/projects/getUnapproved?page=${page}&user=${this.username}&passcode=${this.privateCode}`;
@@ -226,8 +319,18 @@ class ProjectApi {
         })
     }
     rejectProject(id, reason) {
+        const data = {
+            passcode: this.privateCode,
+            approver: this.username,
+            id,
+            reason,
+        };
         return new Promise((resolve, reject) => {
-            fetch(`https://projects.penguinmod.site/api/projects/reject?passcode=${this.privateCode}&approver=${this.username}&id=${id}&reason=${reason}`).then(res => {
+            fetch(`https://projects.penguinmod.site/api/projects/reject`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);

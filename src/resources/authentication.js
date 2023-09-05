@@ -2,7 +2,8 @@ class Authentication {
     static eventListeners = [];
 
     static authenticate() {
-        const redirectUrl = 'https://projects.penguinmod.site/api/users/login';
+        const isLocal = location.hostname === 'localhost';
+        const redirectUrl = 'https://projects.penguinmod.site/api/users/login' + (isLocal ? 'Local' : '');
         const base64 = btoa(redirectUrl);
         return new Promise((resolve, reject) => {
             let login;

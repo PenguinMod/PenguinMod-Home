@@ -140,6 +140,15 @@
         ProjectClient.deleteProject(id);
         projectMenuOpen = false;
     }
+    function rejectProject(id, name) {
+        if (!confirm("Reject this project?")) return;
+        const reason = prompt(`Type your reason for rejecting ${name}.`);
+        if (reason.length <= 3) {
+            return alert("The action was cancelled.");
+        }
+        ProjectClient.rejectProject(id, reason);
+        projectMenuOpen = false;
+    }
     function selectProject(id) {
         projectMenuOpen = false;
         projectIdSelection.value = id;
@@ -278,11 +287,11 @@
                                     newtab: true,
                                 },
                                 {
-                                    name: `Delete ${
+                                    name: `Reject ${
                                         project.remix ? "Remix" : "Project"
                                     }`,
                                     callback: () => {
-                                        deleteProject(project.id, project.name);
+                                        rejectProject(project.id, project.name);
                                     },
                                     color: "red",
                                 },

@@ -4,6 +4,8 @@
 	import ProjectApi from "../../resources/projectapi.js";
 	import HTMLUtility from "../../resources/html.js";
 
+	const ProjectClient = new ProjectApi();
+
 	// Static values
 	import LINK from "../../resources/urls.js";
 
@@ -18,38 +20,61 @@
 
 	let loggedIn = null;
 	let isAdmin = false;
+	let isApprover = false;
+	let accountUsername = "";
+	let messageCount = 0;
 
 	function loggedInCheck() {
 		const privateCode = localStorage.getItem("PV");
 		if (!privateCode) {
 			loggedIn = false;
+			messageCount = 0;
 			return;
 		}
 		Authentication.usernameFromCode(privateCode)
 			.then((username) => {
 				if (username) {
 					loggedIn = true;
+					accountUsername = username;
 					ProjectApi.isAdmin(username).then((isAdminn) => {
 						isAdmin = isAdminn;
+					});
+					ProjectApi.isApprover(username).then((isApproverr) => {
+						isApprover = isApproverr;
+					});
+					if (username) ProjectClient.setUsername(username);
+					if (privateCode) ProjectClient.setPrivateCode(privateCode);
+					ProjectClient.getMessageCount().then((amount) => {
+						messageCount = amount;
 					});
 					return;
 				}
 				loggedIn = false;
+				messageCount = 0;
 			})
 			.catch(() => {
 				loggedIn = false;
+				messageCount = 0;
 			});
 	}
 	Authentication.onAuthentication(loggedInCheck);
 
+	let languageMenu;
+	let accountMenu;
+	let accountButton;
+
 	function logout() {
+		accountMenu.style.display = "none";
 		const pv = localStorage.getItem("PV");
-		Authentication.usernameFromCode(pv).then(username => {
-			fetch(`${LINK.projects}api/users/logout?user=${username}&code=${pv}`).then((res) => {
+		Authentication.usernameFromCode(pv).then((username) => {
+			fetch(
+				`${LINK.projects}api/users/logout?user=${username}&code=${pv}`
+			).then((res) => {
 				if (!res.ok) return;
 				localStorage.removeItem("PV");
 				Authentication.fireLogout();
 				loggedIn = false;
+				messageCount = 0;
 			});
 		});
 	}
@@ -84,12 +109,20 @@
 	// language picker
 	const availableLanguages = Translations.languages;
 	const languageKeys = Object.keys(availableLanguages);
-	let languageMenu;
 	function openLanguageMenu(event) {
 		event = event.detail;
 		languageMenu.style.display = "";
 		languageMenu.style.left = `4px`;
 		languageMenu.style.top = `3rem`;
+	}
+	function openAccountMenu(event) {
+		const buttonRect = accountButton.getBoundingClientRect();
+		event = event.detail;
+		accountMenu.style.display = "";
+		accountMenu.style.right = `${
+			window.innerWidth - buttonRect.right - 8
+		}px`;
+		accountMenu.style.top = `3rem`;
 	}
 	function langName(lang) {
 		return Translations.text("lang.name", lang);
@@ -107,9 +140,15 @@
 	// close menu if we didnt click in it
 	onMount(() => {
 		window.addEventListener("mousedown", (e) => {
-			if (!languageMenu) return;
-			if (!HTMLUtility.isDescendantOf(languageMenu, e.target)) {
-				languageMenu.style.display = "none";
+			if (languageMenu) {
+				if (!HTMLUtility.isDescendantOf(languageMenu, e.target)) {
+					languageMenu.style.display = "none";
+				}
+			}
+			if (accountMenu) {
+				if (!HTMLUtility.isDescendantOf(accountMenu, e.target)) {
+					accountMenu.style.display = "none";
+				}
 			}
 		});
 	});
@@ -136,6 +175,37 @@
 		</button>
 	{/each}
 </div>
+<div
+	style="display: none;"
+	class="profile-dropdown-menu"
+	bind:this={accountMenu}
+>
+	<a href={`/profile?user=${accountUsername}`}>
+		<button>
+			<LocalizedText
+				text="Profile"
+				key="navigation.profile"
+				lang={currentLang}
+			/>
+		</button>
+	</a>
+	<a href="/mystuff">
+		<button>
+			<LocalizedText
+				text="My Stuff"
+				key="navigation.mystuff"
+				lang={currentLang}
+			/>
+		</button>
+	</a>
+	<button on:click={logout}>
+		<LocalizedText
+			text="Logout"
+			key="navigation.logout"
+			lang={currentLang}
+		/>
+	</button>
+</div>
 <div class="bar">
 	<a class="logo" href="/">
 		<img class="logo-image" src="/navicon.png" alt="PenguinMod" />
@@ -154,18 +224,6 @@
 		/>
 	</BarPage>
 	<BarSearch placeholder={searchBar} />
-	{#if loggedIn === true}
-		<BarPage link="/mystuff">
-			<LocalizedText
-				text="My Stuff"
-				key="navigation.mystuff"
-				lang={currentLang}
-			/>
-		</BarPage>
-	{/if}
-	{#if isAdmin && loggedIn}
-		<BarPage label="Admin Panel" link="/panel" />
-	{/if}
 	<BarButton highlighted="true" link={LINK.discord} noredirect="true">
 		<LocalizedText
 			text="Discord"
@@ -173,6 +231,41 @@
 			lang={currentLang}
 		/>
 	</BarButton>
+	{#if loggedIn === true}
+		<BarPage
+			link="/mystuff"
+			label="<img src='/messages/mystuff.svg' width='25' alt='My Stuff'>"
+			style="padding:0.5rem"
+		/>
+		<BarPage
+			link="/messages"
+			label={"<img src='/messages/messages.svg' width='25' alt='Messages'>"}
+			style="padding:0.5rem"
+		>
+			{#if messageCount > 0}
+				<div class="message-badge">
+					{#if messageCount > 9}
+						!
+					{:else}
+						{messageCount}
+					{/if}
+				</div>
+			{/if}
+		</BarPage>
+	{/if}
+	{#if isAdmin && loggedIn}
+		<BarPage
+			link="/panel"
+			label="<img src='/messages/panel.svg' width='25' alt='Panel'>"
+			style="padding:0.5rem"
+		/>
+	{:else if isApprover && loggedIn}
+		<BarPage
+			link="/userpanel"
+			label="<img src='/messages/panel.svg' width='25' alt='Panel'>"
+			style="padding:0.5rem"
+		/>
+	{/if}
 	{#if loggedIn === false}
 		<BarPage on:click={login}>
 			<LocalizedText
@@ -182,13 +275,20 @@
 			/>
 		</BarPage>
 	{:else if loggedIn === true}
-		<BarPage on:click={logout}>
-			<LocalizedText
-				text="Logout"
-				key="navigation.logout"
-				lang={currentLang}
+		<!-- svelte-ignore a11y-img-redundant-alt -->
+		<button
+			class="profile-dropdown"
+			bind:this={accountButton}
+			on:click={openAccountMenu}
+		>
+			<img
+				src={`https://trampoline.turbowarp.org/avatars/by-username/${accountUsername}`}
+				alt="Profile Picture"
+				class="profile-picture"
 			/>
-		</BarPage>
+			<p>{accountUsername}</p>
+			<img src="/dropdown-caret.png" style="margin-left: 4px" alt="v" />
+		</button>
 	{/if}
 	<BarPage
 		label="<img src='/globe.svg' alt='LanguageSwitcher'><img src='/dropdown-caret.png' style='margin-left: 4px' alt='v'>"
@@ -285,5 +385,80 @@
 	.languageOption:hover {
 		background: dodgerblue !important;
 		color: white;
+	}
+
+	.message-badge {
+		position: absolute;
+		background: red;
+		color: white;
+		font-weight: bold;
+		border-radius: 1000px;
+		width: 16px;
+		height: 16px;
+		top: 0px;
+		right: 0px;
+	}
+
+	.profile-picture {
+		border-radius: 4px;
+		width: 30px;
+		height: 30px;
+		margin-right: 8px;
+	}
+	.profile-dropdown {
+		background: transparent;
+		border-radius: 4px;
+		padding: 0 10px;
+		border: 0;
+		margin: 0;
+
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+
+		cursor: pointer;
+		user-select: none;
+	}
+	.profile-dropdown > p {
+		font-weight: bold;
+		font-size: 0.85rem;
+		color: white;
+	}
+
+	.profile-dropdown:hover,
+	.profile-dropdown:focus {
+		background: rgba(0, 0, 0, 0.15);
+	}
+
+	.profile-dropdown-menu {
+		position: fixed;
+		background: var(--penguinmod-color);
+		border-radius: 4px;
+		border: 1px solid rgba(0, 0, 0, 0.15);
+		padding: 4px 0;
+		border-top: 0;
+		border-top-left-radius: 0;
+		border-top-right-radius: 0;
+		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		z-index: 9999;
+	}
+	.profile-dropdown-menu button {
+		background: transparent;
+		font-weight: bold;
+		font-size: 0.85rem;
+		text-align: left;
+		width: 100%;
+		color: white;
+		border: 0;
+		padding: 8px 8px;
+		padding-right: 4px;
+		margin: 4px 0;
+		text-decoration: none;
+		cursor: pointer;
+		user-select: none;
+	}
+	.profile-dropdown-menu button:hover {
+		background: rgba(0, 0, 0, 0.15);
 	}
 </style>

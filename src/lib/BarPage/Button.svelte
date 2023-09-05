@@ -33,6 +33,7 @@
 
 <style>
     .button {
+        position: relative;
         margin-left: 0.1rem;
         margin-right: 0.1rem;
         padding: 0.75rem;
