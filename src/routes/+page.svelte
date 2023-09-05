@@ -259,11 +259,15 @@
                             author={update.authorName}
                             image={update.authorImage}
                         />
-                        <img
-                            src={update.image}
-                            alt="Screenshot"
-                            class="update-image"
-                        />
+                        <a target="_blank" href={update.image}>
+                            <button class="update-image-wrapper">
+                                <img
+                                    src={update.image}
+                                    alt="Screenshot"
+                                    class="update-image"
+                                />
+                            </button>
+                        </a>
                     {/each}
                 {:else}
                     <LoadingSpinner />
@@ -384,11 +388,11 @@
                             alt="Server Penguin"
                             style="width: 15rem"
                         />
-                            <LocalizedText
-                                text="Whoops! Our server's having some problems. Try again later."
-                                key="home.server.error"
-                                lang={currentLang}
-                            />
+                        <LocalizedText
+                            text="Whoops! Our server's having some problems. Try again later."
+                            key="home.server.error"
+                            lang={currentLang}
+                        />
                     </div>
                 {:else}
                     <LoadingSpinner />
@@ -635,9 +639,18 @@
     }
 
     .update-image {
+        width: 100%;
+        height: 100%;
+    }
+    .update-image-wrapper {
+        background: transparent;
+        cursor: pointer;
         margin-top: 4px;
         width: 100%;
         height: 100%;
+        padding: 0;
+        margin: 0;
+        border: 0;
     }
 
     .project-list {
