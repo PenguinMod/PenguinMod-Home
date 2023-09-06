@@ -233,11 +233,6 @@
 	</BarButton>
 	{#if loggedIn === true}
 		<BarPage
-			link="/mystuff"
-			label="<img src='/messages/mystuff.svg' width='25' alt='My Stuff'>"
-			style="padding:0.5rem"
-		/>
-		<BarPage
 			link="/messages"
 			label={"<img src='/messages/messages.svg' width='25' alt='Messages'>"}
 			style="padding:0.5rem"
@@ -252,6 +247,11 @@
 				</div>
 			{/if}
 		</BarPage>
+		<BarPage
+			link="/mystuff"
+			label="<img src='/messages/mystuff.svg' width='25' alt='My Stuff'>"
+			style="padding:0.5rem"
+		/>
 	{/if}
 	{#if isAdmin && loggedIn}
 		<BarPage
