@@ -156,8 +156,8 @@
                 </div>
                 <div class="detail-card" style="background: darkviolet">
                     <p>We send</p>
-                    <h1>7 GB+</h1>
-                    <p>of content weekly</p>
+                    <h1>28 GB+</h1>
+                    <p>of content monthly</p>
                 </div>
                 <div class="detail-card" style="background: #ffb300">
                     <p>We handle</p>
