@@ -42,9 +42,12 @@
     // do the thingy
     $: {
         if (!loggedIn) {
+            // 1:99 chance that we will play the video
+            // imediatly rather then after four hours
+            thingyActive = (Math.random() * 100) <= 1
             setTimeout(() => {
                 thingyActive = true;
-            }, 1.44e+7);
+            }, 100)//1.44e+7);
         } else console.log('you dont get to see the thingy :trol:');
     }
 
@@ -170,35 +173,20 @@
     {#if loggedIn === false}
         <div class="section-info">
             <div style="margin-left: 8rem;">
-                {#if !thingyActive}
-                    <h1>
-                        <LocalizedText
-                            text="Block-based coding with tons of capabilities"
-                            key="home.introduction1"
-                            lang={currentLang}
-                        />
-                    </h1>
-                    <h1>
-                        <LocalizedText
-                            text="Built off of TurboWarp and Scratch"
-                            key="home.introduction2"
-                            lang={currentLang}
-                        />
-                    </h1>
-                {:else}
-                    <h1>
-                        Baby blue buildings far above the crystal grove
-                    </h1>
-                    <h1>
-                        Magenta plated terrace with a table and a stove
-                    </h1>
-                    <h1>
-                        Guarded golden railing just to frame the pretty stars
-                    </h1>
-                    <h1>
-                        Fix that old piano and the birds will fall apart
-                    </h1>
-                {/if}
+                <h1>
+                    <LocalizedText
+                        text="Block-based coding with tons of capabilities"
+                        key="home.introduction1"
+                        lang={currentLang}
+                    />
+                </h1>
+                <h1>
+                    <LocalizedText
+                        text="Built off of TurboWarp and Scratch"
+                        key="home.introduction2"
+                        lang={currentLang}
+                    />
+                </h1>
                 <Button
                     label="<img src='/tryit.svg' width='32px' style='margin-right:8px'></img>"
                     highlighted="true"
@@ -230,10 +218,11 @@
                 </video>
             {:else}
                 <iframe 
-                    src="/eao.html" 
+                    src="/eao.html"
                     title="The Thingy"
                     width="426.666667"
                     height="240"
+                    frameborder="0" 
                     class="example-video"
                 ></iframe>
             {/if}

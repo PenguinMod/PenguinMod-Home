@@ -17,6 +17,7 @@
             var firstScriptTag = document.getElementsByTagName('script')[0];
             firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
             var player;
+            let volume = 5
             function onYouTubeIframeAPIReady() {
                 player = new YT.Player('player', {
                     width: '426.666667',
@@ -24,10 +25,10 @@
                     videoId: 'v1K4EAXe2oo',
                     playerVars: {
                         'playsinline': 1,
-                        'autoplay': 1, 
+                        'autoplay': 1,
+                        'loop': 1,
                         'controls': 0
                     },
-                    controls: false,
                     events: {
                         'onReady': onPlayerReady,
                         'onStateChange': onPlayerStateChange
@@ -36,18 +37,31 @@
             }
 
             function onPlayerReady(event) {
-                player.mute()
+                player.playVideo()
+                // 50:50 chances for it to be unmuted
+                if ((Math.random() * 100) <= 50) {
+                    player.mute()
+                }
             }
 
-            let volume = 5
+            let tries = 0
             function onPlayerStateChange(event) {
-                if (event.data == YT.PlayerState.ENDED && !(volume > 100)) {
-                    player.playVideo()
-                    if (player.isMuted()) {
-                        player.unMute()
+                if (event.data == YT.PlayerState.PAUSED) {
+                    switch (tries) {
+                    // play didnt work, maby the user has blocked playing without muting?
+                    case 0:
+                        player.playVideo()
+                        player.mute()
+                        tries++
+                        break
+                    // nope, user has blocked playing audio and video :/
+                    case 1:
+                        player.stopVideo()
+                        break
                     }
-                    player.setVolume(volume)
-                    volume++
+                }
+                if (event.data == YT.PlayerState.ENDED) {
+                    player.playVideo()
                 }
             }
         </script>
