@@ -17,6 +17,7 @@
     import Project from "$lib/Project/Project.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
+    import AutoLocalizedText from "$lib/AutoLocalizedText/Node.svelte";
     import TranslationHandler from "../resources/translations.js";
     import Language from "../resources/language.js";
 
@@ -140,8 +141,10 @@
     <div class="donate-banner">
         <p>
             <img src="/happy.svg" alt=":D" />
-            PenguinMod is a free-to-use web game maker. Your support can help us
-            keep the website working!
+            <!-- use auto localized since we might update this for handling alerts -->
+            <AutoLocalizedText
+                text={"PenguinMod is a free-to-use web game maker. Your support can help us keep the website working!"}
+            />
             <a href="/donate">
                 <button>
                     <LocalizedText
