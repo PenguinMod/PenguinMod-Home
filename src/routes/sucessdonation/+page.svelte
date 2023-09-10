@@ -46,6 +46,15 @@
             We hope you continue to support PenguinMod, even if it's not with
             money but by sharing and using our service!
         </p>
+        <Confetti
+            amount="465"
+            size="20"
+            x={[-15, 15]}
+            y={[-15, 15]}
+            noGravity
+            duration="6000"
+            fallDistance="100vh"
+        />
         <img src="/penguins/cheer.svg" alt="Cheering" class="thank-you" />
         <p>
             Your donation can help us fund PenguinMod's server and domain!
@@ -61,22 +70,13 @@
     <div class="confetti-wrapper">
         <Confetti
             amount="40"
-            size="100"
-            x={[-15, 15]}
-            y={[0, 50]}
-            noGravity
-            duration="6000"
-            fallDistance="100vh"
-            colorArray={["url(/navicon.png)"]}
-        />
-        <Confetti
-            amount="465"
             size="50"
             x={[-15, 15]}
             y={[0, 50]}
             noGravity
             duration="6000"
             fallDistance="100vh"
+            colorArray={["url(/navicon.png)"]}
         />
     </div>
 </div>
@@ -128,7 +128,44 @@
         pointer-events: none;
     }
 
+    @keyframes bouncy {
+        0% {
+            left: 0px; 
+            top: 0px; 
+            transform: rotate(0deg);
+            animation-timing-function: ease-out;
+        }
+        25% {
+            left: 20px; 
+            top: -30px; 
+            transform: rotate(10deg);
+            animation-timing-function: ease-in;
+        }
+        50% {
+            left:0; 
+            top:0;
+            transform: rotate(0deg);
+            animation-timing-function: ease-out;
+        }
+        75% {
+            left:-20px; 
+            top:-30px; 
+            transform: rotate(-10deg);
+            animation-timing-function: ease-in;
+        }
+        100% {
+            left:0px; 
+            top:0px;
+            transform: rotate(0deg);
+        }
+    }
+
     .thank-you {
         height: 12em;
+        padding-top: 1rem;
+        position: relative;
+        animation-name: bouncy;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
     }
 </style>
