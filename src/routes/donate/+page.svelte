@@ -65,7 +65,7 @@
                     </b>
                     and
                     <br />
-                    we sent our website to <b><i>25k+</i></b> people from
+                    we sent our website to <b><i>25k+</i></b> returning users from
                     <b>Japan</b>, <b>Russia</b>, the <b>United Kingdom</b> and more!
                     🎉
                 </p>
