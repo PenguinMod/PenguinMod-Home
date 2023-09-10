@@ -25,6 +25,18 @@
 
 <NavigationBar />
 
+<div class="confetti-wrapper ">
+    <Confetti 
+        x={[-5, 5]} 
+        y={[0, 0.1]} 
+        delay={[500, 2000]}  
+        infinite 
+        duration=6000 
+        amount=300 
+        fallDistance="120vh" 
+    />
+</div>
+
 <div class="main">
     <NavigationMargin />
 
@@ -46,15 +58,6 @@
             We hope you continue to support PenguinMod, even if it's not with
             money but by sharing and using our service!
         </p>
-        <Confetti
-            amount="100"
-            size="20"
-            x={[-15, 15]}
-            y={[-15, 15]}
-            noGravity
-            duration="6000"
-            fallDistance="100vh"
-        />
         <img src="/penguins/cheer.svg" alt="Cheering" class="thank-you" />
         <p>
             Your donation can help us fund PenguinMod's server and domain!
@@ -94,6 +97,16 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+    }
+    .confetti-wrapper {
+        position: fixed; 
+        top: -50px; 
+        left: 0; 
+        height: 100vh; 
+        width: 100vw; 
+        display: flex; 
+        justify-content: center; 
+        overflow: hidden;
     }
 
     @keyframes bouncy {
