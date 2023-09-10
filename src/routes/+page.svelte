@@ -25,6 +25,7 @@
     import PenguinConfusedSVG from "../icons/Penguin/confused.svelte";
 
     let loggedIn = null;
+    let thingyActive = false;
 
     let ghcommits = [];
     let updates = [];
@@ -38,7 +39,16 @@
         featured: [],
     };
 
-    onMount(() => {
+    // do the thingy
+    $: {
+        if (!loggedIn) {
+            setTimeout(() => {
+                thingyActive = true;
+            }, 1.44e+7);
+        } else console.log('you dont get to see the thingy :trol:');
+    }
+
+    onMount(async () => {
         const projectId = Number(location.hash.replace("#", ""));
         if (!isNaN(projectId) && projectId != 0) {
             location.href = `https://studio.penguinmod.site/#${projectId}`;
@@ -160,44 +170,73 @@
     {#if loggedIn === false}
         <div class="section-info">
             <div style="margin-left: 8rem;">
-                <h1>
-                    <LocalizedText
-                        text="Block-based coding with tons of capabilities"
-                        key="home.introduction1"
-                        lang={currentLang}
-                    />
-                </h1>
-                <h1>
-                    <LocalizedText
-                        text="Built off of TurboWarp and Scratch"
-                        key="home.introduction2"
-                        lang={currentLang}
-                    />
-                </h1>
+                {#if !thingyActive}
+                    <h1>
+                        <LocalizedText
+                            text="Block-based coding with tons of capabilities"
+                            key="home.introduction1"
+                            lang={currentLang}
+                        />
+                    </h1>
+                    <h1>
+                        <LocalizedText
+                            text="Built off of TurboWarp and Scratch"
+                            key="home.introduction2"
+                            lang={currentLang}
+                        />
+                    </h1>
+                {:else}
+                    <h1>
+                        Baby blue buildings far above the crystal grove
+                    </h1>
+                    <h1>
+                        Magenta plated terrace with a table and a stove
+                    </h1>
+                    <h1>
+                        Guarded golden railing just to frame the pretty stars
+                    </h1>
+                    <h1>
+                        Fix that old piano and the birds will fall apart
+                    </h1>
+                {/if}
                 <Button
                     label="<img src='/tryit.svg' width='32px' style='margin-right:8px'></img>"
                     highlighted="true"
                     link={LINK.editor}
                 >
-                    <LocalizedText
-                        text="Try it out"
-                        key="home.tryout"
-                        lang={currentLang}
-                    />
+                    {#if !thingyActive}
+                        <LocalizedText
+                            text="Try it out"
+                            key="home.tryout"
+                            lang={currentLang}
+                        />
+                    {:else}
+                        EEEAAAOOO
+                    {/if}
                 </Button>
             </div>
 
-            <video
-                width="426.666667"
-                height="240"
-                autoplay="true"
-                muted="true"
-                loop="true"
-                class="example-video"
-            >
-                <source src="/example.mp4" type="video/mp4" />
-                <track kind="captions" />
-            </video>
+            {#if !thingyActive}
+                <video
+                    width="426.666667"
+                    height="240"
+                    autoplay="true"
+                    muted="true"
+                    loop="true"
+                    class="example-video"
+                >
+                    <source src="/example.mp4" type="video/mp4" />
+                    <track kind="captions" />
+                </video>
+            {:else}
+                <iframe 
+                    src="/eao.html" 
+                    title="The Thingy"
+                    width="426.666667"
+                    height="240"
+                    class="example-video"
+                ></iframe>
+            {/if}
         </div>
 
         {#if langDecided && currentLang != "en" && loggedIn === false}
@@ -438,12 +477,16 @@
 
     <div class="footer">
         <p>
-            <LocalizedText
-                text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
-                key="home.footer.notaffiliated"
-                dontlink={true}
-                lang={currentLang}
-            />
+            {#if !thingyActive}
+                <LocalizedText
+                    text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
+                    key="home.footer.notaffiliated"
+                    dontlink={true}
+                    lang={currentLang}
+                />
+            {:else}
+                EEAAOO EEAAOOEEAAOOEEAAOOEEAAOOEEAAOOEEAAOO EEAAOO EEAAOOEEAAOOEEAAOO EEAAOO
+            {/if}
         </p>
         <div class="footer-list">
             <div class="footer-section">
