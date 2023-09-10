@@ -47,7 +47,7 @@
             thingyActive = (Math.random() * 100) <= 1
             setTimeout(() => {
                 thingyActive = true;
-            }, 100)//1.44e+7);
+            }, 1.44e+7);
         } else console.log('you dont get to see the thingy :trol:');
     }
 
