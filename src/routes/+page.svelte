@@ -137,6 +137,23 @@
 <div class="main">
     <NavigationMargin />
 
+    <div class="donate-banner">
+        <p>
+            <img src="/happy.svg" alt=":D" />
+            PenguinMod is a free-to-use web game maker. Your support can help us
+            keep the website working!
+            <a href="/donate">
+                <button>
+                    <LocalizedText
+                        text="Donate"
+                        key="home.footer.sections.donate"
+                        lang={currentLang}
+                    />
+                </button>
+            </a>
+        </p>
+    </div>
+
     {#if loggedIn === false}
         <div class="section-info">
             <div style="margin-left: 8rem;">
@@ -213,10 +230,17 @@
                     lang={currentLang}
                 />
             </Button>
+            <Button link={"/donate"}>
+                <LocalizedText
+                    text="Donate"
+                    key="home.footer.sections.donate"
+                    lang={currentLang}
+                />
+            </Button>
             <Button label="GitHub" link={LINK.github} />
             <Button link={LINK.wiki}>
                 <LocalizedText
-                    text="Wiki"
+                    text="Community Wiki"
                     key="home.footer.sections.community.wiki"
                     lang={currentLang}
                 />
@@ -284,13 +308,21 @@
             <div class="category-content">
                 {#if ghcommits.length > 0}
                     {#each ghcommits as commit}
-                        <UserDisplay
-                            link={commit.html_url}
-                            userLink={commit.author.html_url}
-                            text={censor(commit.commit.message)}
-                            author={commit.author.login}
-                            image={commit.author.avatar_url}
-                        />
+                        {#if commit}
+                            <UserDisplay
+                                link={commit.html_url}
+                                userLink={commit.author
+                                    ? commit.author.html_url
+                                    : ""}
+                                text={censor(commit.commit.message)}
+                                author={commit.author
+                                    ? commit.author.login
+                                    : ""}
+                                image={commit.author
+                                    ? commit.author.avatar_url
+                                    : ""}
+                            />
+                        {/if}
                     {/each}
                 {:else if ghcommitsFailed}
                     <p>
@@ -496,8 +528,9 @@
                         lang={currentLang}
                     />
                 </p>
-                <a target="_blank" href={LINK.donate.scratch}>Scratch</a>
+                <a href={"/donate"}>PenguinMod</a>
                 <a target="_blank" href={LINK.donate.turbowarp}>TurboWarp</a>
+                <a target="_blank" href={LINK.donate.scratch}>Scratch</a>
             </div>
         </div>
     </div>
@@ -548,6 +581,42 @@
         /* background: #0059ff15; */
         /* border-top-left-radius: 20%; */
         /* border-top-right-radius: 20%; */
+    }
+
+    .donate-banner {
+        background: rgb(118, 80, 168);
+        font-weight: bold;
+        text-align: center;
+        padding: 20px 0;
+        color: white;
+    }
+    .donate-banner * {
+        margin-block: 0;
+    }
+    .donate-banner > p {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+    }
+    .donate-banner img {
+        height: 32px;
+        margin-right: 12px;
+    }
+    .donate-banner button {
+        border: 0;
+        cursor: pointer;
+        font-weight: bold;
+        border-radius: 1000px;
+        background: white;
+        color: rgb(118, 80, 168);
+        font-size: 16px;
+        padding: 6px 16px;
+        margin: 0 6px;
+        margin-left: 12px;
+    }
+    .donate-banner button:active {
+        background: rgb(216, 216, 216);
     }
 
     .main {
