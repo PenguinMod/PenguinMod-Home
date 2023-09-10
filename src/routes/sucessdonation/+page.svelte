@@ -47,7 +47,7 @@
             money but by sharing and using our service!
         </p>
         <Confetti
-            amount="465"
+            amount="100"
             size="20"
             x={[-15, 15]}
             y={[-15, 15]}
@@ -63,21 +63,6 @@
         </p>
         <div style="height: 16px;" />
         <Button link="/donate">Back</Button>
-    </div>
-</div>
-
-<div class="confetti-holder">
-    <div class="confetti-wrapper">
-        <Confetti
-            amount="40"
-            size="50"
-            x={[-15, 15]}
-            y={[0, 50]}
-            noGravity
-            duration="6000"
-            fallDistance="100vh"
-            colorArray={["url(/navicon.png)"]}
-        />
     </div>
 </div>
 
@@ -109,23 +94,6 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-    }
-
-    .confetti-holder {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 10000;
-        overflow: hidden;
-        pointer-events: none;
-    }
-    .confetti-wrapper {
-        position: absolute;
-        left: 50%;
-        bottom: 0;
-        pointer-events: none;
     }
 
     @keyframes bouncy {
