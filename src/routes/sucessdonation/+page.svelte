@@ -25,15 +25,26 @@
 
 <NavigationBar />
 
-<div class="confetti-wrapper ">
-    <Confetti 
-        x={[-5, 5]} 
-        y={[0, 0.1]} 
-        delay={[500, 2000]}  
-        infinite 
-        duration=6000 
-        amount=300 
-        fallDistance="120vh" 
+<div class="confetti-wrapper2">
+    <Confetti
+        amount="200"
+        size="30"
+        x={[-15, 15]}
+        y={[-15, 15]}
+        noGravity
+        duration="6000"
+        fallDistance="100vh"
+    />
+</div>
+<div class="confetti-wrapper">
+    <Confetti
+        x={[-5, 5]}
+        y={[0, 0.1]}
+        infinite
+        duration="6000"
+        amount="100"
+        size="15"
+        fallDistance="120vh"
     />
 </div>
 
@@ -99,44 +110,55 @@
         align-items: center;
     }
     .confetti-wrapper {
-        position: fixed; 
-        top: -50px; 
-        left: 0; 
-        height: 100vh; 
-        width: 100vw; 
-        display: flex; 
-        justify-content: center; 
+        position: fixed;
+        top: -50px;
+        left: 0;
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+        overflow: hidden;
+    }
+    .confetti-wrapper2 {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         overflow: hidden;
     }
 
     @keyframes bouncy {
         0% {
-            left: 0px; 
-            top: 0px; 
+            left: 0px;
+            top: 0px;
             transform: rotate(0deg);
             animation-timing-function: ease-out;
         }
         25% {
-            left: 20px; 
-            top: -30px; 
+            left: 20px;
+            top: -30px;
             transform: rotate(10deg);
             animation-timing-function: ease-in;
         }
         50% {
-            left:0; 
-            top:0;
+            left: 0;
+            top: 0;
             transform: rotate(0deg);
             animation-timing-function: ease-out;
         }
         75% {
-            left:-20px; 
-            top:-30px; 
+            left: -20px;
+            top: -30px;
             transform: rotate(-10deg);
             animation-timing-function: ease-in;
         }
         100% {
-            left:0px; 
-            top:0px;
+            left: 0px;
+            top: 0px;
             transform: rotate(0deg);
         }
     }
