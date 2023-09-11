@@ -25,17 +25,6 @@
 
 <NavigationBar />
 
-<div class="confetti-wrapper2">
-    <Confetti
-        amount="200"
-        size="30"
-        x={[-15, 15]}
-        y={[-15, 15]}
-        noGravity
-        duration="6000"
-        fallDistance="100vh"
-    />
-</div>
 <div class="confetti-wrapper">
     <Confetti
         x={[-5, 5]}
@@ -69,6 +58,18 @@
             We hope you continue to support PenguinMod, even if it's not with
             money but by sharing and using our service!
         </p>
+        <div class="pengfetti-wrapper">
+            <Confetti
+                amount="200"
+                size="30"
+                x={[-15, 15]}
+                y={[-15, 15]}
+                noGravity
+                duration="6000"
+                fallDistance="100vh"
+                colorArray={['url(/penguins/cheer.svg)']}
+            />
+        </div>
         <img src="/penguins/cheer.svg" alt="Cheering" class="thank-you" />
         <p>
             Your donation can help us fund PenguinMod's server and domain!
@@ -119,7 +120,7 @@
         justify-content: center;
         overflow: hidden;
     }
-    .confetti-wrapper2 {
+    .pengfetti-wrapper {
         position: fixed;
         bottom: 0;
         left: 0;
