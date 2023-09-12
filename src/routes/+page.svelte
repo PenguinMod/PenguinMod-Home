@@ -156,7 +156,7 @@
             <img src="/happy.svg" alt=":D" />
             <!-- use auto localized since we might update this for handling alerts -->
             <AutoLocalizedText
-                text={"PenguinMod is a free-to-use web game maker. Your support can help us keep the website working!"}
+                text={"PenguinMod is a free-to-use visual coding website. Your support can help us keep the website working!"}
             />
             <a href="/donate">
                 <button>
