@@ -35,11 +35,12 @@
 					const body = document.getElementById("PAGE_BODY");
 					const loop = () => {
 						const darkmode = location.hash.replace(/#/gmi, "") === "dark=true";
-						body.setAttribute("class", darkmode ? "dark-mode" : "");
 						if (darkmode) {
+							body.classList.add("dark-mode");
 							body.style.background = "#111";
 							return;
 						}
+						body.classList.remove("dark-mode");
 						body.style.background = "";
 					}
 					setInterval(loop, 100);
@@ -49,15 +50,24 @@
 				const body = document.getElementById("PAGE_BODY");
 				const loop = () => {
 					const darkmode = localStorage.getItem("darkmode");
-					body.setAttribute("class", darkmode ? "dark-mode" : "");
 					if (darkmode) {
+						body.classList.add("dark-mode");
 						body.style.background = "#111";
 						return;
 					}
+					body.classList.remove("dark-mode");
 					body.style.background = "";
 				}
 				setInterval(loop, 100);
 				loop();
+				// check for launcher params
+				const urlParams = new URLSearchParams(location.search);
+				const isLauncher = String(urlParams.get('using_launcher')) === 'true';
+				window._isPenguinModLauncher = false;
+				if (isLauncher) {
+					body.classList.add("launcher-mode");
+					window._isPenguinModLauncher = true;
+				}
 			}
 		</script>
 		<div style="display: contents">%sveltekit.body%</div>

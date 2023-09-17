@@ -3,6 +3,8 @@
     export let link = false;
     export let label = "";
     export let noredirect = false;
+    export let classActor = "";
+    export let id = "";
 </script>
 
 {#if link}
@@ -10,15 +12,20 @@
         href={link}
         target={noredirect ? "_blank" : "_self"}
         style="text-decoration: none;"
+        class={`${classActor ? ` ca-${classActor}` : ""}`}
     >
-        <button class={highlighted ? "button button-highlight" : "button"}>
+        <button class={highlighted ? "button button-highlight" : "button"} {id}>
             {@html label}
             <slot />
         </button>
     </a>
 {/if}
 {#if !link}
-    <button class={highlighted ? "button button-highlight" : "button"}>
+    <button
+        class={(highlighted ? "button button-highlight" : "button") +
+            (classActor ? ` ca-${classActor}` : "")}
+        {id}
+    >
         {@html label}
         <slot />
     </button>
@@ -47,5 +54,14 @@
     }
     :global(body.dark-mode) .button-highlight {
         color: #009ccc;
+    }
+
+    :global(body.launcher-mode) .ca-discordButton {
+        position: absolute;
+        bottom: 52px;
+    }
+    :global(body.launcher-mode) .ca-discordButton > button {
+        padding: 0;
+        background: transparent;
     }
 </style>

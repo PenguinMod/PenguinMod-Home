@@ -5,6 +5,8 @@
     export let label = "";
     export let style = "";
     export let noredirect = false;
+    export let classActor = "";
+    export let id = "";
 
     const dispatch = createEventDispatcher();
 
@@ -14,7 +16,12 @@
 </script>
 
 {#if !link}
-    <button class="button" on:click={event} {style}>
+    <button
+        class={`button${classActor ? ` ca-${classActor}` : ""}`}
+        on:click={event}
+        {style}
+        {id}
+    >
         {@html label}
         <slot />
     </button>
@@ -23,8 +30,9 @@
         href={link}
         target={noredirect ? "_blank" : "_self"}
         style="text-decoration: none;"
+        class={`${classActor ? ` ca-${classActor}` : ""}`}
     >
-        <button class="button" on:click={event} {style}>
+        <button class="button" on:click={event} {style} {id}>
             {@html label}
             <slot />
         </button>
@@ -51,5 +59,15 @@
     }
     .button:hover {
         background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    :global(body.launcher-mode) .ca-languageButton {
+        position: absolute;
+        left: 12px !important;
+        bottom: 8px;
+    }
+    :global(body.launcher-mode) .ca-themeSwitcher {
+        position: absolute;
+        bottom: 96px;
     }
 </style>

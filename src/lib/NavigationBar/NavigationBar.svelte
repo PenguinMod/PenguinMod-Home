@@ -114,6 +114,11 @@
 		languageMenu.style.display = "";
 		languageMenu.style.left = `4px`;
 		languageMenu.style.top = `3rem`;
+		if (window._isPenguinModLauncher) {
+			languageMenu.style.top = "initial";
+			languageMenu.style.left = `calc(5rem + 4px)`;
+			languageMenu.style.bottom = "4px";
+		}
 	}
 	function openAccountMenu(event) {
 		const buttonRect = accountButton.getBoundingClientRect();
@@ -207,29 +212,55 @@
 	</button>
 </div>
 <div class="bar">
-	<a class="logo" href="/">
-		<img class="logo-image" src="/navicon.png" alt="PenguinMod" />
-	</a>
+	<div class="only-non-launcher">
+		<a class="logo" href="/">
+			<img class="logo-image" src="/navicon.png" alt="PenguinMod" />
+		</a>
+	</div>
+	<div class="only-launcher">
+		<a class="logo" href="/?using_launcher=true">
+			<img class="logo-image" src="/navicon.png" alt="PenguinMod" />
+		</a>
+	</div>
 	<div style="margin-right: 12px;" />
+	<div class="logo-launcher-margin" />
 	<BarPage
 		label="<img src='/moon.svg' alt='ThemeSwitcher'>"
 		style="padding:0.5rem"
+		classActor={"themeSwitcher"}
 		on:click={switchTheme}
 	/>
-	<BarPage link={LINK.editor}>
-		<LocalizedText
-			text="Create"
-			key="navigation.create"
-			lang={currentLang}
-		/>
-	</BarPage>
+	<div class="only-non-launcher">
+		<BarPage link={LINK.editor}>
+			<LocalizedText
+				text="Create"
+				key="navigation.create"
+				lang={currentLang}
+			/>
+		</BarPage>
+	</div>
+	<div class="only-launcher">
+		<BarPage id="__home_navigation_create_button">
+			<img src="/create.png" alt="Create" />
+		</BarPage>
+	</div>
 	<BarSearch placeholder={searchBar} />
-	<BarButton highlighted="true" link={LINK.discord} noredirect="true">
-		<LocalizedText
-			text="Discord"
-			key="navigation.discord"
-			lang={currentLang}
-		/>
+	<BarButton
+		highlighted="true"
+		link={LINK.discord}
+		noredirect="true"
+		classActor={"discordButton"}
+	>
+		<div class="discord-button-text">
+			<LocalizedText
+				text="Discord"
+				key="navigation.discord"
+				lang={currentLang}
+			/>
+		</div>
+		<div class="discord-button-icon">
+			<img src="/discord_white.png" alt="Discord" />
+		</div>
 	</BarButton>
 	{#if loggedIn === true}
 		<BarPage
@@ -296,6 +327,7 @@
 			(Object.keys(availableLanguages).length <= 1
 				? "display: none;"
 				: "")}
+		classActor={"languageButton"}
 		on:click={openLanguageMenu}
 	/>
 </div>
@@ -328,6 +360,14 @@
 		min-width: 1000px;
 		z-index: 1000;
 	}
+	:global(body.launcher-mode) .bar {
+		width: 5rem;
+		height: 100%;
+		min-width: initial;
+		min-height: 360px;
+		flex-direction: column;
+		justify-content: flex-start;
+	}
 
 	.logo {
 		height: 100%;
@@ -341,6 +381,45 @@
 		margin-top: 5%;
 		height: 90%;
 		transition: 0.15s ease all;
+	}
+	.logo-launcher-margin {
+		width: 0;
+		height: 0;
+	}
+	:global(body.launcher-mode) .logo {
+		position: absolute;
+		top: 8px;
+		height: initial;
+		width: 100%;
+	}
+	:global(body.launcher-mode) .logo-image {
+		height: initial;
+		margin-top: 20%;
+		margin-left: 20%;
+		width: 60%;
+	}
+	:global(body.launcher-mode) .logo-image:hover {
+		height: initial;
+		margin-top: 15%;
+		margin-left: 15%;
+		width: 70%;
+	}
+	:global(body.launcher-mode) .logo-launcher-margin {
+		height: 90px;
+	}
+
+	.discord-button-icon {
+		display: none;
+	}
+	.discord-button-icon > img {
+		width: 2rem;
+		padding: 2px 0;
+	}
+	:global(body.launcher-mode) .discord-button-icon {
+		display: initial;
+	}
+	:global(body.launcher-mode) .discord-button-text {
+		display: none;
 	}
 
 	.languageSelect {
@@ -460,5 +539,24 @@
 	}
 	.profile-dropdown-menu button:hover {
 		background: rgba(0, 0, 0, 0.15);
+	}
+
+	.only-non-launcher {
+		display: initial;
+	}
+	.only-launcher {
+		display: none;
+	}
+	.only-non-launcher:has(.logo) {
+		height: inherit;
+	}
+	.only-launcher:has(.logo) {
+		width: inherit;
+	}
+	:global(body.launcher-mode) .only-non-launcher {
+		display: none;
+	}
+	:global(body.launcher-mode) .only-launcher {
+		display: initial;
 	}
 </style>
