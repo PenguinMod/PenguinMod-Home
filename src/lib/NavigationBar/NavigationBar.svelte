@@ -212,16 +212,9 @@
 	</button>
 </div>
 <div class="bar">
-	<div class="only-non-launcher">
-		<a class="logo" href="/">
-			<img class="logo-image" src="/navicon.png" alt="PenguinMod" />
-		</a>
-	</div>
-	<div class="only-launcher">
-		<a class="logo" href="/?using_launcher=true">
-			<img class="logo-image" src="/navicon.png" alt="PenguinMod" />
-		</a>
-	</div>
+	<a class="logo" href="/">
+		<img class="logo-image" src="/navicon.png" alt="PenguinMod" />
+	</a>
 	<div style="margin-right: 12px;" />
 	<div class="logo-launcher-margin" />
 	<BarPage
@@ -546,12 +539,6 @@
 	}
 	.only-launcher {
 		display: none;
-	}
-	.only-non-launcher:has(.logo) {
-		height: inherit;
-	}
-	.only-launcher:has(.logo) {
-		width: inherit;
 	}
 	:global(body.launcher-mode) .only-non-launcher {
 		display: none;
