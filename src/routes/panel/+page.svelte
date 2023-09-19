@@ -69,13 +69,13 @@
         location.href = location.origin;
     });
 
-    let projectMenuOpen = false;
     let projects = [];
     let projectPage = 0;
     let lastProjectPage = false;
 
     let approvedProjectNames = [];
 
+    let projectOrdering = "recent";
     function incrementPageAndAddToMenu(approved) {
         projectPage += 1;
         // todo: not this thats for sure
@@ -83,16 +83,19 @@
         //       gonna do that later
         //       (aka in like 3 months when i finally look at this code again)
         console.log(projectPage);
+        const trueOrdering = projectOrdering === "old";
         if (approved) {
-            ProjectApi.getProjects(projectPage).then((projectss) => {
-                projects.push(...projectss);
-                projects = projects;
-                if (projectss.length <= 0) {
-                    lastProjectPage = true;
+            ProjectApi.getProjects(projectPage, trueOrdering).then(
+                (projectss) => {
+                    projects.push(...projectss);
+                    projects = projects;
+                    if (projectss.length <= 0) {
+                        lastProjectPage = true;
+                    }
                 }
-            });
+            );
         } else {
-            ProjectClient.getUnapprovedProjects(projectPage).then(
+            ProjectClient.getUnapprovedProjects(projectPage, trueOrdering).then(
                 (projectss) => {
                     projects.push(...projectss);
                     projects = projects;
@@ -109,13 +112,17 @@
         projects = [];
         projectPage = 0;
         lastProjectPage = false;
-        projectMenuOpen = true;
+        // if old, will be true
+        // true = old is first
+        const trueOrdering = projectOrdering === "old";
         if (approved) {
-            ProjectApi.getProjects(projectPage).then((projectss) => {
-                projects = projectss;
-            });
+            ProjectApi.getProjects(projectPage, trueOrdering).then(
+                (projectss) => {
+                    projects = projectss;
+                }
+            );
         } else {
-            ProjectClient.getUnapprovedProjects(projectPage).then(
+            ProjectClient.getUnapprovedProjects(projectPage, trueOrdering).then(
                 (projectss) => {
                     projects = projectss;
                 }
@@ -138,7 +145,6 @@
             return;
         }
         ProjectClient.deleteProject(id);
-        projectMenuOpen = false;
     }
     function rejectProject(id, name) {
         if (!confirm("Reject this project?")) return;
@@ -147,17 +153,30 @@
             return alert("The action was cancelled.");
         }
         ProjectClient.rejectProject(id, reason);
-        projectMenuOpen = false;
     }
-    function selectProject(id) {
-        projectMenuOpen = false;
+    let selectedProjectName = "";
+    let lastSelectedProjectId = 0;
+    function selectProject(id, name) {
         projectIdSelection.value = id;
+        lastSelectedProjectId = id;
+        if (name) {
+            selectedProjectName = name;
+        }
     }
     function featureProject(id, name) {
         const usure = confirm("Feature " + name + " ?");
         if (!usure) return;
         ProjectClient.featureProject(id).catch((err) => alert(err));
     }
+
+    onMount(() => {
+        projectIdSelection.onchange = () => {
+            const value = projectIdSelection.value;
+            if (value !== lastSelectedProjectId) {
+                selectedProjectName = "";
+            }
+        };
+    });
 
     let sendWebhook = true;
     function approveProject() {
@@ -243,6 +262,63 @@
     }
 
     let guidelinePageOpen = false;
+    let dropdownSelectMenu;
+    let dropdownSelectOrder;
+    const refreshProjectMenu = () => {
+        switch (dropdownSelectMenu.value) {
+            case "unapproved":
+                return openMenu(false);
+            case "approved":
+                return openMenu(true);
+            default:
+                projectPageType = approved;
+                projects = [];
+                projectPage = 0;
+                lastProjectPage = false;
+                break;
+        }
+    };
+    onMount(() => {
+        dropdownSelectMenu.onchange = () => {
+            switch (dropdownSelectMenu.value) {
+                case "unapproved":
+                    return openMenu(false);
+                case "approved":
+                    return openMenu(true);
+                default:
+                    projectPageType = approved;
+                    projects = [];
+                    projectPage = 0;
+                    lastProjectPage = false;
+                    break;
+            }
+        };
+        dropdownSelectOrder.onchange = () => {
+            projectOrdering = "recent";
+            if (dropdownSelectOrder.value === "old") {
+                projectOrdering = "old";
+            }
+            refreshProjectMenu();
+        };
+    });
+
+    const messageReplyInfo = {
+        username: '',
+        id: '',
+        text: ''
+    };
+    const replyToMessage = () => {
+        if (!messageReplyInfo.username) return alert("No user specified.");
+        if (!messageReplyInfo.id) return alert("Message ID is not specified.");
+        if (!messageReplyInfo.text) return alert("No message text was specified.");
+        if (!confirm(`Reply to ${messageReplyInfo.username}'s message with "${messageReplyInfo.text}"?`)) return;
+        ProjectClient.respondToDispute(messageReplyInfo.username, messageReplyInfo.id, messageReplyInfo.text).then(() => {
+            alert('Sent!');
+            messageReplyInfo.username = '';
+            messageReplyInfo.id = '';
+            messageReplyInfo.text = '';
+        });
+    };
 </script>
 
 <head>
@@ -253,95 +329,6 @@
 
 <div class="main" style={loggedIn ? "" : "display:none"}>
     <NavigationMargin />
-
-    {#if projectMenuOpen}
-        <div class="front-card-page">
-            <div class="card-page">
-                <div class="card-header">
-                    <h1>Select a project</h1>
-                </div>
-                <div class="card-projects">
-                    {#each projects as project}
-                        <Project
-                            id={project.id}
-                            name={project.name}
-                            owner={project.owner}
-                            dotsmenu="true"
-                            openNewtab="true"
-                            style="padding:8px;height:min-content"
-                            dotsoptions={[
-                                {
-                                    name: `Select ${
-                                        project.remix ? "Remix" : "Project"
-                                    }`,
-                                    callback: () => {
-                                        selectProject(project.id);
-                                    },
-                                },
-                                {
-                                    name: `Edit ${
-                                        project.remix ? "Remix" : "Project"
-                                    }`,
-                                    href: `/edit?id=${project.id}`,
-                                    color: project.remix ? "remix" : null,
-                                    newtab: true,
-                                },
-                                {
-                                    name: `Reject ${
-                                        project.remix ? "Remix" : "Project"
-                                    }`,
-                                    callback: () => {
-                                        rejectProject(project.id, project.name);
-                                    },
-                                    color: "red",
-                                },
-                                {
-                                    name: `Feature ${
-                                        project.remix ? "Remix" : "Project"
-                                    }`,
-                                    callback: () => {
-                                        featureProject(
-                                            project.id,
-                                            project.name
-                                        );
-                                    },
-                                    color: "orange",
-                                },
-                            ]}
-                        >
-                            <p class="nomargintext date">
-                                {unixToDisplayDate(project.date)}
-                            </p>
-                            {#if approvedProjectNames.includes(project.name) && !project.accepted}
-                                <p class="nomargintext">
-                                    An approved project also has this name
-                                </p>
-                            {/if}
-                            {#if project.updating}
-                                <p class="nomargintext">(Update!)</p>
-                            {/if}
-                        </Project>
-                    {/each}
-                    {#if !lastProjectPage}
-                        <!-- yes this looks weird, no i wont fix it soon -->
-                        <Button
-                            label="More"
-                            on:click={() =>
-                                incrementPageAndAddToMenu(projectPageType)}
-                        />
-                    {/if}
-                </div>
-                <div style="display:flex;flex-direction:row;padding:1em">
-                    <Button
-                        label="Cancel"
-                        on:click={() => {
-                            projectMenuOpen = false;
-                        }}
-                    />
-                </div>
-            </div>
-        </div>
-    {/if}
 
     {#if inspectMenuOpen}
         <div class="front-card-page">
@@ -446,43 +433,200 @@
         </div>
     </div>
 
-    <div class="full">
-        <div class="card">
-            <h2 style="margin-block-start:0">Projects</h2>
-            <p>
-                Project ID:
-                <input type="number" bind:this={projectIdSelection} value="0" />
-            </p>
-            <p>Open Project Selection:</p>
-            <div
-                style="display:flex;flex-direction:row;justify-content:space-evenly"
-            >
-                <Button on:click={() => openMenu(false)} label="Unapproved" />
-                <Button on:click={() => openMenu(true)} label="Approved" />
+    <div class="double-list">
+        <div class="full">
+            <div class="card">
+                <h2 style="margin-block-start:0">Projects</h2>
+                <p>
+                    Project ID:
+                    <input
+                        type="number"
+                        bind:this={projectIdSelection}
+                        value="0"
+                    />
+                </p>
+                {#if selectedProjectName}
+                    <a
+                        target="_blank"
+                        href={`https://studio.penguinmod.site/#${lastSelectedProjectId}`}
+                        style="color: dodgerblue"
+                    >
+                        <p>
+                            Selected <b>{selectedProjectName}</b>
+                        </p>
+                        <img
+                            src={`https://projects.penguinmod.site/api/pmWrapper/iconUrl?id=${lastSelectedProjectId}`}
+                            alt="Project Thumbnail"
+                        />
+                    </a>
+                {/if}
+                <h3>Tools</h3>
+                <div style="display: flex; flex-direction: row;">
+                    <Button
+                        label="Inspect Extensions"
+                        on:click={openInspectMenu}
+                    />
+                </div>
+                <div style="height:24px" />
+                <label>
+                    <input type="checkbox" bind:checked={sendWebhook} />
+                    Send Approved Projects to Discord
+                </label>
+                <div style="height:24px" />
+                <Button label="Approve Project" on:click={approveProject} />
+                <!-- <div style="height:24px" />
+                <h3>Rejected Projects</h3>
+                <p>
+                    Target Rejected Project:
+                    <input type="number" value="0" />
+                </p>
+                <div
+                    style="display: flex; flex-direction: row; align-items: center;"
+                >
+                    <Button>Download</Button>
+                    <Button color="remix">Restore</Button>
+                </div> -->
             </div>
-            <div style="height:24px" />
-            <div
-                style="display: flex; flex-direction: column; align-items: center;"
-            >
-                <Button label="Inspect Extensions" on:click={openInspectMenu} />
-            </div>
-            <div style="height:24px" />
-            <label>
-                <input type="checkbox" bind:checked={sendWebhook} />
-                Send Approved Projects to Discord
-            </label>
-            <div style="height:8px" />
-            <Button label="Approve Project" on:click={approveProject} />
-        </div>
 
-        <button
-            class="guidelines-link"
-            on:click={() => {
-                guidelinePageOpen = true;
-            }}
-        >
-            Project Uploading & Updating Guidelines
-        </button>
+            <button
+                class="guidelines-link"
+                on:click={() => {
+                    guidelinePageOpen = true;
+                }}
+            >
+                Project Uploading & Updating Guidelines
+            </button>
+            
+            <br />
+
+            <div class="card">
+                <h2 style="margin-block-start:0">Messages</h2>
+                <p>Type username:</p>
+                <input
+                    type="text"
+                    size="50"
+                    placeholder="Scratch username..."
+                    bind:value={messageReplyInfo.username}
+                />
+                <p>Type message ID:</p>
+                <input type="text" size="50" placeholder="Message ID..." bind:value={messageReplyInfo.id} />
+                <p>Type reply:</p>
+                <input type="text" size="50" placeholder="Reply..." bind:value={messageReplyInfo.text} />
+                <br />
+                <br />
+                <div class="user-action-row">
+                    <Button color="green" on:click={replyToMessage}>Send</Button>
+                </div>
+            </div>
+
+            <!-- <br />
+
+            <div class="card">
+                <h2 style="margin-block-start:0">Users</h2>
+                <p>Type username:</p>
+                <input
+                    type="text"
+                    size="50"
+                    placeholder="Scratch username..."
+                />
+                <br />
+                <br />
+                <input type="text" size="50" placeholder="Action reason..." />
+                <p>
+                    Action reasons for user punishments must be translatable.
+                    <br />
+                    Punishment may occur if your action reasons continue to be informal.
+                    <br />
+                    <br />
+                    Reasons for banning users MUST be professional.
+                    <br />
+                    Do NOT ban a user with something like "you know why" or "check
+                    (url here) for info"
+                </p>
+                <br />
+                <br />
+                <div class="user-action-row">
+                    <Button>Unban User</Button>
+                    <Button color="red">Ban User</Button>
+                </div>
+            </div>
+
+            <br />
+            <br /> -->
+        </div>
+        <div class="project-sidebar">
+            <div class="project-sidebar-actions">
+                <Button on:click={refreshProjectMenu}>Refresh</Button>
+                <select value="" bind:this={dropdownSelectMenu}>
+                    <option value="" disabled>(Select an option)</option>
+                    <option value="unapproved">Unapproved</option>
+                    <option value="approved">Approved</option>
+                </select>
+                <select value="recent" bind:this={dropdownSelectOrder}>
+                    <option value="recent">Recently uploaded first</option>
+                    <option value="old">Old projects first</option>
+                </select>
+            </div>
+            <div class="list-projects">
+                {#each projects as project}
+                    <Project
+                        id={project.id}
+                        name={project.name}
+                        owner={project.owner}
+                        dotsmenu="true"
+                        openNewtab="true"
+                        style="padding:8px;height:min-content"
+                        dotsoptions={[
+                            {
+                                name: `Select ${
+                                    project.remix ? "Remix" : "Project"
+                                }`,
+                                callback: () => {
+                                    selectProject(project.id, project.name);
+                                },
+                            },
+                            {
+                                name: `Edit ${
+                                    project.remix ? "Remix" : "Project"
+                                }`,
+                                href: `/edit?id=${project.id}`,
+                                color: project.remix ? "remix" : null,
+                                newtab: true,
+                            },
+                            {
+                                name: `Reject ${
+                                    project.remix ? "Remix" : "Project"
+                                }`,
+                                callback: () => {
+                                    rejectProject(project.id, project.name);
+                                },
+                                color: "red",
+                            },
+                        ]}
+                    >
+                        <p class="nomargintext date">
+                            {unixToDisplayDate(project.date)}
+                        </p>
+                        {#if approvedProjectNames.includes(project.name) && !project.accepted}
+                            <p class="nomargintext">
+                                An approved project also has this name
+                            </p>
+                        {/if}
+                        {#if project.updating}
+                            <p class="nomargintext">(Update!)</p>
+                        {/if}
+                    </Project>
+                {/each}
+                {#if !lastProjectPage}
+                    <!-- yes this looks weird, no i wont fix it soon -->
+                    <Button
+                        label="More"
+                        on:click={() =>
+                            incrementPageAndAddToMenu(projectPageType)}
+                    />
+                {/if}
+            </div>
+        </div>
     </div>
 </div>
 
@@ -512,6 +656,7 @@
         left: 0px;
         top: 0px;
         width: 100%;
+        height: calc(100% - 6rem - 3rem);
         min-width: 1000px;
     }
     :global(body.dark-mode) .main {
@@ -539,8 +684,16 @@
         border-color: rgba(0, 0, 0, 0.1);
         border-radius: 16px;
     }
-    .full {
+    .double-list {
         width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: row-reverse;
+    }
+    .full {
+        width: calc(100% - 485px);
+        height: calc(100% - 32px);
+        overflow: auto;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -548,6 +701,32 @@
     }
     :global(body.dark-mode) .card {
         border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .project-sidebar {
+        display: flex;
+        flex-direction: column;
+        background: #00c3ff22;
+    }
+    .project-sidebar-actions {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        height: 5rem;
+    }
+    .list-projects {
+        display: flex;
+        flex-direction: row;
+        width: 485px;
+        flex-wrap: wrap;
+        overflow: auto;
+        height: calc(100% - 5rem);
+    }
+    .user-action-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
     }
 
     .front-card-page {

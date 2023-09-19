@@ -4,9 +4,10 @@ class ProjectApi {
         this.username = username;
     }
 
-    static getProjects(page) {
+    static getProjects(page, oldFirst) {
         return new Promise((resolve, reject) => {
-            const url = `https://projects.penguinmod.site/api/projects/getApproved?page=${page}`;
+            const reverseParam = oldFirst ? '&reverse=true' : '';
+            const url = `https://projects.penguinmod.site/api/projects/getApproved?page=${page}${reverseParam}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -281,9 +282,10 @@ class ProjectApi {
                 });
         })
     }
-    getUnapprovedProjects(page) {
+    getUnapprovedProjects(page, oldFirst) {
         return new Promise((resolve, reject) => {
-            const url = `https://projects.penguinmod.site/api/projects/getUnapproved?page=${page}&user=${this.username}&passcode=${this.privateCode}`;
+            const reverseParam = oldFirst ? '&reverse=true' : '';
+            const url = `https://projects.penguinmod.site/api/projects/getUnapproved?page=${page}&user=${this.username}&passcode=${this.privateCode}${reverseParam}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -327,6 +329,34 @@ class ProjectApi {
         };
         return new Promise((resolve, reject) => {
             fetch(`https://projects.penguinmod.site/api/projects/reject`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+    respondToDispute(disputerUsername, messageId, text) {
+        const data = {
+            passcode: this.privateCode,
+            approver: this.username,
+            username: disputerUsername,
+            id: messageId,
+            reason: text,
+        };
+        return new Promise((resolve, reject) => {
+            fetch(`https://projects.penguinmod.site/api/users/disputeRespond`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
                 method: "POST"

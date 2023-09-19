@@ -13,6 +13,7 @@
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
+    import AutoLocalizedText from "$lib/AutoLocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
 
@@ -345,7 +346,21 @@
                         </p>
                     {:else if message.type === "disputeResponse"}
                         <p>
-                            {message.result}
+                            {message.reason}
+                            {#if canAutoTranslate && !autoTranslationCode.startsWith("en")}
+                                <br />
+                                <p style="display:flex;align-items:center;">
+                                    <img
+                                        src="/messages/translate.png"
+                                        alt="Translate"
+                                        width="30"
+                                        height="30"
+                                        style="margin-right:6px"
+                                    />
+                                    <AutoLocalizedText text={message.reason} />
+                                </p>
+                                <br />
+                            {/if}
                         </p>
                     {:else}
                         <!-- what is this? -->
@@ -362,11 +377,19 @@
                         <details>
                             <summary>
                                 <b>
-                                    <LocalizedText
-                                        text="If you feel this action was wrong, please reply here."
-                                        key="messages.alert.staff.dispute"
-                                        lang={currentLang}
-                                    />
+                                    {#if message.type === "disputeResponse"}
+                                        <LocalizedText
+                                            text="Reply"
+                                            key="messages.alert.staff.reply"
+                                            lang={currentLang}
+                                        />
+                                    {:else}
+                                        <LocalizedText
+                                            text="If you feel this action was wrong, please reply here."
+                                            key="messages.alert.staff.dispute"
+                                            lang={currentLang}
+                                        />
+                                    {/if}
                                 </b>
                             </summary>
                             <div style="margin-top: 8px; width: 100%;" />
