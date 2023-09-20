@@ -25,7 +25,6 @@
     import PenguinConfusedSVG from "../icons/Penguin/confused.svelte";
 
     let loggedIn = null;
-    let thingyActive = false;
 
     let ghcommits = [];
     let updates = [];
@@ -38,18 +37,6 @@
         today: [],
         featured: [],
     };
-
-    // do the thingy
-    $: {
-        if (!loggedIn) {
-            // 1:99 chance that we will play the video
-            // imediatly rather then after four hours
-            thingyActive = (Math.random() * 100) <= 1
-            setTimeout(() => {
-                thingyActive = true;
-            }, 1.44e+7);
-        } else console.log('you dont get to see the thingy :trol:');
-    }
 
     onMount(async () => {
         const projectId = Number(location.hash.replace("#", ""));
@@ -192,40 +179,25 @@
                     highlighted="true"
                     link={LINK.editor}
                 >
-                    {#if !thingyActive}
-                        <LocalizedText
-                            text="Try it out"
-                            key="home.tryout"
-                            lang={currentLang}
-                        />
-                    {:else}
-                        EEEAAAOOO
-                    {/if}
+                    <LocalizedText
+                        text="Try it out"
+                        key="home.tryout"
+                        lang={currentLang}
+                    />
                 </Button>
             </div>
 
-            {#if !thingyActive}
-                <video
-                    width="426.666667"
-                    height="240"
-                    autoplay="true"
-                    muted="true"
-                    loop="true"
-                    class="example-video"
-                >
-                    <source src="/example.mp4" type="video/mp4" />
-                    <track kind="captions" />
-                </video>
-            {:else}
-                <iframe 
-                    src="/eao.html"
-                    title="The Thingy"
-                    width="426.666667"
-                    height="240"
-                    frameborder="0" 
-                    class="example-video"
-                ></iframe>
-            {/if}
+            <video
+                width="426.666667"
+                height="240"
+                autoplay="true"
+                muted="true"
+                loop="true"
+                class="example-video"
+            >
+                <source src="/example.mp4" type="video/mp4" />
+                <track kind="captions" />
+            </video>
         </div>
 
         {#if langDecided && currentLang != "en" && loggedIn === false}
@@ -466,16 +438,12 @@
 
     <div class="footer">
         <p>
-            {#if !thingyActive}
-                <LocalizedText
-                    text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
-                    key="home.footer.notaffiliated"
-                    dontlink={true}
-                    lang={currentLang}
-                />
-            {:else}
-                EEAAOO EEAAOOEEAAOOEEAAOOEEAAOOEEAAOOEEAAOO EEAAOO EEAAOOEEAAOOEEAAOO EEAAOO
-            {/if}
+            <LocalizedText
+                text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
+                key="home.footer.notaffiliated"
+                dontlink={true}
+                lang={currentLang}
+            />
         </p>
         <div class="footer-list">
             <div class="footer-section">
