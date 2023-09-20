@@ -62,6 +62,23 @@
             });
     });
 
+    // moved this here so it can be used latter on
+    let dropdownSelectMenu;
+    let dropdownSelectOrder;
+    const refreshProjectMenu = () => {
+        switch (dropdownSelectMenu.value) {
+            case "unapproved":
+                return openMenu(false);
+            case "approved":
+                return openMenu(true);
+            default:
+                projectPageType = approved;
+                projects = [];
+                projectPage = 0;
+                lastProjectPage = false;
+                break;
+        }
+    };
     // we dont need to add an "onAuthenticate" event
     // because you cant sign in on the /panel page,
     // signing out or going on it while signed out
@@ -160,6 +177,10 @@
         ProjectClient.rejectProject(id, rejectingTextboxArea.value).then(() => {
             rejectionPageOpen = false;
         });
+        // this removes anything with the id we where given to reject
+        // we do this by filter by if it is not :Trol:
+        projects = projects.filter(proj => proj.id !== id)
+        refreshProjectMenu();
     }
     let selectedProjectName = "";
     let lastSelectedProjectId = 0;
@@ -192,6 +213,10 @@
         ProjectClient.approveProject(id, sendWebhook)
             .then(() => {
                 alert("The project was approved!");
+                // this removes anything with the id we where given to reject
+                // we do this by filter by if it is not :Trol:
+                projects = projects.filter(proj => proj.id !== id)
+                refreshProjectMenu();
             })
             .catch((err) => {
                 alert(err);
@@ -269,23 +294,6 @@
     }
 
     let guidelinePageOpen = false;
-
-    let dropdownSelectMenu;
-    let dropdownSelectOrder;
-    const refreshProjectMenu = () => {
-        switch (dropdownSelectMenu.value) {
-            case "unapproved":
-                return openMenu(false);
-            case "approved":
-                return openMenu(true);
-            default:
-                projectPageType = approved;
-                projects = [];
-                projectPage = 0;
-                lastProjectPage = false;
-                break;
-        }
-    };
     onMount(() => {
         dropdownSelectMenu.onchange = () => {
             switch (dropdownSelectMenu.value) {
@@ -895,65 +903,72 @@
                     <option value="old">Old projects first</option>
                 </select>
             </div>
+            {#if !dropdownSelectMenu?.value}
+                <p class="selection-warning">
+                    Please select what type of projects you wish to view
+                </p>
+            {/if}
             <div class="list-projects">
-                {#each projects as project}
-                    <Project
-                        id={project.id}
-                        name={project.name}
-                        owner={project.owner}
-                        dotsmenu="true"
-                        openNewtab="true"
-                        style="padding:8px;height:min-content"
-                        dotsoptions={[
-                            {
-                                name: `Select ${
-                                    project.remix ? "Remix" : "Project"
-                                }`,
-                                callback: () => {
-                                    selectProject(project.id, project.name);
+                {#if dropdownSelectMenu?.value}
+                    {#each projects as project}
+                        <Project
+                            id={project.id}
+                            name={project.name}
+                            owner={project.owner}
+                            dotsmenu="true"
+                            openNewtab="true"
+                            style="padding:8px;height:min-content"
+                            dotsoptions={[
+                                {
+                                    name: `Select ${
+                                        project.remix ? "Remix" : "Project"
+                                    }`,
+                                    callback: () => {
+                                        selectProject(project.id, project.name);
+                                    },
                                 },
-                            },
-                            {
-                                name: `Edit ${
-                                    project.remix ? "Remix" : "Project"
-                                }`,
-                                href: `/edit?id=${project.id}`,
-                                color: project.remix ? "remix" : null,
-                                newtab: true,
-                            },
-                            {
-                                name: `Reject ${
-                                    project.remix ? "Remix" : "Project"
-                                }`,
-                                callback: () => {
-                                    rejectingId = project.id;
-                                    rejectingName = project.name;
-                                    rejectionPageOpen = true;
+                                {
+                                    name: `Edit ${
+                                        project.remix ? "Remix" : "Project"
+                                    }`,
+                                    href: `/edit?id=${project.id}`,
+                                    color: project.remix ? "remix" : null,
+                                    newtab: true,
                                 },
-                                color: "red",
-                            },
-                        ]}
-                    >
-                        <p class="nomargintext date">
-                            {unixToDisplayDate(project.date)}
-                        </p>
-                        {#if approvedProjectNames.includes(project.name) && !project.accepted}
-                            <p class="nomargintext">
-                                An approved project also has this name
+                                {
+                                    name: `Reject ${
+                                        project.remix ? "Remix" : "Project"
+                                    }`,
+                                    callback: () => {
+                                        rejectingId = project.id;
+                                        rejectingName = project.name;
+                                        rejectionPageOpen = true;
+                                    },
+                                    color: "red",
+                                },
+                            ]}
+                        >
+                            <p class="nomargintext date">
+                                {unixToDisplayDate(project.date)}
                             </p>
-                        {/if}
-                        {#if project.updating}
-                            <p class="nomargintext">(Update!)</p>
-                        {/if}
-                    </Project>
-                {/each}
-                {#if !lastProjectPage}
-                    <!-- yes this looks weird, no i wont fix it soon -->
-                    <Button
-                        label="More"
-                        on:click={() =>
-                            incrementPageAndAddToMenu(projectPageType)}
-                    />
+                            {#if approvedProjectNames.includes(project.name) && !project.accepted}
+                                <p class="nomargintext">
+                                    An approved project also has this name
+                                </p>
+                            {/if}
+                            {#if project.updating}
+                                <p class="nomargintext">(Update!)</p>
+                            {/if}
+                        </Project>
+                    {/each}
+                    {#if !lastProjectPage}
+                        <!-- yes this looks weird, no i wont fix it soon -->
+                        <Button
+                            label="More"
+                            on:click={() =>
+                                incrementPageAndAddToMenu(projectPageType)}
+                        />
+                    {/if}
                 {/if}
             </div>
         </div>
@@ -1033,6 +1048,9 @@
         border-color: rgba(255, 255, 255, 0.3);
     }
 
+    .selection-warning {
+        text-align: center;
+    }
     .project-sidebar {
         display: flex;
         flex-direction: column;
