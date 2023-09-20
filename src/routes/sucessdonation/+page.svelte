@@ -2,6 +2,6 @@
     import { onMount } from "svelte";
 
     onMount(() => {
-        location.pathname = "/sucessdonation";
+        location.pathname = "/successdonation";
     });
 </script>
