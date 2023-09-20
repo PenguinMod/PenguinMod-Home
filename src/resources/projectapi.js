@@ -303,6 +303,103 @@ class ProjectApi {
                 });
         })
     }
+    getRejectedProjectFile(id) {
+        return new Promise((resolve, reject) => {
+            const url = `https://projects.penguinmod.site/api/projects/downloadRejected?id=${id}&approver=${this.username}&passcode=${this.privateCode}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.arrayBuffer().then((arrayBuffer) => {
+                        resolve(arrayBuffer);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+    restoreRejectedProject(id) {
+        return new Promise((resolve, reject) => {
+            const data = {
+                approver: this.username,
+                passcode: this.privateCode,
+                id
+            };
+            const url = `https://projects.penguinmod.site/api/projects/restoreRejected`;
+            fetch(url, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            })
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+    banUser(username, reason) {
+        return new Promise((resolve, reject) => {
+            const data = {
+                username: this.username,
+                passcode: this.privateCode,
+                target: username,
+                reason
+            };
+            fetch(`https://projects.penguinmod.site/api/users/ban`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                });
+            }).catch(err => {
+                reject(err);
+            });
+        });
+    }
+    unbanUser(username, reason) {
+        return new Promise((resolve, reject) => {
+            const data = {
+                username: this.username,
+                passcode: this.privateCode,
+                target: username,
+                reason
+            };
+            fetch(`https://projects.penguinmod.site/api/users/unban`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                });
+            }).catch(err => {
+                reject(err);
+            });
+        });
+    }
     deleteProject(id) {
         return new Promise((resolve, reject) => {
             fetch(`https://projects.penguinmod.site/api/projects/delete?passcode=${this.privateCode}&approver=${this.username}&id=${id}`).then(res => {

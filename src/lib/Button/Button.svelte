@@ -52,8 +52,7 @@
 
 <style>
     .button {
-        margin-left: 0.25rem;
-        margin-right: 0.25rem;
+        margin: 0.25rem;
         padding: 1rem 1rem;
         font-weight: 600;
         font-size: 1.1rem;
@@ -83,8 +82,8 @@
         outline-color: rgba(72, 172, 114, 0.35);
     }
     .gray {
-        background-color: #a1a1a1;
-        outline-color: rgba(155, 155, 155, 0.35);
+        background-color: #797979;
+        outline-color: rgba(112, 112, 112, 0.35);
     }
     .orange {
         background-color: #ffab00;

@@ -78,6 +78,8 @@
     "messages.alert.badge": "You've recieved the badge \"$1",
     "messages.alert.staff.removed.title": "Your project \"$1\" was removed.",
     "messages.alert.staff.banned.title": "Your account has been banned from uploading projects and other features. You can continue to use the editor or view other people's projects though.",
+    "messages.alert.staff.unbanned.title": "Your account has been unbanned. You may upload projects again.",
+    "messages.alert.staff.restoredproject.title": "Your project \"$1\" was un-rejected! Check \"My Stuff\" to view the project again, and please wait for the project to be approved.",
     "messages.alert.staff.reason": "Reason:",
     "messages.alert.staff.translate1": "If the moderator is not speaking your language, you may click here for an auto-translation.",
     "messages.alert.staff.translate2": "Sorry for not having any human translation available! :(",

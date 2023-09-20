@@ -1,7 +1,9 @@
 <script>
     import { onMount } from "svelte";
     import Authentication from "../../resources/authentication.js";
+    import QuickReject from "../../resources/quickReject.js";
     import ProjectApi from "../../resources/projectapi.js";
+    import * as FileSaver from "file-saver";
     import JSZip from "jszip";
 
     const ProjectClient = new ProjectApi();
@@ -137,22 +139,27 @@
         //     approvedProjectNames = projects.map((p) => p.name);
         // });
     }
-    function deleteProject(id, name) {
-        const code = prompt(
-            `Delete ${name}? This CANNOT be undone!\nType "${id}" to delete this project.`
-        );
-        if (String(code).replace(/[^0-9]*/gim, "") !== String(id)) {
-            return;
-        }
-        ProjectClient.deleteProject(id);
-    }
-    function rejectProject(id, name) {
-        if (!confirm("Reject this project?")) return;
-        const reason = prompt(`Type your reason for rejecting ${name}.`);
-        if (reason.length <= 3) {
+    // function deleteProject(id, name) {
+    //     const code = prompt(
+    //         `Delete ${name}? This CANNOT be undone!\nType "${id}" to delete this project.`
+    //     );
+    //     if (String(code).replace(/[^0-9]*/gim, "") !== String(id)) {
+    //         return;
+    //     }
+    //     ProjectClient.deleteProject(id);
+    // }
+    let rejectionPageOpen = false;
+    let rejectingId = 0;
+    let rejectingName = "";
+    let rejectingTextboxArea;
+    function rejectProject(id) {
+        if (!confirm(`Reject "${rejectingName}"?`)) return;
+        if (rejectingTextboxArea.value.length <= 3) {
             return alert("The action was cancelled.");
         }
-        ProjectClient.rejectProject(id, reason);
+        ProjectClient.rejectProject(id, rejectingTextboxArea.value).then(() => {
+            rejectionPageOpen = false;
+        });
     }
     let selectedProjectName = "";
     let lastSelectedProjectId = 0;
@@ -262,6 +269,7 @@
     }
 
     let guidelinePageOpen = false;
+
     let dropdownSelectMenu;
     let dropdownSelectOrder;
     const refreshProjectMenu = () => {
@@ -303,21 +311,91 @@
     });
 
     const messageReplyInfo = {
-        username: '',
-        id: '',
-        text: ''
+        username: "",
+        id: "",
+        text: "",
     };
     const replyToMessage = () => {
         if (!messageReplyInfo.username) return alert("No user specified.");
         if (!messageReplyInfo.id) return alert("Message ID is not specified.");
-        if (!messageReplyInfo.text) return alert("No message text was specified.");
-        if (!confirm(`Reply to ${messageReplyInfo.username}'s message with "${messageReplyInfo.text}"?`)) return;
-        ProjectClient.respondToDispute(messageReplyInfo.username, messageReplyInfo.id, messageReplyInfo.text).then(() => {
-            alert('Sent!');
-            messageReplyInfo.username = '';
-            messageReplyInfo.id = '';
-            messageReplyInfo.text = '';
+        if (!messageReplyInfo.text)
+            return alert("No message text was specified.");
+        if (
+            !confirm(
+                `Reply to ${messageReplyInfo.username}'s message with "${messageReplyInfo.text}"?`
+            )
+        )
+            return;
+        ProjectClient.respondToDispute(
+            messageReplyInfo.username,
+            messageReplyInfo.id,
+            messageReplyInfo.text
+        ).then(() => {
+            alert("Sent!");
+            messageReplyInfo.username = "";
+            messageReplyInfo.id = "";
+            messageReplyInfo.text = "";
         });
+    };
+
+    let rejectedProjectId = 0;
+    const downloadRejectedProject = async () => {
+        try {
+            const projectFile = await ProjectClient.getRejectedProjectFile(
+                rejectedProjectId
+            );
+            FileSaver.saveAs(
+                new Blob([projectFile]),
+                `Project_${rejectedProjectId}.pmp`
+            );
+        } catch (err) {
+            console.error(err);
+            alert(`Failed to download the project; ${err}`);
+        }
+    };
+    const restoreRejectedProject = () => {
+        if (!confirm("Are you sure you want to restore this project?")) return;
+        ProjectClient.restoreRejectedProject(rejectedProjectId)
+            .then(() => {
+                alert("Restored! Check the unapproved tab.");
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to restore project; ${err}`);
+            });
+    };
+
+    const banOrUnbanData = {
+        username: "",
+        reason: "",
+    };
+    const banUser = () => {
+        const promptMessage = prompt(
+            `Are you sure you want to ban ${banOrUnbanData.username} for "${banOrUnbanData.reason}"? Type "ok" to confirm.`
+        );
+        if (promptMessage !== "ok") return;
+        ProjectClient.banUser(banOrUnbanData.username, banOrUnbanData.reason)
+            .then(() => {
+                alert(`Banned ${banOrUnbanData.username}.`);
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to ban user; ${err}`);
+            });
+    };
+    const unbanUser = () => {
+        const promptMessage = prompt(
+            `Are you sure you want to unban ${banOrUnbanData.username}? Type "ok" to confirm.`
+        );
+        if (promptMessage !== "ok") return;
+        ProjectClient.unbanUser(banOrUnbanData.username, banOrUnbanData.reason)
+            .then(() => {
+                alert(`Unbanned ${banOrUnbanData.username}.`);
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to unban user; ${err}`);
+            });
     };
 </script>
 
@@ -330,6 +408,235 @@
 <div class="main" style={loggedIn ? "" : "display:none"}>
     <NavigationMargin />
 
+    {#if rejectionPageOpen}
+        <div class="front-card-page" style="z-index: 20000;">
+            <div class="card-page big-card-page">
+                <div class="card-header">
+                    <h1>Reject Project</h1>
+                </div>
+                <div class="card-reject" style="display:block">
+                    <p>Rejecting <b>{rejectingName}</b></p>
+                    <!-- svelte-ignore a11y-autofocus -->
+                    <input
+                        bind:this={rejectingTextboxArea}
+                        placeholder="Reason for rejecting..."
+                        style="width: 95%;"
+                        autofocus
+                    />
+                    <br />
+                    <br />
+                    <h2><b>Quick-Reject</b></h2>
+                    <details>
+                        <summary>Spam</summary>
+                        <div style="margin-left: 16px">
+                            <div class="button-row">
+                                <Button
+                                    color="gray"
+                                    on:click={(rejectingTextboxArea.value =
+                                        QuickReject["Spam"][
+                                            "No content / Default project"
+                                        ])}
+                                >
+                                    No content / Default project
+                                </Button>
+                                <Button
+                                    color="gray"
+                                    on:click={(rejectingTextboxArea.value =
+                                        QuickReject["Spam"]["Repost"])}
+                                >
+                                    Repost
+                                </Button>
+                                <Button
+                                    color="gray"
+                                    on:click={(rejectingTextboxArea.value =
+                                        QuickReject["Spam"][
+                                            "Repost after Rejection"
+                                        ])}
+                                >
+                                    Repost after Rejection
+                                </Button>
+                                <Button
+                                    color="gray"
+                                    on:click={(rejectingTextboxArea.value =
+                                        QuickReject["Spam"][
+                                            "Remix is an exact copy"
+                                        ])}
+                                >
+                                    Remix is an exact copy
+                                </Button>
+                            </div>
+                        </div>
+                    </details>
+                    <details>
+                        <summary>Be respectful to others</summary>
+                        <div style="margin-left: 16px">
+                            <details>
+                                <summary>Offensive / Extreme Content</summary>
+                                <div style="margin-left: 16px">
+                                    <div class="button-row">
+                                        <Button
+                                            color="gray"
+                                            on:click={(rejectingTextboxArea.value =
+                                                QuickReject[
+                                                    "Be respectful to others"
+                                                ][
+                                                    "Offensive / Extreme Content"
+                                                ]["Gore"])}
+                                        >
+                                            Gore
+                                        </Button>
+                                        <Button
+                                            color="gray"
+                                            on:click={(rejectingTextboxArea.value =
+                                                QuickReject[
+                                                    "Be respectful to others"
+                                                ][
+                                                    "Offensive / Extreme Content"
+                                                ]["Drugs / Illegal material"])}
+                                        >
+                                            Drugs / Illegal material
+                                        </Button>
+                                        <Button
+                                            color="gray"
+                                            on:click={(rejectingTextboxArea.value =
+                                                QuickReject[
+                                                    "Be respectful to others"
+                                                ][
+                                                    "Offensive / Extreme Content"
+                                                ][
+                                                    "Pornography / Disturbing / Sexual or explicit content"
+                                                ])}
+                                        >
+                                            Pornography / Disturbing / Sexual or
+                                            explicit content
+                                        </Button>
+                                        <Button
+                                            color="gray"
+                                            on:click={(rejectingTextboxArea.value =
+                                                QuickReject[
+                                                    "Be respectful to others"
+                                                ][
+                                                    "Offensive / Extreme Content"
+                                                ]["Discriminatory Content"])}
+                                        >
+                                            Discriminatory Content
+                                        </Button>
+                                        <Button
+                                            color="gray"
+                                            on:click={(rejectingTextboxArea.value =
+                                                QuickReject[
+                                                    "Be respectful to others"
+                                                ][
+                                                    "Offensive / Extreme Content"
+                                                ]["Threat"])}
+                                        >
+                                            Threat
+                                        </Button>
+                                        <Button
+                                            color="gray"
+                                            on:click={(rejectingTextboxArea.value =
+                                                QuickReject[
+                                                    "Be respectful to others"
+                                                ][
+                                                    "Offensive / Extreme Content"
+                                                ]["Malware"])}
+                                        >
+                                            Malware
+                                        </Button>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                        <div style="margin-left: 16px">
+                            <div class="button-row">
+                                <Button
+                                    color="gray"
+                                    on:click={(rejectingTextboxArea.value =
+                                        QuickReject["Be respectful to others"][
+                                            "Misuse of an external platform"
+                                        ])}
+                                >
+                                    Misuse of an external platform
+                                </Button>
+                                <Button
+                                    color="gray"
+                                    on:click={(rejectingTextboxArea.value =
+                                        QuickReject["Be respectful to others"][
+                                            "Creates Staff Distrust"
+                                        ])}
+                                >
+                                    Creates Staff Distrust
+                                </Button>
+                            </div>
+                        </div>
+                    </details>
+                    <div class="button-row">
+                        <Button
+                            color="gray"
+                            on:click={(rejectingTextboxArea.value =
+                                QuickReject["Scratch Reupload"])}
+                        >
+                            Scratch Reupload
+                        </Button>
+                        <Button
+                            color="gray"
+                            on:click={(rejectingTextboxArea.value =
+                                QuickReject[
+                                    "Breaks or disables aspects of the site"
+                                ])}
+                        >
+                            Breaks or disables aspects of the site
+                        </Button>
+                        <Button
+                            color="gray"
+                            on:click={(rejectingTextboxArea.value =
+                                QuickReject["Sensitive Information"])}
+                        >
+                            Sensitive Information
+                        </Button>
+                        <Button
+                            color="gray"
+                            on:click={(rejectingTextboxArea.value =
+                                QuickReject[
+                                    "Attempts to sell an untrusted product"
+                                ])}
+                        >
+                            Attempts to sell an untrusted product
+                        </Button>
+                        <Button
+                            color="gray"
+                            on:click={(rejectingTextboxArea.value =
+                                QuickReject["Contains loud sounds"])}
+                        >
+                            Contains loud sounds
+                        </Button>
+                        <Button
+                            color="gray"
+                            on:click={(rejectingTextboxArea.value =
+                                QuickReject["Piracy"])}
+                        >
+                            Piracy
+                        </Button>
+                    </div>
+                </div>
+                <div style="display:flex;flex-direction:row;padding:1em">
+                    <Button
+                        label="Reject"
+                        color="red"
+                        on:click={() => {
+                            rejectProject(rejectingId);
+                        }}
+                    />
+                    <Button
+                        label="Cancel"
+                        on:click={() => {
+                            rejectionPageOpen = false;
+                        }}
+                    />
+                </div>
+            </div>
+        </div>
+    {/if}
     {#if inspectMenuOpen}
         <div class="front-card-page">
             <div class="card-page big-card-page">
@@ -474,18 +781,20 @@
                 </label>
                 <div style="height:24px" />
                 <Button label="Approve Project" on:click={approveProject} />
-                <!-- <div style="height:24px" />
+                <div style="height:24px" />
                 <h3>Rejected Projects</h3>
                 <p>
                     Target Rejected Project:
-                    <input type="number" value="0" />
+                    <input type="number" bind:value={rejectedProjectId} />
                 </p>
                 <div
                     style="display: flex; flex-direction: row; align-items: center;"
                 >
-                    <Button>Download</Button>
-                    <Button color="remix">Restore</Button>
-                </div> -->
+                    <Button on:click={downloadRejectedProject}>Download</Button>
+                    <Button color="remix" on:click={restoreRejectedProject}>
+                        Restore
+                    </Button>
+                </div>
             </div>
 
             <button
@@ -496,11 +805,12 @@
             >
                 Project Uploading & Updating Guidelines
             </button>
-            
+
             <br />
 
             <div class="card">
                 <h2 style="margin-block-start:0">Messages</h2>
+                <p>Respond to a project dispute/reply here.</p>
                 <p>Type username:</p>
                 <input
                     type="text"
@@ -509,17 +819,29 @@
                     bind:value={messageReplyInfo.username}
                 />
                 <p>Type message ID:</p>
-                <input type="text" size="50" placeholder="Message ID..." bind:value={messageReplyInfo.id} />
+                <input
+                    type="text"
+                    size="50"
+                    placeholder="Message ID..."
+                    bind:value={messageReplyInfo.id}
+                />
                 <p>Type reply:</p>
-                <input type="text" size="50" placeholder="Reply..." bind:value={messageReplyInfo.text} />
+                <input
+                    type="text"
+                    size="50"
+                    placeholder="Reply..."
+                    bind:value={messageReplyInfo.text}
+                />
                 <br />
                 <br />
                 <div class="user-action-row">
-                    <Button color="green" on:click={replyToMessage}>Send</Button>
+                    <Button color="green" on:click={replyToMessage}>
+                        Send
+                    </Button>
                 </div>
             </div>
 
-            <!-- <br />
+            <br />
 
             <div class="card">
                 <h2 style="margin-block-start:0">Users</h2>
@@ -528,10 +850,16 @@
                     type="text"
                     size="50"
                     placeholder="Scratch username..."
+                    bind:value={banOrUnbanData.username}
                 />
                 <br />
                 <br />
-                <input type="text" size="50" placeholder="Action reason..." />
+                <input
+                    type="text"
+                    size="50"
+                    placeholder="Action reason..."
+                    bind:value={banOrUnbanData.reason}
+                />
                 <p>
                     Action reasons for user punishments must be translatable.
                     <br />
@@ -546,13 +874,13 @@
                 <br />
                 <br />
                 <div class="user-action-row">
-                    <Button>Unban User</Button>
-                    <Button color="red">Ban User</Button>
+                    <Button on:click={unbanUser}>Unban User</Button>
+                    <Button color="red" on:click={banUser}>Ban User</Button>
                 </div>
             </div>
 
             <br />
-            <br /> -->
+            <br />
         </div>
         <div class="project-sidebar">
             <div class="project-sidebar-actions">
@@ -598,7 +926,9 @@
                                     project.remix ? "Remix" : "Project"
                                 }`,
                                 callback: () => {
-                                    rejectProject(project.id, project.name);
+                                    rejectingId = project.id;
+                                    rejectingName = project.name;
+                                    rejectionPageOpen = true;
                                 },
                                 color: "red",
                             },
@@ -728,6 +1058,10 @@
         flex-direction: row;
         align-items: center;
     }
+    .button-row {
+        display: flex;
+        flex-direction: column;
+    }
 
     .front-card-page {
         background: rgba(0, 0, 0, 0.5);
@@ -740,6 +1074,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        z-index: 5000;
     }
     .card-page {
         box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.25);
@@ -776,6 +1111,12 @@
         flex-wrap: wrap;
         overflow: auto;
         height: 100%;
+    }
+    .card-reject {
+        width: calc(100% - 32px);
+        height: 100%;
+        padding: 16px;
+        overflow: auto;
     }
 
     .nomargintext {

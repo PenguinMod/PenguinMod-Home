@@ -344,7 +344,68 @@
                         <p>
                             {message.text}
                         </p>
+                    {:else if message.type === "restored"}
+                        <p>
+                            <a
+                                href={`https://studio.penguinmod.site/#${message.projectId}`}
+                                target="_blank"
+                            >
+                                {String(
+                                    TranslationHandler.text(
+                                        "messages.alert.staff.restoredproject.title",
+                                        currentLang
+                                    )
+                                ).replace("$1", message.name)}
+                            </a>
+                        </p>
+                    {:else if message.type === "ban"}
+                        <h3>
+                            <LocalizedText
+                                text="Your account has been banned from uploading projects and other features. You can continue to use the editor or view other people's projects though."
+                                key="messages.alert.staff.banned.title"
+                                lang={currentLang}
+                            />
+                        </h3>
+                        <p>
+                            <b>
+                                <LocalizedText
+                                    text="Reason:"
+                                    key="messages.alert.staff.reason"
+                                    lang={currentLang}
+                                />
+                            </b>
+                        </p>
+                        <p>{message.reason}</p>
+                        {#if canAutoTranslate && !autoTranslationCode.startsWith("en")}
+                            <br />
+                            <p style="display:flex;align-items:center;">
+                                <img
+                                    src="/messages/translate.png"
+                                    alt="Translate"
+                                    width="30"
+                                    height="30"
+                                    style="margin-right:6px"
+                                />
+                                <AutoLocalizedText text={message.reason} />
+                            </p>
+                            <br />
+                        {/if}
+                    {:else if message.type === "unban"}
+                        <p>
+                            <LocalizedText
+                                text="Your account has been unbanned. You may upload projects again."
+                                key="messages.alert.staff.unbanned.title"
+                                lang={currentLang}
+                            />
+                        </p>
                     {:else if message.type === "disputeResponse"}
+                        <h4>
+                            <LocalizedText
+                                text="Reply from a moderator:"
+                                key="messages.alert.staff.moderatorreply"
+                                lang={currentLang}
+                            />
+                        </h4>
                         <p>
                             {message.reason}
                             {#if canAutoTranslate && !autoTranslationCode.startsWith("en")}
