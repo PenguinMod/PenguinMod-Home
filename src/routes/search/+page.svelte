@@ -158,7 +158,7 @@
             {:else}
                 <!-- projects.length === 0 -->
                 <div style="margin-top: 16px;">
-                    <LoadingSpinner />
+                    <LoadingSpinner enableTips={true} />
                 </div>
             {/each}
         {:else}
