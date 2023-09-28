@@ -12,6 +12,7 @@
     import ContentCategory from "$lib/ContentCategory/Component.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import Project from "$lib/Project/Project.svelte";
+    import StatusAlert from "$lib/Alert/StatusAlert.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
@@ -60,6 +61,8 @@
 
 <div class="main">
     <NavigationMargin />
+
+    <StatusAlert />
 
     {#if user}
         <div class="section-user">

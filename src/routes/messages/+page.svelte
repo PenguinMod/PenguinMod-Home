@@ -11,6 +11,7 @@
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import Button from "$lib/Button/Button.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
+    import StatusAlert from "$lib/Alert/StatusAlert.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import AutoLocalizedText from "$lib/AutoLocalizedText/Node.svelte";
@@ -198,6 +199,8 @@
 
 <div class="main">
     <NavigationMargin />
+
+    <StatusAlert />
 
     <div class="section-info">
         <h1 style="margin-block: 0;">

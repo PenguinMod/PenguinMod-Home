@@ -10,6 +10,7 @@
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import Project from "$lib/Project/Project.svelte";
     import Button from "$lib/Button/Button.svelte";
+    import StatusAlert from "$lib/Alert/StatusAlert.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
@@ -118,6 +119,8 @@
 
 <div class="main">
     <NavigationMargin />
+
+    <StatusAlert />
 
     <div class="section-info">
         <div>

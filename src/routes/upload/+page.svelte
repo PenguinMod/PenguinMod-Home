@@ -14,6 +14,7 @@
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import ClickableProject from "$lib/ClickableProject/Project.svelte";
     import Button from "$lib/Button/Button.svelte";
+    import StatusAlert from "$lib/Alert/StatusAlert.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
@@ -388,6 +389,8 @@
 
 <div class="main">
     <NavigationMargin />
+
+    <StatusAlert />
 
     {#if loadingExternal}
         <div class="external-loading">
