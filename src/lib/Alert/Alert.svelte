@@ -93,7 +93,7 @@
         right: 16px;
         width: 32px;
         height: 32px;
-        background: url("dismiss.svg") !important;
+        background: url("/dismiss.svg") !important;
         background-size: cover !important;
     }
     .alert-dismiss:active {
