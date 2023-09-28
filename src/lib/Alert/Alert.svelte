@@ -38,7 +38,6 @@
                 </a>
             {/if}
             {#if dismissable}
-                <!-- TODO: this should be an X button, preferrably similar to the scratch ones -->
                 <button
                     class="alert-dismiss"
                     on:click={() => {
