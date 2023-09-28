@@ -795,51 +795,58 @@
                     <option value="old">Old projects first</option>
                 </select>
             </div>
+            {#if !dropdownSelectMenu?.value}
+                <p class="selection-warning">
+                    Please select what type of projects you wish to view
+                </p>
+            {/if}
             <div class="list-projects">
-                {#each projects as project}
-                    <Project
-                        id={project.id}
-                        name={project.name}
-                        owner={project.owner}
-                        dotsmenu="true"
-                        openNewtab="true"
-                        style="padding:8px;height:min-content"
-                        dotsoptions={[
-                            {
-                                name: `Select ${
-                                    project.remix ? "Remix" : "Project"
-                                }`,
-                                callback: () => {
-                                    selectProject(project.id, project.name);
+                {#if dropdownSelectMenu?.value}
+                    {#each projects as project}
+                        <Project
+                            id={project.id}
+                            name={project.name}
+                            owner={project.owner}
+                            dotsmenu="true"
+                            openNewtab="true"
+                            style="padding:8px;height:min-content"
+                            dotsoptions={[
+                                {
+                                    name: `Select ${
+                                        project.remix ? "Remix" : "Project"
+                                    }`,
+                                    callback: () => {
+                                        selectProject(project.id, project.name);
+                                    },
                                 },
-                            },
-                            {
-                                name: `Reject ${
-                                    project.remix ? "Remix" : "Project"
-                                }`,
-                                callback: () => {
-                                    rejectingId = project.id;
-                                    rejectingName = project.name;
-                                    rejectionPageOpen = true;
+                                {
+                                    name: `Reject ${
+                                        project.remix ? "Remix" : "Project"
+                                    }`,
+                                    callback: () => {
+                                        rejectingId = project.id;
+                                        rejectingName = project.name;
+                                        rejectionPageOpen = true;
+                                    },
+                                    color: "red",
                                 },
-                                color: "red",
-                            },
-                        ]}
-                    >
-                        <p class="nomargintext date">
-                            {unixToDisplayDate(project.date)}
-                        </p>
-                        {#if project.updating}
-                            <p class="nomargintext">(Update!)</p>
-                        {/if}
-                    </Project>
-                {/each}
-                {#if !lastProjectPage}
-                    <Button
-                        label="More"
-                        on:click={() =>
-                            incrementPageAndAddToMenu(projectPageType)}
-                    />
+                            ]}
+                        >
+                            <p class="nomargintext date">
+                                {unixToDisplayDate(project.date)}
+                            </p>
+                            {#if project.updating}
+                                <p class="nomargintext">(Update!)</p>
+                            {/if}
+                        </Project>
+                    {/each}
+                    {#if !lastProjectPage}
+                        <Button
+                            label="More"
+                            on:click={() =>
+                                incrementPageAndAddToMenu(projectPageType)}
+                        />
+                    {/if}
                 {/if}
             </div>
         </div>

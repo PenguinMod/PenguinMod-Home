@@ -1,4 +1,32 @@
-<img alt="Loading" src="/loading.png" class="spinner-load" />
+<script>
+    import LocalizedText from "$lib/LocalizedText/Node.svelte";
+    import tips from './Tips.json'
+    let tipId = Math.floor(Math.random() * tips)
+    export let isFull = false
+
+    let langDecided = false;
+    let currentLang = "en";
+    onMount(() => {
+        Language.forceUpdate();
+    });
+    Language.onChange((lang) => {
+        currentLang = lang;
+        langDecided = true;
+    });
+</script>
+
+<div>
+    <img alt="Loading" src="/loading.png" class="spinner-load" />
+    {#if isFull}
+        <p>
+            <LocalizedText
+                text={tips[tipId]}
+                key={`spinner.tips.${tipId}`}
+                lang={currentLang}
+            />
+        </p>
+    {/if}
+</div>
 
 <style>
     @keyframes spinning_basic {
