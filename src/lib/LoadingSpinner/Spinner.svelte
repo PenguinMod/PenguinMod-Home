@@ -1,8 +1,10 @@
 <script>
+    import { onMount } from "svelte";
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
+    import Language from "../../resources/language.js";
     import tips from './Tips.json'
     let tipId = Math.floor(Math.random() * tips)
-    export let isFull = false
+    export let enableTips = false
 
     let langDecided = false;
     let currentLang = "en";
@@ -17,7 +19,7 @@
 
 <div>
     <img alt="Loading" src="/loading.png" class="spinner-load" />
-    {#if isFull}
+    {#if enableTips}
         <p>
             <LocalizedText
                 text={tips[tipId]}
