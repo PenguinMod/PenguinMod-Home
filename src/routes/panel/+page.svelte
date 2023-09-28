@@ -9,6 +9,7 @@
     const ProjectClient = new ProjectApi();
 
     // Components
+    import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import Project from "$lib/Project/Project.svelte";
@@ -412,6 +413,11 @@
 </head>
 
 <NavigationBar />
+
+{#if !loggedIn}
+    <NavigationMargin />
+    <LoadingSpinner enableTips={true}/>
+{/if}
 
 <div class="main" style={loggedIn ? "" : "display:none"}>
     <NavigationMargin />

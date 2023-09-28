@@ -1,24 +1,25 @@
 <script>
-    import { onMount } from "svelte";
+    import { onMount, onDestroy } from "svelte";
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import Language from "../../resources/language.js";
     import tips from './Tips.json'
-    let tipId = Math.floor(Math.random() * tips)
+    let tipId = Math.floor(Math.random() * tips.length)
     export let enableTips = false
+    const inter = setInterval(() => {
+        tipId = Math.floor(Math.random() * tips.length)
+    }, 7000)
 
-    let langDecided = false;
     let currentLang = "en";
-    onMount(() => {
-        Language.forceUpdate();
-    });
+    onMount(() => Language.forceUpdate());
+    onDestroy(() => clearInterval(inter))
     Language.onChange((lang) => {
         currentLang = lang;
-        langDecided = true;
     });
 </script>
 
-<div>
+<div class="centerer">
     <img alt="Loading" src="/loading.png" class="spinner-load" />
+    <br />
     {#if enableTips}
         <p>
             <LocalizedText
@@ -31,6 +32,16 @@
 </div>
 
 <style>
+    * {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    .centerer {
+        text-align: center;
+        width: 100%;
+        height: 100%;
+    }
+
     @keyframes spinning_basic {
         0% {
             rotate: 0deg;

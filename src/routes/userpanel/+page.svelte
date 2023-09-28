@@ -332,7 +332,8 @@
 <NavigationBar />
 
 {#if !loggedIn}
-    <LoadingSpinner enableTips/>
+    <NavigationMargin />
+    <LoadingSpinner enableTips={true}/>
 {/if}
 
 <div class="main" style={loggedIn ? "" : "display:none"}>
