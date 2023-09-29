@@ -181,7 +181,8 @@
         // this removes anything with the id we where given to reject
         // we do this by filter by if it is not :Trol:
         projects = projects.filter((proj) => proj.id !== id);
-        refreshProjectMenu();
+        // dont need to do this i think
+        // refreshProjectMenu();
     }
     let selectedProjectName = "";
     let lastSelectedProjectId = 0;
@@ -217,7 +218,7 @@
                 // this removes anything with the id we where given to reject
                 // we do this by filter by if it is not :Trol:
                 projects = projects.filter((proj) => proj.id !== id);
-                refreshProjectMenu();
+                // refreshProjectMenu();
             })
             .catch((err) => {
                 alert(err);
