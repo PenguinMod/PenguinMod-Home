@@ -222,7 +222,7 @@
     <div class="section-messages">
         {#if loggedIn === null}
             <div style="margin-top: 16px;">
-                <LoadingSpinner />
+                <LoadingSpinner enableTips={true} />
             </div>
         {:else if loggedIn === false}
             <div class="login-prompt">
