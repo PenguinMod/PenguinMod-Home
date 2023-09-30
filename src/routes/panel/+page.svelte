@@ -36,22 +36,15 @@
             return;
         }
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then((username, isAdmin) => {
                 if (username) {
-                    ProjectApi.isAdmin(username)
-                        .then((isAdmin) => {
-                            if (!isAdmin) {
-                                kickOut();
-                                return;
-                            }
-                            ProjectClient.setUsername(username);
-                            ProjectClient.setPrivateCode(privateCode);
-                            loggedIn = true;
-                        })
-                        .catch(() => {
-                            kickOut();
-                            return;
-                        });
+                    if (!isAdmin) {
+                        kickOut();
+                        return;
+                    }
+                    ProjectClient.setUsername(username);
+                    ProjectClient.setPrivateCode(privateCode);
+                    loggedIn = true;
                     return;
                 }
                 loggedIn = false;
