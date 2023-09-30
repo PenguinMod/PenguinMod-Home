@@ -64,94 +64,113 @@
 
     <StatusAlert />
 
-    {#if user}
-        <div class="section-user">
-            <div class="subuser-section">
-                <div class="user-username">
-                    <img
-                        src={`https://trampoline.turbowarp.org/avatars/by-username/${user}`}
-                        alt="Profile"
-                        style="margin-right:8px;border-radius:4px;height:128px;"
-                    />
-                    <h1>{user}</h1>
+    {#if projects.all.length > 0}
+        {#if projects.all[0] !== "none"}
+            {#if user}
+                <div class="section-user">
+                    <div class="subuser-section">
+                        <div class="user-username">
+                            <img
+                                src={`https://trampoline.turbowarp.org/avatars/by-username/${user}`}
+                                alt="Profile"
+                                style="margin-right:8px;border-radius:4px;height:128px;width:128px;"
+                            />
+                            <h1>{user}</h1>
+                        </div>
+                        <Button link={`https://scratch.mit.edu/users/${user}/`}>
+                            <LocalizedText
+                                text="View on Scratch"
+                                key="profile.scratchprofile"
+                                dontlink={true}
+                                lang={currentLang}
+                            />
+                        </Button>
+                    </div>
                 </div>
-                <Button link={`https://scratch.mit.edu/users/${user}/`}>
+            {/if}
+            <div class="section-projects">
+                <ContentCategory
+                    header={TranslationHandler.text(
+                        "profile.projects.featured",
+                        currentLang
+                    )}
+                    style="width:65%;"
+                    stylec="height: 244px;"
+                    seemore={`/search?q=user%3A${user} featured%3Atrue`}
+                >
+                    <div class="project-list">
+                        {#if projects.featured.length > 0}
+                            {#if projects.featured[0] !== "none"}
+                                {#each projects.featured as project}
+                                    <Project {...project} />
+                                {/each}
+                            {:else}
+                                <div class="none-found">
+                                    <PenguinConfusedSVG height="10rem" />
+                                    <p>
+                                        <LocalizedText
+                                            text="Nothing was found. Did you misspell something or does the user not exist?"
+                                            key="generic.notfoundonuser"
+                                            lang={currentLang}
+                                        />
+                                    </p>
+                                </div>
+                            {/if}
+                        {:else}
+                            <LoadingSpinner />
+                        {/if}
+                    </div>
+                </ContentCategory>
+                <ContentCategory
+                    header={TranslationHandler.text(
+                        "profile.projects.all",
+                        currentLang
+                    )}
+                    style="width:65%;"
+                    stylec="height: 244px;"
+                    seemore={`/search?q=user%3A${user}`}
+                >
+                    <div class="project-list">
+                        {#if projects.all.length > 0}
+                            {#if projects.all[0] !== "none"}
+                                {#each projects.all as project}
+                                    <Project {...project} />
+                                {/each}
+                            {:else}
+                                <div class="none-found">
+                                    <PenguinConfusedSVG height="10rem" />
+                                    <p>
+                                        <LocalizedText
+                                            text="Nothing was found. Did you misspell something or does the user not exist?"
+                                            key="generic.notfoundonuser"
+                                            lang={currentLang}
+                                        />
+                                    </p>
+                                </div>
+                            {/if}
+                        {:else}
+                            <LoadingSpinner />
+                        {/if}
+                    </div>
+                </ContentCategory>
+            </div>
+        {:else}
+            <div style="height:32px;" />
+            <div style="display:flex;flex-direction:column;align-items:center;">
+                <PenguinConfusedSVG height="10rem" />
+                <p>
                     <LocalizedText
-                        text="View on Scratch"
-                        key="profile.scratchprofile"
-                        dontlink={true}
+                        text="This user was not found. A user must have 1 uploaded project to view their profile."
+                        key="profile.doesntexist"
                         lang={currentLang}
                     />
-                </Button>
+                </p>
             </div>
-        </div>
+        {/if}
+    {:else}
+        <div style="height:32px;" />
+        <LoadingSpinner enableTips={true} />
     {/if}
-    <div class="section-projects">
-        <ContentCategory
-            header={TranslationHandler.text(
-                "profile.projects.featured",
-                currentLang
-            )}
-            style="width:65%;"
-            stylec="height: 244px;"
-            seemore={`/search?q=user%3A${user} featured%3Atrue`}
-        >
-            <div class="project-list">
-                {#if projects.featured.length > 0}
-                    {#if projects.featured[0] !== "none"}
-                        {#each projects.featured as project}
-                            <Project {...project} />
-                        {/each}
-                    {:else}
-                        <div class="none-found">
-                            <PenguinConfusedSVG height="10rem" />
-                            <p>
-                                <LocalizedText
-                                    text="Nothing was found. Did you misspell something or does the user not exist?"
-                                    key="generic.notfoundonuser"
-                                    lang={currentLang}
-                                />
-                            </p>
-                        </div>
-                    {/if}
-                {:else}
-                    <LoadingSpinner />
-                {/if}
-            </div>
-        </ContentCategory>
-        <ContentCategory
-            header={TranslationHandler.text(
-                "profile.projects.all",
-                currentLang
-            )}
-            style="width:65%;"
-            stylec="height: 244px;"
-            seemore={`/search?q=user%3A${user}`}
-        >
-            <div class="project-list">
-                {#if projects.all.length > 0}
-                    {#if projects.all[0] !== "none"}
-                        {#each projects.all as project}
-                            <Project {...project} />
-                        {/each}
-                    {:else}
-                        <div class="none-found">
-                            <PenguinConfusedSVG height="10rem" />
-                            <p>
-                                <LocalizedText
-                                    text="Nothing was found. Did you misspell something or does the user not exist?"
-                                    key="generic.notfoundonuser"
-                                    lang={currentLang}
-                                />
-                            </p>
-                        </div>
-                    {/if}
-                {:else}
-                    <LoadingSpinner />
-                {/if}
-            </div>
-        </ContentCategory>
-    </div>
 </div>
 
 <style>
