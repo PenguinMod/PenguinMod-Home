@@ -13,6 +13,7 @@
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import Button from "$lib/Button/Button.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
+    import StatusAlert from "$lib/Alert/StatusAlert.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
@@ -291,6 +292,8 @@
 
 <div class="main" style={loggedIn ? "" : "display:none"}>
     <NavigationMargin />
+
+    <StatusAlert />
 
     {#if loadingExternal}
         <div class="external-loading">

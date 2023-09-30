@@ -173,8 +173,9 @@
         });
         // this removes anything with the id we where given to reject
         // we do this by filter by if it is not :Trol:
-        projects = projects.filter(proj => proj.id !== id)
-        refreshProjectMenu();
+        projects = projects.filter((proj) => proj.id !== id);
+        // dont need to do this i think
+        // refreshProjectMenu();
     }
     let selectedProjectName = "";
     let lastSelectedProjectId = 0;
@@ -209,8 +210,8 @@
                 alert("The project was approved!");
                 // this removes anything with the id we where given to reject
                 // we do this by filter by if it is not :Trol:
-                projects = projects.filter(proj => proj.id !== id)
-                refreshProjectMenu();
+                projects = projects.filter((proj) => proj.id !== id);
+                // refreshProjectMenu();
             })
             .catch((err) => {
                 alert(err);
@@ -409,7 +410,7 @@
 
 {#if !loggedIn}
     <NavigationMargin />
-    <LoadingSpinner enableTips={true}/>
+    <LoadingSpinner enableTips={true} />
 {/if}
 
 <div class="main" style={loggedIn ? "" : "display:none"}>
@@ -524,6 +525,20 @@
                                                     "Be respectful to others"
                                                 ][
                                                     "Offensive / Extreme Content"
+                                                ][
+                                                    "Pornography: Inflation / Vore / Fetish content"
+                                                ])}
+                                        >
+                                            Pornography: Inflation / Vore /
+                                            Fetish content
+                                        </Button>
+                                        <Button
+                                            color="gray"
+                                            on:click={(rejectingTextboxArea.value =
+                                                QuickReject[
+                                                    "Be respectful to others"
+                                                ][
+                                                    "Offensive / Extreme Content"
                                                 ]["Discriminatory Content"])}
                                         >
                                             Discriminatory Content
@@ -564,6 +579,24 @@
                                         ])}
                                 >
                                     Misuse of an external platform
+                                </Button>
+                                <Button
+                                    color="gray"
+                                    on:click={(rejectingTextboxArea.value =
+                                        QuickReject["Be respectful to others"][
+                                            "References unsafe external platform"
+                                        ])}
+                                >
+                                    References unsafe external platform
+                                </Button>
+                                <Button
+                                    color="gray"
+                                    on:click={(rejectingTextboxArea.value =
+                                        QuickReject["Be respectful to others"][
+                                            "Slurs"
+                                        ])}
+                                >
+                                    Slurs
                                 </Button>
                                 <Button
                                     color="gray"

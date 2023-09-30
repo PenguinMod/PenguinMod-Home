@@ -44,13 +44,13 @@
 
     @keyframes spinning_basic {
         0% {
-            rotate: 0deg;
+            transform: rotate(0deg);
         }
         50% {
-            rotate: 180deg;
+            transform: rotate(180deg);
         }
         100% {
-            rotate: 360deg;
+            transform: rotate(360deg);
         }
     }
     .spinner-load {

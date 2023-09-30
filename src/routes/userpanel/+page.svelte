@@ -333,7 +333,7 @@
 
 {#if !loggedIn}
     <NavigationMargin />
-    <LoadingSpinner enableTips={true}/>
+    <LoadingSpinner enableTips={true} />
 {/if}
 
 <div class="main" style={loggedIn ? "" : "display:none"}>
@@ -448,6 +448,20 @@
                                                     "Be respectful to others"
                                                 ][
                                                     "Offensive / Extreme Content"
+                                                ][
+                                                    "Pornography: Inflation / Vore / Fetish content"
+                                                ])}
+                                        >
+                                            Pornography: Inflation / Vore /
+                                            Fetish content
+                                        </Button>
+                                        <Button
+                                            color="gray"
+                                            on:click={(rejectingTextboxArea.value =
+                                                QuickReject[
+                                                    "Be respectful to others"
+                                                ][
+                                                    "Offensive / Extreme Content"
                                                 ]["Discriminatory Content"])}
                                         >
                                             Discriminatory Content
@@ -488,6 +502,24 @@
                                         ])}
                                 >
                                     Misuse of an external platform
+                                </Button>
+                                <Button
+                                    color="gray"
+                                    on:click={(rejectingTextboxArea.value =
+                                        QuickReject["Be respectful to others"][
+                                            "References unsafe external platform"
+                                        ])}
+                                >
+                                    References unsafe external platform
+                                </Button>
+                                <Button
+                                    color="gray"
+                                    on:click={(rejectingTextboxArea.value =
+                                        QuickReject["Be respectful to others"][
+                                            "Slurs"
+                                        ])}
+                                >
+                                    Slurs
                                 </Button>
                                 <Button
                                     color="gray"

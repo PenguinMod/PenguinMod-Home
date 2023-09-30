@@ -10,6 +10,7 @@
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import Project from "$lib/Project/Project.svelte";
     import Button from "$lib/Button/Button.svelte";
+    import StatusAlert from "$lib/Alert/StatusAlert.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
@@ -119,6 +120,8 @@
 <div class="main">
     <NavigationMargin />
 
+    <StatusAlert />
+
     <div class="section-info">
         <div>
             <h1>
@@ -158,7 +161,7 @@
             {:else}
                 <!-- projects.length === 0 -->
                 <div style="margin-top: 16px;">
-                    <LoadingSpinner />
+                    <LoadingSpinner enableTips={true} />
                 </div>
             {/each}
         {:else}

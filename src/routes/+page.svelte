@@ -15,9 +15,10 @@
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import UserDisplay from "$lib/UserDisplay/Display.svelte";
     import Project from "$lib/Project/Project.svelte";
+    import Alert from "$lib/Alert/Alert.svelte";
+    import StatusAlert from "$lib/Alert/StatusAlert.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
-    import AutoLocalizedText from "$lib/AutoLocalizedText/Node.svelte";
     import TranslationHandler from "../resources/translations.js";
     import Language from "../resources/language.js";
 
@@ -138,24 +139,17 @@
 <div class="main">
     <NavigationMargin />
 
-    <div class="donate-banner">
-        <p>
-            <img src="/happy.svg" alt=":D" />
-            <!-- use auto localized since we might update this for handling alerts -->
-            <AutoLocalizedText
-                text={"PenguinMod is a free-to-use visual coding website. Your support can help us keep the website working!"}
-            />
-            <a href="/donate">
-                <button>
-                    <LocalizedText
-                        text="Donate"
-                        key="home.footer.sections.donate"
-                        lang={currentLang}
-                    />
-                </button>
-            </a>
-        </p>
-    </div>
+    <Alert
+        text={"PenguinMod is a free-to-use visual coding website. Your support can help us keep the website working!"}
+        textColor={"white"}
+        hasImage={true}
+        imgSrc={"/happy.svg"}
+        imgAlt={":D"}
+        hasButton={true}
+        buttonText={"Donate"}
+        buttonHref={"/donate"}
+    />
+    <StatusAlert />
 
     {#if loggedIn === false}
         <div class="section-info">
@@ -584,42 +578,6 @@
         /* background: #0059ff15; */
         /* border-top-left-radius: 20%; */
         /* border-top-right-radius: 20%; */
-    }
-
-    .donate-banner {
-        background: rgb(118, 80, 168);
-        font-weight: bold;
-        text-align: center;
-        padding: 20px 0;
-        color: white;
-    }
-    .donate-banner * {
-        margin-block: 0;
-    }
-    .donate-banner > p {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-    }
-    .donate-banner img {
-        height: 32px;
-        margin-right: 12px;
-    }
-    .donate-banner button {
-        border: 0;
-        cursor: pointer;
-        font-weight: bold;
-        border-radius: 1000px;
-        background: white;
-        color: rgb(118, 80, 168);
-        font-size: 16px;
-        padding: 6px 16px;
-        margin: 0 6px;
-        margin-left: 12px;
-    }
-    .donate-banner button:active {
-        background: rgb(216, 216, 216);
     }
 
     .main {
