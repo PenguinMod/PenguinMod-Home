@@ -32,13 +32,11 @@
 			return;
 		}
 		Authentication.usernameFromCode(privateCode)
-			.then((username) => {
+			.then((username, isAdminn) => {
 				if (username) {
 					loggedIn = true;
 					accountUsername = username;
-					ProjectApi.isAdmin(username).then((isAdminn) => {
-						isAdmin = isAdminn;
-					});
+					isAdmin = isAdminn;
 					ProjectApi.isApprover(username).then((isApproverr) => {
 						isApprover = isApproverr;
 					});

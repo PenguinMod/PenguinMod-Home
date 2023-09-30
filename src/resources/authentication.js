@@ -64,7 +64,7 @@ class Authentication {
         return new Promise((resolve, reject) => {
             fetch(`https://projects.penguinmod.site/api/users/usernameFromCode?privateCode=${code}`).then(r => r.json().then(j => {
                 if (j.username == null) return reject(j.error);
-                resolve(j.username)
+                resolve(j.username, j.admin)
             }).catch(reject)).catch(reject)
         })
     }
