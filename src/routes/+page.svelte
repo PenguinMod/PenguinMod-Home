@@ -89,7 +89,7 @@
             return;
         }
         Authentication.usernameFromCode(privateCode)
-            .then(({username}) => {
+            .then(({ username }) => {
                 if (username) {
                     loggedIn = true;
                     return;
@@ -107,7 +107,7 @@
     Authentication.onAuthentication((privateCode) => {
         loggedIn = null;
         Authentication.usernameFromCode(privateCode)
-            .then(({username}) => {
+            .then(({ username }) => {
                 if (username) {
                     loggedIn = true;
                     return;
@@ -261,6 +261,17 @@
             </p>
         </div>
     {/if}
+
+    <p style="width: 100%; text-align: center;">
+        <i>
+            <LocalizedText
+                text="Scratch Note: Please don't mention PenguinMod on Scratch, we have different rules compared to Scratch! 😅"
+                key="home.scratchnote"
+                dontlink={true}
+                lang={currentLang}
+            />
+        </i>
+    </p>
 
     <div class="section-categories">
         <ContentCategory
