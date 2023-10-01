@@ -127,49 +127,11 @@ class ProjectApi {
         })
     }
 
-    static isApprover(username) {
-        return new Promise((resolve, reject) => {
-            const url = `https://projects.penguinmod.site/api/users/isApprover?username=${username}`;
-            fetch(url)
-                .then((res) => {
-                    if (!res.ok) {
-                        res.text().then(reject);
-                        return;
-                    }
-                    res.json().then((result) => {
-                        resolve(result.approver);
-                    });
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        })
-    }
-
     setPrivateCode(p) {
         this.privateCode = p;
     }
     setUsername(u) {
         this.username = u;
-    }
-
-    isAdmin() {
-        return this.admin/* new Promise((resolve, reject) => {
-            const url = `https://projects.penguinmod.site/api/users/isAdmin?username=${username}`;
-            fetch(url)
-                .then((res) => {
-                    if (!res.ok) {
-                        res.text().then(reject);
-                        return;
-                    }
-                    res.json().then((result) => {
-                        resolve(result.admin);
-                    });
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        }) */
     }
 
     getMyProjects(page) {

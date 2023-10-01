@@ -84,7 +84,7 @@
             return;
         }
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then(({username}) => {
                 if (username) {
                     ProjectApi.getProjectMeta(projectId)
                         .then((metadata) => {

@@ -86,7 +86,7 @@
             return;
         }
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then(({username}) => {
                 if (username) {
                     loggedIn = true;
                     loggedInChange(username, privateCode);
@@ -103,7 +103,7 @@
         Authentication.authenticate().then((privateCode) => {
             loggedIn = null;
             Authentication.usernameFromCode(privateCode)
-                .then((username) => {
+                .then(({username}) => {
                     if (username) {
                         loggedIn = true;
                         loggedInChange(username, privateCode);
@@ -123,7 +123,7 @@
     Authentication.onAuthentication((privateCode) => {
         loggedIn = null;
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then(({username}) => {
                 if (username) {
                     loggedIn = true;
                     loggedInChange(username, privateCode);

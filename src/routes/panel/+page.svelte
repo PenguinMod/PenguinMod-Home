@@ -36,7 +36,7 @@
             return;
         }
         Authentication.usernameFromCode(privateCode)
-            .then((username, isAdmin) => {
+            .then(({username, isAdmin}) => {
                 if (username) {
                     if (!isAdmin) {
                         kickOut();

@@ -35,22 +35,15 @@
             return;
         }
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then(({username, isApprover}) => {
                 if (username) {
-                    ProjectApi.isApprover(username)
-                        .then((isApprover) => {
-                            if (!isApprover) {
-                                kickOut();
-                                return;
-                            }
-                            ProjectClient.setUsername(username);
-                            ProjectClient.setPrivateCode(privateCode);
-                            loggedIn = true;
-                        })
-                        .catch(() => {
-                            kickOut();
-                            return;
-                        });
+                    if (!isApprover) {
+                        kickOut();
+                        return;
+                    }
+                    ProjectClient.setUsername(username);
+                    ProjectClient.setPrivateCode(privateCode);
+                    loggedIn = true;
                     return;
                 }
                 loggedIn = false;

@@ -32,14 +32,12 @@
 			return;
 		}
 		Authentication.usernameFromCode(privateCode)
-			.then((username, isAdminn) => {
+			.then(({username, isAdmin: isAdminn, isApprover: isApproverr}) => {
 				if (username) {
 					loggedIn = true;
 					accountUsername = username;
 					isAdmin = isAdminn;
-					ProjectApi.isApprover(username).then((isApproverr) => {
-						isApprover = isApproverr;
-					});
+					isApprover = isApproverr;
 					if (username) ProjectClient.setUsername(username);
 					if (privateCode) ProjectClient.setPrivateCode(privateCode);
 					ProjectClient.getMessageCount().then((amount) => {
@@ -64,7 +62,7 @@
 	function logout() {
 		accountMenu.style.display = "none";
 		const pv = localStorage.getItem("PV");
-		Authentication.usernameFromCode(pv).then((username) => {
+		Authentication.usernameFromCode(pv).then(({username}) => {
 			fetch(
 				`${LINK.projects}api/users/logout?user=${username}&code=${pv}`
 			).then((res) => {

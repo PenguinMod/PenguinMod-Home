@@ -90,7 +90,7 @@
             loggedIn = false;
         }
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then(({username}) => {
                 if (username) {
                     ProjectClient.setUsername(username);
                     ProjectClient.setPrivateCode(privateCode);
@@ -236,7 +236,7 @@
     Authentication.onAuthentication((privateCode) => {
         loggedIn = null;
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then(({username}) => {
                 if (username) {
                     ProjectClient.setUsername(username);
                     ProjectClient.setPrivateCode(privateCode);

@@ -89,7 +89,7 @@
             return;
         }
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then(({username}) => {
                 if (username) {
                     loggedIn = true;
                     return;
@@ -107,7 +107,7 @@
     Authentication.onAuthentication((privateCode) => {
         loggedIn = null;
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then(({username}) => {
                 if (username) {
                     loggedIn = true;
                     return;
