@@ -96,7 +96,7 @@
             return;
         }
         Authentication.usernameFromCode(privateCode)
-            .then(({username}) => {
+            .then(({ username }) => {
                 if (username) {
                     loggedIn = true;
                     loggedInChange(username, privateCode);
@@ -113,7 +113,7 @@
         Authentication.authenticate().then((privateCode) => {
             loggedIn = null;
             Authentication.usernameFromCode(privateCode)
-                .then(({username}) => {
+                .then(({ username }) => {
                     if (username) {
                         loggedIn = true;
                         loggedInChange(username, privateCode);
@@ -171,7 +171,7 @@
     Authentication.onAuthentication((privateCode) => {
         loggedIn = null;
         Authentication.usernameFromCode(privateCode)
-            .then(({username}) => {
+            .then(({ username }) => {
                 if (username) {
                     loggedIn = true;
                     loggedInChange(username, privateCode);
@@ -314,6 +314,10 @@
                             <p>{autoTranslations[message.id]}</p>
                             <br />
                         {/if}
+                        <p class="small">
+                            <b>Project ID:</b>
+                            {message.projectId}
+                        </p>
                     {:else if message.type === "featured"}
                         <p>
                             <b>
@@ -520,6 +524,11 @@
         top: 0px;
         width: 100%;
         min-width: 1000px;
+    }
+
+    .small {
+        font-size: smaller;
+        opacity: 0.6;
     }
 
     .section-info {

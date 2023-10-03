@@ -93,4 +93,8 @@
         background-color: #ff5151;
         outline-color: rgba(255, 81, 81, 0.35);
     }
+    .purple {
+        background-color: #ab51ff;
+        outline-color: rgba(185, 81, 255, 0.35);
+    }
 </style>

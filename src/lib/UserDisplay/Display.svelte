@@ -36,6 +36,10 @@
         float: left;
         margin-left: 8px;
     }
+    :global(html[dir="rtl"]) .display-meta {
+        margin-left: initial;
+        margin-right: 8px;
+    }
 
     .text {
         text-overflow: ellipsis;

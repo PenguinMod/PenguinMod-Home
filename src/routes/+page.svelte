@@ -141,6 +141,7 @@
 
     <Alert
         text={"PenguinMod is a free-to-use visual coding website. Your support can help us keep the website working!"}
+        textBreakup={true}
         textColor={"white"}
         hasImage={true}
         imgSrc={"/happy.svg"}
@@ -148,6 +149,17 @@
         hasButton={true}
         buttonText={"Donate"}
         buttonHref={"/donate"}
+    />
+    <Alert
+        onlyShowID={"privacee:_1"}
+        text={"Our privacy policy has been updated."}
+        textBreakup={true}
+        textColor={"white"}
+        backColor={"#009900"}
+        hasImage={false}
+        hasButton={true}
+        buttonText={"View"}
+        buttonHref={"https://studio.penguinmod.site/privacy.html"}
     />
     <StatusAlert />
 
@@ -612,6 +624,9 @@
         justify-content: space-between;
         width: 100%;
         margin: 0;
+    }
+    :global(html[dir="rtl"]) .section-info {
+        justify-content: space-around;
     }
     .section-links {
         background: #00c3ff28;
