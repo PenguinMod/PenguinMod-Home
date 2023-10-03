@@ -171,6 +171,8 @@
         ProjectClient.rejectProject(id, rejectingTextboxArea.value).then(() => {
             rejectionPageOpen = false;
         });
+        // uhhhhhhh apparently we need to do this ig?
+        projects = []
         // this removes anything with the id we where given to reject
         // we do this by filter by if it is not :Trol:
         projects = projects.filter((proj) => proj.id !== id);
