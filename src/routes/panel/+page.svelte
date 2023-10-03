@@ -170,14 +170,13 @@
         }
         ProjectClient.rejectProject(id, rejectingTextboxArea.value).then(() => {
             rejectionPageOpen = false;
+            // uhhhhhhh apparently we need to do this ig?
+            const newProjects = projects.filter((proj) => proj.id !== id);
+            projects = []
+            projects = newProjects
+            // dont need to do this i think
+            // refreshProjectMenu();
         });
-        // uhhhhhhh apparently we need to do this ig?
-        projects = []
-        // this removes anything with the id we where given to reject
-        // we do this by filter by if it is not :Trol:
-        projects = projects.filter((proj) => proj.id !== id);
-        // dont need to do this i think
-        // refreshProjectMenu();
     }
     let selectedProjectName = "";
     let lastSelectedProjectId = 0;
@@ -210,10 +209,10 @@
         ProjectClient.approveProject(id, sendWebhook)
             .then(() => {
                 alert("The project was approved!");
-                // this removes anything with the id we where given to reject
-                // we do this by filter by if it is not :Trol:
-                projects = projects.filter((proj) => proj.id !== id);
-                // refreshProjectMenu();
+                // uhhhhhhh apparently we need to do this ig?
+                const newProjects = projects.filter((proj) => proj.id !== id);
+                projects = []
+                projects = newProjects
             })
             .catch((err) => {
                 alert(err);
