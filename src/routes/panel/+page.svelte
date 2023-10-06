@@ -164,6 +164,8 @@
     let rejectingName = "";
     let rejectingTextboxArea;
     function rejectProject(id) {
+        id ??= Number(projectIdSelection.value);
+        if (isNaN(id)) return;
         if (!confirm(`Reject "${rejectingName}"?`)) return;
         if (rejectingTextboxArea.value.length <= 3) {
             return alert("The action was cancelled.");
@@ -822,6 +824,7 @@
                 </label>
                 <div style="height:24px" />
                 <Button label="Approve Project" on:click={approveProject} />
+                <Button label="Reject Project" on:click={rejectProject} />
                 <div style="height:24px" />
                 <h3>Rejected Projects</h3>
                 <p>
