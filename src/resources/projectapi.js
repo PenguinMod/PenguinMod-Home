@@ -90,7 +90,7 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
     /**
      * @deprecated Cannot be used statically anymore.
