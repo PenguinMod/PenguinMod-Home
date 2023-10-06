@@ -164,7 +164,6 @@
     let rejectingName = "";
     let rejectingTextboxArea;
     function rejectProject(id) {
-        id ??= Number(projectIdSelection.value);
         if (isNaN(id)) return;
         if (!confirm(`Reject "${rejectingName}"?`)) return;
         if (rejectingTextboxArea.value.length <= 3) {
@@ -824,7 +823,17 @@
                 </label>
                 <div style="height:24px" />
                 <Button label="Approve Project" on:click={approveProject} />
-                <Button label="Reject Project" on:click={rejectProject} />
+                <Button
+                    label="Reject"
+                    color="red"
+                    on:click={() => {
+                        const id = Number(projectIdSelection.value)
+                        if (isNaN(id)) return
+                        rejectingId = id;
+                        rejectingName = selectedProjectName;
+                        rejectionPageOpen = true;
+                    }}
+                />
                 <div style="height:24px" />
                 <h3>Rejected Projects</h3>
                 <p>
