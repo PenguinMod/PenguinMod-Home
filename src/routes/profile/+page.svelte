@@ -237,29 +237,39 @@
                                 </div>
                             </div>
                         </div>
-                        {#key isFollowingUser}
-                            <Button
-                                color={isDonator ? "purple" : false}
-                                toggled={isFollowingUser}
-                                on:click={safeFollowUser}
+                        <div>
+                            {#key isFollowingUser}
+                                <Button
+                                    color={isDonator ? "purple" : false}
+                                    toggled={isFollowingUser}
+                                    on:click={safeFollowUser}
+                                >
+                                    {#if isFollowingUser}
+                                        <LocalizedText
+                                            text="Unfollow"
+                                            key="profile.unfollow"
+                                            dontlink={true}
+                                            lang={currentLang}
+                                        />
+                                    {:else}
+                                        <LocalizedText
+                                            text="Follow"
+                                            key="profile.follow"
+                                            dontlink={true}
+                                            lang={currentLang}
+                                        />
+                                    {/if}
+                                </Button>
+                            {/key}
+                            <p
+                                style="font-size:small;text-align:center;margin-block:0.5em"
                             >
-                                {#if isFollowingUser}
-                                    <LocalizedText
-                                        text="Unfollow"
-                                        key="profile.unfollow"
-                                        dontlink={true}
-                                        lang={currentLang}
-                                    />
-                                {:else}
-                                    <LocalizedText
-                                        text="Follow"
-                                        key="profile.follow"
-                                        dontlink={true}
-                                        lang={currentLang}
-                                    />
-                                {/if}
-                            </Button>
-                        {/key}
+                                {TranslationHandler.text(
+                                    "profile.followers",
+                                    currentLang
+                                ).replace("$1", followerCount)}
+                            </p>
+                        </div>
                     </div>
                 </div>
             {/if}

@@ -85,6 +85,11 @@
         color: black;
         font-weight: normal;
     }
+    :global(body.dark-mode) .button-toggled {
+        outline-color: rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: white;
+    }
 
     .remix {
         background-color: #48ac72;
