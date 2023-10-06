@@ -824,8 +824,7 @@
                 <div style="height:24px" />
                 <Button label="Approve Project" on:click={approveProject} />
                 <Button
-                    label="Reject"
-                    color="red"
+                    label="Reject Project"
                     on:click={() => {
                         const id = Number(projectIdSelection.value)
                         if (isNaN(id)) return
