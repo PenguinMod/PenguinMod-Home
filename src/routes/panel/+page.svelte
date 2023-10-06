@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import Authentication from "../../resources/authentication.js";
+    import ProfileBadges from "../../resources/badges.js";
     import QuickReject from "../../resources/quickReject.js";
     import ProjectApi from "../../resources/projectapi.js";
     import * as FileSaver from "file-saver";
@@ -36,7 +37,7 @@
             return;
         }
         Authentication.usernameFromCode(privateCode)
-            .then(({username, isAdmin}) => {
+            .then(({ username, isAdmin }) => {
                 if (username) {
                     if (!isAdmin) {
                         kickOut();
@@ -164,6 +165,7 @@
     let rejectingName = "";
     let rejectingTextboxArea;
     function rejectProject(id) {
+        id ??= Number(projectIdSelection.value);
         if (isNaN(id)) return;
         if (!confirm(`Reject "${rejectingName}"?`)) return;
         if (rejectingTextboxArea.value.length <= 3) {
@@ -173,8 +175,8 @@
             rejectionPageOpen = false;
             // uhhhhhhh apparently we need to do this ig?
             const newProjects = projects.filter((proj) => proj.id !== id);
-            projects = []
-            projects = newProjects
+            projects = [];
+            projects = newProjects;
             // dont need to do this i think
             // refreshProjectMenu();
         });
@@ -212,8 +214,8 @@
                 alert("The project was approved!");
                 // uhhhhhhh apparently we need to do this ig?
                 const newProjects = projects.filter((proj) => proj.id !== id);
-                projects = []
-                projects = newProjects
+                projects = [];
+                projects = newProjects;
             })
             .catch((err) => {
                 alert(err);
@@ -400,6 +402,40 @@
             .catch((err) => {
                 console.error(err);
                 alert(`Failed to unban user; ${err}`);
+            });
+    };
+
+    let areBadgesLoadedForVisibility = false;
+    let currentUserBadges = {};
+    let userBadgesUsername = "";
+    const loadUserBadges = async () => {
+        areBadgesLoadedForVisibility = false;
+        if (!userBadgesUsername) return;
+        const realBadges = await ProjectApi.getUserBadges(userBadgesUsername);
+        currentUserBadges = {};
+        for (const badgeName in ProfileBadges) {
+            currentUserBadges[badgeName] = false;
+        }
+        for (const badgeName of realBadges) {
+            currentUserBadges[badgeName] = true;
+        }
+        console.log(currentUserBadges);
+        areBadgesLoadedForVisibility = true;
+    };
+    const applyUserBadges = () => {
+        if (!confirm("Apply badges to this user?")) return;
+        const newBadges = [];
+        for (const badgeName in currentUserBadges) {
+            if (currentUserBadges[badgeName] === true) {
+                newBadges.push(badgeName);
+            }
+        }
+        ProjectClient.setUserBadges(userBadgesUsername, newBadges)
+            .then(() => {
+                alert("Badges are set!");
+            })
+            .catch((err) => {
+                alert(`An error occurred: ${err}`);
             });
     };
 </script>
@@ -804,7 +840,7 @@
                             Selected <b>{selectedProjectName}</b>
                         </p>
                         <img
-                            src={`https://projects.penguinmod.site/api/pmWrapper/iconUrl?id=${lastSelectedProjectId}`}
+                            src={`${ProjectApi.OriginApiUrl}/api/pmWrapper/iconUrl?id=${lastSelectedProjectId}`}
                             alt="Project Thumbnail"
                         />
                     </a>
@@ -825,6 +861,7 @@
                 <Button label="Approve Project" on:click={approveProject} />
                 <Button
                     label="Reject Project"
+                    color="red"
                     on:click={() => {
                         const id = Number(projectIdSelection.value)
                         if (isNaN(id)) return
@@ -928,6 +965,63 @@
                 <div class="user-action-row">
                     <Button on:click={unbanUser}>Unban User</Button>
                     <Button color="red" on:click={banUser}>Ban User</Button>
+                </div>
+            </div>
+
+            <br />
+
+            <div class="card">
+                <h2 style="margin-block-start:0">Badges</h2>
+                <p>Type username:</p>
+                <input
+                    type="text"
+                    size="50"
+                    placeholder="Scratch username..."
+                    on:change={() => {
+                        areBadgesLoadedForVisibility = false;
+                    }}
+                    bind:value={userBadgesUsername}
+                />
+                <div class="user-action-row">
+                    <Button on:click={loadUserBadges}>Load Badges</Button>
+                </div>
+                <br />
+                <br />
+                {#if areBadgesLoadedForVisibility}
+                    <p>Click a badge to toggle if it is given to a user</p>
+                    <p>
+                        Dark gray badges are not added to the user or will be
+                        removed from the user
+                    </p>
+                    <br />
+                    <div class="user-badges-list">
+                        {#each Object.keys(ProfileBadges) as badgeName}
+                            <button
+                                class="user-badge-button"
+                                on:click={() => {
+                                    currentUserBadges[badgeName] =
+                                        !currentUserBadges[badgeName];
+                                }}
+                                data-active={currentUserBadges[badgeName]}
+                            >
+                                <img
+                                    src={`/badges/${ProfileBadges[badgeName]}.png`}
+                                    alt={badgeName}
+                                />
+                                {badgeName}
+                            </button>
+                        {/each}
+                    </div>
+                {:else}
+                    <p>Badges have not been loaded.</p>
+                {/if}
+                <br />
+                <div style="width:100%;height:32px;" />
+                <br />
+                <div class="user-action-row">
+                    <Button color="remix" on:click={applyUserBadges}>
+                        Apply Badges
+                    </Button>
                 </div>
             </div>
 
@@ -1179,6 +1273,26 @@
         height: 100%;
         padding: 16px;
         overflow: auto;
+    }
+
+    .user-badges-list {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        overflow: auto;
+    }
+    .user-badges-list button img {
+        width: 64px;
+        height: 64px;
+    }
+    .user-badge-button {
+        background: #1f1f1f;
+        filter: grayscale(1);
+        color: white;
+    }
+    .user-badge-button[data-active="true"] {
+        background: green;
+        filter: initial;
     }
 
     .nomargintext {

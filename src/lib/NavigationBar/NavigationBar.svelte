@@ -32,22 +32,26 @@
 			return;
 		}
 		Authentication.usernameFromCode(privateCode)
-			.then(({username, isAdmin: isAdminn, isApprover: isApproverr}) => {
-				if (username) {
-					loggedIn = true;
-					accountUsername = username;
-					isAdmin = isAdminn;
-					isApprover = isApproverr;
-					if (username) ProjectClient.setUsername(username);
-					if (privateCode) ProjectClient.setPrivateCode(privateCode);
-					ProjectClient.getMessageCount().then((amount) => {
-						messageCount = amount;
-					});
-					return;
+			.then(
+				({ username, isAdmin: isAdminn, isApprover: isApproverr }) => {
+					if (username) {
+						loggedIn = true;
+						accountUsername = username;
+						isAdmin = isAdminn;
+						isApprover = isApproverr;
+						if (username) ProjectClient.setUsername(username);
+						if (privateCode)
+							ProjectClient.setPrivateCode(privateCode);
+						ProjectClient.setAdmin(isAdminn);
+						ProjectClient.getMessageCount().then((amount) => {
+							messageCount = amount;
+						});
+						return;
+					}
+					loggedIn = false;
+					messageCount = 0;
 				}
-				loggedIn = false;
-				messageCount = 0;
-			})
+			)
 			.catch(() => {
 				loggedIn = false;
 				messageCount = 0;
@@ -62,7 +66,7 @@
 	function logout() {
 		accountMenu.style.display = "none";
 		const pv = localStorage.getItem("PV");
-		Authentication.usernameFromCode(pv).then(({username}) => {
+		Authentication.usernameFromCode(pv).then(({ username }) => {
 			fetch(
 				`${LINK.projects}api/users/logout?user=${username}&code=${pv}`
 			).then((res) => {
@@ -114,6 +118,10 @@
 			languageMenu.style.top = "initial";
 			languageMenu.style.left = `calc(5rem + 4px)`;
 			languageMenu.style.bottom = "4px";
+		}
+		if (Translations.rtlLanguages.includes(currentLang)) {
+			languageMenu.style.left = `initial`;
+			languageMenu.style.right = `4px`;
 		}
 	}
 	function openAccountMenu(event) {
@@ -307,11 +315,11 @@
 				class="profile-picture"
 			/>
 			<p>{accountUsername}</p>
-			<img src="/dropdown-caret.png" style="margin-left: 4px" alt="v" />
+			<img src="/dropdown-caret.png" style="margin: 0 4px" alt="v" />
 		</button>
 	{/if}
 	<BarPage
-		label="<img src='/globe.svg' alt='LanguageSwitcher'><img src='/dropdown-caret.png' style='margin-left: 4px' alt='v'>"
+		label="<img src='/globe.svg' alt='LanguageSwitcher'><img src='/dropdown-caret.png' style='margin: 0 4px' alt='v'>"
 		style={"padding: 0.5rem; position: absolute; left: 4px;" +
 			(Object.keys(availableLanguages).length <= 1
 				? "display: none;"
@@ -431,6 +439,9 @@
 		text-align: left;
 		cursor: pointer;
 	}
+	:global(html[dir="rtl"]) .languageOption {
+		text-align: right;
+	}
 	.languageCount {
 		/* width: 100%; */
 		/* text-align: center; */
@@ -472,6 +483,10 @@
 		width: 30px;
 		height: 30px;
 		margin-right: 8px;
+	}
+	:global(html[dir="rtl"]) .profile-picture {
+		margin-right: initial;
+		margin-left: 8px;
 	}
 	.profile-dropdown {
 		background: transparent;
@@ -525,6 +540,9 @@
 		text-decoration: none;
 		cursor: pointer;
 		user-select: none;
+	}
+	:global(html[dir="rtl"]) .profile-dropdown-menu button {
+		text-align: right;
 	}
 	.profile-dropdown-menu button:hover {
 		background: rgba(0, 0, 0, 0.15);

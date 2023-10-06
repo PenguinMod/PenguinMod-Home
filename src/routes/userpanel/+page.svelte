@@ -739,7 +739,7 @@
                                 Selected <b>{selectedProjectName}</b>
                             </p>
                             <img
-                                src={`https://projects.penguinmod.site/api/pmWrapper/iconUrl?id=${lastSelectedProjectId}`}
+                                src={`${ProjectApi.OriginApiUrl}/api/pmWrapper/iconUrl?id=${lastSelectedProjectId}`}
                                 alt="Project Thumbnail"
                             />
                         </a>

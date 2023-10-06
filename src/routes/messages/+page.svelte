@@ -329,6 +329,27 @@
                                 ).replace("$1", message.name)}
                             </b> 🌟
                         </p>
+                    {:else if message.type === "followerAdded"}
+                        <p>
+                            {String(
+                                TranslationHandler.text(
+                                    "messages.alert.followeradded",
+                                    currentLang
+                                )
+                            ).replace("$1", message.name)}
+                        </p>
+                    {:else if message.type === "newBadge"}
+                        <p>
+                            {String(
+                                TranslationHandler.text(
+                                    "messages.alert.badge",
+                                    currentLang
+                                )
+                            ).replace("$1", TranslationHandler.text(
+                                    `profile.badge.${message.name}`,
+                                    currentLang
+                                ))}
+                        </p>
                     {:else if message.type === "remix"}
                         <p>
                             <a

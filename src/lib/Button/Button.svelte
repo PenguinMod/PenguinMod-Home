@@ -3,6 +3,7 @@
 
     export let highlighted = false;
     export let link = false;
+    export let toggled = false;
     export let label = "";
     export let noredirect = false;
 
@@ -39,7 +40,8 @@
 {#if !link}
     <button
         class={(highlighted ? "button button-highlight" : "button") +
-            (color ? ` ${color}` : "")}
+            (color ? ` ${color}` : "") +
+            (toggled ? " button-toggled" : "")}
         on:click={event}
     >
         {#if icon}
@@ -75,6 +77,13 @@
         outline: 0px;
         background-color: white;
         color: #00c3ff;
+    }
+    .button-toggled {
+        background-color: transparent !important;
+        outline-color: rgba(0, 0, 0, 0.1) !important;
+        border: 1px solid rgba(0, 0, 0, 0.35);
+        color: black;
+        font-weight: normal;
     }
 
     .remix {

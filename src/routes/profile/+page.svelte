@@ -1,9 +1,11 @@
 <script>
     import { onMount } from "svelte";
+    import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
+    const ProjectClient = new ProjectApi();
 
     // Static values
-    import LINK from "../../resources/urls.js";
+    import ProfileBadges from "../../resources/badges.js";
 
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
@@ -21,12 +23,27 @@
     // Icons
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
 
+    let loggedIn = null;
+
     let user;
     const projects = {
         all: [],
         featured: [],
     };
+    let badges = [];
+    let focusedBadge = -1;
+    let isDonator = false;
+    let isFollowingUser = false;
+    let followerCount = null;
 
+    const loggedInChange = async () => {
+        if (!loggedIn) {
+            isFollowingUser = false;
+            return;
+        }
+        const isFollowing = await ProjectClient.isFollowingUser(user);
+        isFollowingUser = isFollowing;
+    };
     onMount(() => {
         const params = new URLSearchParams(location.search);
         const query = params.get("user");
@@ -42,6 +59,13 @@
                 projects.featured = ["none"];
             }
         });
+        ProjectApi.getUserBadges(user).then((badgs) => {
+            badges = badgs;
+            isDonator = badges.includes("donator");
+        });
+        ProjectApi.getFollowerCount(user).then((foolowerCount) => {
+            followerCount = foolowerCount;
+        });
     });
 
     let currentLang = "en";
@@ -50,6 +74,98 @@
     });
     Language.onChange((lang) => {
         currentLang = lang;
+    });
+
+    const waitForLogin = () => {
+        return new Promise((resolve, reject) => {
+            if (loggedIn) return resolve();
+            Authentication.authenticate().then((privateCode) => {
+                loggedIn = null;
+                Authentication.usernameFromCode(privateCode)
+                    .then(({ username }) => {
+                        if (username) {
+                            loggedIn = true;
+                            loggedInChange();
+                            resolve();
+                            return;
+                        }
+                        loggedIn = false;
+                        loggedInChange();
+                        reject();
+                    })
+                    .catch(() => {
+                        loggedIn = false;
+                        loggedInChange();
+                        reject();
+                    });
+            });
+        });
+    };
+    let canClickFollow = true;
+    const followUser = async () => {
+        await waitForLogin();
+        const info = await ProjectClient.toggleFollowingUser(user);
+        isFollowingUser = info.following;
+    };
+    const safeFollowUser = async () => {
+        if (!canClickFollow) return;
+        canClickFollow = false;
+        try {
+            await followUser();
+        } catch (err) {
+            console.error("couldnt follow user", err);
+        }
+        canClickFollow = true;
+    };
+
+    // login code below
+    onMount(async () => {
+        const privateCode = localStorage.getItem("PV");
+        if (!privateCode) {
+            loggedIn = false;
+            loggedInChange();
+            return;
+        }
+        Authentication.usernameFromCode(privateCode)
+            .then(({ username }) => {
+                if (username) {
+                    ProjectClient.setUsername(username);
+                    ProjectClient.setPrivateCode(privateCode);
+                    loggedIn = true;
+                    loggedInChange();
+                    return;
+                }
+                loggedIn = false;
+                loggedInChange();
+            })
+            .catch(() => {
+                loggedIn = false;
+                loggedInChange();
+            });
+    });
+
+    Authentication.onLogout(() => {
+        loggedIn = false;
+        loggedInChange();
+    });
+    Authentication.onAuthentication((privateCode) => {
+        loggedIn = null;
+        Authentication.usernameFromCode(privateCode)
+            .then(({ username }) => {
+                if (username) {
+                    ProjectClient.setUsername(username);
+                    ProjectClient.setPrivateCode(privateCode);
+                    loggedIn = true;
+                    loggedInChange();
+                    return;
+                }
+                loggedIn = false;
+                loggedInChange();
+            })
+            .catch(() => {
+                loggedIn = false;
+                loggedInChange();
+            });
     });
 </script>
 
@@ -73,18 +189,77 @@
                             <img
                                 src={`https://trampoline.turbowarp.org/avatars/by-username/${user}`}
                                 alt="Profile"
-                                style="margin-right:8px;border-radius:4px;height:128px;width:128px;"
+                                class="profile-picture"
                             />
-                            <h1>{user}</h1>
+                            <div class="user-after-image">
+                                {#if isDonator}
+                                    <h1 class="donator-color">{user}</h1>
+                                {:else}
+                                    <h1>{user}</h1>
+                                {/if}
+                                <div class="user-badges">
+                                    {#each badges as badge, idx}
+                                        <!-- TODO: these should be clickable & have proper
+                                alts + titles -->
+                                        <button
+                                            on:click={() => {
+                                                focusedBadge = idx;
+                                            }}
+                                            on:focusout={() => {
+                                                focusedBadge = -1;
+                                            }}
+                                            title={TranslationHandler.text(
+                                                `profile.badge.${badge}`,
+                                                currentLang
+                                            )}
+                                        >
+                                            <img
+                                                src={`/badges/${ProfileBadges[badge]}.png`}
+                                                alt={TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    currentLang
+                                                )}
+                                                title={TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    currentLang
+                                                )}
+                                            />
+                                            {#if focusedBadge === idx}
+                                                <div class="badge-info">
+                                                    {TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        currentLang
+                                                    )}
+                                                </div>
+                                            {/if}
+                                        </button>
+                                    {/each}
+                                </div>
+                            </div>
                         </div>
-                        <Button link={`https://scratch.mit.edu/users/${user}/`}>
-                            <LocalizedText
-                                text="View on Scratch"
-                                key="profile.scratchprofile"
-                                dontlink={true}
-                                lang={currentLang}
-                            />
-                        </Button>
+                        {#key isFollowingUser}
+                            <Button
+                                color={isDonator ? "purple" : false}
+                                toggled={isFollowingUser}
+                                on:click={safeFollowUser}
+                            >
+                                {#if isFollowingUser}
+                                    <LocalizedText
+                                        text="Unfollow"
+                                        key="profile.unfollow"
+                                        dontlink={true}
+                                        lang={currentLang}
+                                    />
+                                {:else}
+                                    <LocalizedText
+                                        text="Follow"
+                                        key="profile.follow"
+                                        dontlink={true}
+                                        lang={currentLang}
+                                    />
+                                {/if}
+                            </Button>
+                        {/key}
                     </div>
                 </div>
             {/if}
@@ -222,6 +397,24 @@
         text-align: center;
     }
 
+    .profile-picture {
+        margin-right: 8px;
+        border-radius: 4px;
+        height: 128px;
+        width: 128px;
+    }
+    :global(html[dir="rtl"]) .profile-picture {
+        margin-right: initial;
+        margin-left: 8px;
+    }
+
+    .donator-color {
+        color: #a237db;
+    }
+    :global(body.dark-mode) .donator-color {
+        color: #c65cff;
+    }
+
     .subuser-section {
         width: 65.5%;
         display: flex;
@@ -232,5 +425,46 @@
         display: flex;
         flex-direction: row;
         align-items: center;
+    }
+    .user-after-image {
+        display: flex;
+        flex-direction: column;
+    }
+    .user-after-image > h1 {
+        margin-block: 0.2rem;
+    }
+    .user-badges {
+        display: flex;
+        flex-direction: row;
+    }
+    .user-badges button {
+        position: relative;
+        margin: 0 4px;
+        border: 0;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        background: transparent;
+        cursor: pointer;
+    }
+    .user-badges button img {
+        margin: 0;
+        border: 0;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+    }
+
+    .badge-info {
+        position: absolute;
+        top: 36px;
+        left: 0;
+        padding: 8px 16px;
+        border-radius: 4px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        transform-origin: center;
+        transform: translateX(calc(50% - 64px));
+        z-index: 5000;
     }
 </style>

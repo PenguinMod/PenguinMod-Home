@@ -1,3 +1,5 @@
+import ProjectApi from "./projectapi"
+
 export default {
     /**
      * PenguinMod's normal page
@@ -40,12 +42,12 @@ export default {
     /**
      * PenguinMod's project page
      */
-    projects: "https://projects.penguinmod.site/",
+    projects: `${ProjectApi.OriginApiUrl}/`,
 
     /**
      * PenguinMod's my stuff page
      */
-    mystuff: "https://projects.penguinmod.site/mystuff",
+    mystuff: `${ProjectApi.OriginApiUrl}/mystuff`,
 
     /**
      * PenguinMod's home page

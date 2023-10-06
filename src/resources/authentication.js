@@ -1,15 +1,17 @@
+import ProjectApi from "./projectapi";
+
 class Authentication {
     static eventListeners = [];
 
     static authenticate() {
         const isLocal = location.hostname === 'localhost';
-        const redirectUrl = 'https://projects.penguinmod.site/api/users/login' + (isLocal ? 'Local' : '');
+        const redirectUrl = `${ProjectApi.OriginApiUrl}/api/users/login` + (isLocal ? 'Local' : '');
         const base64 = btoa(redirectUrl);
         return new Promise((resolve, reject) => {
             let login;
 
             const handleMessageReciever = (event) => {
-                if (event.origin !== 'https://projects.penguinmod.site') {
+                if (event.origin !== ProjectApi.OriginApiUrl) {
                     return;
                 }
                 const data = event.data && event.data.a2;
@@ -62,7 +64,7 @@ class Authentication {
     }
     static usernameFromCode(code) {
         return new Promise((resolve, reject) => {
-            fetch(`https://projects.penguinmod.site/api/users/usernameFromCode?privateCode=${code}`).then(r => r.json().then(j => {
+            fetch(`${ProjectApi.OriginApiUrl}/api/users/usernameFromCode?privateCode=${code}`).then(r => r.json().then(j => {
                 if (j.username == null) return reject(j.error);
                 resolve({
                     username: j.username, 
