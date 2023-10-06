@@ -768,6 +768,16 @@
                 </label>
                 <div style="height:20px" />
                 <Button label="Approve Project" on:click={approveProject} />
+                <Button
+                    label="Reject Project"
+                    on:click={() => {
+                        const id = Number(projectIdSelection.value)
+                        if (isNaN(id)) return
+                        rejectingId = id;
+                        rejectingName = selectedProjectName;
+                        rejectionPageOpen = true;
+                    }}
+                />
             </div>
 
             <button
