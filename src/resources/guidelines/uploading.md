@@ -27,8 +27,9 @@ If you keep doing this, you wont be able to post projects for a day or more
 Uploading empty or default projects will get your project rejected.
 Please do not do this multiple times as your account will be limited if we see you doing this.
 
-Projects that only have the purpose of using an iframe to display other websites or projects will be rejected.
+Projects that are based around using an iframe to display other websites or projects will be rejected.
 This is a rule because the only purpose of this is to show content that is not yours or can be viewed anyways in your browser.
+*(This may not apply to projects uploaded before October 6th due to communication issues.)*
 
 ### Projects uploaded that were shared on Scratch (Scratch Reuploads)
 If you are just taking a Scratch project that was shared on Scratch and uploading it onto PenguinMod, please note the following:

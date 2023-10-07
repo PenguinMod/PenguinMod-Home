@@ -85,4 +85,7 @@
         margin: 0 20%;
         width: 60%;
     }
+    :global(body.dark-mode) a {
+        color: dodgerblue;
+    }
 </style>
