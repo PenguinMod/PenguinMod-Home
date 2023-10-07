@@ -664,7 +664,7 @@
                         lang={currentLang}
                     />
                 </a>
-                <a target="_blank" href={LINK.guidelines.projects}>
+                <a target="_blank" href={'/guidelines/uploading'}>
                     <LocalizedText
                         text="Uploading Guidelines"
                         key="home.footer.sections.info.guidelines"

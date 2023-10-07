@@ -90,7 +90,7 @@
             loggedIn = false;
         }
         Authentication.usernameFromCode(privateCode)
-            .then(({username}) => {
+            .then(({ username }) => {
                 if (username) {
                     ProjectClient.setUsername(username);
                     ProjectClient.setPrivateCode(privateCode);
@@ -236,7 +236,7 @@
     Authentication.onAuthentication((privateCode) => {
         loggedIn = null;
         Authentication.usernameFromCode(privateCode)
-            .then(({username}) => {
+            .then(({ username }) => {
                 if (username) {
                     ProjectClient.setUsername(username);
                     ProjectClient.setPrivateCode(privateCode);
@@ -507,7 +507,7 @@
         </div>
     {/if}
 
-    {#if guidelinePageOpen}
+    <!-- {#if guidelinePageOpen}
         <div class="front-card-page">
             <div class="card-page">
                 <div class="card-header">
@@ -566,7 +566,7 @@
                 </div>
             </div>
         </div>
-    {/if}
+    {/if} -->
 
     <div class="section-info">
         <h1>
@@ -766,18 +766,19 @@
             </div>
         </div>
         <div style="height:16px" />
-        <button
-            class="guidelines-link"
-            on:click={() => {
-                guidelinePageOpen = true;
-            }}
-        >
-            <LocalizedText
-                text="Project Uploading & Updating Guidelines"
-                key="uploading.guidelines.button"
-                lang={currentLang}
-            />
-        </button>
+        <p>
+            <a
+                class="guidelines-link"
+                target="_blank"
+                href={"/guidelines/uploading"}
+            >
+                <LocalizedText
+                    text="Project Uploading & Updating Guidelines"
+                    key="uploading.guidelines.button"
+                    lang={currentLang}
+                />
+            </a>
+        </p>
     </div>
 </div>
 

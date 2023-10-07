@@ -292,7 +292,7 @@
         }, 1000);
     }
 
-    let guidelinePageOpen = false;
+    // let guidelinePageOpen = false;
     onMount(() => {
         dropdownSelectMenu.onchange = () => {
             switch (dropdownSelectMenu.value) {
@@ -775,7 +775,7 @@
         </div>
     {/if}
 
-    {#if guidelinePageOpen}
+    <!-- {#if guidelinePageOpen}
         <div class="front-card-page">
             <div class="card-page">
                 <div class="card-header">
@@ -810,7 +810,7 @@
                 </div>
             </div>
         </div>
-    {/if}
+    {/if} -->
 
     <div class="section-info">
         <div>
@@ -863,8 +863,8 @@
                     label="Reject Project"
                     color="red"
                     on:click={() => {
-                        const id = Number(projectIdSelection.value)
-                        if (isNaN(id)) return
+                        const id = Number(projectIdSelection.value);
+                        if (isNaN(id)) return;
                         rejectingId = id;
                         rejectingName = selectedProjectName;
                         rejectionPageOpen = true;
@@ -886,14 +886,15 @@
                 </div>
             </div>
 
-            <button
-                class="guidelines-link"
-                on:click={() => {
-                    guidelinePageOpen = true;
-                }}
-            >
-                Project Uploading & Updating Guidelines
-            </button>
+            <p>
+                <a
+                    class="guidelines-link"
+                    target="_blank"
+                    href={"/guidelines/uploading"}
+                >
+                    Project Uploading & Updating Guidelines
+                </a>
+            </p>
 
             <br />
 
