@@ -374,8 +374,10 @@
 
     const banOrUnbanData = {
         username: "",
-        reason: "",
+        reason: ""
     };
+    let admin = false
+    let approver = false
     const banUser = () => {
         const promptMessage = prompt(
             `Are you sure you want to ban ${banOrUnbanData.username} for "${banOrUnbanData.reason}"? Type "ok" to confirm.`
@@ -438,6 +440,27 @@
                 alert(`An error occurred: ${err}`);
             });
     };
+    const setUsersPerms = () => {
+        const verbAdmin = banOrUnbanData.admin
+            ? `grant ${banOrUnbanData.username} admin?`
+            : `revoke ${banOrUnbanData.username}'s admin?`
+        const verbApprover = banOrUnbanData.approver
+            ? `grant ${banOrUnbanData.username} modderator?`
+            : `revoke ${banOrUnbanData.username}'s modderation possition?`
+        const promptMessage = prompt(
+            `Are you sure you want to ${verbAdmin} & ${verbApprover} Type "ok" to confirm.`
+        );
+        if (promptMessage !== "ok") return;
+        ProjectClient.assingUsersPermisions(banOrUnbanData.username, banOrUnbanData.reason)
+            .then(() => {
+                // i don wana make it re-say the whole grant-revoke thingy
+                alert(`Successfully did what ever you said to do ${banOrUnbanData.username}.`);
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to moddify users permissions; ${err}`);
+            });
+    }
 </script>
 
 <head>
@@ -963,9 +986,18 @@
                 </p>
                 <br />
                 <br />
+                <label>
+                    <input type="checkbox" bind:checked={admin} />
+                    Grant User Admin Perms
+                </label>
+                <label>
+                    <input type="checkbox" bind:checked={approver} />
+                    Grant User Moderator Perms
+                </label>
                 <div class="user-action-row">
                     <Button on:click={unbanUser}>Unban User</Button>
                     <Button color="red" on:click={banUser}>Ban User</Button>
+                    <Button on:click={setUsersPerms}>Assign User Perms</Button>
                 </div>
             </div>
 
