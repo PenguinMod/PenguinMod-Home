@@ -572,11 +572,13 @@
                             alt="Server Penguin"
                             style="width: 15rem"
                         />
-                        <LocalizedText
-                            text="Whoops! Our server's having some problems. Try again later."
-                            key="home.server.error"
-                            lang={currentLang}
-                        />
+                        <p>
+                            <LocalizedText
+                                text="Whoops! Our server's having some problems. Try again later."
+                                key="home.server.error"
+                                lang={currentLang}
+                            />
+                        </p>
                     </div>
                 {:else}
                     <LoadingSpinner />
