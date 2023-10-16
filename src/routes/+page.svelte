@@ -77,7 +77,7 @@
         switch (type) {
             case "upload":
             case "remixed":
-                return `https://studio.penguinmod.site/#${content.id}`;
+                return `https://studio.penguinmod.com/#${content.id}`;
             case "posted":
                 return `/profile?user=${author}&post=${content.id}`;
             default:
@@ -88,7 +88,7 @@
     onMount(async () => {
         const projectId = Number(location.hash.replace("#", ""));
         if (!isNaN(projectId) && projectId != 0) {
-            location.href = `https://studio.penguinmod.site/#${projectId}`;
+            location.href = `https://studio.penguinmod.com/#${projectId}`;
             return;
         }
 
@@ -214,7 +214,7 @@
         hasImage={false}
         hasButton={true}
         buttonText={"View"}
-        buttonHref={"https://studio.penguinmod.site/privacy.html"}
+        buttonHref={"https://studio.penguinmod.com/privacy.html"}
     /> -->
     <StatusAlert />
 
@@ -666,7 +666,7 @@
                         lang={currentLang}
                     />
                 </a>
-                <a target="_blank" href={'/guidelines/uploading'}>
+                <a target="_blank" href={"/guidelines/uploading"}>
                     <LocalizedText
                         text="Uploading Guidelines"
                         key="home.footer.sections.info.guidelines"

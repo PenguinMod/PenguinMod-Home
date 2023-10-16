@@ -4,22 +4,22 @@ export default {
     /**
      * PenguinMod's normal page
      */
-    base: "https://studio.penguinmod.site/",
+    base: "https://studio.penguinmod.com/",
 
     /**
      * PenguinMod's editor page
      */
-    editor: "https://studio.penguinmod.site/editor.html",
+    editor: "https://studio.penguinmod.com/editor.html",
 
     /**
      * PenguinMod's credits page
      */
-    credits: "https://studio.penguinmod.site/credits.html",
+    credits: "https://studio.penguinmod.com/credits.html",
 
     /**
      * PenguinMod's privacy policy page
      */
-    privacy: "https://studio.penguinmod.site/privacy.html",
+    privacy: "https://studio.penguinmod.com/privacy.html",
 
     /**
      * PenguinMod's guideline pages for services
@@ -28,7 +28,7 @@ export default {
         /**
          * PenguinMod's project uploading guidelines
          */
-        projects: "https://studio.penguinmod.site/PenguinMod-Guidelines/PROJECTS"
+        projects: "https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
     },
 
     /**
@@ -52,12 +52,12 @@ export default {
     /**
      * PenguinMod's home page
      */
-    home: "https://home.penguinmod.site/",
+    home: "https://home.penguinmod.com/",
 
     /**
      * PenguinMod's packager page
      */
-    packager: "https://studio.penguinmod.site/PenguinMod-Packager/",
+    packager: "https://studio.penguinmod.com/PenguinMod-Packager/",
 
     /**
      * PenguinMod's unofficial wiki
@@ -97,5 +97,5 @@ export default {
     /**
      * The admin panel for pm projects api
      */
-    adminPanel: "https://penguinmod.site/panel"
+    adminPanel: "https://penguinmod.com/panel"
 }

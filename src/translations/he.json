@@ -162,7 +162,7 @@
     "uploading.guidelines.button": "הנחיות להעלאה ועדכון של פרויקטים",
     "uploading.guidelines.newtab": "פתח בכרטיסיה חדשה",
     "uploading.guidelines.darkmode": "דף זה אינו במצב חשוך בגלל שזה אתר חיצוני.",
-    "uploading.guidelines.nottranslated": "יכול להיות שהחוקים וההנחיות האלה לא מתורגמים . לחלופה מתורגמת, <a href=\"https://studio.penguinmod.site/PenguinMod-Guidelines/PROJECTS\">ראו כאן</a>.",
+    "uploading.guidelines.nottranslated": "יכול להיות שהחוקים וההנחיות האלה לא מתורגמים . לחלופה מתורגמת, <a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">ראו כאן</a>.",
     "uploading.error.toomanyrequests": "אפשר להעלות פרויקט רק כל 8 דקות.",
     "uploading.error.missingprojectdata": "נכשל בשליחת נתוני פרויקט. הפרויקט יכול להיות גדול מדי.",
     "uploading.error.reauthenticate": "התנתנקת מהחשבון שלך. בבקשה היכנס שוב.",

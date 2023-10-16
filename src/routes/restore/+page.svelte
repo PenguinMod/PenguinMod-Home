@@ -9,11 +9,11 @@
 
     function begin() {
         window.open(
-            "https://studio.penguinmod.site?restore=true&handler=" +
+            "https://studio.penguinmod.com?restore=true&handler=" +
                 window.location.origin
         );
         window.onmessage = (e) => {
-            if (!e.origin.startsWith(`https://studio.penguinmod.site`)) {
+            if (!e.origin.startsWith(`https://studio.penguinmod.com`)) {
                 return;
             }
 

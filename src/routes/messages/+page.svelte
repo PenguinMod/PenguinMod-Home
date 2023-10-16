@@ -345,15 +345,18 @@
                                     "messages.alert.badge",
                                     currentLang
                                 )
-                            ).replace("$1", TranslationHandler.text(
+                            ).replace(
+                                "$1",
+                                TranslationHandler.text(
                                     `profile.badge.${message.name}`,
                                     currentLang
-                                ))}
+                                )
+                            )}
                         </p>
                     {:else if message.type === "remix"}
                         <p>
                             <a
-                                href={`https://studio.penguinmod.site/#${message.remixId}`}
+                                href={`https://studio.penguinmod.com/#${message.remixId}`}
                                 target="_blank"
                             >
                                 {String(
@@ -375,7 +378,7 @@
                     {:else if message.type === "restored"}
                         <p>
                             <a
-                                href={`https://studio.penguinmod.site/#${message.projectId}`}
+                                href={`https://studio.penguinmod.com/#${message.projectId}`}
                                 target="_blank"
                             >
                                 {String(
