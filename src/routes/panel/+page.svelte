@@ -374,10 +374,10 @@
 
     const banOrUnbanData = {
         username: "",
-        reason: ""
+        reason: "",
     };
-    let admin = false
-    let approver = false
+    let admin = false;
+    let approver = false;
     const banUser = () => {
         const promptMessage = prompt(
             `Are you sure you want to ban ${banOrUnbanData.username} for "${banOrUnbanData.reason}"? Type "ok" to confirm.`
@@ -441,26 +441,32 @@
             });
     };
     const setUsersPerms = () => {
-        const verbAdmin = banOrUnbanData.admin
+        const verbAdmin = admin
             ? `grant ${banOrUnbanData.username} admin?`
-            : `revoke ${banOrUnbanData.username}'s admin?`
-        const verbApprover = banOrUnbanData.approver
+            : `revoke ${banOrUnbanData.username}'s admin?`;
+        const verbApprover = approver
             ? `grant ${banOrUnbanData.username} modderator?`
-            : `revoke ${banOrUnbanData.username}'s modderation possition?`
+            : `revoke ${banOrUnbanData.username}'s modderation possition?`;
         const promptMessage = prompt(
             `Are you sure you want to ${verbAdmin} & ${verbApprover} Type "ok" to confirm.`
         );
         if (promptMessage !== "ok") return;
-        ProjectClient.assingUsersPermisions(banOrUnbanData.username, banOrUnbanData.reason)
+        ProjectClient.assingUsersPermisions(
+            banOrUnbanData.username,
+            admin,
+            approver
+        )
             .then(() => {
                 // i don wana make it re-say the whole grant-revoke thingy
-                alert(`Successfully did what ever you said to do ${banOrUnbanData.username}.`);
+                alert(
+                    `Successfully did what ever you said to do ${banOrUnbanData.username}.`
+                );
             })
             .catch((err) => {
                 console.error(err);
                 alert(`Failed to moddify users permissions; ${err}`);
             });
-    }
+    };
 </script>
 
 <head>
@@ -807,11 +813,11 @@
                 <div class="card-projects">
                     <iframe
                         title="Guidelines Page"
-                        src="https://studio.penguinmod.site/PenguinMod-Guidelines/PROJECTS"
+                        src="https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
                     />
                 </div>
                 <a
-                    href="https://studio.penguinmod.site/PenguinMod-Guidelines/PROJECTS"
+                    href="https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
                     style="margin-top:6px;color:dodgerblue"
                     target="_blank"
                 >
@@ -856,7 +862,7 @@
                 {#if selectedProjectName}
                     <a
                         target="_blank"
-                        href={`https://studio.penguinmod.site/#${lastSelectedProjectId}`}
+                        href={`https://studio.penguinmod.com/#${lastSelectedProjectId}`}
                         style="color: dodgerblue"
                     >
                         <p>

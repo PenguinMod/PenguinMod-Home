@@ -517,19 +517,9 @@ class ProjectApi {
             });
         });
     }
-    assingUsersPermisions(username, permisions) {
+    assingUsersPermisions(username, admin, approver) {
         return new Promise((resolve, reject) => {
-            const data = {
-                username: this.username,
-                passcode: this.privateCode,
-                target: username,
-                ...permisions
-            };
-            fetch(`https://projects.penguinmod.site/api/users/assignPossition`, {
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-                method: "POST"
-            }).then(res => {
+            fetch(`${OriginApiUrl}/api/users/assignPossition?user=${this.username}&passcode=${this.privateCode}&target=${username}&admin=${admin}&approver=${approver}`).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);
