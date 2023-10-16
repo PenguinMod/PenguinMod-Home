@@ -24,6 +24,7 @@
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
 
     let loggedIn = null;
+    let loggedInUser = '';
 
     let user;
     const projects = {
@@ -81,20 +82,24 @@
             if (loggedIn) return resolve();
             Authentication.authenticate().then((privateCode) => {
                 loggedIn = null;
+                loggedInUser = '';
                 Authentication.usernameFromCode(privateCode)
                     .then(({ username }) => {
                         if (username) {
                             loggedIn = true;
+                            loggedInUser = username;
                             loggedInChange();
                             resolve();
                             return;
                         }
                         loggedIn = false;
+                        loggedInUser = '';
                         loggedInChange();
                         reject();
                     })
                     .catch(() => {
                         loggedIn = false;
+                        loggedInUser = '';
                         loggedInChange();
                         reject();
                     });
@@ -123,6 +128,7 @@
         const privateCode = localStorage.getItem("PV");
         if (!privateCode) {
             loggedIn = false;
+            loggedInUser = '';
             loggedInChange();
             return;
         }
@@ -132,38 +138,46 @@
                     ProjectClient.setUsername(username);
                     ProjectClient.setPrivateCode(privateCode);
                     loggedIn = true;
+                    loggedInUser = username;
                     loggedInChange();
                     return;
                 }
                 loggedIn = false;
+                loggedInUser = '';
                 loggedInChange();
             })
             .catch(() => {
                 loggedIn = false;
+                loggedInUser = '';
                 loggedInChange();
             });
     });
 
     Authentication.onLogout(() => {
         loggedIn = false;
+        loggedInUser = '';
         loggedInChange();
     });
     Authentication.onAuthentication((privateCode) => {
         loggedIn = null;
+        loggedInUser = '';
         Authentication.usernameFromCode(privateCode)
             .then(({ username }) => {
                 if (username) {
                     ProjectClient.setUsername(username);
                     ProjectClient.setPrivateCode(privateCode);
                     loggedIn = true;
+                    loggedInUser = username;
                     loggedInChange();
                     return;
                 }
                 loggedIn = false;
+                loggedInUser = '';
                 loggedInChange();
             })
             .catch(() => {
                 loggedIn = false;
+                loggedInUser = '';
                 loggedInChange();
             });
     });
@@ -180,7 +194,7 @@
 
     <StatusAlert />
 
-    {#if projects.all.length > 0}
+    {#if projects.all.length > 0 || user === loggedInUser}
         {#if projects.all[0] !== "none"}
             {#if user}
                 <div class="section-user">
