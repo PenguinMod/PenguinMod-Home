@@ -194,8 +194,8 @@
 
     <StatusAlert />
 
-    {#if projects.all.length > 0 || user === loggedInUser}
-        {#if projects.all[0] !== "none"}
+    {#if projects.all.length > 0}
+        {#if projects.all[0] !== "none" || (loggedIn && user === loggedInUser)}
             {#if user}
                 <div class="section-user">
                     <div class="subuser-section">
