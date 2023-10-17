@@ -24,7 +24,7 @@
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
 
     let loggedIn = null;
-    let loggedInUser = '';
+    let loggedInUser = "";
 
     let user;
     const projects = {
@@ -82,7 +82,7 @@
             if (loggedIn) return resolve();
             Authentication.authenticate().then((privateCode) => {
                 loggedIn = null;
-                loggedInUser = '';
+                loggedInUser = "";
                 Authentication.usernameFromCode(privateCode)
                     .then(({ username }) => {
                         if (username) {
@@ -93,13 +93,13 @@
                             return;
                         }
                         loggedIn = false;
-                        loggedInUser = '';
+                        loggedInUser = "";
                         loggedInChange();
                         reject();
                     })
                     .catch(() => {
                         loggedIn = false;
-                        loggedInUser = '';
+                        loggedInUser = "";
                         loggedInChange();
                         reject();
                     });
@@ -128,7 +128,7 @@
         const privateCode = localStorage.getItem("PV");
         if (!privateCode) {
             loggedIn = false;
-            loggedInUser = '';
+            loggedInUser = "";
             loggedInChange();
             return;
         }
@@ -143,24 +143,24 @@
                     return;
                 }
                 loggedIn = false;
-                loggedInUser = '';
+                loggedInUser = "";
                 loggedInChange();
             })
             .catch(() => {
                 loggedIn = false;
-                loggedInUser = '';
+                loggedInUser = "";
                 loggedInChange();
             });
     });
 
     Authentication.onLogout(() => {
         loggedIn = false;
-        loggedInUser = '';
+        loggedInUser = "";
         loggedInChange();
     });
     Authentication.onAuthentication((privateCode) => {
         loggedIn = null;
-        loggedInUser = '';
+        loggedInUser = "";
         Authentication.usernameFromCode(privateCode)
             .then(({ username }) => {
                 if (username) {
@@ -172,12 +172,12 @@
                     return;
                 }
                 loggedIn = false;
-                loggedInUser = '';
+                loggedInUser = "";
                 loggedInChange();
             })
             .catch(() => {
                 loggedIn = false;
-                loggedInUser = '';
+                loggedInUser = "";
                 loggedInChange();
             });
     });
@@ -252,29 +252,31 @@
                             </div>
                         </div>
                         <div>
-                            {#key isFollowingUser}
-                                <Button
-                                    color={isDonator ? "purple" : false}
-                                    toggled={isFollowingUser}
-                                    on:click={safeFollowUser}
-                                >
-                                    {#if isFollowingUser}
-                                        <LocalizedText
-                                            text="Unfollow"
-                                            key="profile.unfollow"
-                                            dontlink={true}
-                                            lang={currentLang}
-                                        />
-                                    {:else}
-                                        <LocalizedText
-                                            text="Follow"
-                                            key="profile.follow"
-                                            dontlink={true}
-                                            lang={currentLang}
-                                        />
-                                    {/if}
-                                </Button>
-                            {/key}
+                            {#if !(loggedIn && user === loggedInUser)}
+                                {#key isFollowingUser}
+                                    <Button
+                                        color={isDonator ? "purple" : false}
+                                        toggled={isFollowingUser}
+                                        on:click={safeFollowUser}
+                                    >
+                                        {#if isFollowingUser}
+                                            <LocalizedText
+                                                text="Unfollow"
+                                                key="profile.unfollow"
+                                                dontlink={true}
+                                                lang={currentLang}
+                                            />
+                                        {:else}
+                                            <LocalizedText
+                                                text="Follow"
+                                                key="profile.follow"
+                                                dontlink={true}
+                                                lang={currentLang}
+                                            />
+                                        {/if}
+                                    </Button>
+                                {/key}
+                            {/if}
                             <p
                                 style="font-size:small;text-align:center;margin-block:0.5em"
                             >
