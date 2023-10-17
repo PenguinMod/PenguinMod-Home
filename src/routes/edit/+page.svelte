@@ -461,6 +461,20 @@
                             lang={currentLang}
                         />
                     </label>
+                    <div style="height:16px" />
+                    <p>
+                        <a
+                            class="guidelines-link"
+                            target="_blank"
+                            href={"/guidelines/uploading"}
+                        >
+                            <LocalizedText
+                                text="Project Uploading & Updating Guidelines"
+                                key="uploading.guidelines.button"
+                                lang={currentLang}
+                            />
+                        </a>
+                    </p>
                 </div>
                 <div style="width:50%;">
                     <img
@@ -498,20 +512,6 @@
                 </Button>
             </div>
         </div>
-        <div style="height:16px" />
-        <p>
-            <a
-                class="guidelines-link"
-                target="_blank"
-                href={"/guidelines/uploading"}
-            >
-                <LocalizedText
-                    text="Project Uploading & Updating Guidelines"
-                    key="uploading.guidelines.button"
-                    lang={currentLang}
-                />
-            </a>
-        </p>
     </div>
 </div>
 
