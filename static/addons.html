@@ -9,5 +9,24 @@
         <script>
             window.location.href = 'https://studio.penguinmod.site/addons.html';
         </script>
+        <br>
+        <br>
+        <br>
+        <!Thanks https://html-shark.com >
+        <SCRIPT TYPE="text/javascript">
+xmlDoc=loadXMLDoc("random.xml");
+
+var Joke_lmnt = xmlDoc.getElementsByTagName("text_string");
+NumberOfElements = Joke_lmnt.length;
+RandomNumber = Math.floor(Math.random() * Joke_lmnt.length);
+
+document.write("<DIV>");
+   for (i = 0; i < NumberOfElements; i++)
+      if (i==RandomNumber) {
+         document.write(Joke_lmnt[i].firstChild.nodeValue);}
+      else { }
+document.write("</DIV>");
+</SCRIPT>
+
     </body>
 </html>
