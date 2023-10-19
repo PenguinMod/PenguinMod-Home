@@ -23,11 +23,13 @@
 	let isApprover = false;
 	let accountUsername = "";
 	let messageCount = 0;
+	let canRankUp = false;
 
 	function loggedInCheck() {
 		const privateCode = localStorage.getItem("PV");
 		if (!privateCode) {
 			loggedIn = false;
+			canRankUp = false;
 			messageCount = 0;
 			return;
 		}
@@ -46,14 +48,21 @@
 						ProjectClient.getMessageCount().then((amount) => {
 							messageCount = amount;
 						});
+						if (username) {
+							ProjectApi.getProfile(username).then((profile) => {
+								canRankUp = profile.canrankup === true;
+							});
+						}
 						return;
 					}
 					loggedIn = false;
+					canRankUp = false;
 					messageCount = 0;
 				}
 			)
 			.catch(() => {
 				loggedIn = false;
+				canRankUp = false;
 				messageCount = 0;
 			});
 	}
@@ -74,6 +83,7 @@
 				localStorage.removeItem("PV");
 				Authentication.fireLogout();
 				loggedIn = false;
+				canRankUp = false;
 				messageCount = 0;
 			});
 		});
@@ -196,6 +206,9 @@
 				key="navigation.profile"
 				lang={currentLang}
 			/>
+			{#if canRankUp}
+				<div class="rankup-badge">!</div>
+			{/if}
 		</button>
 	</a>
 	<a href="/mystuff">
@@ -281,15 +294,9 @@
 			style="padding:0.5rem"
 		/>
 	{/if}
-	{#if isAdmin && loggedIn}
+	{#if (isAdmin || isApprover) && loggedIn}
 		<BarPage
 			link="/panel"
-			label="<img src='/messages/panel.svg' width='25' alt='Panel'>"
-			style="padding:0.5rem"
-		/>
-	{:else if isApprover && loggedIn}
-		<BarPage
-			link="/userpanel"
 			label="<img src='/messages/panel.svg' width='25' alt='Panel'>"
 			style="padding:0.5rem"
 		/>
@@ -476,6 +483,16 @@
 		height: 16px;
 		top: 0px;
 		right: 0px;
+	}
+	.rankup-badge {
+		display: inline-block;
+		text-align: center;
+		background: red;
+		color: white;
+		font-weight: bold;
+		border-radius: 1000px;
+		width: 16px;
+		height: 16px;
 	}
 
 	.profile-picture {

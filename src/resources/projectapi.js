@@ -46,6 +46,24 @@ class ProjectApi {
                 });
         });
     }
+    static getProfile(user) {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/users/profile?username=${user}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((profile) => {
+                        resolve(profile);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
     static async isDonator(user) {
         if (user in ProjectApi.CachedDonators) {
             return ProjectApi.CachedDonators[user];
@@ -391,7 +409,72 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
+    }
+    getReports(type, userOrId) {
+        if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/${type}s/getReports?target=${userOrId}&username=${this.username}&passcode=${this.privateCode}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((reports) => {
+                        resolve(reports);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+    getTypeWithReports(type) {
+        if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/${type}s/getContentWithReports?username=${this.username}&passcode=${this.privateCode}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((reports) => {
+                        resolve(reports);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+    closeReports(type, idOrName, reporter) {
+        if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
+        return new Promise((resolve, reject) => {
+            const data = {
+                username: this.username,
+                passcode: this.privateCode,
+                id: idOrName,
+                target: reporter
+            };
+            const url = `${OriginApiUrl}/api/${type}s/deleteReports`;
+            fetch(url, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            })
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
     getRejectedProjectFile(id) {
         return new Promise((resolve, reject) => {
@@ -419,6 +502,31 @@ class ProjectApi {
                 id
             };
             const url = `${OriginApiUrl}/api/projects/restoreRejected`;
+            fetch(url, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            })
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+    deleteRejectedProject(id) {
+        return new Promise((resolve, reject) => {
+            const data = {
+                approver: this.username,
+                passcode: this.privateCode,
+                id
+            };
+            const url = `${OriginApiUrl}/api/projects/deleteRejected`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
@@ -517,9 +625,44 @@ class ProjectApi {
             });
         });
     }
+    reportContent(type, nameOrId, reason) {
+        if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/${type}s/report?username=${this.username}&passcode=${this.privateCode}&target=${nameOrId}&reason=${reason}`).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                });
+            }).catch(err => {
+                reject(err);
+            });
+        });
+    }
     assingUsersPermisions(username, admin, approver) {
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/users/assignPossition?user=${this.username}&passcode=${this.privateCode}&target=${username}&admin=${admin}&approver=${approver}`).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                });
+            }).catch(err => {
+                reject(err);
+            });
+        });
+    }
+    setErrorAllGetProjects(enabled) {
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/errorAllProjectRequests?user=${this.username}&passcode=${this.privateCode}&enabled=${enabled}`).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);
@@ -560,6 +703,31 @@ class ProjectApi {
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/projects/reject`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+    attemptRankUp() {
+        const data = {
+            passcode: this.privateCode,
+            username: this.username
+        };
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/users/requestRankUp`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
                 method: "POST"

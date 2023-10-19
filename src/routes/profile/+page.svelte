@@ -36,6 +36,9 @@
     let isDonator = false;
     let isFollowingUser = false;
     let followerCount = null;
+    let fullProfile = {};
+    let isRankingUpMenu = false;
+    let isAttemptingRankUp = false;
 
     const loggedInChange = async () => {
         if (!loggedIn) {
@@ -60,12 +63,11 @@
                 projects.featured = ["none"];
             }
         });
-        ProjectApi.getUserBadges(user).then((badgs) => {
-            badges = badgs;
-            isDonator = badges.includes("donator");
-        });
-        ProjectApi.getFollowerCount(user).then((foolowerCount) => {
-            followerCount = foolowerCount;
+        ProjectApi.getProfile(user).then((proffile) => {
+            fullProfile = proffile;
+            badges = fullProfile.badges;
+            isDonator = fullProfile.donator;
+            followerCount = fullProfile.followers;
         });
     });
 
@@ -181,6 +183,20 @@
                 loggedInChange();
             });
     });
+
+    const rankUpAccount = () => {
+        isAttemptingRankUp = true;
+        ProjectClient.attemptRankUp()
+            .then(() => {
+                window.location.reload();
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`We couldn't rank you up!\n${err}`);
+                isAttemptingRankUp = false;
+                isRankingUpMenu = false;
+            });
+    };
 </script>
 
 <head>
@@ -188,6 +204,28 @@
 </head>
 
 <NavigationBar />
+
+{#if isRankingUpMenu}
+    <div class="scratch-modal-back">
+        <div class="scratch-modal">
+            <div class="scratch-modal-title">Rank up</div>
+            <div class="scratch-modal-content">
+                <img src="/penguins/rankup.svg" alt="Rank up" />
+                <p style="text-align:center;">
+                    Let's see if you can become a real penguin!
+                    <br />
+                    This will allow you to upload projects with custom extensions
+                    and other built-in extensions.
+                </p>
+                {#if isAttemptingRankUp}
+                    <LoadingSpinner />
+                {:else}
+                    <Button on:click={rankUpAccount}>Rank up</Button>
+                {/if}
+            </div>
+        </div>
+    </div>
+{/if}
 
 <div class="main">
     <NavigationMargin />
@@ -214,7 +252,7 @@
                                 <div class="user-badges">
                                     {#each badges as badge, idx}
                                         <!-- TODO: these should be clickable & have proper
-                                alts + titles -->
+                                    alts + titles -->
                                         <button
                                             on:click={() => {
                                                 focusedBadge = idx;
@@ -249,6 +287,39 @@
                                         </button>
                                     {/each}
                                 </div>
+                                <p class="small" style="margin-block:4px">
+                                    {#if fullProfile.admin === true}
+                                        King Penguin
+                                    {:else if fullProfile.approver === true}
+                                        Guard Penguin
+                                    {:else if fullProfile.rank === 1}
+                                        Penguin
+                                    {:else}
+                                        Newborn Penguin
+                                    {/if}
+                                    {#if loggedIn && user === loggedInUser && fullProfile.rank === 0}
+                                        |
+                                        {#if fullProfile.canrankup !== true}
+                                            <span style="opacity: 0.5">
+                                                Cannot rank up
+                                            </span>
+                                        {:else}
+                                            <!-- svelte-ignore a11y-invalid-attribute -->
+                                            <a
+                                                href="#"
+                                                style="color:dodgerblue"
+                                                on:click={() => {
+                                                    isRankingUpMenu = true;
+                                                }}
+                                            >
+                                                Rank up
+                                                <div class="rankup-badge">
+                                                    !
+                                                </div>
+                                            </a>
+                                        {/if}
+                                    {/if}
+                                </p>
                             </div>
                         </div>
                         <div>
@@ -355,6 +426,29 @@
                     </div>
                 </ContentCategory>
             </div>
+            {#if !(loggedIn && user === loggedInUser)}
+                <div class="section-serious-actions">
+                    <div class="report-action">
+                        <a
+                            href={`/report?type=user&id=${user}`}
+                            target="_blank"
+                            class="report-link"
+                            style="color: red !important;"
+                        >
+                            <img
+                                class="report-icon"
+                                src="/report_flag.png"
+                                alt="Report"
+                            />
+                            <LocalizedText
+                                text="Report"
+                                key="report.title"
+                                lang={currentLang}
+                            />
+                        </a>
+                    </div>
+                </div>
+            {/if}
         {:else}
             <div style="height:32px;" />
             <div style="display:flex;flex-direction:column;align-items:center;">
@@ -408,6 +502,19 @@
         margin: 0px;
         margin-top: 6px;
     }
+    .section-serious-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+    .report-action {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        width: 65%;
+    }
 
     .project-list {
         display: flex;
@@ -421,6 +528,43 @@
         width: 100%;
         height: 100%;
         text-align: center;
+    }
+
+    .scratch-modal-back {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.5);
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 6000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .scratch-modal {
+        overflow: hidden;
+        border: 4px solid hsla(0, 100%, 100%, 0.25);
+        outline: none;
+        border-radius: 0.5rem;
+    }
+    .scratch-modal-title {
+        background: #00c3ff;
+        color: white;
+        font-size: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 3.125rem;
+    }
+    .scratch-modal-content {
+        padding: 12px;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .profile-picture {
@@ -439,6 +583,28 @@
     }
     :global(body.dark-mode) .donator-color {
         color: #c65cff;
+    }
+
+    .small {
+        font-size: small;
+    }
+    .rankup-badge {
+        display: inline-block;
+        text-align: center;
+        background: red;
+        color: white;
+        font-weight: bold;
+        border-radius: 1000px;
+        width: 16px;
+        height: 16px;
+    }
+    .report-link {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+    .report-icon {
+        height: 16px;
     }
 
     .subuser-section {

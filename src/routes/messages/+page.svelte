@@ -3,6 +3,7 @@
     import Authentication from "../../resources/authentication.js";
     import AutoTranslate from "../../resources/autoTranslate.js";
     import ProjectApi from "../../resources/projectapi.js";
+    import * as FileSaver from "file-saver";
 
     const ProjectClient = new ProjectApi();
 
@@ -88,6 +89,20 @@
     //     }
     //     ProjectClient.deleteProject(id).then(loggedInChange);
     // }
+    const downloadRejectedProject = async (projectId) => {
+        try {
+            const projectFile = await ProjectClient.getRejectedProjectFile(
+                projectId
+            );
+            FileSaver.saveAs(
+                new Blob([projectFile]),
+                `Project_${projectId}.pmp`
+            );
+        } catch (err) {
+            console.error(err);
+            alert(`Failed to download the project; ${err}`);
+        }
+    };
 
     onMount(async () => {
         const privateCode = localStorage.getItem("PV");
@@ -318,6 +333,25 @@
                             <b>Project ID:</b>
                             {message.projectId}
                         </p>
+                        <button
+                            class="fake-link"
+                            style="display:flex;align-items:center;"
+                            on:click={() =>
+                                downloadRejectedProject(message.projectId)}
+                        >
+                            <img
+                                src="/messages/download.png"
+                                alt="Download"
+                                width="16"
+                                height="16"
+                                style="margin-right:6px"
+                            />
+                            <LocalizedText
+                                text="Download"
+                                key="messages.download"
+                                lang={currentLang}
+                            />
+                        </button>
                     {:else if message.type === "featured"}
                         <p>
                             <b>

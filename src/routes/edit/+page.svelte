@@ -191,11 +191,11 @@
             );
             if (continueEdit.trim().replace(/[^0-9]*/gim, "") !== String(code))
                 return;
-        } else if (projectMetadata.accepted) {
-            const continueEdit = confirm(
-                TranslationHandler.text("editing.confirm.normal", currentLang)
-            );
-            if (!continueEdit) return;
+            // } else if (projectMetadata.accepted) {
+            //     const continueEdit = confirm(
+            //         TranslationHandler.text("editing.confirm.normal", currentLang)
+            //     );
+            //     if (!continueEdit) return;
         }
         const newMetadata = {};
         const data = {
