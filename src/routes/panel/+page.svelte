@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import Authentication from "../../resources/authentication.js";
+    import ProfileBadges from "../../resources/badges.js";
     import QuickReject from "../../resources/quickReject.js";
     import ProjectApi from "../../resources/projectapi.js";
     import * as FileSaver from "file-saver";
@@ -36,22 +37,15 @@
             return;
         }
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then(({ username, isAdmin, isApprover }) => {
                 if (username) {
-                    ProjectApi.isAdmin(username)
-                        .then((isAdmin) => {
-                            if (!isAdmin) {
-                                kickOut();
-                                return;
-                            }
-                            ProjectClient.setUsername(username);
-                            ProjectClient.setPrivateCode(privateCode);
-                            loggedIn = true;
-                        })
-                        .catch(() => {
-                            kickOut();
-                            return;
-                        });
+                    if (!isAdmin && !isApprover) {
+                        kickOut();
+                        return;
+                    }
+                    ProjectClient.setUsername(username);
+                    ProjectClient.setPrivateCode(privateCode);
+                    loggedIn = true;
                     return;
                 }
                 loggedIn = false;
@@ -62,24 +56,6 @@
                 kickOut();
             });
     });
-
-    // moved this here so it can be used latter on
-    let dropdownSelectMenu;
-    let dropdownSelectOrder;
-    const refreshProjectMenu = () => {
-        switch (dropdownSelectMenu.value) {
-            case "unapproved":
-                return openMenu(false);
-            case "approved":
-                return openMenu(true);
-            default:
-                projectPageType = approved;
-                projects = [];
-                projectPage = 0;
-                lastProjectPage = false;
-                break;
-        }
-    };
     // we dont need to add an "onAuthenticate" event
     // because you cant sign in on the /panel page,
     // signing out or going on it while signed out
@@ -89,65 +65,70 @@
         location.href = location.origin;
     });
 
-    let projects = [];
-    let projectPage = 0;
-    let lastProjectPage = false;
+    // moved this here so it can be used latter on
+    let dropdownSelectMenu;
 
-    let approvedProjectNames = [];
+    let contentWithReports = [];
+    let reports = [];
+    let selectedReportDetailed = -1;
+    let reportDetails = Object.create({});
 
-    let projectOrdering = "recent";
-    function incrementPageAndAddToMenu(approved) {
-        projectPage += 1;
-        // todo: not this thats for sure
-        //       just do one of them and then await it idk
-        //       gonna do that later
-        //       (aka in like 3 months when i finally look at this code again)
-        console.log(projectPage);
-        const trueOrdering = projectOrdering === "old";
-        if (approved) {
-            ProjectApi.getProjects(projectPage, trueOrdering).then(
-                (projectss) => {
-                    projects.push(...projectss);
-                    projects = projects;
-                    if (projectss.length <= 0) {
-                        lastProjectPage = true;
-                    }
-                }
-            );
-        } else {
-            ProjectClient.getUnapprovedProjects(projectPage, trueOrdering).then(
-                (projectss) => {
-                    projects.push(...projectss);
-                    projects = projects;
-                    if (projectss.length <= 0) {
-                        lastProjectPage = true;
-                    }
-                }
-            );
+    const loadReportDetails = (id) => {
+        let type = "user";
+        if (dropdownSelectMenu.value === "project") {
+            type = "project";
         }
-    }
-    let projectPageType = true;
-    function openMenu(approved) {
-        projectPageType = approved;
-        projects = [];
-        projectPage = 0;
-        lastProjectPage = false;
-        // if old, will be true
-        // true = old is first
-        const trueOrdering = projectOrdering === "old";
-        if (approved) {
-            ProjectApi.getProjects(projectPage, trueOrdering).then(
-                (projectss) => {
-                    projects = projectss;
-                }
-            );
-        } else {
-            ProjectClient.getUnapprovedProjects(projectPage, trueOrdering).then(
-                (projectss) => {
-                    projects = projectss;
-                }
-            );
+        if (id in reportDetails) {
+            return;
         }
+        ProjectClient.getReports(type, id).then((reports) => {
+            reportDetails[id] = reports;
+            reportDetails = reportDetails;
+        });
+    };
+
+    const setGetProjects = (allowGetProjects) => {
+        if (!confirm("Are you sure?")) return;
+        ProjectClient.setErrorAllGetProjects(allowGetProjects)
+            .then(() => {
+                alert("done");
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(err);
+            });
+    };
+
+    const refreshProjectMenu = () => {
+        reports = [];
+        contentWithReports = [];
+        selectedReportDetailed = -1;
+        reportDetails = Object.create({});
+        switch (dropdownSelectMenu.value) {
+            case "user":
+            case "project":
+                return openMenu(dropdownSelectMenu.value);
+        }
+    };
+    const closeUserReports = (idOrName, user) => {
+        const confirmed = prompt(
+            'Are you sure you have looked at all reports and possibly acted upon them?\nType "ok" to close all reports from this user.'
+        );
+        if (confirmed !== "ok") return;
+        const type = dropdownSelectMenu.value;
+        ProjectClient.closeReports(type, idOrName, user)
+            .then(() => {
+                refreshProjectMenu();
+            })
+            .catch((err) => {
+                alert(err);
+            });
+    };
+
+    function openMenu(type) {
+        ProjectClient.getTypeWithReports(type).then((projectsWithReports) => {
+            contentWithReports = projectsWithReports;
+        });
         // get approved projects anyways cuz we need to update list
         // todo: getProjects is paged breh what we do?
         //       add a new endpoint containing all project names with tons of compression propably :idk_man:
@@ -171,18 +152,21 @@
     let rejectingName = "";
     let rejectingTextboxArea;
     function rejectProject(id) {
+        id ??= Number(projectIdSelection.value);
+        if (isNaN(id)) return;
         if (!confirm(`Reject "${rejectingName}"?`)) return;
         if (rejectingTextboxArea.value.length <= 3) {
             return alert("The action was cancelled.");
         }
         ProjectClient.rejectProject(id, rejectingTextboxArea.value).then(() => {
             rejectionPageOpen = false;
+            // uhhhhhhh apparently we need to do this ig?
+            const newProjects = projects.filter((proj) => proj.id !== id);
+            projects = [];
+            projects = newProjects;
+            // dont need to do this i think
+            // refreshProjectMenu();
         });
-        // this removes anything with the id we where given to reject
-        // we do this by filter by if it is not :Trol:
-        projects = projects.filter((proj) => proj.id !== id);
-        // dont need to do this i think
-        // refreshProjectMenu();
     }
     let selectedProjectName = "";
     let lastSelectedProjectId = 0;
@@ -193,11 +177,11 @@
             selectedProjectName = name;
         }
     }
-    function featureProject(id, name) {
-        const usure = confirm("Feature " + name + " ?");
-        if (!usure) return;
-        ProjectClient.featureProject(id).catch((err) => alert(err));
-    }
+    // function featureProject(id, name) {
+    //     const usure = confirm("Feature " + name + " ?");
+    //     if (!usure) return;
+    //     ProjectClient.featureProject(id).catch((err) => alert(err));
+    // }
 
     onMount(() => {
         projectIdSelection.onchange = () => {
@@ -208,22 +192,22 @@
         };
     });
 
-    let sendWebhook = true;
-    function approveProject() {
-        const id = Number(projectIdSelection.value);
-        if (isNaN(id)) return;
-        ProjectClient.approveProject(id, sendWebhook)
-            .then(() => {
-                alert("The project was approved!");
-                // this removes anything with the id we where given to reject
-                // we do this by filter by if it is not :Trol:
-                projects = projects.filter((proj) => proj.id !== id);
-                // refreshProjectMenu();
-            })
-            .catch((err) => {
-                alert(err);
-            });
-    }
+    // let sendWebhook = true;
+    // function approveProject() {
+    //     const id = Number(projectIdSelection.value);
+    //     if (isNaN(id)) return;
+    //     ProjectClient.approveProject(id, sendWebhook)
+    //         .then(() => {
+    //             alert("The project was approved!");
+    //             // uhhhhhhh apparently we need to do this ig?
+    //             const newProjects = projects.filter((proj) => proj.id !== id);
+    //             projects = [];
+    //             projects = newProjects;
+    //         })
+    //         .catch((err) => {
+    //             alert(err);
+    //         });
+    // }
 
     let inspectMenuOpen = false;
     const inspectMenuDetails = {
@@ -295,31 +279,6 @@
         }, 1000);
     }
 
-    let guidelinePageOpen = false;
-    onMount(() => {
-        dropdownSelectMenu.onchange = () => {
-            switch (dropdownSelectMenu.value) {
-                case "unapproved":
-                    return openMenu(false);
-                case "approved":
-                    return openMenu(true);
-                default:
-                    projectPageType = approved;
-                    projects = [];
-                    projectPage = 0;
-                    lastProjectPage = false;
-                    break;
-            }
-        };
-        dropdownSelectOrder.onchange = () => {
-            projectOrdering = "recent";
-            if (dropdownSelectOrder.value === "old") {
-                projectOrdering = "old";
-            }
-            refreshProjectMenu();
-        };
-    });
-
     const messageReplyInfo = {
         username: "",
         id: "",
@@ -367,11 +326,27 @@
         if (!confirm("Are you sure you want to restore this project?")) return;
         ProjectClient.restoreRejectedProject(rejectedProjectId)
             .then(() => {
-                alert("Restored! Check the unapproved tab.");
+                alert("Restored!");
             })
             .catch((err) => {
                 console.error(err);
                 alert(`Failed to restore project; ${err}`);
+            });
+    };
+    const deleteRejectedProject = () => {
+        if (
+            !confirm(
+                "Are you sure you want to PERMANENTLY delete this project?\nYou should only do this if the project contains some really bad stuff."
+            )
+        )
+            return;
+        ProjectClient.deleteRejectedProject(rejectedProjectId)
+            .then(() => {
+                alert("Deleted.");
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to delete project; ${err}`);
             });
     };
 
@@ -379,6 +354,8 @@
         username: "",
         reason: "",
     };
+    let admin = false;
+    let approver = false;
     const banUser = () => {
         const promptMessage = prompt(
             `Are you sure you want to ban ${banOrUnbanData.username} for "${banOrUnbanData.reason}"? Type "ok" to confirm.`
@@ -405,6 +382,67 @@
             .catch((err) => {
                 console.error(err);
                 alert(`Failed to unban user; ${err}`);
+            });
+    };
+
+    let areBadgesLoadedForVisibility = false;
+    let currentUserBadges = {};
+    let userBadgesUsername = "";
+    const loadUserBadges = async () => {
+        areBadgesLoadedForVisibility = false;
+        if (!userBadgesUsername) return;
+        const realBadges = await ProjectApi.getUserBadges(userBadgesUsername);
+        currentUserBadges = {};
+        for (const badgeName in ProfileBadges) {
+            currentUserBadges[badgeName] = false;
+        }
+        for (const badgeName of realBadges) {
+            currentUserBadges[badgeName] = true;
+        }
+        console.log(currentUserBadges);
+        areBadgesLoadedForVisibility = true;
+    };
+    const applyUserBadges = () => {
+        if (!confirm("Apply badges to this user?")) return;
+        const newBadges = [];
+        for (const badgeName in currentUserBadges) {
+            if (currentUserBadges[badgeName] === true) {
+                newBadges.push(badgeName);
+            }
+        }
+        ProjectClient.setUserBadges(userBadgesUsername, newBadges)
+            .then(() => {
+                alert("Badges are set!");
+            })
+            .catch((err) => {
+                alert(`An error occurred: ${err}`);
+            });
+    };
+    const setUsersPerms = () => {
+        const verbAdmin = admin
+            ? `grant ${banOrUnbanData.username} admin?`
+            : `revoke ${banOrUnbanData.username}'s admin?`;
+        const verbApprover = approver
+            ? `grant ${banOrUnbanData.username} modderator?`
+            : `revoke ${banOrUnbanData.username}'s modderation possition?`;
+        const promptMessage = prompt(
+            `Are you sure you want to ${verbAdmin} & ${verbApprover} Type "ok" to confirm.`
+        );
+        if (promptMessage !== "ok") return;
+        ProjectClient.assingUsersPermisions(
+            banOrUnbanData.username,
+            admin,
+            approver
+        )
+            .then(() => {
+                // i don wana make it re-say the whole grant-revoke thingy
+                alert(
+                    `Successfully did what ever you said to do ${banOrUnbanData.username}.`
+                );
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to moddify users permissions; ${err}`);
             });
     };
 </script>
@@ -744,7 +782,7 @@
         </div>
     {/if}
 
-    {#if guidelinePageOpen}
+    <!-- {#if guidelinePageOpen}
         <div class="front-card-page">
             <div class="card-page">
                 <div class="card-header">
@@ -753,11 +791,11 @@
                 <div class="card-projects">
                     <iframe
                         title="Guidelines Page"
-                        src="https://studio.penguinmod.site/PenguinMod-Guidelines/PROJECTS"
+                        src="https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
                     />
                 </div>
                 <a
-                    href="https://studio.penguinmod.site/PenguinMod-Guidelines/PROJECTS"
+                    href="https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
                     style="margin-top:6px;color:dodgerblue"
                     target="_blank"
                 >
@@ -779,7 +817,7 @@
                 </div>
             </div>
         </div>
-    {/if}
+    {/if} -->
 
     <div class="section-info">
         <div>
@@ -802,14 +840,14 @@
                 {#if selectedProjectName}
                     <a
                         target="_blank"
-                        href={`https://studio.penguinmod.site/#${lastSelectedProjectId}`}
+                        href={`https://studio.penguinmod.com/#${lastSelectedProjectId}`}
                         style="color: dodgerblue"
                     >
                         <p>
                             Selected <b>{selectedProjectName}</b>
                         </p>
                         <img
-                            src={`https://projects.penguinmod.site/api/pmWrapper/iconUrl?id=${lastSelectedProjectId}`}
+                            src={`${ProjectApi.OriginApiUrl}/api/pmWrapper/iconUrl?id=${lastSelectedProjectId}`}
                             alt="Project Thumbnail"
                         />
                     </a>
@@ -821,17 +859,27 @@
                         on:click={openInspectMenu}
                     />
                 </div>
-                <div style="height:24px" />
+                <!-- <div style="height:24px" />
                 <label>
                     <input type="checkbox" bind:checked={sendWebhook} />
                     Send Approved Projects to Discord
-                </label>
+                </label> -->
                 <div style="height:24px" />
-                <Button label="Approve Project" on:click={approveProject} />
+                <Button
+                    label="Remove Project"
+                    color="red"
+                    on:click={() => {
+                        const id = Number(projectIdSelection.value);
+                        if (isNaN(id)) return;
+                        rejectingId = id;
+                        rejectingName = selectedProjectName;
+                        rejectionPageOpen = true;
+                    }}
+                />
                 <div style="height:24px" />
-                <h3>Rejected Projects</h3>
+                <h3>Removed Projects</h3>
                 <p>
-                    Target Rejected Project:
+                    Target Removed Project:
                     <input type="number" bind:value={rejectedProjectId} />
                 </p>
                 <div
@@ -841,17 +889,22 @@
                     <Button color="remix" on:click={restoreRejectedProject}>
                         Restore
                     </Button>
+                    <div style="margin-right:24px" />
+                    <Button color="red" on:click={deleteRejectedProject}>
+                        Delete
+                    </Button>
                 </div>
             </div>
 
-            <button
-                class="guidelines-link"
-                on:click={() => {
-                    guidelinePageOpen = true;
-                }}
-            >
-                Project Uploading & Updating Guidelines
-            </button>
+            <p>
+                <a
+                    class="guidelines-link"
+                    target="_blank"
+                    href={"/guidelines/uploading"}
+                >
+                    Project Uploading & Updating Guidelines
+                </a>
+            </p>
 
             <br />
 
@@ -920,11 +973,84 @@
                 </p>
                 <br />
                 <br />
+                <label>
+                    <input type="checkbox" bind:checked={admin} />
+                    Grant User Admin Perms
+                </label>
+                <label>
+                    <input type="checkbox" bind:checked={approver} />
+                    Grant User Moderator Perms
+                </label>
                 <div class="user-action-row">
                     <Button on:click={unbanUser}>Unban User</Button>
                     <Button color="red" on:click={banUser}>Ban User</Button>
+                    <Button on:click={setUsersPerms}>Assign User Perms</Button>
                 </div>
             </div>
+
+            <br />
+
+            <div class="card">
+                <h2 style="margin-block-start:0">Badges</h2>
+                <p>Type username:</p>
+                <input
+                    type="text"
+                    size="50"
+                    placeholder="Scratch username..."
+                    on:change={() => {
+                        areBadgesLoadedForVisibility = false;
+                    }}
+                    bind:value={userBadgesUsername}
+                />
+                <div class="user-action-row">
+                    <Button on:click={loadUserBadges}>Load Badges</Button>
+                </div>
+                <br />
+                <br />
+                {#if areBadgesLoadedForVisibility}
+                    <p>Click a badge to toggle if it is given to a user</p>
+                    <p>
+                        Dark gray badges are not added to the user or will be
+                        removed from the user
+                    </p>
+                    <br />
+                    <div class="user-badges-list">
+                        {#each Object.keys(ProfileBadges) as badgeName}
+                            <button
+                                class="user-badge-button"
+                                on:click={() => {
+                                    currentUserBadges[badgeName] =
+                                        !currentUserBadges[badgeName];
+                                }}
+                                data-active={currentUserBadges[badgeName]}
+                            >
+                                <img
+                                    src={`/badges/${ProfileBadges[badgeName]}.png`}
+                                    alt={badgeName}
+                                />
+                                {badgeName}
+                            </button>
+                        {/each}
+                    </div>
+                {:else}
+                    <p>Badges have not been loaded.</p>
+                {/if}
+                <br />
+                <div style="width:100%;height:32px;" />
+                <br />
+                <div class="user-action-row">
+                    <Button color="remix" on:click={applyUserBadges}>
+                        Apply Badges
+                    </Button>
+                </div>
+            </div>
+
+            <Button on:click={() => setGetProjects(false)} color="red"
+                >Disable Getting Projects</Button
+            >
+            <Button on:click={() => setGetProjects(true)} color="remix"
+                >Enable Getting Projects</Button
+            >
 
             <br />
             <br />
@@ -932,82 +1058,171 @@
         <div class="project-sidebar">
             <div class="project-sidebar-actions">
                 <Button on:click={refreshProjectMenu}>Refresh</Button>
-                <select value="" bind:this={dropdownSelectMenu}>
+                <select
+                    value=""
+                    on:change={refreshProjectMenu}
+                    bind:this={dropdownSelectMenu}
+                >
                     <option value="" disabled>(Select an option)</option>
-                    <option value="unapproved">Unapproved</option>
-                    <option value="approved">Approved</option>
-                </select>
-                <select value="recent" bind:this={dropdownSelectOrder}>
-                    <option value="recent">Recently uploaded first</option>
-                    <option value="old">Old projects first</option>
+                    <option value="" disabled />
+                    <option value="user">User Reports</option>
+                    <option value="project">Project Reports</option>
+                    <option value="" disabled />
+                    <optgroup label="Moderation">
+                        <option value="" disabled>
+                            Assets (in development)
+                        </option>
+                    </optgroup>
                 </select>
             </div>
             {#if !dropdownSelectMenu?.value}
                 <p class="selection-warning">
-                    Please select what type of projects you wish to view
+                    Please select what type of reports you wish to view
                 </p>
             {/if}
+
             <div class="list-projects">
                 {#if dropdownSelectMenu?.value}
-                    {#each projects as project}
-                        <Project
-                            id={project.id}
-                            name={project.name}
-                            owner={project.owner}
-                            dotsmenu="true"
-                            openNewtab="true"
-                            style="padding:8px;height:min-content"
-                            dotsoptions={[
-                                {
-                                    name: `Select ${
-                                        project.remix ? "Remix" : "Project"
-                                    }`,
-                                    callback: () => {
-                                        selectProject(project.id, project.name);
-                                    },
-                                },
-                                {
-                                    name: `Edit ${
-                                        project.remix ? "Remix" : "Project"
-                                    }`,
-                                    href: `/edit?id=${project.id}`,
-                                    color: project.remix ? "remix" : null,
-                                    newtab: true,
-                                },
-                                {
-                                    name: `Reject ${
-                                        project.remix ? "Remix" : "Project"
-                                    }`,
-                                    callback: () => {
-                                        rejectingId = project.id;
-                                        rejectingName = project.name;
-                                        rejectionPageOpen = true;
-                                    },
-                                    color: "red",
-                                },
-                            ]}
-                        >
-                            <p class="nomargintext date">
-                                {unixToDisplayDate(project.date)}
-                            </p>
-                            {#if approvedProjectNames.includes(project.name) && !project.accepted}
-                                <p class="nomargintext">
-                                    An approved project also has this name
-                                </p>
-                            {/if}
-                            {#if project.updating}
-                                <p class="nomargintext">(Update!)</p>
-                            {/if}
-                        </Project>
-                    {/each}
-                    {#if !lastProjectPage}
-                        <!-- yes this looks weird, no i wont fix it soon -->
-                        <Button
-                            label="More"
-                            on:click={() =>
-                                incrementPageAndAddToMenu(projectPageType)}
-                        />
+                    {#if dropdownSelectMenu.value === "user"}
+                        <p>Click on a user to expand details</p>
+                    {:else}
+                        <p>Click on a project to expand details</p>
                     {/if}
+                    {#each contentWithReports as content, idx}
+                        {#if dropdownSelectMenu.value === "user"}
+                            <button
+                                class="reports-user-button"
+                                on:click={() => {
+                                    loadReportDetails(content.username);
+                                    if (selectedReportDetailed === idx) {
+                                        selectedReportDetailed = -1;
+                                        return;
+                                    }
+                                    selectedReportDetailed = idx;
+                                }}
+                            >
+                                <img
+                                    src={`https://trampoline.turbowarp.org/avatars/by-username/${content.username}`}
+                                    alt={content.username}
+                                />
+                                <div class="reports-user-content">
+                                    <p style="font-weight: bold;">
+                                        {content.username}
+                                    </p>
+                                    <p>{content.reports} reports</p>
+                                </div>
+                            </button>
+                            {#if selectedReportDetailed === idx}
+                                <div class="reports-generic-details">
+                                    {#if !reportDetails[content.username]}
+                                        <LoadingSpinner />
+                                    {:else}
+                                        <h3>View reports by</h3>
+                                        {#each reportDetails[content.username] as report}
+                                            <details>
+                                                <summary>
+                                                    {report.reporter}
+                                                </summary>
+                                                <p>
+                                                    {report.ids.length} reports
+                                                </p>
+                                                <Button
+                                                    on:click={() =>
+                                                        closeUserReports(
+                                                            content.username,
+                                                            report.reporter
+                                                        )}
+                                                    color="red"
+                                                >
+                                                    Close Reports
+                                                </Button>
+                                                <p style="white-space:pre-wrap">
+                                                    {report.reason}
+                                                </p>
+                                            </details>
+                                        {/each}
+                                    {/if}
+                                </div>
+                            {/if}
+                        {:else if content.exists}
+                            <button
+                                class="reports-user-button reports-project-button"
+                                on:click={() => {
+                                    loadReportDetails(content.id);
+                                    if (selectedReportDetailed === idx) {
+                                        selectedReportDetailed = -1;
+                                        return;
+                                    }
+                                    selectedReportDetailed = idx;
+                                }}
+                            >
+                                <img
+                                    src={`https://projects.penguinmod.com/api/pmWrapper/iconUrl?id=${content.id}`}
+                                    alt={content.name}
+                                />
+                                <div
+                                    class="reports-user-content reports-project-content"
+                                >
+                                    <p style="font-weight: bold;">
+                                        {content.name}
+                                    </p>
+                                    <p>
+                                        by {content.author} | {content.reports} reports
+                                    </p>
+                                </div>
+                            </button>
+                            {#if selectedReportDetailed === idx}
+                                <div class="reports-generic-details">
+                                    <p>
+                                        View project at
+                                        <a
+                                            href={`https://studio.penguinmod.com/#${content.id}`}
+                                        >
+                                            {`https://studio.penguinmod.com/#${content.id}`}
+                                        </a>
+                                        or
+                                        <button
+                                            on:click={() =>
+                                                selectProject(
+                                                    content.id,
+                                                    content.name
+                                                )}
+                                        >
+                                            Select Project
+                                        </button>
+                                    </p>
+                                    {#if !reportDetails[content.id]}
+                                        <LoadingSpinner />
+                                    {:else}
+                                        <h3>View reports by</h3>
+                                        {#each reportDetails[content.id] as report}
+                                            <details>
+                                                <summary>
+                                                    {report.reporter}
+                                                </summary>
+                                                <p>
+                                                    {report.ids.length} reports
+                                                </p>
+                                                <Button
+                                                    on:click={() =>
+                                                        closeUserReports(
+                                                            content.id,
+                                                            report.reporter
+                                                        )}
+                                                    color="red"
+                                                >
+                                                    Close Reports
+                                                </Button>
+                                                <p style="white-space:pre-wrap">
+                                                    {report.reason}
+                                                </p>
+                                            </details>
+                                        {/each}
+                                    {/if}
+                                </div>
+                            {/if}
+                        {/if}
+                    {/each}
                 {/if}
             </div>
         </div>
@@ -1087,6 +1302,49 @@
         border-color: rgba(255, 255, 255, 0.3);
     }
 
+    .reports-user-button {
+        margin: 4px;
+        padding: 4px;
+        border: rgba(0, 0, 0, 0.25) 1px solid;
+        border-radius: 4px;
+        background: white;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: calc(100% - 8px);
+        height: 44px;
+        cursor: pointer;
+    }
+    .reports-user-button:active {
+        filter: brightness(0.9);
+    }
+    .reports-user-button img {
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+    }
+    .reports-project-button img {
+        width: 48px;
+        border-radius: 0;
+    }
+    .reports-user-content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-left: 4px;
+    }
+    .reports-user-content p {
+        margin-block: 0;
+    }
+    .reports-generic-details {
+        margin: 4px;
+        padding: 4px;
+        border: rgba(0, 0, 0, 0.25) 1px solid;
+        border-radius: 4px;
+        background: white;
+        width: calc(100% - 20px);
+    }
+
     .selection-warning {
         text-align: center;
     }
@@ -1104,9 +1362,9 @@
     }
     .list-projects {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         width: 485px;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         overflow: auto;
         height: calc(100% - 5rem);
     }
@@ -1174,6 +1432,26 @@
         height: 100%;
         padding: 16px;
         overflow: auto;
+    }
+
+    .user-badges-list {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        overflow: auto;
+    }
+    .user-badges-list button img {
+        width: 64px;
+        height: 64px;
+    }
+    .user-badge-button {
+        background: #1f1f1f;
+        filter: grayscale(1);
+        color: white;
+    }
+    .user-badge-button[data-active="true"] {
+        background: green;
+        filter: initial;
     }
 
     .nomargintext {

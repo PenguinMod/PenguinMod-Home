@@ -5,6 +5,7 @@
 
 import en from '../translations/en.json';
 import id from '../translations/id.json';
+import he from '../translations/he.json';
 import test from '../translations/test.json';
 
 // to add a language, the first part is the language code (ex: "es-419") or top level (ex: "en-US" goes to "en")
@@ -13,9 +14,14 @@ import test from '../translations/test.json';
 const languages = {
     "en": en,
     "id": id,
+    "he": he,
 
     // "test": test,
 };
+// add languages that are RTL here
+const rtlLanguages = [
+    "he",
+];
 
 class TranslationHandler {
     static text(key, lang) {
@@ -44,6 +50,9 @@ class TranslationHandler {
 
     static get languages() {
         return languages;
+    }
+    static get rtlLanguages() {
+        return rtlLanguages;
     }
 }
 

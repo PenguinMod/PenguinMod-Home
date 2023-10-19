@@ -90,7 +90,7 @@
             loggedIn = false;
         }
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then(({ username }) => {
                 if (username) {
                     ProjectClient.setUsername(username);
                     ProjectClient.setPrivateCode(privateCode);
@@ -236,7 +236,7 @@
     Authentication.onAuthentication((privateCode) => {
         loggedIn = null;
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then(({ username }) => {
                 if (username) {
                     ProjectClient.setUsername(username);
                     ProjectClient.setPrivateCode(privateCode);
@@ -507,7 +507,7 @@
         </div>
     {/if}
 
-    {#if guidelinePageOpen}
+    <!-- {#if guidelinePageOpen}
         <div class="front-card-page">
             <div class="card-page">
                 <div class="card-header">
@@ -522,11 +522,11 @@
                 <div class="card-projects">
                     <iframe
                         title="Guidelines Page"
-                        src="https://studio.penguinmod.site/PenguinMod-Guidelines/PROJECTS"
+                        src="https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
                     />
                 </div>
                 <a
-                    href="https://studio.penguinmod.site/PenguinMod-Guidelines/PROJECTS"
+                    href="https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
                     style="margin-top:6px;color:dodgerblue"
                     target="_blank"
                 >
@@ -566,7 +566,7 @@
                 </div>
             </div>
         </div>
-    {/if}
+    {/if} -->
 
     <div class="section-info">
         <h1>
@@ -647,6 +647,20 @@
                             lang={currentLang}
                         />
                     </label>
+                    <div style="height:16px" />
+                    <p>
+                        <a
+                            class="guidelines-link"
+                            target="_blank"
+                            href={"/guidelines/uploading"}
+                        >
+                            <LocalizedText
+                                text="Project Uploading & Updating Guidelines"
+                                key="uploading.guidelines.button"
+                                lang={currentLang}
+                            />
+                        </a>
+                    </p>
                 </div>
                 <div style="width:50%;">
                     <img
@@ -765,19 +779,6 @@
                 {/if}
             </div>
         </div>
-        <div style="height:16px" />
-        <button
-            class="guidelines-link"
-            on:click={() => {
-                guidelinePageOpen = true;
-            }}
-        >
-            <LocalizedText
-                text="Project Uploading & Updating Guidelines"
-                key="uploading.guidelines.button"
-                lang={currentLang}
-            />
-        </button>
     </div>
 </div>
 

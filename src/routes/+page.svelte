@@ -3,6 +3,7 @@
     import Authentication from "../resources/authentication.js";
     import ProjectApi from "../resources/projectapi.js";
     import censor from "../resources/basiccensorship.js";
+    const ProjectClient = new ProjectApi();
 
     // Static values
     import LINK from "../resources/urls.js";
@@ -26,9 +27,13 @@
     import PenguinConfusedSVG from "../icons/Penguin/confused.svelte";
 
     let loggedIn = null;
+    let langDecided = false;
+    let currentLang = "en";
 
     let ghcommits = [];
+    let myFeed = [];
     let updates = [];
+    let feedIsEmpty = false;
     let ghcommitsFailed = false;
     let ghcommitsLoaded = false;
     let projectsLoaded = false;
@@ -39,10 +44,51 @@
         featured: [],
     };
 
+    const getAndUpdateMyFeed = async () => {
+        const feed = await ProjectClient.getMyFeed();
+        if (feed.length <= 0) {
+            feedIsEmpty = true;
+        }
+        myFeed = feed;
+    };
+    const getFeedText = (type, author, content) => {
+        switch (type) {
+            case "follow":
+                return TranslationHandler.text(
+                    "feed.following",
+                    currentLang
+                ).replace("$1", author);
+            case "upload":
+                return TranslationHandler.text("feed.uploaded", currentLang)
+                    .replace("$1", author)
+                    .replace("$2", content.name);
+            case "remixed":
+                return TranslationHandler.text("feed.remixed", currentLang)
+                    .replace("$1", author)
+                    .replace("$2", content.name);
+            case "posted":
+                return TranslationHandler.text(
+                    "feed.posted",
+                    currentLang
+                ).replace("$1", author);
+        }
+    };
+    const getFeedUrl = (type, author, content) => {
+        switch (type) {
+            case "upload":
+            case "remixed":
+                return `https://studio.penguinmod.com/#${content.id}`;
+            case "posted":
+                return `/profile?user=${author}&post=${content.id}`;
+            default:
+                return `/profile?user=${author}`;
+        }
+    };
+
     onMount(async () => {
         const projectId = Number(location.hash.replace("#", ""));
         if (!isNaN(projectId) && projectId != 0) {
-            location.href = `https://studio.penguinmod.site/#${projectId}`;
+            location.href = `https://studio.penguinmod.com/#${projectId}`;
             return;
         }
 
@@ -89,9 +135,12 @@
             return;
         }
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then(({ username }) => {
                 if (username) {
+                    ProjectClient.setUsername(username);
+                    ProjectClient.setPrivateCode(privateCode);
                     loggedIn = true;
+                    getAndUpdateMyFeed();
                     return;
                 }
                 loggedIn = false;
@@ -103,13 +152,17 @@
 
     Authentication.onLogout(() => {
         loggedIn = false;
+        myFeed = [];
     });
     Authentication.onAuthentication((privateCode) => {
         loggedIn = null;
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then(({ username }) => {
                 if (username) {
+                    ProjectClient.setUsername(username);
+                    ProjectClient.setPrivateCode(privateCode);
                     loggedIn = true;
+                    getAndUpdateMyFeed();
                     return;
                 }
                 loggedIn = false;
@@ -119,8 +172,6 @@
             });
     });
 
-    let langDecided = false;
-    let currentLang = "en";
     onMount(() => {
         Language.forceUpdate();
     });
@@ -128,6 +179,8 @@
         currentLang = lang;
         langDecided = true;
     });
+
+    let isFeedTabSelected = true;
 </script>
 
 <head>
@@ -140,7 +193,9 @@
     <NavigationMargin />
 
     <Alert
+        onlyShowID={"donatee:_1"}
         text={"PenguinMod is a free-to-use visual coding website. Your support can help us keep the website working!"}
+        textBreakup={true}
         textColor={"white"}
         hasImage={true}
         imgSrc={"/happy.svg"}
@@ -149,6 +204,18 @@
         buttonText={"Donate"}
         buttonHref={"/donate"}
     />
+    <!-- TODO: re-add this, but only have it appear for new users after they login on a date before the alert -->
+    <!-- <Alert
+        onlyShowID={"privacee:_1"}
+        text={"Our privacy policy has been updated."}
+        textBreakup={true}
+        textColor={"white"}
+        backColor={"#009900"}
+        hasImage={false}
+        hasButton={true}
+        buttonText={"View"}
+        buttonHref={"https://studio.penguinmod.com/privacy.html"}
+    /> -->
     <StatusAlert />
 
     {#if loggedIn === false}
@@ -262,6 +329,17 @@
         </div>
     {/if}
 
+    <p style="width: 100%; text-align: center;">
+        <i>
+            <LocalizedText
+                text="Scratch Note: Please don't mention PenguinMod on Scratch, we have different rules compared to Scratch! 😅"
+                key="home.scratchnote"
+                dontlink={true}
+                lang={currentLang}
+            />
+        </i>
+    </p>
+
     <div class="section-categories">
         <ContentCategory
             header={TranslationHandler.text(
@@ -295,55 +373,132 @@
                 {/if}
             </div>
         </ContentCategory>
-        <ContentCategory
-            header={TranslationHandler.text(
-                "home.sections.githubcommits",
-                currentLang
-            )}
-            seemore={LINK.github}
-        >
-            <div class="category-content">
-                {#if ghcommits.length > 0}
-                    {#each ghcommits as commit}
-                        {#if commit}
-                            <UserDisplay
-                                link={commit.html_url}
-                                userLink={commit.author
-                                    ? commit.author.html_url
-                                    : ""}
-                                text={censor(commit.commit.message)}
-                                author={commit.author
-                                    ? commit.author.login
-                                    : ""}
-                                image={commit.author
-                                    ? commit.author.avatar_url
-                                    : ""}
+        {#if loggedIn && isFeedTabSelected}
+            <ContentCategory
+                header={TranslationHandler.text(
+                    "home.sections.feed",
+                    currentLang
+                )}
+            >
+                <div class="category-content">
+                    {#if myFeed.length > 0}
+                        {#each myFeed as message}
+                            {#if message}
+                                <UserDisplay
+                                    link={getFeedUrl(
+                                        message.type,
+                                        message.username,
+                                        message.content
+                                    )}
+                                    userLink={`/profile?user=${message.username}`}
+                                    text={getFeedText(
+                                        message.type,
+                                        message.username,
+                                        message.content
+                                    )}
+                                    author={message.username}
+                                    image={`https://trampoline.turbowarp.org/avatars/by-username/${message.username}`}
+                                />
+                            {/if}
+                        {/each}
+                    {:else if feedIsEmpty}
+                        <PenguinConfusedSVG width="6rem" />
+                        <p>
+                            <LocalizedText
+                                text="Nothing was found."
+                                key="generic.notfound"
+                                lang={currentLang}
                             />
-                        {/if}
-                    {/each}
-                {:else if ghcommitsFailed}
-                    <p>
-                        <LocalizedText
-                            text="Failed to load commits."
-                            key="home.sections.githubcommits.failed.generic"
-                            lang={currentLang}
-                        />
-                    </p>
-                {:else if ghcommitsLoaded}
-                    <p style="text-align: center;">
-                        <LocalizedText
-                            text="GitHub failed to provide commits. Please try again later."
-                            key="home.sections.githubcommits.failed.provide"
-                            lang={currentLang}
-                        />
-                    </p>
-                {:else}
-                    <LoadingSpinner />
-                {/if}
-            </div>
-        </ContentCategory>
+                        </p>
+                    {:else}
+                        <LoadingSpinner />
+                    {/if}
+                </div>
+            </ContentCategory>
+        {:else}
+            <ContentCategory
+                header={TranslationHandler.text(
+                    "home.sections.githubcommits",
+                    currentLang
+                )}
+                seemore={LINK.github}
+            >
+                <div class="category-content">
+                    {#if ghcommits.length > 0}
+                        {#each ghcommits as commit}
+                            {#if commit}
+                                <UserDisplay
+                                    link={commit.html_url}
+                                    userLink={commit.author
+                                        ? commit.author.html_url
+                                        : ""}
+                                    text={censor(commit.commit.message)}
+                                    author={commit.author
+                                        ? commit.author.login
+                                        : ""}
+                                    image={commit.author
+                                        ? commit.author.avatar_url
+                                        : ""}
+                                />
+                            {/if}
+                        {/each}
+                    {:else if ghcommitsFailed}
+                        <p>
+                            <LocalizedText
+                                text="Failed to load commits."
+                                key="home.sections.githubcommits.failed.generic"
+                                lang={currentLang}
+                            />
+                        </p>
+                    {:else if ghcommitsLoaded}
+                        <p style="text-align: center;">
+                            <LocalizedText
+                                text="GitHub failed to provide commits. Please try again later."
+                                key="home.sections.githubcommits.failed.provide"
+                                lang={currentLang}
+                            />
+                        </p>
+                    {:else}
+                        <LoadingSpinner />
+                    {/if}
+                </div>
+            </ContentCategory>
+        {/if}
     </div>
-    <div style="height:32px;" />
+    {#if loggedIn}
+        <div class="section-category-toggles">
+            <div class="category-toggle-section" />
+            <div class="category-toggle-section">
+                <button
+                    class="section-toggle-button"
+                    data-active={isFeedTabSelected}
+                    on:click={() => {
+                        isFeedTabSelected = true;
+                    }}
+                >
+                    <LocalizedText
+                        text="My Feed"
+                        key="home.sections.feed"
+                        lang={currentLang}
+                    />
+                </button>
+                <button
+                    class="section-toggle-button"
+                    data-active={!isFeedTabSelected}
+                    on:click={() => {
+                        isFeedTabSelected = false;
+                    }}
+                >
+                    <LocalizedText
+                        text="Recent commits"
+                        key="home.sections.githubcommits"
+                        lang={currentLang}
+                    />
+                </button>
+            </div>
+        </div>
+    {/if}
+
     <div class="section-projects">
         <ContentCategory
             header={TranslationHandler.text(
@@ -417,11 +572,13 @@
                             alt="Server Penguin"
                             style="width: 15rem"
                         />
-                        <LocalizedText
-                            text="Whoops! Our server's having some problems. Try again later."
-                            key="home.server.error"
-                            lang={currentLang}
-                        />
+                        <p>
+                            <LocalizedText
+                                text="Whoops! Our server's having some problems. Try again later."
+                                key="home.server.error"
+                                lang={currentLang}
+                            />
+                        </p>
                     </div>
                 {:else}
                     <LoadingSpinner />
@@ -509,7 +666,7 @@
                         lang={currentLang}
                     />
                 </a>
-                <a target="_blank" href={LINK.guidelines.projects}>
+                <a target="_blank" href={"/guidelines/uploading"}>
                     <LocalizedText
                         text="Uploading Guidelines"
                         key="home.footer.sections.info.guidelines"
@@ -602,6 +759,9 @@
         width: 100%;
         margin: 0;
     }
+    :global(html[dir="rtl"]) .section-info {
+        justify-content: space-around;
+    }
     .section-links {
         background: #00c3ff28;
         color: white;
@@ -621,6 +781,36 @@
         justify-content: center;
         width: 100%;
         margin: 0px;
+    }
+    .section-category-toggles {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin: 0px;
+    }
+    .category-toggle-section {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 30%;
+        margin: 4px 10px;
+    }
+    .section-toggle-button {
+        border-radius: 1024px;
+        padding: 4px 10px;
+        background: #008cff;
+        font-weight: bold;
+        font-size: 1em;
+        border: 0;
+        margin: 0 4px;
+        color: white;
+        cursor: pointer;
+    }
+    .section-toggle-button[data-active="true"] {
+        background: #003bdd;
     }
 
     .section-projects {

@@ -1,5 +1,8 @@
 <script>
     import { onMount } from "svelte";
+    import Translations from "../../resources/translations.js";
+    // import ProjectApi from "../../resources/projectapi.js";
+    import Language from "../../resources/language.js";
     import HTMLUtility from "../../resources/html.js";
 
     // Static values
@@ -9,6 +12,7 @@
     export let name;
     export let showdate = false;
     export let featured = false;
+    export let fromDonator = false;
     export let owner;
     export let date = 0;
     export let style = "";
@@ -17,6 +21,17 @@
 
     export let linkOverride = false;
     export let openNewtab = false;
+
+    // let isDonator = false;
+
+    // translation
+    let currentLang = "en";
+    onMount(() => {
+        Language.forceUpdate();
+    });
+    Language.onChange((lang) => {
+        currentLang = lang;
+    });
 
     function unixToDisplayDate(unix) {
         return `${new Date(Number(unix)).toDateString()} at ${new Date(
@@ -42,6 +57,11 @@
                 dropdownMenu.style.display = "none";
             }
         });
+
+        // if (!owner) return;
+        // ProjectApi.isDonator(owner).then((donator) => {
+        //     isDonator = donator;
+        // });
     });
 </script>
 
@@ -124,9 +144,20 @@
             <a
                 href={projectAuthorLink}
                 target={openNewtab ? "_blank" : "_self"}
-                class="text author"
+                class={"text author" + (fromDonator ? " donator-name" : "")}
             >
                 {owner}
+                {#if fromDonator}
+                    <img
+                        src="/badges/donator2.png"
+                        alt="Donator"
+                        height="16"
+                        title={Translations.text(
+                            "profile.badge.donator",
+                            currentLang
+                        )}
+                    />
+                {/if}
             </a>
         {/if}
     </div>
@@ -179,6 +210,10 @@
         float: left;
         margin-left: 8px;
     }
+    :global(html[dir="rtl"]) .project-meta {
+        margin-left: initial;
+        margin-right: 8px;
+    }
     :global(body.dark-mode) .project[data-featured="false"] {
         border-color: rgba(255, 255, 255, 0.3);
     }
@@ -211,10 +246,24 @@
     .author {
         color: #575e75;
         font-weight: normal;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+    .author > img {
+        margin: 0 4px;
     }
     :global(body.dark-mode) .author {
         color: #9ba0b1;
         font-weight: normal;
+    }
+    .donator-name {
+        color: #a237db;
+        font-weight: bold;
+    }
+    :global(body.dark-mode) .donator-name {
+        color: #c65cff;
+        font-weight: bold;
     }
     .date {
         font-size: 10px;
@@ -226,6 +275,10 @@
     }
     .project[data-featured="true"] .author {
         color: black;
+    }
+    .project[data-featured="true"] .donator-name {
+        color: #8f00db;
+        font-weight: bold;
     }
 
     .dots-menu {

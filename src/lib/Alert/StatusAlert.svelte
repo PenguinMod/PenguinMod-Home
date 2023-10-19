@@ -26,5 +26,13 @@
 </script>
 
 {#if currentStatus.type !== "empty"}
-    <Alert text={currentStatus.text} backColor="#ffd900" textColor="black" />
+    <Alert
+        text={currentStatus.text}
+        backColor="#ffd900"
+        textColor="black"
+        hasButton={true}
+        buttonText="Details"
+        buttonHref={"https://status.penguinmod.site/"}
+        buttonTooLight={true}
+    />
 {/if}

@@ -42,6 +42,11 @@ class Language {
             "color:white;font-family:system-ui;font-size:1.75rem;-webkit-text-stroke: 1px black;font-weight:bold"
         );
         console.log(warnings[2]);
+        // change page direction if needed
+        document.documentElement.dir = "ltr";
+        if (TranslationHandler.rtlLanguages.includes(lang)) {
+            document.documentElement.dir = "rtl";
+        }
         // fire change event
         Language.fireChange(lang);
     }

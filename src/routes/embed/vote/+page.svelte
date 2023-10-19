@@ -30,7 +30,7 @@
         if (loggedIn === false) {
             Authentication.authenticate().then((privateCode) => {
                 Authentication.usernameFromCode(privateCode)
-                    .then((username) => {
+                    .then(({username}) => {
                         if (username) {
                             loggedIn = true;
                             vote();
@@ -54,7 +54,7 @@
         if (loggedIn === false) {
             Authentication.authenticate().then((privateCode) => {
                 Authentication.usernameFromCode(privateCode)
-                    .then((username) => {
+                    .then(({username}) => {
                         if (username) {
                             loggedIn = true;
                             love();
@@ -100,7 +100,7 @@
             return;
         }
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then(({username}) => {
                 if (username) {
                     ProjectClient.setPrivateCode(privateCode);
                     ProjectClient.setUsername(username);
@@ -128,7 +128,7 @@
     });
     Authentication.onAuthentication((privateCode) => {
         ProjectClient.setPrivateCode(privateCode);
-        Authentication.usernameFromCode(privateCode).then((username) => {
+        Authentication.usernameFromCode(privateCode).then(({username}) => {
             if (username) {
                 ProjectClient.setUsername(username);
                 loggedIn = true;

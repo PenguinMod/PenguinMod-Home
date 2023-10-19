@@ -3,14 +3,13 @@
     "Tip: Using colored custom blocks can help clean up your code.",
     "Fun fact: PenguinMod's birthday is October 17th!",
     "Can you find the secrets hidden around the site?",
-    "I LOVE DARK MODE!!!!",
+    "Fun fact: I LOVE DARK MODE!!!!",
     "Did you know you can get your own extensions added to PenguinMod? Check out the extensions repository!",
-    "PenguinMod's home page is made in Svelte :3",
-    "We handle millions of requests a month!",
-    "An offline PenguinMod app is in development!",
+    "Fun fact: PenguinMod's home page is made in Svelte :3",
+    "Fun fact: We handle millions of requests a month!",
+    "Fun fact: An offline PenguinMod app is in development!",
     "Want to contribute to PenguinMod? Check out the GitHub repository!",
     "I might need to come back to this tomorrow...",
-    "Loading chunks...",
     "Fixing all of the grammar errors, lol",
     "All of these \"tips\" are stored inside \"PenguinMod-Home/src/lib/LoadingSpinner/Tips.json\"!",
     "Please wait unless waiting is not possible!",
@@ -25,4 +24,6 @@
     "Fun fact: PenguinMod developers can't spell correctly :trollface:",
     "Fun fact: You can donate to the developer of PenguinMod",
     "I LOVE SNAIL IDE"
+    "Fun fact: The penguin's name is Pang.",
+    "Fun fact: The front-facing penguin costume was added thanks to a project asking for it!"
 ]

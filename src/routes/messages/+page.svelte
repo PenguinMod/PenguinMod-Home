@@ -3,6 +3,7 @@
     import Authentication from "../../resources/authentication.js";
     import AutoTranslate from "../../resources/autoTranslate.js";
     import ProjectApi from "../../resources/projectapi.js";
+    import * as FileSaver from "file-saver";
 
     const ProjectClient = new ProjectApi();
 
@@ -88,6 +89,20 @@
     //     }
     //     ProjectClient.deleteProject(id).then(loggedInChange);
     // }
+    const downloadRejectedProject = async (projectId) => {
+        try {
+            const projectFile = await ProjectClient.getRejectedProjectFile(
+                projectId
+            );
+            FileSaver.saveAs(
+                new Blob([projectFile]),
+                `Project_${projectId}.pmp`
+            );
+        } catch (err) {
+            console.error(err);
+            alert(`Failed to download the project; ${err}`);
+        }
+    };
 
     onMount(async () => {
         const privateCode = localStorage.getItem("PV");
@@ -96,7 +111,7 @@
             return;
         }
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then(({ username }) => {
                 if (username) {
                     loggedIn = true;
                     loggedInChange(username, privateCode);
@@ -113,7 +128,7 @@
         Authentication.authenticate().then((privateCode) => {
             loggedIn = null;
             Authentication.usernameFromCode(privateCode)
-                .then((username) => {
+                .then(({ username }) => {
                     if (username) {
                         loggedIn = true;
                         loggedInChange(username, privateCode);
@@ -171,7 +186,7 @@
     Authentication.onAuthentication((privateCode) => {
         loggedIn = null;
         Authentication.usernameFromCode(privateCode)
-            .then((username) => {
+            .then(({ username }) => {
                 if (username) {
                     loggedIn = true;
                     loggedInChange(username, privateCode);
@@ -222,7 +237,7 @@
     <div class="section-messages">
         {#if loggedIn === null}
             <div style="margin-top: 16px;">
-                <LoadingSpinner />
+                <LoadingSpinner enableTips={true} />
             </div>
         {:else if loggedIn === false}
             <div class="login-prompt">
@@ -314,6 +329,29 @@
                             <p>{autoTranslations[message.id]}</p>
                             <br />
                         {/if}
+                        <p class="small">
+                            <b>Project ID:</b>
+                            {message.projectId}
+                        </p>
+                        <button
+                            class="fake-link"
+                            style="display:flex;align-items:center;"
+                            on:click={() =>
+                                downloadRejectedProject(message.projectId)}
+                        >
+                            <img
+                                src="/messages/download.png"
+                                alt="Download"
+                                width="16"
+                                height="16"
+                                style="margin-right:6px"
+                            />
+                            <LocalizedText
+                                text="Download"
+                                key="messages.download"
+                                lang={currentLang}
+                            />
+                        </button>
                     {:else if message.type === "featured"}
                         <p>
                             <b>
@@ -325,10 +363,34 @@
                                 ).replace("$1", message.name)}
                             </b> 🌟
                         </p>
+                    {:else if message.type === "followerAdded"}
+                        <p>
+                            {String(
+                                TranslationHandler.text(
+                                    "messages.alert.followeradded",
+                                    currentLang
+                                )
+                            ).replace("$1", message.name)}
+                        </p>
+                    {:else if message.type === "newBadge"}
+                        <p>
+                            {String(
+                                TranslationHandler.text(
+                                    "messages.alert.badge",
+                                    currentLang
+                                )
+                            ).replace(
+                                "$1",
+                                TranslationHandler.text(
+                                    `profile.badge.${message.name}`,
+                                    currentLang
+                                )
+                            )}
+                        </p>
                     {:else if message.type === "remix"}
                         <p>
                             <a
-                                href={`https://studio.penguinmod.site/#${message.remixId}`}
+                                href={`https://studio.penguinmod.com/#${message.remixId}`}
                                 target="_blank"
                             >
                                 {String(
@@ -350,7 +412,7 @@
                     {:else if message.type === "restored"}
                         <p>
                             <a
-                                href={`https://studio.penguinmod.site/#${message.projectId}`}
+                                href={`https://studio.penguinmod.com/#${message.projectId}`}
                                 target="_blank"
                             >
                                 {String(
@@ -520,6 +582,11 @@
         top: 0px;
         width: 100%;
         min-width: 1000px;
+    }
+
+    .small {
+        font-size: smaller;
+        opacity: 0.6;
     }
 
     .section-info {

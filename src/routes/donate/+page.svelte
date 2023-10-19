@@ -152,7 +152,7 @@
                 <p style="text-align: center;">For completely free:</p>
                 <div class="detail-card" style="background: dodgerblue">
                     <p>We host and serve</p>
-                    <h1>800+</h1>
+                    <h1>1.5k+</h1>
                     <p>projects</p>
                 </div>
                 <div class="detail-card" style="background: darkviolet">

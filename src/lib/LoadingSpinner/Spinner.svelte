@@ -38,8 +38,6 @@
 
     .centerer {
         text-align: center;
-        width: 100%;
-        height: 100%;
     }
 
     @keyframes spinning_basic {

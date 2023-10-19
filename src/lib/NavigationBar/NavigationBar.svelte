@@ -23,37 +23,46 @@
 	let isApprover = false;
 	let accountUsername = "";
 	let messageCount = 0;
+	let canRankUp = false;
 
 	function loggedInCheck() {
 		const privateCode = localStorage.getItem("PV");
 		if (!privateCode) {
 			loggedIn = false;
+			canRankUp = false;
 			messageCount = 0;
 			return;
 		}
 		Authentication.usernameFromCode(privateCode)
-			.then((username) => {
-				if (username) {
-					loggedIn = true;
-					accountUsername = username;
-					ProjectApi.isAdmin(username).then((isAdminn) => {
+			.then(
+				({ username, isAdmin: isAdminn, isApprover: isApproverr }) => {
+					if (username) {
+						loggedIn = true;
+						accountUsername = username;
 						isAdmin = isAdminn;
-					});
-					ProjectApi.isApprover(username).then((isApproverr) => {
 						isApprover = isApproverr;
-					});
-					if (username) ProjectClient.setUsername(username);
-					if (privateCode) ProjectClient.setPrivateCode(privateCode);
-					ProjectClient.getMessageCount().then((amount) => {
-						messageCount = amount;
-					});
-					return;
+						if (username) ProjectClient.setUsername(username);
+						if (privateCode)
+							ProjectClient.setPrivateCode(privateCode);
+						ProjectClient.setAdmin(isAdminn);
+						ProjectClient.getMessageCount().then((amount) => {
+							messageCount = amount;
+						});
+						if (username) {
+							ProjectApi.getProfile(username).then((profile) => {
+								canRankUp = profile.canrankup === true;
+							});
+						}
+						return;
+					}
+					loggedIn = false;
+					canRankUp = false;
+					messageCount = 0;
 				}
-				loggedIn = false;
-				messageCount = 0;
-			})
+			)
 			.catch(() => {
 				loggedIn = false;
+				canRankUp = false;
 				messageCount = 0;
 			});
 	}
@@ -66,7 +75,7 @@
 	function logout() {
 		accountMenu.style.display = "none";
 		const pv = localStorage.getItem("PV");
-		Authentication.usernameFromCode(pv).then((username) => {
+		Authentication.usernameFromCode(pv).then(({ username }) => {
 			fetch(
 				`${LINK.projects}api/users/logout?user=${username}&code=${pv}`
 			).then((res) => {
@@ -74,6 +83,7 @@
 				localStorage.removeItem("PV");
 				Authentication.fireLogout();
 				loggedIn = false;
+				canRankUp = false;
 				messageCount = 0;
 			});
 		});
@@ -118,6 +128,10 @@
 			languageMenu.style.top = "initial";
 			languageMenu.style.left = `calc(5rem + 4px)`;
 			languageMenu.style.bottom = "4px";
+		}
+		if (Translations.rtlLanguages.includes(currentLang)) {
+			languageMenu.style.left = `initial`;
+			languageMenu.style.right = `4px`;
 		}
 	}
 	function openAccountMenu(event) {
@@ -192,6 +206,9 @@
 				key="navigation.profile"
 				lang={currentLang}
 			/>
+			{#if canRankUp}
+				<div class="rankup-badge">!</div>
+			{/if}
 		</button>
 	</a>
 	<a href="/mystuff">
@@ -277,15 +294,9 @@
 			style="padding:0.5rem"
 		/>
 	{/if}
-	{#if isAdmin && loggedIn}
+	{#if (isAdmin || isApprover) && loggedIn}
 		<BarPage
 			link="/panel"
-			label="<img src='/messages/panel.svg' width='25' alt='Panel'>"
-			style="padding:0.5rem"
-		/>
-	{:else if isApprover && loggedIn}
-		<BarPage
-			link="/userpanel"
 			label="<img src='/messages/panel.svg' width='25' alt='Panel'>"
 			style="padding:0.5rem"
 		/>
@@ -311,11 +322,11 @@
 				class="profile-picture"
 			/>
 			<p>{accountUsername}</p>
-			<img src="/dropdown-caret.png" style="margin-left: 4px" alt="v" />
+			<img src="/dropdown-caret.png" style="margin: 0 4px" alt="v" />
 		</button>
 	{/if}
 	<BarPage
-		label="<img src='/globe.svg' alt='LanguageSwitcher'><img src='/dropdown-caret.png' style='margin-left: 4px' alt='v'>"
+		label="<img src='/globe.svg' alt='LanguageSwitcher'><img src='/dropdown-caret.png' style='margin: 0 4px' alt='v'>"
 		style={"padding: 0.5rem; position: absolute; left: 4px;" +
 			(Object.keys(availableLanguages).length <= 1
 				? "display: none;"
@@ -435,6 +446,9 @@
 		text-align: left;
 		cursor: pointer;
 	}
+	:global(html[dir="rtl"]) .languageOption {
+		text-align: right;
+	}
 	.languageCount {
 		/* width: 100%; */
 		/* text-align: center; */
@@ -470,12 +484,26 @@
 		top: 0px;
 		right: 0px;
 	}
+	.rankup-badge {
+		display: inline-block;
+		text-align: center;
+		background: red;
+		color: white;
+		font-weight: bold;
+		border-radius: 1000px;
+		width: 16px;
+		height: 16px;
+	}
 
 	.profile-picture {
 		border-radius: 4px;
 		width: 30px;
 		height: 30px;
 		margin-right: 8px;
+	}
+	:global(html[dir="rtl"]) .profile-picture {
+		margin-right: initial;
+		margin-left: 8px;
 	}
 	.profile-dropdown {
 		background: transparent;
@@ -529,6 +557,9 @@
 		text-decoration: none;
 		cursor: pointer;
 		user-select: none;
+	}
+	:global(html[dir="rtl"]) .profile-dropdown-menu button {
+		text-align: right;
 	}
 	.profile-dropdown-menu button:hover {
 		background: rgba(0, 0, 0, 0.15);

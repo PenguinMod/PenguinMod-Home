@@ -61,6 +61,10 @@
         background-color: rgba(0, 0, 0, 0.1);
     }
 
+    :global(html[dir="rtl"]) .ca-languageButton {
+        left: initial !important;
+        right: 12px !important;
+    }
     :global(body.launcher-mode) .ca-languageButton {
         position: absolute;
         left: 12px !important;
