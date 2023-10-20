@@ -127,7 +127,7 @@
 
     function openMenu(type) {
         ProjectClient.getTypeWithReports(type).then((projectsWithReports) => {
-            contentWithReports = projectsWithReports;
+            contentWithReports = projectsWithReports.filter(content => content.exists);
         });
         // get approved projects anyways cuz we need to update list
         // todo: getProjects is paged breh what we do?
