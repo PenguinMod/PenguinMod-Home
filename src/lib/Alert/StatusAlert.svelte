@@ -32,7 +32,7 @@
         textColor="black"
         hasButton={true}
         buttonText="Details"
-        buttonHref={"https://status.penguinmod.site/"}
+        buttonHref={"https://status.penguinmod.com/"}
         buttonTooLight={true}
     />
 {/if}
