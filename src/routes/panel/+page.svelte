@@ -1076,17 +1076,33 @@
                 </select>
             </div>
             {#if !dropdownSelectMenu?.value}
-                <p class="selection-warning">
+                <p class="selection-info">
                     Please select what type of reports you wish to view
                 </p>
             {/if}
 
             <div class="list-projects">
                 {#if dropdownSelectMenu?.value}
-                    {#if dropdownSelectMenu.value === "user"}
-                        <p>Click on a user to expand details</p>
+                    {#if contentWithReports.length > 0}
+                        {#if dropdownSelectMenu.value === "user"}
+                            <p class="selection-info">
+                                Click on a user to expand details
+                            </p>
+                        {:else}
+                            <p class="selection-info">
+                                Click on a project to expand details
+                            </p>
+                        {/if}
                     {:else}
-                        <p>Click on a project to expand details</p>
+                        {#if dropdownSelectMenu.value === "user"}
+                            <p class="selection-info">
+                                No user reports currently!
+                            </p>
+                        {:else}
+                            <p class="selection-info">
+                                No project reports currently!
+                            </p>
+                        {/if}
                     {/if}
                     {#each contentWithReports as content, idx}
                         {#if dropdownSelectMenu.value === "user"}
@@ -1351,7 +1367,7 @@
         color: white;
     }
 
-    .selection-warning {
+    .selection-info {
         text-align: center;
     }
     .project-sidebar {
