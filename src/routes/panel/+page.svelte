@@ -1344,6 +1344,12 @@
         background: white;
         width: calc(100% - 20px);
     }
+    :global(body.dark-mode) .reports-user-button,
+    :global(body.dark-mode) .reports-generic-details {
+        border: rgba(255, 255, 255, 0.35) 1px solid;
+        background: #111;
+        color: white;
+    }
 
     .selection-warning {
         text-align: center;
