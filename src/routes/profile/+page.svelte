@@ -566,6 +566,9 @@
         flex-direction: column;
         align-items: center;
     }
+    :global(body.dark-mode) .scratch-modal-content {
+        background: #111;
+    }
 
     .profile-picture {
         margin-right: 8px;
