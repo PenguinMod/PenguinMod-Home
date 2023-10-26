@@ -361,38 +361,25 @@
                 </div>
             {/if}
             <div class="section-projects">
-                <ContentCategory
-                    header={TranslationHandler.text(
-                        "profile.projects.featured",
-                        currentLang
-                    )}
-                    style="width:65%;"
-                    stylec="height: 244px;"
-                    seemore={`/search?q=user%3A${user} featured%3Atrue`}
-                >
-                    <div class="project-list">
-                        {#if projects.featured.length > 0}
-                            {#if projects.featured[0] !== "none"}
+                {#if projects.featured.length > 0}
+                    {#if projects.featured[0] !== "none"}
+                        <ContentCategory
+                            header={TranslationHandler.text(
+                                "profile.projects.featured",
+                                currentLang
+                            )}
+                            style="width:65%;"
+                            stylec="height: 244px;"
+                            seemore={`/search?q=user%3A${user} featured%3Atrue`}
+                        >
+                            <div class="project-list">
                                 {#each projects.featured as project}
                                     <Project {...project} />
                                 {/each}
-                            {:else}
-                                <div class="none-found">
-                                    <PenguinConfusedSVG height="10rem" />
-                                    <p>
-                                        <LocalizedText
-                                            text="Nothing was found. Did you misspell something or does the user not exist?"
-                                            key="generic.notfoundonuser"
-                                            lang={currentLang}
-                                        />
-                                    </p>
-                                </div>
-                            {/if}
-                        {:else}
-                            <LoadingSpinner />
-                        {/if}
-                    </div>
-                </ContentCategory>
+                            </div>
+                        </ContentCategory>
+                    {/if}
+                {/if}
                 <ContentCategory
                     header={TranslationHandler.text(
                         "profile.projects.all",
@@ -414,7 +401,7 @@
                                     <p>
                                         <LocalizedText
                                             text="Nothing was found. Did you misspell something or does the user not exist?"
-                                            key="generic.notfoundonuser"
+                                            key="generic.notfound"
                                             lang={currentLang}
                                         />
                                     </p>
