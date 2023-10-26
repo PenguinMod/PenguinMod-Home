@@ -301,7 +301,7 @@
                                         |
                                         {#if fullProfile.canrankup !== true}
                                             <span style="opacity: 0.5">
-                                                Cannot rank up
+                                                Cannot rank up yet
                                             </span>
                                         {:else}
                                             <!-- svelte-ignore a11y-invalid-attribute -->
