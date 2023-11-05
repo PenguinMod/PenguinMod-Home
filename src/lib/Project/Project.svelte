@@ -43,7 +43,7 @@
                 src="https://library.penguinmod.com/files/emojis/${emojiName}.png"
                 alt=":${emojiName}:"
                 title=":${emojiName}:"
-                style="width:1.2rem;margin:0 4px;"
+                style="width:1.2rem;vertical-align: middle;"
             >`;
         });
     };
@@ -266,10 +266,6 @@
         white-space: nowrap;
         overflow: hidden;
         font-weight: bold;
-    }
-    .project-title {
-        display: flex;
-        align-items: center;
     }
     .author {
         color: #575e75;
