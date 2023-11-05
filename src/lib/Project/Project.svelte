@@ -23,6 +23,30 @@
     export let openNewtab = false;
 
     // let isDonator = false;
+    const xmlEscape = function (unsafe) {
+        return unsafe.replace(/[<>&'"]/g, c => {
+            switch (c) {
+            case '<': return '&lt;';
+            case '>': return '&gt;';
+            case '&': return '&amp;';
+            case '\'': return '&apos;';
+            case '"': return '&quot;';
+            }
+        });
+    };
+    const formatProjectTitle = (_title) => {
+        const title = xmlEscape(String(_title));
+        const emojiRegex = /:(\w+):/g;
+        return title.replace(emojiRegex, (match) => {
+            const emojiName = match.replace(/\:/gmi, "");
+            return `<img
+                src="https://library.penguinmod.com/files/emojis/${emojiName}.png"
+                alt=":${emojiName}:"
+                title=":${emojiName}:"
+                style="width:1.2rem;margin:0 4px;"
+            >`;
+        });
+    };
 
     // translation
     let currentLang = "en";
@@ -127,10 +151,10 @@
         <a
             href={projectLink}
             target={openNewtab ? "_blank" : "_self"}
-            class="text"
+            class="text project-title"
             title={name}
         >
-            {name}
+            {@html formatProjectTitle(name)}
         </a>
         {#if showdate}
             <a
@@ -242,6 +266,10 @@
         white-space: nowrap;
         overflow: hidden;
         font-weight: bold;
+    }
+    .project-title {
+        display: flex;
+        align-items: center;
     }
     .author {
         color: #575e75;
