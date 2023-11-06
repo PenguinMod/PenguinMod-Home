@@ -87,7 +87,7 @@ export default {
     /**
      * PenguinMod's basic API
      */
-    basicApi: "https://pmbasicapi--jeremygamer1.repl.co/",
+    basicApi: "https://basic-api.penguinmod.com/",
 
     /**
      * PenguinMod's update reader API
