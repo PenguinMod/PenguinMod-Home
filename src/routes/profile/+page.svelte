@@ -23,6 +23,8 @@
     // Icons
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
 
+    import { page } from "$app/stores";
+
     let loggedIn = null;
     let loggedInUser = "";
 
@@ -69,6 +71,8 @@
             isDonator = fullProfile.donator;
             followerCount = fullProfile.followers;
         });
+
+        page.subscribe(window.location.reload);
     });
 
     let currentLang = "en";
