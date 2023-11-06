@@ -119,7 +119,7 @@
             .catch(() => {
                 ghcommitsFailed = true;
             });
-        fetch(LINK.updateReaderApi).then((res) => {
+        fetch(`${LINK.basicApi}updates`).then((res) => {
             res.json().then((updatess) => {
                 // currently multiple updates are not supported
                 updates = [updatess];
