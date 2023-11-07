@@ -72,7 +72,12 @@
             followerCount = fullProfile.followers;
         });
 
-        page.subscribe(window.location.reload);
+        page.subscribe(v => {
+            if (!v.url.searchParams.get("user") || !user) return;
+            if (v.url.searchParams.get("user") == user) return;
+            
+            window.location.reload();
+        });
     });
 
     let currentLang = "en";
