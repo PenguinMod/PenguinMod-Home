@@ -90,10 +90,32 @@ class VRHandler {
             alpha: true
         });
         this.renderer.setSize(1920, 1080); // TODO: is this too large or does it even matter?
-        this.renderer.setClearColor(0xffffff, 1);
+        this.renderer.setClearColor(0x000000, 1);
         const canvas = this.renderer.domElement;
         canvas.style.display = "none";
         this.camera = new Three.PerspectiveCamera(70, 1920 / 1080, 0.1, 1000);
+        // skybox
+        const cubeTexLoader = new Three.CubeTextureLoader();
+        const skyboxTexture = cubeTexLoader.load([
+            'https://penguinmod.com/vr/skybox_right.png',
+            'https://penguinmod.com/vr/skybox_left.png',
+            'https://penguinmod.com/vr/skybox_top.png',
+            'https://penguinmod.com/vr/skybox_bottom.png',
+            'https://penguinmod.com/vr/skybox_front.png',
+            'https://penguinmod.com/vr/skybox_back.png',
+        ]);
+        this.scene.background = skyboxTexture;
+        // platform
+        const texLoader = new Three.TextureLoader();
+        const platformTexture = texLoader.load('https://penguinmod.com/vr/platform.png');
+        const geometry = new Three.PlaneGeometry(8, 8);
+        const material = new Three.MeshStandardMaterial({
+            map: platformTexture,
+            side: Three.DoubleSide
+        });
+        const platformObject = new Three.Mesh(geometry, material);
+        scene.add(platformObject);
+        platformObject.position.set(0, 0, 0);
     }
     start() {
         if (this.isStarted) return;
