@@ -3,6 +3,7 @@
     import Authentication from "../resources/authentication.js";
     import ProjectApi from "../resources/projectapi.js";
     import censor from "../resources/basiccensorship.js";
+    import VRHandler from "../vr";
     const ProjectClient = new ProjectApi();
 
     // Static values
@@ -196,6 +197,29 @@
     });
 
     let selectedFrontTabSelected = "new";
+
+    // VR stuff
+    let isLiveTests = false;
+    let vrIsSupported = null;
+    /**
+     * @type {VRHandler}
+     */
+    let vrSession;
+    onMount(async () => {
+        const urlParams = new URLSearchParams(location.search);
+        if (urlParams.has("livetests")) {
+            isLiveTests = true;
+        }
+
+        if (!isLiveTests) return;
+        vrIsSupported = await VRHandler.isSupported();
+        if (!vrIsSupported) return;
+        vrSession = new VRHandler();
+        vrSession.initialize();
+    });
+    const vr_openSession = () => {
+        vrSession.start();
+    };
 </script>
 
 <head>
@@ -341,6 +365,16 @@
             </Button>
         </div>
     {/if}
+        
+    {#if isLiveTests && vrIsSupported}
+        <button
+            class="vr-test-button"
+            on:click={vr_openSession}
+        >
+            Enter VR
+        </button>
+    {/if}
+
     {#if langDecided && currentLang != "en" && loggedIn !== false}
         <div class="section-language-warning">
             <img
@@ -729,17 +763,18 @@
 
     <div class="footer">
         <p>
-            {#if !thingyActive}
+            <!-- {#if !thingyActive} -->
                 <LocalizedText
                     text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
                     key="home.footer.notaffiliated"
                     dontlink={true}
                     lang={currentLang}
                 />
-            {:else}
+            <!-- todo: find a better place to put this that isn't, the legal text -->
+            <!-- {:else}
                 EEAAOO EEAAOOEEAAOOEEAAOOEEAAOOEEAAOOEEAAOO EEAAOO
                 EEAAOOEEAAOOEEAAOO EEAAOO
-            {/if}
+            {/if} -->
         </p>
         <div class="footer-list">
             <div class="footer-section">
@@ -1086,5 +1121,12 @@
     .project-list {
         display: flex;
         flex-direction: row;
+    }
+
+    /* test styles, remove later */
+    .vr-test-button {
+        padding: 20px;
+        margin: 4px;
+        font-size: larger;
     }
 </style>
