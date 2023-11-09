@@ -56,6 +56,7 @@ class VRHandler {
             type: new Audio("https://penguinmod.com/vr/type.mp3"),
             hover: new Audio("https://penguinmod.com/vr/hover.mp3"),
             enter: new Audio("https://penguinmod.com/vr/enter.mp3"),
+            deselect: new Audio("https://penguinmod.com/vr/deselect.mp3"),
         };
     }
 
@@ -247,7 +248,7 @@ class VRHandler {
         this.raycaster = new Three.Raycaster();
 
         // test
-        const testCubeGeometry = new Three.PlaneGeometry(1, 1);
+        const testCubeGeometry = new Three.BoxGeometry(1, 1, 1);
         const testCubeMaterial = new Three.MeshBasicMaterial({
             color: 0xff0000
         });
@@ -277,6 +278,8 @@ class VRHandler {
 
             const object = intersection.object;
             // object.material.emissive.b = 1;
+            this.audioElements.hover.currentTime = 0;
+            this.audioElements.hover.play();
             controller.attach(object);
 
             controller.userData.selected = object;
@@ -288,6 +291,9 @@ class VRHandler {
 
         if (controller.userData.selected !== undefined) {
             const object = controller.userData.selected;
+            this.audioElements.hover.pause();
+            this.audioElements.deselect.currentTime = 0;
+            this.audioElements.deselect.play();
             this.group.attach(object);
 
             controller.userData.selected = undefined;
