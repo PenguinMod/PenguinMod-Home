@@ -157,7 +157,7 @@ class VRHandler {
 
     playSessionAudio() {
         this.audioElements.background.loop = true;
-        this.audioElements.background.volume = 0.2;
+        this.audioElements.background.volume = 0.125;
         this.audioElements.background.play();
     }
 
