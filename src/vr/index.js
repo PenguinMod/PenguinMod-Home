@@ -1,5 +1,4 @@
 import * as Three from "three";
-import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
 // import BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 // import { ConvexGeometry } from 'three/examples/jsm/geometries/ConvexGeometry';
 // import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
@@ -7,13 +6,6 @@ import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFa
 // import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 
 const SESSION_TYPE = "immersive-vr";
-
-function toRad(deg) {
-    return deg * (Math.PI / 180);
-}
-function toDeg(rad) {
-    return rad * (180 / Math.PI);
-}
 
 class VRHandler {
     constructor() {
@@ -50,7 +42,6 @@ class VRHandler {
         this.session = null;
         if (!this.renderer) return;
         this.renderer.xr.enabled = false;
-        this.hideVrCanvas();
     }
     async _createImmersive() {
         const renderer = this.renderer;
@@ -64,11 +55,9 @@ class VRHandler {
         // enable xr on three.js
         renderer.xr.enabled = true;
         await renderer.xr.setSession(session);
-        this.showVrCanvas();
 
         session.addEventListener("end", () => {
             this.isStarted = false;
-            this.hideVrCanvas();
             this._disposeImmersive();
         });
 
@@ -93,22 +82,6 @@ class VRHandler {
 
         return session;
     }
-    showVrCanvas() {
-        try {
-            const canvas = this.renderer.domElement;
-            canvas.style.display = "";
-        } catch {
-            console.warn('tried to show VR canvas');
-        }
-    }
-    hideVrCanvas() {
-        try {
-            const canvas = this.renderer.domElement;
-            canvas.style.display = "none";
-        } catch {
-            console.warn('tried to hide VR canvas');
-        }
-    }
 
     initialize() {
         this.scene = new Three.Scene();
@@ -118,7 +91,8 @@ class VRHandler {
         });
         this.renderer.setSize(1920, 1080); // TODO: is this too large or does it even matter?
         this.renderer.setClearColor(0x000000, 1);
-        this.hideVrCanvas();
+        const canvas = this.renderer.domElement;
+        canvas.style.display = "none";
         this.camera = new Three.PerspectiveCamera(70, 1920 / 1080, 0.1, 1000);
         // skybox
         const cubeTexLoader = new Three.CubeTextureLoader();
@@ -134,40 +108,14 @@ class VRHandler {
         // platform
         const texLoader = new Three.TextureLoader();
         const platformTexture = texLoader.load('https://penguinmod.com/vr/platform.png');
-        const geometry = new Three.PlaneGeometry(1, 1);
-        const material = new Three.MeshBasicMaterial({
+        const geometry = new Three.PlaneGeometry(8, 8);
+        const material = new Three.MeshStandardMaterial({
             map: platformTexture,
             side: Three.DoubleSide
         });
         const platformObject = new Three.Mesh(geometry, material);
+        scene.add(platformObject);
         platformObject.position.set(0, 0, 0);
-        platformObject.rotateX(toRad(90));
-        this.scene.add(platformObject);
-		// controllers
-		const controller1 = this.renderer.xr.getController(0);
-		// controller1.addEventListener( 'selectstart', onSelectStart );
-		// controller1.addEventListener( 'selectend', onSelectEnd );
-		this.scene.add(controller1);
-
-		const controller2 = this.renderer.xr.getController(1);
-		// controller2.addEventListener( 'selectstart', onSelectStart );
-		// controller2.addEventListener( 'selectend', onSelectEnd );
-		this.scene.add(controller2);
-
-		const controllerModelFactory = new XRControllerModelFactory();
-
-		const controllerGrip1 = this.renderer.xr.getControllerGrip(0);
-		controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
-		this.scene.add(controllerGrip1);
-
-		const controllerGrip2 = this.renderer.xr.getControllerGrip(1);
-		controllerGrip2.add(controllerModelFactory.createControllerModel(controllerGrip2));
-		this.scene.add(controllerGrip2);
-
-        // light
-        const light = new Three.SpotLight(0xffffff, 60);
-        light.position.set(0, 5, 2.5)
-        this.scene.add(light);
     }
     start() {
         if (this.isStarted) return;
