@@ -250,7 +250,7 @@
                         <div class="subuser-section">
                             <div class="user-username">
                                 <img
-                                    style="border-color:{isFollowingUser ? "#a237db" : "#efefef"}"
+                                    style="border-color:{isDonator ? "#a237db" : "#efefef"}"
                                     src={`https://trampoline.turbowarp.org/avatars/by-username/${user}`}
                                     alt="Profile"
                                     class="profile-picture"
@@ -273,8 +273,10 @@
                             <div>
                                 {#if !(loggedIn && user === loggedInUser)}
                                     {#key isFollowingUser}
-                                        <button class="follower-button"
-                                            style="background-color:{isFollowingUser ? "#a3a3a3" : "#00c3ff"}"
+                                        <button
+                                            class={`follower-button
+                                                ${isDonator ? ' follower-button-donator' : ''}
+                                                ${isFollowingUser ? ' follower-button-following' : ''}`}
                                             on:click={safeFollowUser}
                                         >
                                             {#if isFollowingUser}
@@ -345,6 +347,7 @@
                             <div class="user-stat-box-inner">
                                 Badges
                             </div>
+                            <div class="user-box-maxwidth"></div>
                             <div class="user-badge-container">
                             <div class="user-badges">
                                 {#each badges as badge, idx}
@@ -380,6 +383,14 @@
                                             </div>
                                         {/if}
                                     </button>
+                                {:else}
+                                    <p style="font-size: initial; font-weight: normal; width: 100%; text-align: center;">
+                                        <LocalizedText
+                                            text="Nothing was found."
+                                            key="generic.notfound"
+                                            lang={currentLang}
+                                        />
+                                    </p>
                                 {/each}
                             </div>
                         </div>
@@ -503,31 +514,12 @@
         min-width: 1000px;
     }
     .background {
-        background-color: #fdfdfd;
-        border-color: rgba(0, 0, 0, 0.3);
-        border-style: solid;
-        border-width: 1px;
         margin: auto;
-        margin-top: 30px;
-        width: 60%;
-        border-radius: 25px;
-        margin-bottom: 30px;
-    }
-
-    :global(body.dark-mode) .background {
-        background-color: #1e1e1e;
-        border-color: rgba(255, 255, 255, 0.3);
-        border-style: solid;
-        border-width: 1px;
-        margin: auto;
-        margin-top: 30px;
-        width: 60%;
-        border-radius: 25px;
-        margin-bottom: 30px;
+        width: 80%;
     }
 
     .user-stat-box {
-        height:50%;
+        height: 50%;
         display: flex;
         justify-content: center;
         font-weight: bolder;
@@ -543,11 +535,7 @@
         width: 50%;
     }
     :global(body.dark-mode) .user-stat-box-inner {
-        margin-top: 10px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-        height: 35px;
-        text-align: center;
-        width: 50%;
     }
 
     :global(body.dark-mode) .main {
@@ -572,18 +560,21 @@
         margin-top: 6px;
     }
     .section-serious-actions {
-        padding-top: 120px;
+        /* padding-top: 120px; */
         padding-bottom: 10px;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: flex-end;
         justify-content: center;
-        width: 100%;
+        width: 95%;
     }
     .report-action {
         display: flex;
         flex-direction: column;
         align-items: center;
+    }
+    .report-action img {
+        margin-right: 4px;
     }
 
     .project-list {
@@ -660,7 +651,7 @@
     }
 
     .small {
-        font-size: 1em;
+        font-size: .8em;
         font-weight: lighter;
         text-align: center;
         width: 100%;
@@ -698,41 +689,54 @@
         width: 30%;
         margin-right: 5%;
         border-radius: 8px;
-    border-width: 1px;
-    border-color: rgba(0, 0, 0, 0.3);
-    border-style: solid;
+        border-width: 1px;
+        border-color: rgba(0, 0, 0, 0.3);
+        border-style: solid;
+    }
+    .user-box-maxwidth {
+        width: 100%;
+        height: 1px;
     }
     :global(body.dark-mode) .section-user-stats {
-        height: 295px;
-        width: 30%;
-        margin-right: 5%;
-        border-radius: 8px;
-    border-width: 1px;
-    border-color: rgba(255, 255, 255, 0.3);
-    border-style: solid;
+        border-color: rgba(255, 255, 255, 0.3);
     }
 
     .follower-section {
         width: auto;
         margin-right: 0px;
-        text-align:center;
+        text-align: center;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
     }
     .follower-count {
-        font-size:medium;
-        text-align:center;
+        font-size: medium;
+        text-align: center;
         font-weight: bold;
+        margin-right: 6px;
     }
     .follower-button {
         width: 100px;
         height: 35px;
-        font-size:medium;
+        font-size: medium;
         font-weight: bold;
+        background-color: rgb(0, 195, 255);
         color: white;
         border-radius: 10px;
-        border-color: #b7b7b7;
+        border-color: rgba(0, 0, 0, 0.25);
+        border-width: 1px;
         border-style: solid;
-        text-align:center;
-        margin-bottom: 10px;
+        text-align: center;
+        cursor: pointer;
+    }
+    .follower-button-donator {
+        background-color: #c65cff;
+    }
+    .follower-button-following {
+        background-color: rgb(163, 163, 163);
+    }
+    :global(body.dark-mode) .follower-button {
+        border-color: rgba(255, 255, 255, 0.25);
     }
 
     .subuser-section {
@@ -759,9 +763,11 @@
 
     .user-badge-container {
         margin: 0px;
-        margin-top: -30px;
+        /* TODO: this is a bandaid fix, properly fix it later */
+        margin-top: -64px;
         height: 32px;
         width: 200px;
+        /* TODO: too many badges will overflow this box, fix this later */
     }
     .user-badges {
         display: flex;
