@@ -17,6 +17,11 @@ export default {
     credits: "https://studio.penguinmod.com/credits.html",
 
     /**
+     * PenguinMod's terms of service page
+     */
+    terms: "https://studio.penguinmod.com/terms.html",
+
+    /**
      * PenguinMod's privacy policy page
      */
     privacy: "https://studio.penguinmod.com/privacy.html",
