@@ -9,7 +9,8 @@ These guidelines only apply to PenguinMod's project sharing.
 If you are packaging your project for release on other websites,
 you should still follow their rules.
 
-Also, let us know of any necessary changes we should make by talking to us in our [Discord server](https://discord.gg/NZ9MBMYTZh).
+Also, let us know of any necessary changes we should make by talking to us in our [Discord server](https://discord.gg/NZ9MBMYTZh)
+or making an issue on our [GitHub](https://github.com/PenguinMod/PenguinMod-Home/issues).
 
 ### Spam
 Do not just upload the same project multiple times.
@@ -129,11 +130,7 @@ Reasons your project might be removed are:
 - Including logos or designs without their owner's explicit permission
 - Using other peoples artwork or music without their explicit permission
 
-If you are a company or individual and believe your copyright has been violated, you will currently have to contact us via the following methods:
-- [X (Twitter)](https://twitter.com/penguin_mod)
-- [Discord](https://discord.gg/NZ9MBMYTZh)
-
-We will make a better system for this soon.
+If you are a company or individual and believe your copyright has been violated, [please check contact methods here.](https://studio.penguinmod.com/contact.html)
 
 ### Preventing or Removing access to parts of the site
 You may not remove or prevent access to any part of the project or website.
