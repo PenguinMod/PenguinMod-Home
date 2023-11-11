@@ -15,6 +15,9 @@ function toDeg(rad) {
     return rad * (180 / Math.PI);
 }
 
+class ButtonHandler {
+    
+}
 class VRHandler {
     constructor() {
         /**
@@ -192,12 +195,12 @@ class VRHandler {
         const platformTexture = texLoader.load(
             "https://penguinmod.com/vr/platform.png"
         );
-        const geometry = new Three.PlaneGeometry(1, 1);
-        const material = new Three.MeshBasicMaterial({
+        const platformGeometry = new Three.PlaneGeometry(1, 1);
+        const platformMaterial = new Three.MeshBasicMaterial({
             map: platformTexture,
             side: Three.DoubleSide,
         });
-        const platformObject = new Three.Mesh(geometry, material);
+        const platformObject = new Three.Mesh(platformGeometry, platformMaterial);
         platformObject.position.set(0, 0, 0);
         platformObject.rotateX(toRad(90));
         this.scene.add(platformObject);
@@ -246,6 +249,25 @@ class VRHandler {
         controller2.add(line.clone());
 
         this.raycaster = new Three.Raycaster();
+        
+        // exit button
+        const exitTexture = texLoader.load("https://penguinmod.com/vr/exit.png");
+        const exitProgressTexture = texLoader.load("https://penguinmod.com/vr/white.png");
+        const exitMaterial = new Three.MeshBasicMaterial({
+            map: exitTexture,
+            side: Three.DoubleSide,
+        });
+        const exitProgressMaterial = new Three.MeshBasicMaterial({
+            map: exitProgressTexture,
+            side: Three.DoubleSide,
+        });
+        const exitObject = new Three.Mesh(platformGeometry, exitMaterial);
+        const exitProgressObject = new Three.Mesh(platformGeometry, exitProgressMaterial);
+        exitObject.userData.button = true;
+        exitObject.userData.buttonOpcode = 'exiting';
+        exitProgressObject.userData.interactable = false;
+        this.group.add(exitObject);
+        this.group.add(exitProgressObject);
 
         // test
         const testCubeGeometry = new Three.BoxGeometry(1, 1, 1);
