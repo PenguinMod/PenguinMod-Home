@@ -16,7 +16,8 @@ const languages = {
     "en": en,
     "id": id,
     "he": he,
-    "uwu": uwu
+    // todo: uncomment this when its complete :troll_hands:
+    // "uwu": uwu
     // "test": test,
 };
 // add languages that are RTL here
