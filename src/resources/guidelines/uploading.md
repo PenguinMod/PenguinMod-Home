@@ -56,7 +56,9 @@ As of November 14th, 2023, PenguinMod has decided to ban uploaded projects based
 ```
 This section is talking about projects that have online chat, but aren't focused around it.
 
-As of now, you are not currently allowed to have online chatting within your project.
+As of now, you are not currently allowed to have online chatting within your project unless:
+- Users can only use hand-picked phrases or sentences to chat
+
 We are planning on developing online chat systems to allow creators to have a moderated but easily usable chatting feature.
 
 There is no estimated time when this guideline will be lifted.
