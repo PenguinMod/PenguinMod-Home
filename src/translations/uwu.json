@@ -153,7 +153,7 @@
     "uploading.project.ownfile.imported": "Impowted Pwowject fwom PenguinMod",
     "uploading.project.mustselect": "You must sewect a pwowject fiwe to upwoad.",
     "uploading.project.mustlogin": "Pwease wog-in to upwoad a pwowject.",
-    "uploading.project.selector": "Sewect a pwowject",ç
+    "uploading.project.selector": "Sewect a pwowject",
     "uploading.project.selector.cancel": "Cancew",
     "uploading.project.selector.close": "Cwose",
     "uploading.type.upload": "Upwoad",
@@ -164,7 +164,7 @@
     "uploading.guidelines.button": "Pwoject Upwoading & Updating Guidewines",
     "uploading.guidelines.newtab": "Open in new tab",
     "uploading.guidelines.darkmode": "This page is nyot in Dawk Mode because it is an extewnaw website.",
-    "uploading.guidelines.nottranslated": "These guidewines might nyot be twanswated. Fow a twanswated awtewnativyE, <a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">see hewe</a>.",
+    "uploading.guidelines.nottranslated": "These guidewines might nyot be twanswated. Fow a twanswated awtewnativye, <a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">see hewe</a>.",
     "uploading.error.toomanyrequests": "You can onwy upwoad pwojects evewy 8 minyutes.",
     "uploading.error.missingprojectdata": "Faiwed to send pwoject data. Youw pwoject may be too wawge.",
     "uploading.error.reauthenticate": "You wewe wogged out. Pwease wog-in again.",
@@ -186,7 +186,7 @@
     "editing.confirm.featured": "Editing this pwoject wiww cause it to become unfeatuwed. You wiww be abwe to we-featuwe it if the pwoject stiww meets the wequiwwements. Awe you suwe you want to continyue?\nType \"$1\" to continyue.",
     "mystuff.title": "My Stuff",
     "mystuff.login": "Pwease wog in to view youw PenguinMod pwojects.",
-    "mystuff.none": "NyO pwojects found. Why nyot upwoad onye?",
+    "mystuff.none": "Nyo pwojects found. Why nyot upwoad onye?",
     "mystuff.error": "An ewwow occuwwed. We couwdny't get youw upwoaded pwojects.",
     "mystuff.confirm.delete": "Dewete $1? This CANNOT be undonye!\nType \"$2\" to dewete this pwoject."
 }
