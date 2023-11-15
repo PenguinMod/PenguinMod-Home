@@ -595,7 +595,7 @@
         color: white;
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
         justify-content: center;
         width: 100%;
         margin: 0;

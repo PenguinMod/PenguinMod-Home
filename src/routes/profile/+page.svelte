@@ -23,6 +23,8 @@
     // Icons
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
 
+    import { page } from "$app/stores";
+
     let loggedIn = null;
     let loggedInUser = "";
 
@@ -68,6 +70,13 @@
             badges = fullProfile.badges;
             isDonator = fullProfile.donator;
             followerCount = fullProfile.followers;
+        });
+
+        page.subscribe(v => {
+            if (!v.url.searchParams.get("user") || !user) return;
+            if (v.url.searchParams.get("user") == user) return;
+            
+            window.location.reload();
         });
     });
 
@@ -234,171 +243,194 @@
 
     {#if projects.all.length > 0}
         {#if projects.all[0] !== "none" || (loggedIn && user === loggedInUser)}
+        <div class="background">
             {#if user}
                 <div class="section-user">
-                    <div class="subuser-section">
-                        <div class="user-username">
-                            <img
-                                src={`https://trampoline.turbowarp.org/avatars/by-username/${user}`}
-                                alt="Profile"
-                                class="profile-picture"
-                            />
-                            <div class="user-after-image">
-                                {#if isDonator}
-                                    <h1 class="donator-color">{user}</h1>
-                                {:else}
-                                    <h1>{user}</h1>
-                                {/if}
-                                <div class="user-badges">
-                                    {#each badges as badge, idx}
-                                        <!-- TODO: these should be clickable & have proper
-                                    alts + titles -->
-                                        <button
-                                            on:click={() => {
-                                                focusedBadge = idx;
-                                            }}
-                                            on:focusout={() => {
-                                                focusedBadge = -1;
-                                            }}
-                                            title={TranslationHandler.text(
-                                                `profile.badge.${badge}`,
-                                                currentLang
-                                            )}
-                                        >
-                                            <img
-                                                src={`/badges/${ProfileBadges[badge]}.png`}
-                                                alt={TranslationHandler.text(
-                                                    `profile.badge.${badge}`,
-                                                    currentLang
-                                                )}
-                                                title={TranslationHandler.text(
-                                                    `profile.badge.${badge}`,
-                                                    currentLang
-                                                )}
-                                            />
-                                            {#if focusedBadge === idx}
-                                                <div class="badge-info">
-                                                    {TranslationHandler.text(
-                                                        `profile.badge.${badge}`,
-                                                        currentLang
-                                                    )}
-                                                </div>
-                                            {/if}
-                                        </button>
-                                    {/each}
-                                </div>
-                                <p class="small" style="margin-block:4px">
-                                    {#if fullProfile.admin === true}
-                                        King Penguin
-                                    {:else if fullProfile.approver === true}
-                                        Guard Penguin
-                                    {:else if fullProfile.rank === 1}
-                                        Penguin
+                    <div class="section-user-header">
+                        <div class="subuser-section">
+                            <div class="user-username">
+                                <img
+                                    style="border-color:{isDonator ? "#a237db" : "#efefef"}"
+                                    src={`https://trampoline.turbowarp.org/avatars/by-username/${user}`}
+                                    alt="Profile"
+                                    class="profile-picture"
+                                />
+                                <div class="user-after-image">
+                                    {#if isDonator}
+                                        <h1 class="donator-color">{user}</h1>
                                     {:else}
-                                        Newborn Penguin
+                                        <h1>{user}</h1>
                                     {/if}
-                                    {#if loggedIn && user === loggedInUser && fullProfile.rank === 0}
-                                        |
-                                        {#if fullProfile.canrankup !== true}
-                                            <span style="opacity: 0.5">
-                                                Cannot rank up
-                                            </span>
-                                        {:else}
-                                            <!-- svelte-ignore a11y-invalid-attribute -->
-                                            <a
-                                                href="#"
-                                                style="color:dodgerblue"
-                                                on:click={() => {
-                                                    isRankingUpMenu = true;
-                                                }}
-                                            >
-                                                Rank up
-                                                <div class="rankup-badge">
-                                                    !
-                                                </div>
-                                            </a>
-                                        {/if}
-                                    {/if}
-                                </p>
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            {#if !(loggedIn && user === loggedInUser)}
-                                {#key isFollowingUser}
-                                    <Button
-                                        color={isDonator ? "purple" : false}
-                                        toggled={isFollowingUser}
-                                        on:click={safeFollowUser}
-                                    >
-                                        {#if isFollowingUser}
-                                            <LocalizedText
-                                                text="Unfollow"
-                                                key="profile.unfollow"
-                                                dontlink={true}
-                                                lang={currentLang}
-                                            />
-                                        {:else}
-                                            <LocalizedText
-                                                text="Follow"
-                                                key="profile.follow"
-                                                dontlink={true}
-                                                lang={currentLang}
-                                            />
-                                        {/if}
-                                    </Button>
-                                {/key}
-                            {/if}
-                            <p
-                                style="font-size:small;text-align:center;margin-block:0.5em"
-                            >
+                        <div class="follower-section">
+                            <p class="follower-count">
                                 {TranslationHandler.text(
                                     "profile.followers",
                                     currentLang
                                 ).replace("$1", followerCount)}
                             </p>
+                            <div>
+                                {#if !(loggedIn && user === loggedInUser)}
+                                    {#key isFollowingUser}
+                                        <button
+                                            class={`follower-button
+                                                ${isDonator ? ' follower-button-donator' : ''}
+                                                ${isFollowingUser ? ' follower-button-following' : ''}`}
+                                            on:click={safeFollowUser}
+                                        >
+                                            {#if isFollowingUser}
+                                                <LocalizedText
+                                                    text="Unfollow"
+                                                    key="profile.unfollow"
+                                                    dontlink={true}
+                                                    lang={currentLang}
+                                                />
+                                            {:else}
+                                                <LocalizedText
+                                                    text="Follow"
+                                                    key="profile.follow"
+                                                    dontlink={true}
+                                                    lang={currentLang}
+                                                />
+                                            {/if}
+                                        </button>
+                                    {/key}
+                                {/if}
+                            </div>
+                        </div>
                         </div>
                     </div>
                 </div>
             {/if}
             <div class="section-projects">
-                <ContentCategory
-                    header={TranslationHandler.text(
-                        "profile.projects.featured",
-                        currentLang
-                    )}
-                    style="width:65%;"
-                    stylec="height: 244px;"
-                    seemore={`/search?q=user%3A${user} featured%3Atrue`}
-                >
-                    <div class="project-list">
-                        {#if projects.featured.length > 0}
-                            {#if projects.featured[0] !== "none"}
-                                {#each projects.featured as project}
-                                    <Project {...project} />
+                <div style="width:90%;margin:10px;">
+                    <div class="section-user-stats">
+                        <div class="user-stat-box" style="border-bottom: 1px solid rgba(0, 0, 0, 0.15);">
+                            <div class="user-stat-box-inner">
+                                Rank
+                            </div>
+                            <p class="small" style="margin-block:4px">
+                                {#if fullProfile.admin === true}
+                                    King Penguin
+                                {:else if fullProfile.approver === true}
+                                    Guard Penguin
+                                {:else if fullProfile.rank === 1}
+                                    Penguin
+                                {:else}
+                                    Newborn Penguin
+                                {/if}
+                                {#if loggedIn && user === loggedInUser && fullProfile.rank === 0}
+                                    {#if fullProfile.canrankup !== true}
+                                        <span style="opacity: 0.5;font-size:.7em;">
+                                            <br>Cannot rank up yet
+                                        </span>
+                                    {:else}
+                                        <!-- svelte-ignore a11y-invalid-attribute -->
+                                        <a
+                                            href="#"
+                                            style="color:dodgerblue;font-size:.6em;"
+                                            on:click={() => {
+                                                isRankingUpMenu = true;
+                                            }}
+                                        >
+                                            <br>Rank up
+                                            <div class="rankup-badge">
+                                                !
+                                            </div>
+                                        </a>
+                                    {/if}
+                                {/if}
+                            </p>
+                        </div>
+                        <div class="user-stat-box">
+                            <div class="user-stat-box-inner">
+                                Badges
+                            </div>
+                            <div class="user-box-maxwidth"></div>
+                            <div class="user-badge-container">
+                            <div class="user-badges">
+                                {#each badges as badge, idx}
+                                    <button
+                                        on:click={() => {
+                                            focusedBadge = idx;
+                                        }}
+                                        on:focusout={() => {
+                                            focusedBadge = -1;
+                                        }}
+                                        title={TranslationHandler.text(
+                                            `profile.badge.${badge}`,
+                                            currentLang
+                                        )}
+                                    >
+                                        <img
+                                            src={`/badges/${ProfileBadges[badge]}.png`}
+                                            alt={TranslationHandler.text(
+                                                `profile.badge.${badge}`,
+                                                currentLang
+                                            )}
+                                            title={TranslationHandler.text(
+                                                `profile.badge.${badge}`,
+                                                currentLang
+                                            )}
+                                        />
+                                        {#if focusedBadge === idx}
+                                            <div class="badge-info">
+                                                {TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    currentLang
+                                                )}
+                                            </div>
+                                        {/if}
+                                    </button>
+                                {:else}
+                                    <p style="font-size: initial; font-weight: normal; width: 100%; text-align: center;">
+                                        <LocalizedText
+                                            text="Nothing was found."
+                                            key="generic.notfound"
+                                            lang={currentLang}
+                                        />
+                                    </p>
                                 {/each}
-                            {:else}
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                        <ContentCategory
+                            header={TranslationHandler.text(
+                                "profile.projects.featured",
+                                currentLang
+                            )}
+                            style="width:65%;float:right;margin:0px;margin-top:-297px;"
+                            stylec="height: 244px;"
+                            seemore={`/search?q=user%3A${user} featured%3Atrue`}
+                        >
+                            <div class="project-list">
+                                {#if projects.featured[0] !== "none"}
+                                    {#each projects.featured as project}
+                                        <Project {...project} />
+                                    {/each}
+                                {:else}
                                 <div class="none-found">
                                     <PenguinConfusedSVG height="10rem" />
                                     <p>
                                         <LocalizedText
                                             text="Nothing was found. Did you misspell something or does the user not exist?"
-                                            key="generic.notfoundonuser"
+                                            key="generic.notfound"
                                             lang={currentLang}
                                         />
                                     </p>
                                 </div>
-                            {/if}
-                        {:else}
-                            <LoadingSpinner />
-                        {/if}
+                                {/if}
+                            </div>
+                        </ContentCategory>
                     </div>
-                </ContentCategory>
                 <ContentCategory
                     header={TranslationHandler.text(
                         "profile.projects.all",
                         currentLang
                     )}
-                    style="width:65%;"
+                    style="width:calc(90% - 10px);"
                     stylec="height: 244px;"
                     seemore={`/search?q=user%3A${user}`}
                 >
@@ -414,7 +446,7 @@
                                     <p>
                                         <LocalizedText
                                             text="Nothing was found. Did you misspell something or does the user not exist?"
-                                            key="generic.notfoundonuser"
+                                            key="generic.notfound"
                                             lang={currentLang}
                                         />
                                     </p>
@@ -426,8 +458,8 @@
                     </div>
                 </ContentCategory>
             </div>
-            {#if !(loggedIn && user === loggedInUser)}
-                <div class="section-serious-actions">
+            <div class="section-serious-actions">
+                {#if !(loggedIn && user === loggedInUser)}
                     <div class="report-action">
                         <a
                             href={`/report?type=user&id=${user}`}
@@ -447,8 +479,9 @@
                             />
                         </a>
                     </div>
-                </div>
-            {/if}
+                {/if}
+            </div>
+        </div>
         {:else}
             <div style="height:32px;" />
             <div style="display:flex;flex-direction:column;align-items:center;">
@@ -475,10 +508,34 @@
 
     .main {
         position: absolute;
-        left: 0px;
         top: 0px;
+        left: 0px;
         width: 100%;
         min-width: 1000px;
+    }
+    .background {
+        margin: auto;
+        width: 80%;
+    }
+
+    .user-stat-box {
+        height: 50%;
+        display: flex;
+        justify-content: center;
+        font-weight: bolder;
+        font-size: 1.7em;
+        flex-wrap: wrap;
+    }
+
+    .user-stat-box-inner {
+        margin-top: 10px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+        height: 35px;
+        text-align: center;
+        width: 50%;
+    }
+    :global(body.dark-mode) .user-stat-box-inner {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     }
 
     :global(body.dark-mode) .main {
@@ -503,17 +560,21 @@
         margin-top: 6px;
     }
     .section-serious-actions {
+        /* padding-top: 120px; */
+        padding-bottom: 10px;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: flex-end;
         justify-content: center;
-        width: 100%;
+        width: 95%;
     }
     .report-action {
         display: flex;
         flex-direction: column;
-        align-items: flex-end;
-        width: 65%;
+        align-items: center;
+    }
+    .report-action img {
+        margin-right: 4px;
     }
 
     .project-list {
@@ -566,12 +627,16 @@
         flex-direction: column;
         align-items: center;
     }
+    :global(body.dark-mode) .scratch-modal-content {
+        background: #111;
+    }
 
     .profile-picture {
-        margin-right: 8px;
-        border-radius: 4px;
-        height: 128px;
-        width: 128px;
+        border-radius: 15px;
+        height: 80px;
+        width: 80px;
+        border-style: solid;
+        border-width: 2px;
     }
     :global(html[dir="rtl"]) .profile-picture {
         margin-right: initial;
@@ -586,7 +651,10 @@
     }
 
     .small {
-        font-size: small;
+        font-size: .8em;
+        font-weight: lighter;
+        text-align: center;
+        width: 100%;
     }
     .rankup-badge {
         display: inline-block;
@@ -607,8 +675,72 @@
         height: 16px;
     }
 
+    .section-user-header {
+        margin: 10px;
+        margin-top: 20px;
+        width: 80%;
+        vertical-align: middle;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .section-user-stats {
+        height: 295px;
+        width: 30%;
+        margin-right: 5%;
+        border-radius: 8px;
+        border-width: 1px;
+        border-color: rgba(0, 0, 0, 0.3);
+        border-style: solid;
+    }
+    .user-box-maxwidth {
+        width: 100%;
+        height: 1px;
+    }
+    :global(body.dark-mode) .section-user-stats {
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .follower-section {
+        width: auto;
+        margin-right: 0px;
+        text-align: center;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+    .follower-count {
+        font-size: medium;
+        text-align: center;
+        font-weight: bold;
+        margin-right: 6px;
+    }
+    .follower-button {
+        width: 100px;
+        height: 35px;
+        font-size: medium;
+        font-weight: bold;
+        background-color: rgb(0, 195, 255);
+        color: white;
+        border-radius: 10px;
+        border-color: rgba(0, 0, 0, 0.25);
+        border-width: 1px;
+        border-style: solid;
+        text-align: center;
+        cursor: pointer;
+    }
+    .follower-button-donator {
+        background-color: #c65cff;
+    }
+    .follower-button-following {
+        background-color: rgb(163, 163, 163);
+    }
+    :global(body.dark-mode) .follower-button {
+        border-color: rgba(255, 255, 255, 0.25);
+    }
+
     .subuser-section {
-        width: 65.5%;
+        width: 100%;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -623,11 +755,24 @@
         flex-direction: column;
     }
     .user-after-image > h1 {
+        font-size: 3em;
+        font-weight: bolder;
         margin-block: 0.2rem;
+        margin-left: 20px;
+    }
+
+    .user-badge-container {
+        margin: 0px;
+        /* TODO: this is a bandaid fix, properly fix it later */
+        margin-top: -64px;
+        height: 32px;
+        width: 200px;
+        /* TODO: too many badges will overflow this box, fix this later */
     }
     .user-badges {
         display: flex;
-        flex-direction: row;
+        flex-flow: row;
+        flex-wrap: wrap;
     }
     .user-badges button {
         position: relative;

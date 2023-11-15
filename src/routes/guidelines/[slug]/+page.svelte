@@ -17,12 +17,11 @@
     md.renderer.rules.fence = function (tokens, idx, options, env, self) {
         const token = tokens[idx];
 
-        // if (token.info === "scratch") {
-        //     env.usesScratchBlocks = true;
-        //     return `<div class="render-scratchblocks">${md.utils.escapeHtml(
-        //         token.content
-        //     )}</div>`;
-        // }
+        if (token.info === "warning") {
+            return `<div class="guidelines-warning-box">${md.utils.escapeHtml(
+                token.content
+            )}</div>`;
+        }
 
         // By default markdown-it will use a strange combination of <code> and <pre>; we'd rather it
         // just use <pre>

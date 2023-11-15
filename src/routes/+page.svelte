@@ -3,6 +3,7 @@
     import Authentication from "../resources/authentication.js";
     import ProjectApi from "../resources/projectapi.js";
     import censor from "../resources/basiccensorship.js";
+    import VRHandler from "../vr";
     const ProjectClient = new ProjectApi();
 
     // Static values
@@ -43,6 +44,19 @@
         today: [],
         featured: [],
     };
+
+    let thingyActive = false;
+    // do the thingy
+    $: {
+        if (!loggedIn) {
+            // 1:99 chance that we will play the video
+            // imediatly rather then after four hours
+            thingyActive = Math.random() * 100 <= 1;
+            setTimeout(() => {
+                thingyActive = true;
+            }, 1.44e7);
+        } else console.log("you dont get to see the thingy :trol:");
+    }
 
     const getAndUpdateMyFeed = async () => {
         const feed = await ProjectClient.getMyFeed();
@@ -106,7 +120,7 @@
             .catch(() => {
                 ghcommitsFailed = true;
             });
-        fetch(LINK.updateReaderApi).then((res) => {
+        fetch(`${LINK.basicApi}updates`).then((res) => {
             res.json().then((updatess) => {
                 // currently multiple updates are not supported
                 updates = [updatess];
@@ -127,7 +141,7 @@
     });
 
     // login code below
-
+    let loggedInUsername = "";
     onMount(async () => {
         const privateCode = localStorage.getItem("PV");
         if (!privateCode) {
@@ -137,6 +151,7 @@
         Authentication.usernameFromCode(privateCode)
             .then(({ username }) => {
                 if (username) {
+                    loggedInUsername = username;
                     ProjectClient.setUsername(username);
                     ProjectClient.setPrivateCode(privateCode);
                     loggedIn = true;
@@ -159,6 +174,7 @@
         Authentication.usernameFromCode(privateCode)
             .then(({ username }) => {
                 if (username) {
+                    loggedInUsername = username;
                     ProjectClient.setUsername(username);
                     ProjectClient.setPrivateCode(privateCode);
                     loggedIn = true;
@@ -180,7 +196,30 @@
         langDecided = true;
     });
 
-    let isFeedTabSelected = true;
+    let selectedFrontTabSelected = "new";
+
+    // VR stuff
+    let isLiveTests = false;
+    let vrIsSupported = null;
+    /**
+     * @type {VRHandler}
+     */
+    let vrSession;
+    onMount(async () => {
+        const urlParams = new URLSearchParams(location.search);
+        if (urlParams.has("livetests")) {
+            isLiveTests = true;
+        }
+
+        if (!isLiveTests) return;
+        vrIsSupported = await VRHandler.isSupported();
+        if (!vrIsSupported) return;
+        vrSession = new VRHandler();
+        vrSession.initialize();
+    });
+    const vr_openSession = () => {
+        vrSession.start();
+    };
 </script>
 
 <head>
@@ -240,25 +279,40 @@
                     highlighted="true"
                     link={LINK.editor}
                 >
-                    <LocalizedText
-                        text="Try it out"
-                        key="home.tryout"
-                        lang={currentLang}
-                    />
+                    {#if !thingyActive}
+                        <LocalizedText
+                            text="Try it out"
+                            key="home.tryout"
+                            lang={currentLang}
+                        />
+                    {:else}
+                        EEEAAAOOO
+                    {/if}
                 </Button>
             </div>
 
-            <video
-                width="426.666667"
-                height="240"
-                autoplay="true"
-                muted="true"
-                loop="true"
-                class="example-video"
-            >
-                <source src="/example.mp4" type="video/mp4" />
-                <track kind="captions" />
-            </video>
+            {#if !thingyActive}
+                <video
+                    width="426.666667"
+                    height="240"
+                    autoplay="true"
+                    muted="true"
+                    loop="true"
+                    class="example-video"
+                >
+                    <source src="/example.mp4" type="video/mp4" />
+                    <track kind="captions" />
+                </video>
+            {:else}
+                <iframe
+                    src="/eao.html"
+                    title="The Thingy"
+                    width="426.666667"
+                    height="240"
+                    frameborder="0"
+                    class="example-video"
+                />
+            {/if}
         </div>
 
         {#if langDecided && currentLang != "en" && loggedIn === false}
@@ -311,6 +365,16 @@
             </Button>
         </div>
     {/if}
+        
+    {#if isLiveTests && vrIsSupported}
+        <button
+            class="vr-test-button"
+            on:click={vr_openSession}
+        >
+            Enter VR
+        </button>
+    {/if}
+
     {#if langDecided && currentLang != "en" && loggedIn !== false}
         <div class="section-language-warning">
             <img
@@ -341,39 +405,103 @@
     </p>
 
     <div class="section-categories">
-        <ContentCategory
-            header={TranslationHandler.text(
-                "home.sections.whatsnew",
-                currentLang
-            )}
-            seemore={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
-        >
-            <div class="category-content">
-                {#if updates.length > 0}
-                    {#each updates as update}
-                        <UserDisplay
-                            link={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
-                            userLink={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
-                            text={update.cleanContent}
-                            author={update.authorName}
-                            image={update.authorImage}
-                        />
-                        <a target="_blank" href={update.image}>
-                            <button class="update-image-wrapper">
+        {#if loggedIn !== true}
+            <ContentCategory
+                header={TranslationHandler.text(
+                    "home.sections.whatsnew",
+                    currentLang
+                )}
+                seemore={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
+            >
+                <div class="category-content">
+                    {#if updates.length > 0}
+                        {#each updates as update}
+                            <UserDisplay
+                                link={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
+                                userLink={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
+                                text={update.cleanContent}
+                                author={update.authorName}
+                                image={update.authorImage}
+                            />
+                            <a target="_blank" href={update.image}>
+                                <button class="update-image-wrapper">
+                                    <img
+                                        src={update.image}
+                                        alt="Screenshot"
+                                        class="update-image"
+                                    />
+                                </button>
+                            </a>
+                        {/each}
+                    {:else}
+                        <LoadingSpinner />
+                    {/if}
+                </div>
+            </ContentCategory>
+        {:else}
+            <div class="welcome-back-card">
+                <img
+                    src={`https://trampoline.turbowarp.org/avatars/by-username/${loggedInUsername}`}
+                    alt="Profile"
+                    class="profile-picture"
+                />
+                <h1>Hello, {loggedInUsername}!</h1>
+                <div class="welcome-back-row">
+                    <a href={LINK.editor} class="welcome-back-no-underline">
+                        <button class="welcome-back-button">
+                            <div class="welcome-back-icon-container">
                                 <img
-                                    src={update.image}
-                                    alt="Screenshot"
-                                    class="update-image"
+                                    src="/messages/create.svg"
+                                    alt="Create"
+                                    draggable="false"
                                 />
-                            </button>
-                        </a>
-                    {/each}
-                {:else}
-                    <LoadingSpinner />
-                {/if}
+                            </div>
+                            <LocalizedText
+                                text="Create"
+                                key="navigation.create"
+                                lang={currentLang}
+                            />
+                        </button>
+                    </a>
+                    <a href={`/mystuff`} class="welcome-back-no-underline">
+                        <button class="welcome-back-button">
+                            <div class="welcome-back-icon-container">
+                                <img
+                                    src="/messages/mystuff.svg"
+                                    alt="My Stuff"
+                                    draggable="false"
+                                />
+                            </div>
+                            <LocalizedText
+                                text="My Stuff"
+                                key="navigation.mystuff"
+                                lang={currentLang}
+                            />
+                        </button>
+                    </a>
+                    <a
+                        href={`/profile?user=${loggedInUsername}`}
+                        class="welcome-back-no-underline"
+                    >
+                        <button class="welcome-back-button">
+                            <div class="welcome-back-icon-container">
+                                <img
+                                    src="/messages/profile.svg"
+                                    alt="Profile"
+                                    draggable="false"
+                                />
+                            </div>
+                            <LocalizedText
+                                text="Profile"
+                                key="navigation.profile"
+                                lang={currentLang}
+                            />
+                        </button>
+                    </a>
+                </div>
             </div>
-        </ContentCategory>
-        {#if loggedIn && isFeedTabSelected}
+        {/if}
+        {#if loggedIn && selectedFrontTabSelected === "feed"}
             <ContentCategory
                 header={TranslationHandler.text(
                     "home.sections.feed",
@@ -415,7 +543,7 @@
                     {/if}
                 </div>
             </ContentCategory>
-        {:else}
+        {:else if !loggedIn || selectedFrontTabSelected === "commit"}
             <ContentCategory
                 header={TranslationHandler.text(
                     "home.sections.githubcommits",
@@ -463,6 +591,39 @@
                     {/if}
                 </div>
             </ContentCategory>
+        {:else if loggedIn && selectedFrontTabSelected === "new"}
+            <ContentCategory
+                header={TranslationHandler.text(
+                    "home.sections.whatsnew",
+                    currentLang
+                )}
+                seemore={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
+            >
+                <div class="category-content">
+                    {#if updates.length > 0}
+                        {#each updates as update}
+                            <UserDisplay
+                                link={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
+                                userLink={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
+                                text={update.cleanContent}
+                                author={update.authorName}
+                                image={update.authorImage}
+                            />
+                            <a target="_blank" href={update.image}>
+                                <button class="update-image-wrapper">
+                                    <img
+                                        src={update.image}
+                                        alt="Screenshot"
+                                        class="update-image"
+                                    />
+                                </button>
+                            </a>
+                        {/each}
+                    {:else}
+                        <LoadingSpinner />
+                    {/if}
+                </div>
+            </ContentCategory>
         {/if}
     </div>
     {#if loggedIn}
@@ -471,9 +632,22 @@
             <div class="category-toggle-section">
                 <button
                     class="section-toggle-button"
-                    data-active={isFeedTabSelected}
+                    data-active={selectedFrontTabSelected === "new"}
                     on:click={() => {
-                        isFeedTabSelected = true;
+                        selectedFrontTabSelected = "new";
+                    }}
+                >
+                    <LocalizedText
+                        text="What's new?"
+                        key="home.sections.whatsnew"
+                        lang={currentLang}
+                    />
+                </button>
+                <button
+                    class="section-toggle-button"
+                    data-active={selectedFrontTabSelected === "feed"}
+                    on:click={() => {
+                        selectedFrontTabSelected = "feed";
                     }}
                 >
                     <LocalizedText
@@ -484,9 +658,9 @@
                 </button>
                 <button
                     class="section-toggle-button"
-                    data-active={!isFeedTabSelected}
+                    data-active={selectedFrontTabSelected === "commit"}
                     on:click={() => {
-                        isFeedTabSelected = false;
+                        selectedFrontTabSelected = "commit";
                     }}
                 >
                     <LocalizedText
@@ -589,12 +763,18 @@
 
     <div class="footer">
         <p>
-            <LocalizedText
-                text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
-                key="home.footer.notaffiliated"
-                dontlink={true}
-                lang={currentLang}
-            />
+            <!-- {#if !thingyActive} -->
+                <LocalizedText
+                    text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
+                    key="home.footer.notaffiliated"
+                    dontlink={true}
+                    lang={currentLang}
+                />
+            <!-- todo: find a better place to put this that isn't, the legal text -->
+            <!-- {:else}
+                EEAAOO EEAAOOEEAAOOEEAAOOEEAAOOEEAAOOEEAAOO EEAAOO
+                EEAAOOEEAAOOEEAAOO EEAAOO
+            {/if} -->
         </p>
         <div class="footer-list">
             <div class="footer-section">
@@ -659,6 +839,13 @@
                         lang={currentLang}
                     />
                 </p>
+                <a target="_blank" href={LINK.terms}>
+                    <LocalizedText
+                        text="Terms of Service"
+                        key="home.footer.sections.info.terms"
+                        lang={currentLang}
+                    />
+                </a>
                 <a target="_blank" href={LINK.privacy}>
                     <LocalizedText
                         text="Privacy Policy"
@@ -813,6 +1000,71 @@
         background: #003bdd;
     }
 
+    .profile-picture {
+        width: 72px;
+        height: 72px;
+        border-radius: 4px;
+    }
+    .welcome-back-card {
+        width: 30%;
+        height: 312px;
+        margin: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .welcome-back-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+    .welcome-back-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+    }
+    :global(body.dark-mode) .welcome-back-button {
+        color: white;
+    }
+    .welcome-back-no-underline {
+        text-decoration: none;
+    }
+    .welcome-back-icon-container {
+        border: 1px solid rgba(0, 0, 0, 0.25);
+        background: transparent;
+        border-radius: 1024px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 72px;
+        height: 72px;
+        margin-bottom: 4px;
+    }
+    :global(body.dark-mode) .welcome-back-icon-container {
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    .welcome-back-button:active .welcome-back-icon-container {
+        background: rgba(0, 0, 0, 0.2);
+    }
+    :global(body.dark-mode)
+        .welcome-back-button:active
+        .welcome-back-icon-container {
+        background: rgba(255, 255, 255, 0.2);
+    }
+    .welcome-back-icon-container img {
+        width: 32px;
+        height: 32px;
+        filter: brightness(0.2);
+    }
+    :global(body.dark-mode) .welcome-back-icon-container img {
+        filter: brightness(1);
+    }
+
     .section-projects {
         display: flex;
         flex-direction: column;
@@ -876,5 +1128,12 @@
     .project-list {
         display: flex;
         flex-direction: row;
+    }
+
+    /* test styles, remove later */
+    .vr-test-button {
+        padding: 20px;
+        margin: 4px;
+        font-size: larger;
     }
 </style>

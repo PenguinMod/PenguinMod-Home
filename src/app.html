@@ -20,6 +20,19 @@
 		<link rel="icon" href="https://penguinmod.com/favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
 		%sveltekit.head%
+		<style>
+			.guidelines-warning-box {
+				padding: 8px;
+				border-radius: 4px;
+				border: 1px solid rgb(255, 153, 0);
+				background: rgb(255, 217, 0, 0.5);
+				color: black;
+			}
+			body.dark-mode .guidelines-warning-box {
+				color: white;
+				background: rgb(255, 217, 0, 0.2);
+			}
+		</style>
 	</head>
 	<body data-sveltekit-preload-data="hover" id="PAGE_BODY">
 		<script>

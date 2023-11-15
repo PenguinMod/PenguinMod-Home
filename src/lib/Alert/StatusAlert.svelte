@@ -10,7 +10,7 @@
     };
 
     onMount(() => {
-        fetch(`${LINK.updateReaderApi}status`).then((res) => {
+        fetch(`${LINK.basicApi}status`).then((res) => {
             if (!res.ok) return;
             res.json().then((status) => {
                 // currently multiple updates are not supported

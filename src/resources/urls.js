@@ -17,6 +17,11 @@ export default {
     credits: "https://studio.penguinmod.com/credits.html",
 
     /**
+     * PenguinMod's terms of service page
+     */
+    terms: "https://studio.penguinmod.com/terms.html",
+
+    /**
      * PenguinMod's privacy policy page
      */
     privacy: "https://studio.penguinmod.com/privacy.html",
@@ -87,12 +92,7 @@ export default {
     /**
      * PenguinMod's basic API
      */
-    basicApi: "https://pmbasicapi--jeremygamer1.repl.co/",
-
-    /**
-     * PenguinMod's update reader API
-     */
-    updateReaderApi: "https://pmupdatereader.jeremygamer13.repl.co/",
+    basicApi: "https://basic-api.penguinmod.com/",
 
     /**
      * The admin panel for pm projects api
