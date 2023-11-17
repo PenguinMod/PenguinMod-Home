@@ -15,4 +15,5 @@ export default {
     likes: "likes_many",
     followers: "followers_many",
     amongus: "sussy",
+    contributor: "contributor",
 };
