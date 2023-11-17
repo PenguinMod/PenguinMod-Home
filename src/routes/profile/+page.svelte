@@ -201,7 +201,10 @@
             })
             .catch((err) => {
                 console.error(err);
-                alert(`We couldn't rank you up!\n${err}`);
+                alert(`${TranslationHandler.text(
+                    "profile.rankup.error",
+                    currentLang
+                )}\n${err}`);
                 isAttemptingRankUp = false;
                 isRankingUpMenu = false;
             });
@@ -217,19 +220,38 @@
 {#if isRankingUpMenu}
     <div class="scratch-modal-back">
         <div class="scratch-modal">
-            <div class="scratch-modal-title">Rank up</div>
+            <div class="scratch-modal-title">
+                <LocalizedText
+                    text="Rank up"
+                    key="profile.rankup.title"
+                    lang={currentLang}
+                />
+            </div>
             <div class="scratch-modal-content">
                 <img src="/penguins/rankup.svg" alt="Rank up" />
                 <p style="text-align:center;">
-                    Let's see if you can become a real penguin!
+                    <LocalizedText
+                        text="Let's see if you can become a real penguin!"
+                        key="profile.rankup.message1"
+                        lang={currentLang}
+                    />
                     <br />
-                    This will allow you to upload projects with custom extensions
-                    and other built-in extensions.
+                    <LocalizedText
+                        text="This will allow you to upload projects with custom extensions and other built-in extensions."
+                        key="profile.rankup.message2"
+                        lang={currentLang}
+                    />
                 </p>
                 {#if isAttemptingRankUp}
                     <LoadingSpinner />
                 {:else}
-                    <Button on:click={rankUpAccount}>Rank up</Button>
+                    <Button on:click={rankUpAccount}>
+                        <LocalizedText
+                            text="Rank up"
+                            key="profile.rankup.title"
+                            lang={currentLang}
+                        />
+                    </Button>
                 {/if}
             </div>
         </div>
@@ -304,26 +326,51 @@
                 </div>
             {/if}
             <div class="section-projects">
-                <div style="width:90%;margin:10px;">
+                <div class="user-ordering-stats" style="width:90%;margin:10px;">
                     <div class="section-user-stats">
                         <div class="user-stat-box" style="border-bottom: 1px solid rgba(0, 0, 0, 0.15);">
                             <div class="user-stat-box-inner">
-                                Rank
+                                <LocalizedText
+                                    text="Rank"
+                                    key="profile.ranking.title"
+                                    lang={currentLang}
+                                />
                             </div>
                             <p class="small" style="margin-block:4px">
                                 {#if fullProfile.admin === true}
-                                    King Penguin
+                                    <LocalizedText
+                                        text="King Penguin"
+                                        key="profile.ranking.admin"
+                                        lang={currentLang}
+                                    />
                                 {:else if fullProfile.approver === true}
-                                    Guard Penguin
+                                    <LocalizedText
+                                        text="Guard Penguin"
+                                        key="profile.ranking.mod"
+                                        lang={currentLang}
+                                    />
                                 {:else if fullProfile.rank === 1}
-                                    Penguin
+                                    <LocalizedText
+                                        text="Penguin"
+                                        key="profile.ranking.ranked"
+                                        lang={currentLang}
+                                    />
                                 {:else}
-                                    Newborn Penguin
+                                    <LocalizedText
+                                        text="Newborn Penguin"
+                                        key="profile.ranking.new"
+                                        lang={currentLang}
+                                    />
                                 {/if}
                                 {#if loggedIn && user === loggedInUser && fullProfile.rank === 0}
                                     {#if fullProfile.canrankup !== true}
                                         <span style="opacity: 0.5;font-size:.7em;">
-                                            <br>Cannot rank up yet
+                                            <br>
+                                            <LocalizedText
+                                                text="Cannot rank up yet"
+                                                key="profile.rankup.cannot"
+                                                lang={currentLang}
+                                            />
                                         </span>
                                     {:else}
                                         <!-- svelte-ignore a11y-invalid-attribute -->
@@ -334,7 +381,12 @@
                                                 isRankingUpMenu = true;
                                             }}
                                         >
-                                            <br>Rank up
+                                            <br>
+                                            <LocalizedText
+                                                text="Rank up"
+                                                key="profile.rankup.title"
+                                                lang={currentLang}
+                                            />
                                             <div class="rankup-badge">
                                                 !
                                             </div>
@@ -345,7 +397,11 @@
                         </div>
                         <div class="user-stat-box">
                             <div class="user-stat-box-inner">
-                                Badges
+                                <LocalizedText
+                                    text="Badges"
+                                    key="profile.badges.title"
+                                    lang={currentLang}
+                                />
                             </div>
                             <div class="user-box-maxwidth"></div>
                             <div class="user-badge-container">
@@ -401,7 +457,7 @@
                                 "profile.projects.featured",
                                 currentLang
                             )}
-                            style="width:65%;float:right;margin:0px;margin-top:-297px;"
+                            style="width:65%;margin:0px;"
                             stylec="height: 244px;"
                             seemore={`/search?q=user%3A${user} featured%3Atrue`}
                         >
@@ -574,7 +630,7 @@
         align-items: center;
     }
     .report-action img {
-        margin-right: 4px;
+        margin: 0 4px;
     }
 
     .project-list {
@@ -693,6 +749,15 @@
         border-color: rgba(0, 0, 0, 0.3);
         border-style: solid;
     }
+    :global(html[dir="rtl"]) .section-user-stats {
+        margin-right: inherit;
+        margin-left: 5%;
+    }
+    .user-ordering-stats {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
     .user-box-maxwidth {
         width: 100%;
         height: 1px;
@@ -713,7 +778,7 @@
         font-size: medium;
         text-align: center;
         font-weight: bold;
-        margin-right: 6px;
+        margin: 0 6px;
     }
     .follower-button {
         width: 100px;

@@ -445,7 +445,12 @@
                     alt="Profile"
                     class="profile-picture"
                 />
-                <h1>Hello, {loggedInUsername}!</h1>
+                <h1>
+                    {TranslationHandler.text(
+                        "home.welcome",
+                        currentLang
+                    ).replace('$1', loggedInUsername)}
+                </h1>
                 <div class="welcome-back-row">
                     <a href={LINK.editor} class="welcome-back-no-underline">
                         <button class="welcome-back-button">

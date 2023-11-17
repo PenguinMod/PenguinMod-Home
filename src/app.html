@@ -36,13 +36,6 @@
 	</head>
 	<body data-sveltekit-preload-data="hover" id="PAGE_BODY">
 		<script>
-			console.log(
-				"%cSCAM ALERT! %cDo NOT paste things into here that other people sent you!",
-				"color:red;font-family:system-ui;font-size:2rem;-webkit-text-stroke: 1px black;font-weight:bold",
-				"color:white;font-family:system-ui;font-size:1.75rem;-webkit-text-stroke: 1px black;font-weight:bold"
-			)
-			console.log("If you don't know what this window does, EXIT NOW! People can use this to upload inappropriate projects under YOUR name, delete YOUR projects, and get YOU banned from PenguinMod!")
-
 			if (location.pathname.replace(/\//gmi, "").startsWith("embed")) {
 				if (location.hash.replace(/#/gmi, "").startsWith("dark=")) {
 					const body = document.getElementById("PAGE_BODY");
@@ -82,6 +75,13 @@
 					window._isPenguinModLauncher = true;
 				}
 			}
+			
+			console.log(
+				"%cSCAM ALERT! %cDo NOT paste things into here that other people sent you!",
+				"color:red;font-family:system-ui;font-size:2rem;-webkit-text-stroke: 1px black;font-weight:bold",
+				"color:white;font-family:system-ui;font-size:1.75rem;-webkit-text-stroke: 1px black;font-weight:bold"
+			);
+			console.log("If you don't know what this window does, EXIT NOW! People can use this to upload inappropriate projects under YOUR name, delete YOUR projects, and get YOU banned from PenguinMod!");
 		</script>
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
