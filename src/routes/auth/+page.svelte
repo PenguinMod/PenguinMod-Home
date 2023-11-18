@@ -93,6 +93,10 @@
     async function FinishTokenBasedAuth() {
         location.replace("https://projects.penguinmod.com/api/users/login?privateCode=" + PrivateCode)
     }
+
+    var OneClickAccounts = []; // { username, lastSignedIn }, lastSignedIn should be a formatted date string.
+
+    function OneClickSignInTriggered() {} // This cannot function unless a change is made to penguin mod's projects API
 </script>
 
 <head>
@@ -143,7 +147,7 @@
             </div>
         </div>
     </dialog>
-    <main class="auth-page-holder">
+    <main class="auth-page-holder"> <!-- use class "one-click-available" if a one click account is available. -->
         <div class="auth-method-sector">
             <button on:click={ProjectCommentPrompt}>
                 <b>Project Comment Auth</b>
@@ -155,6 +159,16 @@
             </button>
         </div>
     </main>
+    <aside class="one-click-sign-in"> <!-- use class "one-click-available" if a one click account is available. -->
+        <div class="auth-method-sector">
+            {#each OneClickAccounts as { username, lastSignedIn }}
+            <button on:click={OneClickSignInTriggered}>
+                <b><i>One Click:</i> {username}</b>
+                <p>Last signed in {lastSignedIn}</p>
+            </button>
+            {/each}
+        </div>
+    </aside>
 </div>
 
 <style>
@@ -174,6 +188,31 @@
         display: flex;
         position: relative;
         justify-content: center;
+        width: 100%;
+    }
+
+    .auth-page-holder.one-click-available {
+        width: 50% !important;
+        display: inline-flex;
+    }
+
+    .one-click-sign-in:not(.one-click-available) {
+        display: none;
+    }
+
+    .one-click-sign-in.one-click-available {
+        display: block;
+        width: 50%;
+        float: right;
+    }
+
+    .auth-method-sector h2 {
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    :not(.one-click-available) .auth-method-sector h2 {
+        display: none;
     }
 
     .auth-method {

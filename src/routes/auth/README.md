@@ -16,7 +16,7 @@ This is a custom frontend for Scratch Auth, made to be a drag-and-drop(not liter
   **privateCode**\* - String ( private code given by `getTokens` )
   _Query Options:_
   **redirect**\* - String ( base64 encoded url, only required when `oneClickSignIn` is true )
-  oneClickSignIn - Boolean
+  oneClickSignIn - Boolean ( this allows for accounts to be quickly signed into )
 
 * **GET** https://auth-api.itinerary.eu.org/auth/oneClickSignIn
   _Headers:_
