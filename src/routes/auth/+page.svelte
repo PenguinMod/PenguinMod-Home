@@ -94,46 +94,54 @@
 
 <div class="main">
     <NavigationMargin />
-    <div>
-        <button on:click={ProjectCommentPrompt}>Project Comments</button>
-        <button on:click={ProfileCommentPrompt}>Profile Comments</button>
-    </div>
-    <dialog class="auth-method" open="{ProjectCommentAuthOpen}">
-        <div class="dialog-head">
-            <button on:click={CloseProjectCommentAuth}>X</button>
-            <b>Project Comment Auth</b>
+    <main class="auth-page-holder">
+        <div class="auth-method-sector">
+            <button on:click={ProjectCommentPrompt}>
+                <b>Project Comment Auth</b>
+                <p>Sign in by leaving a comment on a Scratch project.</p>
+            </button>
+            <button on:click={ProfileCommentPrompt}>
+                <b>Profile Comment Auth</b>
+                <p>Sign in by leaving a comment on <i>your</i> Scratch profile.</p>
+            </button>
         </div>
-        <div class="dialog-body">
-            <div class="auth-code-holder">
-                <input type="text" readonly="true" value="{AuthCode}" />
-                <button on:click={CopyAuthCode}>Copy</button>
+        <dialog class="auth-method" open="{ProjectCommentAuthOpen}">
+            <div class="dialog-head">
+                <button on:click={CloseProjectCommentAuth}>X</button>
+                <b>Project Comment Auth</b>
             </div>
-            <div class="auth-finish">
-                <a href="https://scratch.mit.edu/projects/{AuthProject}" target="_blank">Open Auth Project</a>
-                <button on:click={FinishTokenBasedAuth}>Done</button>
+            <div class="dialog-body">
+                <div class="auth-code-holder">
+                    <input type="text" readonly="true" value="{AuthCode}" />
+                    <button on:click={CopyAuthCode}>Copy</button>
+                </div>
+                <div class="auth-finish">
+                    <a href="https://scratch.mit.edu/projects/{AuthProject}" target="_blank">Open Auth Project</a>
+                    <button on:click={FinishTokenBasedAuth}>Done</button>
+                </div>
             </div>
-        </div>
-    </dialog>
-    <dialog class="auth-method" open="{ProfileCommentAuthOpen}">
-        <div class="dialog-head">
-            <button on:click={CloseProfileCommentAuth}>X</button>
-            <b>Profile Comment Auth</b>
-        </div>
-        <div class="dialog-body">
-            <div class="auth-initiary">
-                <input type="text" value={AuthUser} on:change={SetUsername} />
-                <button on:click={SetUsername}>Continue</button>
+        </dialog>
+        <dialog class="auth-method" open="{ProfileCommentAuthOpen}">
+            <div class="dialog-head">
+                <button on:click={CloseProfileCommentAuth}>X</button>
+                <b>Profile Comment Auth</b>
             </div>
-            <div class="auth-code-holder">
-                <input type="text" readonly="true" value="{AuthCode}" />
-                <button on:click={CopyAuthCode}>Copy</button>
+            <div class="dialog-body">
+                <div class="auth-initiary">
+                    <input type="text" value={AuthUser} on:change={SetUsername} />
+                    <button on:click={SetUsername}>Continue</button>
+                </div>
+                <div class="auth-code-holder">
+                    <input type="text" readonly="true" value="{AuthCode}" />
+                    <button on:click={CopyAuthCode}>Copy</button>
+                </div>
+                <div class="auth-finish">
+                    <a href="https://scratch.mit.edu/users/{AuthUser}#comments" target="_blank">Open Profile Comments</a>
+                    <button on:click={FinishTokenBasedAuth}>Done</button>
+                </div>
             </div>
-            <div class="auth-finish">
-                <a href="https://scratch.mit.edu/users/{AuthUser}#comments" target="_blank">Open Profile Comments</a>
-                <button on:click={FinishTokenBasedAuth}>Done</button>
-            </div>
-        </div>
-    </dialog>
+        </dialog>
+    </main>
 </div>
 
 <style>
@@ -149,8 +157,31 @@
         min-width: 1000px;
     }
 
+    .auth-page-holder {
+        display: flex;
+        position: relative;
+        justify-content: center;
+    }
+
     .auth-method {
         width: 50%;
+    }
+
+    .auth-method-sector {
+        position: relative;
+        width: 25%;
+    }
+
+    .auth-method-sector button {
+        display: block;
+        text-align: left;
+        padding: 10px;
+        margin: 10px;
+        width: 100%;
+    }
+
+    .auth-method-sector button p {
+        margin: 5px 0;
     }
 
     .small {
