@@ -11,7 +11,7 @@ This is a custom frontend for Scratch Auth, made to be a drag-and-drop(not liter
   method - Enum ( "cloud", "comment", "profile-comment" )
   authProject - String ( ID of the Scratch project used for authentication )
 
-* **GET** https://auth-api.itinerary.eu.org/auth/verifyTokens/:privateCode
+* **GET** https://auth-api.itinerary.eu.org/auth/verifyToken/:privateCode
   _Query Parameters:_
   **privateCode**\* - String ( private code given by `getTokens` )
   _Query Options:_
