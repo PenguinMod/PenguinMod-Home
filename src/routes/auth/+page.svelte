@@ -205,7 +205,7 @@
 
     .auth-method-sector {
         position: relative;
-        width: 25%;
+        width: 50%;
     }
 
     .auth-method-sector button {
@@ -220,7 +220,7 @@
         border: none;
         border-radius: 4px;
         outline: rgba(0, 195, 255, 0.35) 2px solid;
-        background-color: #00c3ff;
+        background-color: var(--penguinmod-color);
     }
 
     .auth-method-sector button b {
