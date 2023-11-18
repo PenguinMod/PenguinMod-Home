@@ -11,8 +11,6 @@
     // Static values
     import LINK from "../../resources/urls.js";
 
-    import Button from "$lib/Button/Button.svelte";
-
     let currentLang = "en";
     onMount(() => {
         Language.forceUpdate();
@@ -31,6 +29,10 @@
     var ProjectCommentAuthOpen = false;
     var ProfileCommentAuthOpen = false;
 
+    var OpenLinkReady = false;
+    var ReadyToFinish = false;
+    const ReadyUpToFinish = () => ReadyToFinish = true;
+
     var DoneReady = false;
 
     var AuthCode = "";
@@ -42,6 +44,7 @@
         ProjectCommentAuthOpen = !ProjectCommentAuthOpen;
         ProfileCommentAuthOpen = false;
         AuthCode = "";
+        ReadyToFinish = false;
         AuthUser = "";
         GrabProjectCommentCode()
     }
@@ -49,17 +52,20 @@
         ProfileCommentAuthOpen = !ProfileCommentAuthOpen;
         ProjectCommentAuthOpen = false;
         AuthCode = "";
+        ReadyToFinish = false;
         AuthUser = "";
     }
 
     function CloseProfileCommentAuth() {
         ProfileCommentAuthOpen = false;
         AuthUser = "";
+        ReadyToFinish = false;
         AuthCode = "";
     }
     function CloseProjectCommentAuth() {
         ProjectCommentAuthOpen = false;
         AuthCode = "";
+        ReadyToFinish = false;
     }
 
     function SetUsername(event) {
@@ -71,6 +77,7 @@
         const ProfileCommentAuthAPIUrl = AuthAPIProfileCommentsTemplate.replace("%AuthUser", AuthUser);
         const ProfileCommentAuthAPICall = await fetch(ProfileCommentAuthAPIUrl).then(res => res.json());
         AuthCode = ProfileCommentAuthAPICall.publicCode;
+        OpenLinkReady = true;
         PrivateCode = ProfileCommentAuthAPICall.privateCode;
         DoneReady = true;
     }
@@ -92,10 +99,7 @@
     <title>PenguinMod - Authenticate</title>
 </head>
 
-<NavigationBar />
-
 <div class="main">
-    <NavigationMargin />
     <div class="section-info">
         <h1 style="margin-block: 0;">PenguinMod Sign In</h1>
     </div>
@@ -121,8 +125,8 @@
                     <button on:click={CopyAuthCode}>Copy</button>
                 </div>
                 <div class="auth-finish">
-                    <a href="https://scratch.mit.edu/projects/{AuthProject}" target="_blank">Open Auth Project</a>
-                    <button on:click={FinishTokenBasedAuth}>Done</button>
+                    <a href="https://scratch.mit.edu/projects/{AuthProject}" on:click={ReadyUpToFinish} target="_blank">Open Auth Project</a>
+                    <button on:click={FinishTokenBasedAuth} disabled="{ReadyToFinish}">Done</button>
                 </div>
             </div>
         </dialog>
@@ -141,8 +145,12 @@
                     <button on:click={CopyAuthCode}>Copy</button>
                 </div>
                 <div class="auth-finish">
-                    <a href="https://scratch.mit.edu/users/{AuthUser}#comments" target="_blank">Open Profile Comments</a>
-                    <button on:click={FinishTokenBasedAuth}>Done</button>
+                    {#if OpenLinkReady}
+                    <a href="https://scratch.mit.edu/users/{AuthUser}#comments" on:click={ReadyUpToFinish} target="_blank">Open Profile Comments</a>
+                    {:else}
+                    <span class="disabled-link">Open Profile Comments</span>
+                    {/if}
+                    <button on:click={FinishTokenBasedAuth} disabled="{ReadyToFinish}">Done</button>
                 </div>
             </div>
         </dialog>
@@ -202,10 +210,24 @@
 
     .auth-method-sector button {
         display: block;
+        padding: 1rem;
+        font-size: 1.1rem;
         text-align: left;
         padding: 10px;
         margin: 10px;
         width: 100%;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        outline: rgba(0, 195, 255, 0.35) 2px solid;
+        background-color: #00c3ff;
+    }
+
+    .auth-method-sector button b {
+        font-size: 1.5rem;
+        text-align: center;
+        width: 100%;
+        display: block;
     }
 
     .auth-method-sector button p {
