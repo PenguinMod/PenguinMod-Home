@@ -12,6 +12,7 @@ import da from '../translations/da.json';
 import tr from '../translations/tr.json';
 import pl from '../translations/pl.json';
 import ro from '../translations/ro.json';
+import sv from '../translations/sv.json';
 import uwu from '../translations/uwu.json';
 import test from '../translations/test.json';
 
@@ -26,6 +27,7 @@ const languages = {
     "da": da,
     // "pl": pl,
     "tr": tr,
+    "sv": sv,
     "id": id,
     "he": he,
     // todo: uncomment this when its complete :troll_hands:
