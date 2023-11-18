@@ -107,7 +107,7 @@
         </div>
         <dialog class="auth-method" open="{ProjectCommentAuthOpen}">
             <div class="dialog-head">
-                <button on:click={CloseProjectCommentAuth}>X</button>
+                <div class="close-button-holder"><button on:click={CloseProjectCommentAuth}>X</button></div>
                 <b>Project Comment Auth</b>
             </div>
             <div class="dialog-body">
@@ -123,7 +123,7 @@
         </dialog>
         <dialog class="auth-method" open="{ProfileCommentAuthOpen}">
             <div class="dialog-head">
-                <button on:click={CloseProfileCommentAuth}>X</button>
+                <div class="close-button-holder"><button on:click={CloseProfileCommentAuth}>X</button></div>
                 <b>Profile Comment Auth</b>
             </div>
             <div class="dialog-body">
@@ -165,6 +165,29 @@
 
     .auth-method {
         width: 50%;
+    }
+
+    .auth-method .dialog-head {
+        display: flex;
+        align-items: center;
+    }
+
+    dialog {
+        padding: 0;
+        --outer-padding: 1.5em;
+        --inner-padding: 5px;
+    }
+
+    .dialog-head {
+        padding: var(--outer-padding) var(--outer-padding) var(--inner-padding);
+    }
+
+    .dialog-body {
+        padding: var(--inner-padding) var(--outer-padding) var(--outer-padding);
+    }
+
+    .auth-method .dialog-head .close-button-holder {
+        flex: 1;
     }
 
     .auth-method-sector {
