@@ -19,31 +19,43 @@
         currentLang = lang;
     });
 
-    const AuthProject = "";
-    const AuthAPIProfileCommentsTemplate = "https://auth.itinerary.eu.org/api/auth/getTokens?method=profile-comment&username=%AuthUser&redirect=aHR0cHM6Ly9wcm9qZWN0cy5wZW5ndWlubW9kLmNvbS9hcGkvdXNlcnMvbG9naW4%3D";
-    const AuthAPIProjectComments = "https://auth.itinerary.eu.org/api/auth/getTokens?method=comment&redirect=aHR0cHM6Ly9wcm9qZWN0cy5wZW5ndWlubW9kLmNvbS9hcGkvdXNlcnMvbG9naW4%3D&authProject=" + AuthProject;
+    // Page Specific Functions, Constants, & Variables
+
+    const AuthProject = "926884382";
+    const AuthAPIProfileCommentsTemplate = "https://auth-api.itinerary.eu.org/auth/getTokens?method=profile-comment&username=%AuthUser&redirect=aHR0cHM6Ly9wcm9qZWN0cy5wZW5ndWlubW9kLmNvbS9hcGkvdXNlcnMvbG9naW4%3D";
+    const AuthAPIProjectComments = "https://auth-api.itinerary.eu.org/auth/getTokens?method=comment&redirect=aHR0cHM6Ly9wcm9qZWN0cy5wZW5ndWlubW9kLmNvbS9hcGkvdXNlcnMvbG9naW4%3D&authProject=" + AuthProject;
+    const AuthAPIFinishURLTemplate = "https://auth-api.itinerary.eu.org/auth/verifyTokens/%PrivateCode";
 
     var ProjectCommentAuthOpen = false;
     var ProfileCommentAuthOpen = false;
 
     var AuthCode = "";
     var AuthUser = "";
+    
+    var PrivateCode = "";
 
     function ProjectCommentPrompt() {
         ProjectCommentAuthOpen = !ProjectCommentAuthOpen;
         ProfileCommentAuthOpen = false;
+        AuthCode = "";
+        AuthUser = "";
+        GrabProjectCommentCode()
     }
     function ProfileCommentPrompt() {
         ProfileCommentAuthOpen = !ProfileCommentAuthOpen;
         ProjectCommentAuthOpen = false;
+        AuthCode = "";
+        AuthUser = "";
     }
 
     function CloseProfileCommentAuth() {
         ProfileCommentAuthOpen = false;
         AuthUser = "";
+        AuthCode = "";
     }
     function CloseProjectCommentAuth() {
         ProjectCommentAuthOpen = false;
+        AuthCode = "";
     }
 
     function SetUsername(event) {
@@ -52,8 +64,20 @@
     }
 
     async function GrabProfileCommentCode() {
-        let ProfileCommentAuthAPIUrl = AuthAPIProfileCommentsTemplate.replace("%AuthUser", AuthUser);
-        fetch(ProfileCommentAuthAPIUrl);
+        const ProfileCommentAuthAPIUrl = AuthAPIProfileCommentsTemplate.replace("%AuthUser", AuthUser);
+        const ProfileCommentAuthAPICall = await fetch(ProfileCommentAuthAPIUrl).then(res => res.json());
+        AuthCode = ProfileCommentAuthAPICall.publicCode;
+        PrivateCode = ProfileCommentAuthAPICall.privateCode;
+    }
+
+    async function GrabProjectCommentCode() {
+        const ProjectCommentAuthAPICall = await fetch(AuthAPIProjectComments).then(res => res.json());
+        AuthCode = ProjectCommentAuthAPICall.publicCode;
+        PrivateCode = ProjectCommentAuthAPICall.privateCode;
+    }
+
+    async function FinishTokenBasedAuth() {
+        AuthAPIFinishURLTemplate.replace("%PrivateCode", PrivateCode)
     }
 </script>
 
@@ -76,6 +100,7 @@
         </div>
         <input readonly="true" value="{AuthCode}" />
         <a href="https://scratch.mit.edu/projects/{AuthProject}" target="_blank">Open Auth Project</a>
+        <button on:click={FinishTokenBasedAuth}>Done</button>
     </dialog>
     <dialog open="{ProfileCommentAuthOpen}">
         <div class="dialog-head">
@@ -87,6 +112,7 @@
             <input type="text" readonly="true" value="{AuthCode}" />
             <a href="https://scratch.mit.edu/users/{AuthUser}#comments" target="_blank">Open Profile Comments</a>
         </div>
+        <button on:click={FinishTokenBasedAuth}>Done</button>
     </dialog>
 </div>
 
