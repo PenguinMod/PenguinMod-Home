@@ -5,11 +5,11 @@
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     // translations
-    // import LocalizedText from "$lib/LocalizedText/Node.svelte";
+    import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import Language from "../../resources/language.js";
 
     // Static values
-    // import LINK from "../../resources/urls.js";
+    import LINK from "../../resources/urls.js";
 
     let currentLang = "en";
     onMount(() => {
@@ -18,6 +18,43 @@
     Language.onChange((lang) => {
         currentLang = lang;
     });
+
+    const AuthProject = "";
+    const AuthAPIProfileCommentsTemplate = "https://auth.itinerary.eu.org/api/auth/getTokens?method=profile-comment&username=%AuthUser&redirect=aHR0cHM6Ly9wcm9qZWN0cy5wZW5ndWlubW9kLmNvbS9hcGkvdXNlcnMvbG9naW4%3D";
+    const AuthAPIProjectComments = "https://auth.itinerary.eu.org/api/auth/getTokens?method=comment&redirect=aHR0cHM6Ly9wcm9qZWN0cy5wZW5ndWlubW9kLmNvbS9hcGkvdXNlcnMvbG9naW4%3D&authProject=" + AuthProject;
+
+    var ProjectCommentAuthOpen = false;
+    var ProfileCommentAuthOpen = false;
+
+    var AuthCode = "";
+    var AuthUser = "";
+
+    function ProjectCommentPrompt() {
+        ProjectCommentAuthOpen = !ProjectCommentAuthOpen;
+        ProfileCommentAuthOpen = false;
+    }
+    function ProfileCommentPrompt() {
+        ProfileCommentAuthOpen = !ProfileCommentAuthOpen;
+        ProjectCommentAuthOpen = false;
+    }
+
+    function CloseProfileCommentAuth() {
+        ProfileCommentAuthOpen = false;
+        AuthUser = "";
+    }
+    function CloseProjectCommentAuth() {
+        ProjectCommentAuthOpen = false;
+    }
+
+    function SetUsername(event) {
+        AuthUser = event.target.value;
+        GrabProfileCommentCode();
+    }
+
+    async function GrabProfileCommentCode() {
+        let ProfileCommentAuthAPIUrl = AuthAPIProfileCommentsTemplate.replace("%AuthUser", AuthUser);
+        fetch(ProfileCommentAuthAPIUrl);
+    }
 </script>
 
 <head>
@@ -28,6 +65,29 @@
 
 <div class="main">
     <NavigationMargin />
+    <div>
+        <button on:click={ProjectCommentPrompt}>Project Comments</button>
+        <button on:click={ProfileCommentPrompt}>Profile Comments</button>
+    </div>
+    <dialog open="{ProjectCommentAuthOpen}">
+        <div class="dialog-head">
+            <button on:click={CloseProjectCommentAuth}>X</button>
+            <b>Project Comment Auth</b>
+        </div>
+        <input readonly="true" value="{AuthCode}" />
+        <a href="https://scratch.mit.edu/projects/{AuthProject}" target="_blank">Open Auth Project</a>
+    </dialog>
+    <dialog open="{ProfileCommentAuthOpen}">
+        <div class="dialog-head">
+            <button on:click={CloseProfileCommentAuth}>X</button>
+            <b>Profile Comment Auth</b>
+        </div>
+        <input type="text" value={AuthUser} on:change={SetUsername} id="username" /> <!--Username-->
+        <div class="step-two">
+            <input type="text" readonly="true" value="{AuthCode}" />
+            <a href="https://scratch.mit.edu/users/{AuthUser}#comments" target="_blank">Open Profile Comments</a>
+        </div>
+    </dialog>
 </div>
 
 <style>

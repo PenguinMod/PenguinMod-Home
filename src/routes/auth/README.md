@@ -7,7 +7,8 @@ This is a custom frontend for Scratch Auth.
 * **GET** https://auth.itinerary.eu.org/api/auth/getTokens
   _Query Options:_
   **redirect**\* - String ( base64 encoded url )
-  method - Enum ( "cloud", "comment" )
+  **username**\* - String ( only used if method is "profile-comment" )
+  method - Enum ( "cloud", "comment", "profile-comment" )
   authProject - String ( ID of the Scratch project used for authentication )
 
 * **GET** https://auth.itinerary.eu.org/api/auth/verifyTokens/:privateCode
