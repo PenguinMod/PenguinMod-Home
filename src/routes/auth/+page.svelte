@@ -29,6 +29,8 @@
     var ProjectCommentAuthOpen = false;
     var ProfileCommentAuthOpen = false;
 
+    var DoneReady = false;
+
     var AuthCode = "";
     var AuthUser = "";
     
@@ -68,6 +70,7 @@
         const ProfileCommentAuthAPICall = await fetch(ProfileCommentAuthAPIUrl).then(res => res.json());
         AuthCode = ProfileCommentAuthAPICall.publicCode;
         PrivateCode = ProfileCommentAuthAPICall.privateCode;
+        DoneReady = true;
     }
 
     async function GrabProjectCommentCode() {
@@ -75,6 +78,8 @@
         AuthCode = ProjectCommentAuthAPICall.publicCode;
         PrivateCode = ProjectCommentAuthAPICall.privateCode;
     }
+
+    function CopyAuthCode() {}
 
     async function FinishTokenBasedAuth() {
         location.replace("https://projects.penguinmod.com/api/users/login?privateCode=" + PrivateCode)
@@ -93,26 +98,41 @@
         <button on:click={ProjectCommentPrompt}>Project Comments</button>
         <button on:click={ProfileCommentPrompt}>Profile Comments</button>
     </div>
-    <dialog open="{ProjectCommentAuthOpen}">
+    <dialog class="auth-method" open="{ProjectCommentAuthOpen}">
         <div class="dialog-head">
             <button on:click={CloseProjectCommentAuth}>X</button>
             <b>Project Comment Auth</b>
         </div>
-        <input readonly="true" value="{AuthCode}" />
-        <a href="https://scratch.mit.edu/projects/{AuthProject}" target="_blank">Open Auth Project</a>
-        <button on:click={FinishTokenBasedAuth}>Done</button>
+        <div class="dialog-body">
+            <div class="auth-code-holder">
+                <input type="text" readonly="true" value="{AuthCode}" />
+                <button on:click={CopyAuthCode}>Copy</button>
+            </div>
+            <div class="auth-finish">
+                <a href="https://scratch.mit.edu/projects/{AuthProject}" target="_blank">Open Auth Project</a>
+                <button on:click={FinishTokenBasedAuth}>Done</button>
+            </div>
+        </div>
     </dialog>
-    <dialog open="{ProfileCommentAuthOpen}">
+    <dialog class="auth-method" open="{ProfileCommentAuthOpen}">
         <div class="dialog-head">
             <button on:click={CloseProfileCommentAuth}>X</button>
             <b>Profile Comment Auth</b>
         </div>
-        <input type="text" value={AuthUser} on:change={SetUsername} id="username" /> <!--Username-->
-        <div class="step-two">
-            <input type="text" readonly="true" value="{AuthCode}" />
-            <a href="https://scratch.mit.edu/users/{AuthUser}#comments" target="_blank">Open Profile Comments</a>
+        <div class="dialog-body">
+            <div class="auth-initiary">
+                <input type="text" value={AuthUser} on:change={SetUsername} />
+                <button on:click={SetUsername}>Continue</button>
+            </div>
+            <div class="auth-code-holder">
+                <input type="text" readonly="true" value="{AuthCode}" />
+                <button on:click={CopyAuthCode}>Copy</button>
+            </div>
+            <div class="auth-finish">
+                <a href="https://scratch.mit.edu/users/{AuthUser}#comments" target="_blank">Open Profile Comments</a>
+                <button on:click={FinishTokenBasedAuth}>Done</button>
+            </div>
         </div>
-        <button on:click={FinishTokenBasedAuth}>Done</button>
     </dialog>
 </div>
 
@@ -128,6 +148,11 @@
         width: 100%;
         min-width: 1000px;
     }
+
+    .auth-method {
+        width: 50%;
+    }
+
     .small {
         font-size: 12px;
     }
