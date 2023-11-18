@@ -428,7 +428,7 @@
 
 	.languageSelect {
 		position: fixed;
-		width: 192px;
+		width: 256px;
 		max-height: 300px;
 		overflow: auto;
 		background: white;
