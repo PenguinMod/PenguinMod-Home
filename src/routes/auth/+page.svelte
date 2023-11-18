@@ -126,7 +126,7 @@
                 </div>
                 <div class="auth-finish">
                     <a href="https://scratch.mit.edu/projects/{AuthProject}" on:click={ReadyUpToFinish} target="_blank">Open Auth Project</a>
-                    <button on:click={FinishTokenBasedAuth} disabled="{ReadyToFinish}">Done</button>
+                    <button on:click={FinishTokenBasedAuth} disabled="{!ReadyToFinish}">Done</button>
                 </div>
             </div>
         </dialog>
@@ -150,7 +150,7 @@
                     {:else}
                     <span class="disabled-link">Open Profile Comments</span>
                     {/if}
-                    <button on:click={FinishTokenBasedAuth} disabled="{ReadyToFinish}">Done</button>
+                    <button on:click={FinishTokenBasedAuth} disabled="{!ReadyToFinish}">Done</button>
                 </div>
             </div>
         </dialog>
