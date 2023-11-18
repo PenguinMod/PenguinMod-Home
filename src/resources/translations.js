@@ -7,6 +7,9 @@ import en from '../translations/en.json';
 import id from '../translations/id.json';
 import he from '../translations/he.json';
 import ptBr from '../translations/pt-br.json';
+import es419 from '../translations/es-419.json';
+import da from '../translations/da.json';
+import tr from '../translations/tr.json';
 import uwu from '../translations/uwu.json';
 import test from '../translations/test.json';
 
@@ -15,7 +18,10 @@ import test from '../translations/test.json';
 // its easy to just duplicate the "en": en, line and then change accordingly
 const languages = {
     "en": en,
-    // "pt-br": ptBr,
+    "es-419": es419,
+    "pt-br": ptBr,
+    "da": da,
+    "tr": tr,
     "id": id,
     "he": he,
     // todo: uncomment this when its complete :troll_hands:
