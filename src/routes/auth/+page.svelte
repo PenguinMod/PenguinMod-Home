@@ -103,6 +103,46 @@
     <div class="section-info">
         <h1 style="margin-block: 0;">PenguinMod Sign In</h1>
     </div>
+    <dialog class="auth-method" open="{ProjectCommentAuthOpen}">
+        <div class="dialog-head">
+            <div class="close-button-holder"><button on:click={CloseProjectCommentAuth}>X</button></div>
+            <b>Project Comment Auth</b>
+        </div>
+        <div class="dialog-body">
+            <div class="auth-code-holder">
+                <input type="text" readonly="true" value="{AuthCode}" />
+                <button on:click={CopyAuthCode}>Copy</button>
+            </div>
+            <div class="auth-finish">
+                <a href="https://scratch.mit.edu/projects/{AuthProject}" on:click={ReadyUpToFinish} target="_blank">Open Auth Project</a>
+                <button on:click={FinishTokenBasedAuth} disabled="{!ReadyToFinish}">Done</button>
+            </div>
+        </div>
+    </dialog>
+    <dialog class="auth-method" open="{ProfileCommentAuthOpen}">
+        <div class="dialog-head">
+            <div class="close-button-holder"><button on:click={CloseProfileCommentAuth}>X</button></div>
+            <b>Profile Comment Auth</b>
+        </div>
+        <div class="dialog-body">
+            <div class="auth-initiary">
+                <input type="text" value={AuthUser} on:change={SetUsername} />
+                <button on:click={SetUsername}>Continue</button>
+            </div>
+            <div class="auth-code-holder">
+                <input type="text" readonly="true" value="{AuthCode}" />
+                <button on:click={CopyAuthCode}>Copy</button>
+            </div>
+            <div class="auth-finish">
+                {#if OpenLinkReady}
+                <a href="https://scratch.mit.edu/users/{AuthUser}#comments" on:click={ReadyUpToFinish} target="_blank">Open Profile Comments</a>
+                {:else}
+                <span class="disabled-link">Open Profile Comments</span>
+                {/if}
+                <button on:click={FinishTokenBasedAuth} disabled="{!ReadyToFinish}">Done</button>
+            </div>
+        </div>
+    </dialog>
     <main class="auth-page-holder">
         <div class="auth-method-sector">
             <button on:click={ProjectCommentPrompt}>
@@ -114,46 +154,6 @@
                 <p>Sign in by leaving a comment on <i>your</i> Scratch profile.</p>
             </button>
         </div>
-        <dialog class="auth-method" open="{ProjectCommentAuthOpen}">
-            <div class="dialog-head">
-                <div class="close-button-holder"><button on:click={CloseProjectCommentAuth}>X</button></div>
-                <b>Project Comment Auth</b>
-            </div>
-            <div class="dialog-body">
-                <div class="auth-code-holder">
-                    <input type="text" readonly="true" value="{AuthCode}" />
-                    <button on:click={CopyAuthCode}>Copy</button>
-                </div>
-                <div class="auth-finish">
-                    <a href="https://scratch.mit.edu/projects/{AuthProject}" on:click={ReadyUpToFinish} target="_blank">Open Auth Project</a>
-                    <button on:click={FinishTokenBasedAuth} disabled="{!ReadyToFinish}">Done</button>
-                </div>
-            </div>
-        </dialog>
-        <dialog class="auth-method" open="{ProfileCommentAuthOpen}">
-            <div class="dialog-head">
-                <div class="close-button-holder"><button on:click={CloseProfileCommentAuth}>X</button></div>
-                <b>Profile Comment Auth</b>
-            </div>
-            <div class="dialog-body">
-                <div class="auth-initiary">
-                    <input type="text" value={AuthUser} on:change={SetUsername} />
-                    <button on:click={SetUsername}>Continue</button>
-                </div>
-                <div class="auth-code-holder">
-                    <input type="text" readonly="true" value="{AuthCode}" />
-                    <button on:click={CopyAuthCode}>Copy</button>
-                </div>
-                <div class="auth-finish">
-                    {#if OpenLinkReady}
-                    <a href="https://scratch.mit.edu/users/{AuthUser}#comments" on:click={ReadyUpToFinish} target="_blank">Open Profile Comments</a>
-                    {:else}
-                    <span class="disabled-link">Open Profile Comments</span>
-                    {/if}
-                    <button on:click={FinishTokenBasedAuth} disabled="{!ReadyToFinish}">Done</button>
-                </div>
-            </div>
-        </dialog>
     </main>
 </div>
 
@@ -189,6 +189,7 @@
         padding: 0;
         --outer-padding: 1.5em;
         --inner-padding: 5px;
+        z-index: 99;
     }
 
     .dialog-head {
