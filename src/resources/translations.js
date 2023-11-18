@@ -10,6 +10,8 @@ import ptBr from '../translations/pt-br.json';
 import es419 from '../translations/es-419.json';
 import da from '../translations/da.json';
 import tr from '../translations/tr.json';
+import pl from '../translations/pl.json';
+import ro from '../translations/ro.json';
 import uwu from '../translations/uwu.json';
 import test from '../translations/test.json';
 
@@ -20,7 +22,9 @@ const languages = {
     "en": en,
     "es-419": es419,
     "pt-br": ptBr,
+    "ro": ro,
     "da": da,
+    // "pl": pl,
     "tr": tr,
     "id": id,
     "he": he,
