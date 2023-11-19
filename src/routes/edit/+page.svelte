@@ -921,6 +921,7 @@
         align-items: center;
         justify-content: center;
         color: white;
+        z-index: 99999;
     }
 
     /* .front-card-page {
@@ -934,6 +935,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        z-index: 99998;
     }
     .card-page {
         box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.25);
