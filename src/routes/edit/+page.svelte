@@ -765,6 +765,10 @@
         justify-content: center;
         cursor: pointer;
     }
+    :global(html[dir="rtl"]) .emoji-picker-button {
+        left: initial;
+        right: -72px;
+    }
     :global(body.dark-mode) .emoji-picker-button {
         border-color: rgba(255, 255, 255, 0.35);
     }
@@ -792,6 +796,11 @@
         display: none;
         border-radius: 8px;
         border: 2px solid rgba(0, 0, 0, 0.1);
+        z-index: 50;
+    }
+    :global(html[dir="rtl"]) .emoji-picker-list {
+        right: initial;
+        left: 8px;
     }
     :global(body.dark-mode) .emoji-picker-list {
         border-color: rgba(255, 255, 255, 0.35);
@@ -921,6 +930,7 @@
         align-items: center;
         justify-content: center;
         color: white;
+        z-index: 99999;
     }
 
     /* .front-card-page {
@@ -934,6 +944,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        z-index: 99998;
     }
     .card-page {
         box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.25);
