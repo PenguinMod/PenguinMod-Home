@@ -109,7 +109,7 @@
     </div>
     <dialog class="auth-method" open="{ProjectCommentAuthOpen}">
         <div class="dialog-head">
-            <div class="close-button-holder"><button on:click={CloseProjectCommentAuth}>X</button></div>
+            <div class="close-button-holder"><button class="close-button" on:click={CloseProjectCommentAuth}>X</button></div>
             <b>Project Comment Auth</b>
         </div>
         <div class="dialog-body">
@@ -125,7 +125,7 @@
     </dialog>
     <dialog class="auth-method" open="{ProfileCommentAuthOpen}">
         <div class="dialog-head">
-            <div class="close-button-holder"><button on:click={CloseProfileCommentAuth}>X</button></div>
+            <div class="close-button-holder"><button class="close-button" on:click={CloseProfileCommentAuth}>X</button></div>
             <b>Profile Comment Auth</b>
         </div>
         <div class="dialog-body">
@@ -169,6 +169,12 @@
             {/each}
         </div>
     </aside>
+
+    <div style="display:none">
+        <!-- tricking the packager into keeping the required CSS that isn't used until page load. -->
+        <div class="auth-page-holder one-click-available"></div>
+        <div class="one-click-sign-in one-click-available"></div>
+    </div>
 </div>
 
 <style>
@@ -206,17 +212,45 @@
         float: right;
     }
 
-    .auth-method-sector h2 {
-        font-size: 1rem;
-        text-align: center;
-    }
-
-    :not(.one-click-available) .auth-method-sector h2 {
-        display: none;
-    }
-
     .auth-method {
         width: 50%;
+        border-radius: 10px;
+    }
+
+    .auth-method button:not(.close-button) {
+        display: inline-block;
+        padding: 5px;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        outline: rgba(0, 195, 255, 0.35) 2px solid;
+        background-color: var(--penguinmod-color);
+        cursor: pointer;
+    }
+
+    .auth-method button:disabled {
+        filter: grayscale(1);
+        cursor: not-allowed;
+    }
+
+    .disabled-link {
+        color: grey;
+    }
+
+    .close-button {
+        cursor: pointer;
+        color: white;
+        font-weight: 900;
+        background: none;
+        border: none;
+    }
+
+    .close-button:hover {
+        color: #ececec;
+    }
+
+    .auth-method .dialog-body > div {
+        margin: 4px 0;
     }
 
     .auth-method .dialog-head {
@@ -227,16 +261,19 @@
     dialog {
         padding: 0;
         --outer-padding: 1.5em;
-        --inner-padding: 5px;
         z-index: 99;
+        border: var(--penguinmod-color) 2px solid;
+        outline: rgba(0, 195, 255, 0.35) 3px solid;
     }
 
     .dialog-head {
-        padding: var(--outer-padding) var(--outer-padding) var(--inner-padding);
+        padding: 14px var(--outer-padding) 14px;
+        background-color: var(--penguinmod-color);
+        color: white;
     }
 
     .dialog-body {
-        padding: var(--inner-padding) var(--outer-padding) var(--outer-padding);
+        padding: 1px var(--outer-padding) var(--outer-padding);
     }
 
     .auth-method .dialog-head .close-button-holder {
@@ -261,6 +298,7 @@
         border-radius: 4px;
         outline: rgba(0, 195, 255, 0.35) 2px solid;
         background-color: var(--penguinmod-color);
+        cursor: pointer;
     }
 
     .auth-method-sector button b {
@@ -311,11 +349,6 @@
     .section-info p {
         margin-block-end: 0;
         margin-left: 32px;
-    }
-
-    .penguin-donate {
-        height: 80%;
-        margin-right: 32px;
     }
 
     .section-discussion-wrapper {

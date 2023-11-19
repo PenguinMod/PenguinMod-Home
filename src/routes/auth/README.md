@@ -2,6 +2,12 @@
 
 This is a custom frontend for Scratch Auth, made to be a drag-and-drop(not literally in this case) replacement.
 
+## Where's One Click Sign In?
+
+One click sign in would require changes to the backend, which I don't think anybody wants to do. I've given JeremyGamer13 a more comprehensive explanation, if you're curious, here it is:
+
+![](https://u.cubeupload.com/Steve_Greatness/Screenshot2023111816.png)
+
 ## Scratch Auth API
 
 * **GET** https://auth-api.itinerary.eu.org/auth/getTokens
