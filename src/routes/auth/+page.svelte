@@ -104,6 +104,7 @@
 </head>
 
 <div class="main">
+    <!-- I'm aware this page is bland, I just didn't feel like making Pang illustrations. -->
     <div class="section-info">
         <h1 style="margin-block: 0;">PenguinMod Sign In</h1>
     </div>
