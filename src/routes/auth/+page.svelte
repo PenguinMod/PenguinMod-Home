@@ -46,6 +46,7 @@
         AuthCode = "";
         ReadyToFinish = false;
         AuthUser = "";
+        OpenLinkReady = false;
         GrabProjectCommentCode()
     }
     function ProfileCommentPrompt() {
@@ -53,17 +54,20 @@
         ProjectCommentAuthOpen = false;
         AuthCode = "";
         ReadyToFinish = false;
+        OpenLinkReady = false;
         AuthUser = "";
     }
 
     function CloseProfileCommentAuth() {
         ProfileCommentAuthOpen = false;
         AuthUser = "";
+        OpenLinkReady = false;
         ReadyToFinish = false;
         AuthCode = "";
     }
     function CloseProjectCommentAuth() {
         ProjectCommentAuthOpen = false;
+        OpenLinkReady = false;
         AuthCode = "";
         ReadyToFinish = false;
     }
@@ -136,7 +140,7 @@
             </div>
             <div class="auth-code-holder">
                 <input type="text" readonly="true" value="{AuthCode}" />
-                <button on:click={CopyAuthCode}>Copy</button>
+                <button on:click={CopyAuthCode} disabled="{AuthCode == ""}">Copy</button>
             </div>
             <div class="auth-finish">
                 {#if OpenLinkReady}
@@ -236,6 +240,9 @@
 
     .disabled-link {
         color: grey;
+        cursor: not-allowed;
+        text-decoration: underline;
+        text-decoration-style: dotted;
     }
 
     .close-button {
