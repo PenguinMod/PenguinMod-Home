@@ -92,7 +92,9 @@
         PrivateCode = ProjectCommentAuthAPICall.privateCode;
     }
 
-    function CopyAuthCode() {}
+    function CopyAuthCode() {
+        navigator.clipboard.writeText(AuthCode);
+    }
 
     async function FinishTokenBasedAuth() {
         location.replace("https://projects.penguinmod.com/api/users/login?privateCode=" + PrivateCode)
@@ -120,10 +122,10 @@
         <div class="dialog-body">
             <div class="auth-code-holder">
                 <input type="text" readonly="true" value="{AuthCode}" />
-                <button on:click={CopyAuthCode}>Copy</button>
+                <button on:click={CopyAuthCode} class="copy-button">Copy</button>
             </div>
             <div class="auth-finish">
-                <a href="https://scratch.mit.edu/projects/{AuthProject}" on:click={ReadyUpToFinish} target="_blank">Open Auth Project</a>
+                <a href="https://scratch.mit.edu/projects/{AuthProject}" class="open-auth-area" on:click={ReadyUpToFinish} target="_blank">Open Auth Project</a>
                 <button on:click={FinishTokenBasedAuth} disabled="{!ReadyToFinish}">Done</button>
             </div>
         </div>
@@ -140,13 +142,13 @@
             </div>
             <div class="auth-code-holder">
                 <input type="text" readonly="true" value="{AuthCode}" />
-                <button on:click={CopyAuthCode} disabled="{AuthCode == ""}">Copy</button>
+                <button on:click={CopyAuthCode} class="copy-button" disabled="{AuthCode == ""}">Copy</button>
             </div>
             <div class="auth-finish">
                 {#if OpenLinkReady}
-                <a href="https://scratch.mit.edu/users/{AuthUser}#comments" on:click={ReadyUpToFinish} target="_blank">Open Profile Comments</a>
+                <a href="https://scratch.mit.edu/users/{AuthUser}#comments" class="open-auth-area" on:click={ReadyUpToFinish} target="_blank">Open Profile Comments</a>
                 {:else}
-                <span class="disabled-link">Open Profile Comments</span>
+                <span class="disabled-link open-auth-area">Open Profile Comments</span>
                 {/if}
                 <button on:click={FinishTokenBasedAuth} disabled="{!ReadyToFinish}">Done</button>
             </div>
@@ -217,6 +219,18 @@
         float: right;
     }
 
+    .copy-button {
+        transition: filter .2s;
+    }
+
+    .copy-button:not(:disabled):active {
+        filter: grayscale(25%);
+    }
+
+    :any-link {
+        color: var(--penguinmod-color);
+    }
+
     .auth-method {
         width: 50%;
         border-radius: 10px;
@@ -239,7 +253,7 @@
     }
 
     .disabled-link {
-        color: grey;
+        color: grey !important;
         cursor: not-allowed;
         text-decoration: underline;
         text-decoration-style: dotted;
