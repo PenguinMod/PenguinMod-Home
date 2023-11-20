@@ -23,6 +23,7 @@
 
     // Page Specific Functions, Constants, & Variables
 
+
     const AuthProject = "926884382";
     const AuthAPIProfileCommentsTemplate = "https://auth-api.itinerary.eu.org/auth/getTokens?method=profile-comment&username=%AuthUser&redirect=aHR0cHM6Ly9wcm9qZWN0cy5wZW5ndWlubW9kLmNvbS9hcGkvdXNlcnMvbG9naW4%3D";
     const AuthAPIProjectComments = `https://auth-api.itinerary.eu.org/auth/getTokens?method=comment&authProject=${AuthProject}&redirect=aHR0cHM6Ly9wcm9qZWN0cy5wZW5ndWlubW9kLmNvbS9hcGkvdXNlcnMvbG9naW4%3D`;
@@ -38,6 +39,12 @@
     var AuthUser = "";
     
     var PrivateCode = "";
+
+    var useLocal = "";
+
+    onMount(() => {
+        if (window.location.hostname === "localhost") useLocal = "Local";
+    })
 
     function ProjectCommentPrompt() {
         ProjectCommentAuthOpen = !ProjectCommentAuthOpen;
@@ -96,7 +103,7 @@
     }
 
     async function FinishTokenBasedAuth() {
-        location.replace(`${ProjectApi.OriginApiUrl}/api/users/login?privateCode=${PrivateCode}`)
+        location.replace(`${ProjectApi.OriginApiUrl}/api/users/login${useLocal}?privateCode=${PrivateCode}`)
     }
 
     var OneClickAccounts = []; // { username, lastSignedIn }, lastSignedIn should be a formatted date string.
