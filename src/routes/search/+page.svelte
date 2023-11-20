@@ -117,7 +117,10 @@
         async
         src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8116356065497356"
         crossorigin="anonymous"
-    />
+    ></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
 </svelte:head>
 
 <NavigationBar />
@@ -158,6 +161,15 @@
                 : `?q=studio:${searchQuery}`}
         />
     </div>
+    
+    <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-8116356065497356"
+        data-ad-slot="7630939391"
+        data-ad-format="horizontal"
+        data-full-width-responsive="true"
+    ></ins>
 
     <div class="section-projects">
         {#if projects[0] !== "notfound"}
