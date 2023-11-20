@@ -23,8 +23,7 @@
 
     const AuthProject = "926884382";
     const AuthAPIProfileCommentsTemplate = "https://auth-api.itinerary.eu.org/auth/getTokens?method=profile-comment&username=%AuthUser&redirect=aHR0cHM6Ly9wcm9qZWN0cy5wZW5ndWlubW9kLmNvbS9hcGkvdXNlcnMvbG9naW4%3D";
-    const AuthAPIProjectComments = "https://auth-api.itinerary.eu.org/auth/getTokens?method=comment&redirect=aHR0cHM6Ly9wcm9qZWN0cy5wZW5ndWlubW9kLmNvbS9hcGkvdXNlcnMvbG9naW4%3D&authProject=" + AuthProject;
-    const AuthAPIFinishURLTemplate = "https://auth-api.itinerary.eu.org/auth/verifyToken/%PrivateCode";
+    const AuthAPIProjectComments = `https://auth-api.itinerary.eu.org/auth/getTokens?method=comment&authProject=${AuthProject}&redirect=aHR0cHM6Ly9wcm9qZWN0cy5wZW5ndWlubW9kLmNvbS9hcGkvdXNlcnMvbG9naW4%3D`;
 
     var ProjectCommentAuthOpen = false;
     var ProfileCommentAuthOpen = false;
