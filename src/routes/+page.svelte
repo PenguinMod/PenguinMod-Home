@@ -228,10 +228,7 @@
         async
         src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8116356065497356"
         crossorigin="anonymous"
-    ></script>
-    <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
+    />
 </svelte:head>
 
 <NavigationBar />
@@ -264,29 +261,6 @@
         buttonHref={"https://studio.penguinmod.com/privacy.html"}
     /> -->
     <StatusAlert />
-
-    <div class="ad-parent">
-        <div class="ad-sector-a">
-            <ins
-                class="adsbygoogle"
-                style="display:block"
-                data-ad-client="ca-pub-8116356065497356"
-                data-ad-slot="7630939391"
-                data-ad-format="vertical"
-                data-full-width-responsive="true"
-            ></ins>
-        </div>
-        <div class="ad-sector-b">
-            <ins
-                class="adsbygoogle"
-                style="display:block"
-                data-ad-client="ca-pub-8116356065497356"
-                data-ad-slot="7630939391"
-                data-ad-format="vertical"
-                data-full-width-responsive="true"
-            ></ins>
-        </div>
-    </div>
 
     {#if loggedIn === false}
         <div class="section-info">
@@ -1164,21 +1138,6 @@
     .project-list {
         display: flex;
         flex-direction: row;
-    }
-
-    .ad-parent {
-        position: relative;
-        z-index: 500;
-    }
-    .ad-sector-a {
-        position: absolute;
-        left: 8px;
-        top: 8px;
-    }
-    .ad-sector-b {
-        position: absolute;
-        right: 8px;
-        top: 8px;
     }
 
     /* test styles, remove later */
