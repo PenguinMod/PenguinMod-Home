@@ -222,9 +222,14 @@
     };
 </script>
 
-<head>
+<svelte:head>
     <title>PenguinMod - Home</title>
-</head>
+    <script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8116356065497356"
+        crossorigin="anonymous"
+    />
+</svelte:head>
 
 <NavigationBar />
 
