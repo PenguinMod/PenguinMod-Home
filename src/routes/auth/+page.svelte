@@ -32,8 +32,6 @@
     var ReadyToFinish = false;
     const ReadyUpToFinish = () => ReadyToFinish = true;
 
-    var DoneReady = false;
-
     var AuthCode = "";
     var AuthUser = "";
     
