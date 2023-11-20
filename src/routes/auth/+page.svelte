@@ -7,6 +7,8 @@
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import Language from "../../resources/language.js";
+    import ProjectApi from "../../resources/projectapi.js";
+
 
     // Static values
     import LINK from "../../resources/urls.js";
@@ -94,7 +96,7 @@
     }
 
     async function FinishTokenBasedAuth() {
-        location.replace("https://projects.penguinmod.com/api/users/login?privateCode=" + PrivateCode)
+        location.replace(`${ProjectApi.OriginApiUrl}/api/users/login?privateCode=${PrivateCode}`)
     }
 
     var OneClickAccounts = []; // { username, lastSignedIn }, lastSignedIn should be a formatted date string.
