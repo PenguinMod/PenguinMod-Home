@@ -24,7 +24,7 @@ One click sign in would require changes to the backend, which I don't think anyb
   **privateCode**\* - String ( private code given by `getTokens` )
   _Query Options:_
   **redirect**\* - String ( base64 encoded url, only required when `oneClickSignIn` is true )
-  oneClickSignIn - Boolean ( this allows for accounts to be quickly signed into, use `oneClickSignInToken` )
+  oneClickSignIn - Boolean ( this allows for accounts to be quickly signed into, it will add a `oneClickSignInToken` key to the response JSON )
 
 * **GET** https://auth-api.itinerary.eu.org/auth/oneClickSignIn
   _Headers:_
