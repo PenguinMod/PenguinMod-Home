@@ -18,11 +18,13 @@ One click sign in would require changes to the backend, which I don't think anyb
   authProject - String ( ID of the Scratch project used for authentication )
 
 * **GET** https://auth-api.itinerary.eu.org/auth/verifyToken/:privateCode
+  _Headers:_
+  Authorization - If `oneClickSignIn` is true, you can send an already pre-defined one click token to add to it.
   _Query Parameters:_
   **privateCode**\* - String ( private code given by `getTokens` )
   _Query Options:_
   **redirect**\* - String ( base64 encoded url, only required when `oneClickSignIn` is true )
-  oneClickSignIn - Boolean ( this allows for accounts to be quickly signed into )
+  oneClickSignIn - Boolean ( this allows for accounts to be quickly signed into, use `oneClickSignInToken` )
 
 * **GET** https://auth-api.itinerary.eu.org/auth/oneClickSignIn
   _Headers:_
