@@ -94,7 +94,6 @@
         const ProjectCommentAuthAPICall = await fetch(AuthAPIProjectComments).then(res => res.json());
         AuthCode = ProjectCommentAuthAPICall.publicCode;
         PrivateCode = ProjectCommentAuthAPICall.privateCode;
-        console.log(PrivateCode);
     }
 
     function CopyAuthCode() {
