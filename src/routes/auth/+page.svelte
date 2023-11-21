@@ -197,8 +197,9 @@
     </main>
     <aside class="one-click-sign-in"> <!-- use class "one-click-available" if a one click account is available. -->
         <div class="auth-method-sector">
+            <h3 style="opacity: 0.6">One click sign in</h3>
             {#each OneClickAccounts as { username, lastSignedIn }}
-            <button on:click={OneClickSignInTriggered}>
+            <button class="auth-button" on:click={OneClickSignInTriggered}>
                 <b><i>One Click:</i> {username}</b>
                 <p>Last signed in {lastSignedIn}</p>
             </button>
