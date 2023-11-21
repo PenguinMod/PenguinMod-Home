@@ -222,9 +222,9 @@
     };
 </script>
 
-<head>
+<svelte:head>
     <title>PenguinMod - Home</title>
-</head>
+</svelte:head>
 
 <NavigationBar />
 

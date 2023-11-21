@@ -5,9 +5,9 @@
     });
 </script>
 
-<head>
+<svelte:head>
     <title>Redirecting</title>
-</head>
+</svelte:head>
 <div>
     If you are not redirected automatically,
     <a href="https://studio.penguinmod.com/privacy.html">click here</a>

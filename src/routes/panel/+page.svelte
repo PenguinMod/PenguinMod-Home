@@ -447,9 +447,9 @@
     };
 </script>
 
-<head>
+<svelte:head>
     <title>PenguinMod - Admin Panel</title>
-</head>
+</svelte:head>
 
 <NavigationBar />
 

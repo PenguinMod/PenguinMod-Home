@@ -56,9 +56,9 @@
     }
 </script>
 
-<head>
+<svelte:head>
     <title>PenguinMod - Restore</title>
-</head>
+</svelte:head>
 
 <NavigationBar />
 

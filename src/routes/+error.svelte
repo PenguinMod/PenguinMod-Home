@@ -9,9 +9,9 @@
     import PenguinConfusedSVG from "../icons/Penguin/confused.svelte";
 </script>
 
-<head>
+<svelte:head>
     <title>PenguinMod - {$page.status}</title>
-</head>
+</svelte:head>
 
 <NavigationBar />
 <NavigationMargin />

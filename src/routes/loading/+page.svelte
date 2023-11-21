@@ -5,9 +5,9 @@
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
 </script>
 
-<head>
+<svelte:head>
     <title>PenguinMod - Loading</title>
-</head>
+</svelte:head>
 
 <NavigationBar />
 
