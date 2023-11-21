@@ -116,12 +116,29 @@
 <div class="main">
     <!-- I'm aware this page is bland, I just didn't feel like making Pang illustrations. -->
     <div class="section-info">
-        <h1 style="margin-block: 0;">PenguinMod Sign In</h1>
+        <div>
+            <h1 style="margin-block: 0;">Sign in to PenguinMod</h1>
+            <p>Use your Scratch account to sign in to PenguinMod.</p>
+        </div>
+        <div>
+            <img
+                src="/penguins/signin.svg"
+                alt="Sign In"
+            >
+        </div>
     </div>
+    <div class="darken" data-opened={ProjectCommentAuthOpen || ProfileCommentAuthOpen}></div>
     <dialog class="auth-method" open="{ProjectCommentAuthOpen}">
         <div class="dialog-head">
-            <div class="close-button-holder"><button class="close-button" on:click={CloseProjectCommentAuth}>X</button></div>
-            <b>Project Comment Auth</b>
+            Project Comment Auth
+            <div class="close-button-holder">
+                <button class="close-button" on:click={CloseProjectCommentAuth}>
+                    <img
+                        src="/dismiss.svg"
+                        alt="X"
+                    >
+                </button>
+            </div>
         </div>
         <div class="dialog-body">
             <div class="auth-code-holder">
@@ -136,8 +153,15 @@
     </dialog>
     <dialog class="auth-method" open="{ProfileCommentAuthOpen}">
         <div class="dialog-head">
-            <div class="close-button-holder"><button class="close-button" on:click={CloseProfileCommentAuth}>X</button></div>
-            <b>Profile Comment Auth</b>
+            Profile Comment Auth
+            <div class="close-button-holder">
+                <button class="close-button" on:click={CloseProfileCommentAuth}>
+                    <img
+                        src="/dismiss.svg"
+                        alt="X"
+                    >
+                </button>
+            </div>
         </div>
         <div class="dialog-body">
             <div class="auth-initiary">
@@ -160,11 +184,12 @@
     </dialog>
     <main class="auth-page-holder"> <!-- use class "one-click-available" if a one click account is available. -->
         <div class="auth-method-sector">
-            <button on:click={ProjectCommentPrompt}>
+            <h3 style="opacity: 0.6">Choose a way to sign in</h3>
+            <button class="auth-button" on:click={ProjectCommentPrompt}>
                 <b>Project Comment Auth</b>
                 <p>Sign in by leaving a comment on a Scratch project.</p>
             </button>
-            <button on:click={ProfileCommentPrompt}>
+            <button class="auth-button" on:click={ProfileCommentPrompt}>
                 <b>Profile Comment Auth</b>
                 <p>Sign in by leaving a comment on <i>your</i> Scratch profile.</p>
             </button>
@@ -198,7 +223,7 @@
         left: 0px;
         top: 0px;
         width: 100%;
-        min-width: 1000px;
+        min-width: 500px;
     }
 
     .auth-page-holder {
@@ -265,14 +290,14 @@
 
     .close-button {
         cursor: pointer;
-        color: white;
-        font-weight: 900;
         background: none;
         border: none;
     }
-
+    .close-button img {
+        height: 2rem;
+    }
     .close-button:hover {
-        color: #ececec;
+        filter: brightness(0.8);
     }
 
     .auth-method .dialog-body > div {
@@ -288,21 +313,34 @@
         padding: 0;
         --outer-padding: 1.5em;
         z-index: 99;
-        border: var(--penguinmod-color) 2px solid;
+        /* border: var(--penguinmod-color) 2px solid; */
+        border: 0;
         outline: rgba(0, 195, 255, 0.35) 3px solid;
+        overflow: hidden;
     }
 
     .dialog-head {
-        padding: 14px var(--outer-padding) 14px;
+        padding: 8px 12px;
         background-color: var(--penguinmod-color);
         color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 2rem;
+        font-weight: bold;
+    }
+    .close-button-holder {
+        position: absolute;
+        right: 8px;
+        top: 8px;
     }
 
     .dialog-body {
         padding: 1px var(--outer-padding) var(--outer-padding);
     }
 
-    .auth-method .dialog-head .close-button-holder {
+    .auth-method .dialog-head b {
         flex: 1;
     }
 
@@ -310,32 +348,36 @@
         position: relative;
         width: 50%;
     }
+    .auth-method-sector button b {
+        font-size: 1.5rem;
+        /* text-align: center; */
+        width: 100%;
+        display: block;
+    }
+    .auth-method-sector button p {
+        margin: 5px 0;
+    }
 
-    .auth-method-sector button {
+    .auth-button {
         display: block;
         padding: 1rem;
         font-size: 1.1rem;
         text-align: left;
-        padding: 10px;
+        padding: 20px 15px;
         margin: 10px;
         width: 100%;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        outline: rgba(0, 195, 255, 0.35) 2px solid;
-        background-color: var(--penguinmod-color);
+        color: #111;
+        border-radius: 8px;
+        outline: none;
+        background: rgba(0, 195, 255, 0.03);
+        border: 1px solid var(--penguinmod-color);
         cursor: pointer;
     }
-
-    .auth-method-sector button b {
-        font-size: 1.5rem;
-        text-align: center;
-        width: 100%;
-        display: block;
+    .auth-button:active {
+        background: rgba(0, 195, 255, 0.25);
     }
-
-    .auth-method-sector button p {
-        margin: 5px 0;
+    :global(body.dark-mode) .auth-button {
+        color: white;
     }
 
     .small {
@@ -359,7 +401,7 @@
 
     .section-info {
         background: #00c3ffad;
-        height: 12rem;
+        height: 9rem;
         color: white;
         display: flex;
         flex-direction: row;
@@ -368,13 +410,35 @@
         width: 100%;
         margin: 0;
     }
-    .section-info h1 {
+    .section-info div {
+        margin: 0 12px;
+    }
+    .section-info div h1 {
         margin-block: 0;
         margin-left: 32px;
     }
-    .section-info p {
+    :global(html[dir="rtl"]) .section-info div h1 {
+        margin-left: inherit;
+        margin-right: 32px;
+    }
+    .section-info div p {
         margin-block-end: 0;
         margin-left: 32px;
+    }
+    :global(html[dir="rtl"]) .section-info div p {
+        margin-left: inherit;
+        margin-right: 32px;
+    }
+    .section-info div img {
+        height: 7rem;
+        transform-origin: center;
+        transform: scaleX(-1);
+        margin-right: 12px;
+    }
+    :global(html[dir="rtl"]) .section-info div img {
+        margin-right: inherit;
+        margin-left: 12px;
+        transform: scaleX(1);
     }
 
     .section-discussion-wrapper {
@@ -394,6 +458,20 @@
     }
     .section-details {
         width: 30%;
+    }
+
+    .darken {
+        background: rgba(0, 195, 255, 0.25);
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+        z-index: 5;
+    }
+    .darken[data-opened="true"] {
+        display: initial;
     }
 
     :global(body.dark-mode) a {
