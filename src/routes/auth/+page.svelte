@@ -32,8 +32,6 @@
     var ProfileCommentAuthOpen = false;
 
     var OpenLinkReady = false;
-    var ReadyToFinish = false;
-    const ReadyUpToFinish = () => ReadyToFinish = true;
 
     var AuthCode = "";
     var AuthUser = "";
@@ -50,7 +48,6 @@
         ProjectCommentAuthOpen = !ProjectCommentAuthOpen;
         ProfileCommentAuthOpen = false;
         AuthCode = "";
-        ReadyToFinish = false;
         AuthUser = "";
         OpenLinkReady = false;
         GrabProjectCommentCode()
@@ -59,7 +56,6 @@
         ProfileCommentAuthOpen = !ProfileCommentAuthOpen;
         ProjectCommentAuthOpen = false;
         AuthCode = "";
-        ReadyToFinish = false;
         OpenLinkReady = false;
         AuthUser = "";
     }
@@ -68,14 +64,12 @@
         ProfileCommentAuthOpen = false;
         AuthUser = "";
         OpenLinkReady = false;
-        ReadyToFinish = false;
         AuthCode = "";
     }
     function CloseProjectCommentAuth() {
         ProjectCommentAuthOpen = false;
         OpenLinkReady = false;
         AuthCode = "";
-        ReadyToFinish = false;
     }
 
     function SetUsername(event) {
@@ -96,6 +90,7 @@
         const ProjectCommentAuthAPICall = await fetch(AuthAPIProjectComments).then(res => res.json());
         AuthCode = ProjectCommentAuthAPICall.publicCode;
         PrivateCode = ProjectCommentAuthAPICall.privateCode;
+        console.log(PrivateCode);
     }
 
     function CopyAuthCode() {
@@ -131,8 +126,8 @@
                 <button on:click={CopyAuthCode} class="copy-button">Copy</button>
             </div>
             <div class="auth-finish">
-                <a href="https://scratch.mit.edu/projects/{AuthProject}" class="open-auth-area" on:click={ReadyUpToFinish} target="_blank">Open Auth Project</a>
-                <button on:click={FinishTokenBasedAuth} disabled="{!ReadyToFinish}">Done</button>
+                <a href="https://scratch.mit.edu/projects/{AuthProject}" class="open-auth-area" target="_blank">Open Auth Project</a>
+                <button on:click={FinishTokenBasedAuth}>Done</button>
             </div>
         </div>
     </dialog>
@@ -152,11 +147,11 @@
             </div>
             <div class="auth-finish">
                 {#if OpenLinkReady}
-                <a href="https://scratch.mit.edu/users/{AuthUser}#comments" class="open-auth-area" on:click={ReadyUpToFinish} target="_blank">Open Profile Comments</a>
+                <a href="https://scratch.mit.edu/users/{AuthUser}#comments" class="open-auth-area" target="_blank">Open Profile Comments</a>
                 {:else}
                 <span class="disabled-link open-auth-area">Open Profile Comments</span>
                 {/if}
-                <button on:click={FinishTokenBasedAuth} disabled="{!ReadyToFinish}">Done</button>
+                <button on:click={FinishTokenBasedAuth} disabled="{!OpenLinkReady}">Done</button>
             </div>
         </div>
     </dialog>
