@@ -20,9 +20,16 @@
     });
 </script>
 
-<head>
+<svelte:head>
     <title>PenguinMod - Donate</title>
-</head>
+    <meta name="title"                   content="PenguinMod - Donate" />
+    <meta property="og:title"            content="PenguinMod - Donate" />
+    <meta property="twitter:title"       content="PenguinMod - Donate">
+    <meta name="description"             content="Help support PenguinMod and it's development!">
+    <meta property="twitter:description" content="Help support PenguinMod and it's development!">
+    <meta property="og:url"              content="https://penguinmod.com/donate">
+    <meta property="twitter:url"         content="https://penguinmod.com/donate">
+</svelte:head>
 
 <NavigationBar />
 

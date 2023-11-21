@@ -242,9 +242,16 @@
     });
 </script>
 
-<head>
+<svelte:head>
     <title>PenguinMod - Report</title>
-</head>
+    <meta name="title"                   content="PenguinMod - Report" />
+    <meta property="og:title"            content="PenguinMod - Report" />
+    <meta property="twitter:title"       content="PenguinMod - Report">
+    <meta name="description"             content="Report a specific project or user on PenguinMod.">
+    <meta property="twitter:description" content="Report a specific project or user on PenguinMod.">
+    <meta property="og:url"              content="https://penguinmod.com/report">
+    <meta property="twitter:url"         content="https://penguinmod.com/report">
+</svelte:head>
 
 <NavigationBar />
 

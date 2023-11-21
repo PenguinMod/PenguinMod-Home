@@ -5,9 +5,16 @@
     });
 </script>
 
-<head>
+<svelte:head>
     <title>Redirecting</title>
-</head>
+    <meta name="title" content="PenguinMod - Home" />
+    <meta property="og:title" content="PenguinMod - Home" />
+    <meta property="twitter:title" content="PenguinMod - Home">
+    <meta name="description" content="The area where featured projects and community stuff & info is shown.">
+    <meta property="twitter:description" content="The area where featured projects and community stuff & info is shown.">
+    <meta property="og:url" content="https://penguinmod.com/privacy">
+    <meta property="twitter:url" content="https://penguinmod.com/privacy">
+</svelte:head>
 <div>
     If you are not redirected automatically,
     <a href="https://studio.penguinmod.com/privacy.html">click here</a>
