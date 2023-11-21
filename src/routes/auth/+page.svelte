@@ -25,8 +25,9 @@
 
 
     const AuthProject = "926884382";
-    const AuthAPIProfileCommentsTemplate = "https://auth-api.itinerary.eu.org/auth/getTokens?method=profile-comment&username=%AuthUser&redirect=aHR0cHM6Ly9wcm9qZWN0cy5wZW5ndWlubW9kLmNvbS9hcGkvdXNlcnMvbG9naW4%3D";
-    const AuthAPIProjectComments = `https://auth-api.itinerary.eu.org/auth/getTokens?method=comment&authProject=${AuthProject}&redirect=aHR0cHM6Ly9wcm9qZWN0cy5wZW5ndWlubW9kLmNvbS9hcGkvdXNlcnMvbG9naW4%3D`;
+    const DefaultRedirect = `${ProjectApi.OriginApiUrl}/api/users/login`;
+    var AuthAPIProfileCommentsTemplate = "https://auth-api.itinerary.eu.org/auth/getTokens?method=profile-comment&username=%AuthUser&redirect=%Redirect";
+    var AuthAPIProjectComments = `https://auth-api.itinerary.eu.org/auth/getTokens?method=comment&authProject=${AuthProject}&redirect=%Redirect`;
 
     var ProjectCommentAuthOpen = false;
     var ProfileCommentAuthOpen = false;
@@ -42,7 +43,10 @@
 
     onMount(() => {
         if (window.location.hostname === "localhost") useLocal = "Local";
-    })
+        const Redirect = btoa(DefaultRedirect + useLocal);
+        AuthAPIProfileCommentsTemplate = AuthAPIProfileCommentsTemplate.replace("%Redirect", Redirect);
+        AuthAPIProjectComments = AuthAPIProjectComments.replace("%Redirect", Redirect);
+    });
 
     function ProjectCommentPrompt() {
         ProjectCommentAuthOpen = !ProjectCommentAuthOpen;
