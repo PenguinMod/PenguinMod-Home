@@ -144,7 +144,7 @@
         <div class="dialog-body">
             <div class="auth-initiary">
                 <input type="text" value={AuthUser} on:change={SetUsername} />
-                <button on:click={SetUsername}>Continue</button>
+                <button>Continue</button>
             </div>
             <div class="auth-code-holder">
                 <input type="text" readonly="true" value="{AuthCode}" />
