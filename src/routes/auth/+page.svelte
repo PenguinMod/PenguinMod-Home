@@ -44,6 +44,7 @@
     onMount(() => {
         if (window.location.hostname === "localhost") useLocal = "Local";
         const Redirect = btoa(DefaultRedirect + useLocal);
+        console.info("Using the " + DefaultRedirect + useLocal + " url")
         AuthAPIProfileCommentsTemplate = AuthAPIProfileCommentsTemplate.replace("%Redirect", Redirect);
         AuthAPIProjectComments = AuthAPIProjectComments.replace("%Redirect", Redirect);
     });
