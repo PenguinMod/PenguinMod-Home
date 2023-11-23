@@ -19,12 +19,12 @@ export default {
     /**
      * PenguinMod's terms of service page
      */
-    terms: "https://penguinmod.com/terms",
+    terms: "/terms",
 
     /**
      * PenguinMod's privacy policy page
      */
-    privacy: "https://penguinmod.com/privacy",
+    privacy: "/privacy",
 
     /**
      * PenguinMod's guideline pages for services
