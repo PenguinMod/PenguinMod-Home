@@ -239,7 +239,7 @@
     <NavigationMargin />
 
     <Alert
-        onlyShowID={"donatee:_1"}
+        onlyShowID={"donatee:_2"}
         text={"PenguinMod is a free-to-use visual coding website. Your support can help us keep the website working!"}
         textBreakup={true}
         textColor={"white"}
