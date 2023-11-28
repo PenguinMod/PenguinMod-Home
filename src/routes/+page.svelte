@@ -851,14 +851,14 @@
                         lang={currentLang}
                     />
                 </p>
-                <a target="_blank" href={LINK.terms}>
+                <a href={LINK.terms}>
                     <LocalizedText
                         text="Terms of Service"
                         key="home.footer.sections.info.terms"
                         lang={currentLang}
                     />
                 </a>
-                <a target="_blank" href={LINK.privacy}>
+                <a href={LINK.privacy}>
                     <LocalizedText
                         text="Privacy Policy"
                         key="home.footer.sections.info.privacy"
