@@ -27,8 +27,8 @@
         <meta property="twitter:title" content="PenguinMod - Terms of Service">
         <meta name="description" content="Terms you must follow if you would like to use PenguinMod.">
         <meta property="twitter:description" content="Terms you must follow if you would like to use PenguinMod.">
-        <meta property="og:url" content="https://penguinmod.com/privacy">
-        <meta property="twitter:url" content="https://penguinmod.com/privacy">
+        <meta property="og:url" content="https://penguinmod.com/terms">
+        <meta property="twitter:url" content="https://penguinmod.com/terms">
     </svelte:head>
     
     <NavigationBar />
@@ -82,16 +82,26 @@
                 <a href="https://penguinmod.com/guidelines/uploading">Uploading Guidelines</a>
                 at all times. 
             </p>
+            <p>
+                PenguinMod is allowed to cut access to your ability to publish, update, or remix projects if you do not
+                abide by these rules, and PenguinMod has the right to cut your access to any services we provide if we believe you
+                are violating these guidelines or the Terms of Service.
+            </p>
 
             <h2>Copyright</h2>
+            <p>
+                You may not include copyrighted content in your projects. You are responsible for making sure you have the necessary
+                rights, licenses, or permission for any user-generated content you submit to PenguinMod. You may get your project removed
+                and or face punishment if you do not properly check whether or not you have permission to include something in your project.
+            </p>
             <p>
                 If you are a company, individual, etc. and you believe your copyright has been violated,
                 please view contact methods here: <a href="https://studio.penguinmod.com/contact.html">Contact Us</a>
             </p>
 
-            <h2>Advertisments</h2>
+            <h2>Advertisements</h2>
             <p>
-                Advertisement Content: We use Google AdSense to display advertisements on PenguinMod. These ads are provided by Google
+                Advertisement Content: We may use Google AdSense to display advertisements on PenguinMod. These ads are provided by Google
                 and are subject to Google's policies. PenguinMod is not responsible for the content of these ads.
             </p>
             
