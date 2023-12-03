@@ -182,8 +182,10 @@
             post({ type: "validate" });
         }
     });
-
+    
+    let isBusyUploading = false;
     function updateProject() {
+        if (isBusyUploading) return;
         if (projectMetadata.featured) {
             const code = projectId;
             const continueEdit = prompt(
@@ -200,6 +202,7 @@
             //     );
             //     if (!continueEdit) return;
         }
+        isBusyUploading = true;
         const newMetadata = {};
         const data = {
             newMeta: newMetadata,
@@ -240,7 +243,10 @@
                     );
                 alert(message);
                 // alert(`Uh oh! An error occurred: ${err}`);
-            });
+            })
+            .finally(() => {
+                isBusyUploading = false;
+            });;
     }
 
     function filePicked(input) {
@@ -682,13 +688,27 @@
                 </div>
             </div>
             <div style="display:flex;flex-direction:row;margin-top:48px">
-                <Button icon="update.svg" on:click={updateProject}>
-                    <LocalizedText
-                        text="Update"
-                        key="uploading.type.update"
-                        lang={currentLang}
-                    />
-                </Button>
+                {#if isBusyUploading}
+                    <div class="button-sized">
+                        <span style="width:26px;height:20px"></span>
+                        <LocalizedText
+                            text="Update"
+                            key="uploading.type.update"
+                            lang={currentLang}
+                        />
+                        <div>
+                            <LoadingSpinner></LoadingSpinner>
+                        </div>
+                    </div>
+                {:else}
+                    <Button icon="update.svg" on:click={updateProject}>
+                        <LocalizedText
+                            text="Update"
+                            key="uploading.type.update"
+                            lang={currentLang}
+                        />
+                    </Button>
+                {/if}
             </div>
         </div>
     </div>
@@ -757,6 +777,27 @@
         text-align: center;
     }
 
+    .button-sized {
+        position: relative;
+        margin: 0.25rem;
+        padding: 1rem 1rem;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        color: transparent;
+    }
+    .button-sized > div {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
     .emoji-picker-button {
         position: absolute;
         left: -72px;
