@@ -1,2 +1,2 @@
 # PenguinMod-Home
-A main home page with community projects and other content.
+The main home page for PenguinMod with community-made projects and other content.
