@@ -27,7 +27,8 @@
                         'playsinline': 1,
                         'autoplay': 1,
                         'loop': 1,
-                        'controls': 0
+                        'controls': 0,
+                        'mute': 1
                     },
                     events: {
                         'onReady': onPlayerReady,
@@ -39,9 +40,9 @@
             function onPlayerReady(event) {
                 player.playVideo()
                 // 50:50 chances for it to be unmuted
-                if ((Math.random() * 100) <= 50) {
+                // if ((Math.random() * 100) <= 50) {
                     player.mute()
-                }
+                // }
             }
 
             let tries = 0

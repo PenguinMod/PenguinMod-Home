@@ -239,7 +239,7 @@
     <NavigationMargin />
 
     <Alert
-        onlyShowID={"donatee:_1"}
+        onlyShowID={"donatee:_2"}
         text={"PenguinMod is a free-to-use visual coding website. Your support can help us keep the website working!"}
         textBreakup={true}
         textColor={"white"}
@@ -851,14 +851,14 @@
                         lang={currentLang}
                     />
                 </p>
-                <a target="_blank" href={LINK.terms}>
+                <a href={LINK.terms}>
                     <LocalizedText
                         text="Terms of Service"
                         key="home.footer.sections.info.terms"
                         lang={currentLang}
                     />
                 </a>
-                <a target="_blank" href={LINK.privacy}>
+                <a href={LINK.privacy}>
                     <LocalizedText
                         text="Privacy Policy"
                         key="home.footer.sections.info.privacy"

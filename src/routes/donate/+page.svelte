@@ -68,13 +68,14 @@
                 </p>
                 <p>
                     In the last month, <b>
-                        <i>20k+ new people found PenguinMod</i>
+                        <i>60k+ new people found PenguinMod</i>
                     </b>
                     and
                     <br />
-                    we sent our website to <b><i>50k+</i></b> returning users
+                    we sent our website to <b><i>100k+</i></b> returning users
                     from
-                    <b>Japan</b>, <b>Russia</b>, the <b>United Kingdom</b> and more!
+                    the <b>United Kingdom</b>, <b>Russia</b>,
+                    <b>Brazil</b>, <b>Japan</b>, and more!
                     🎉
                 </p>
                 <p>
@@ -159,17 +160,17 @@
                 <p style="text-align: center;">For completely free:</p>
                 <div class="detail-card" style="background: dodgerblue">
                     <p>We host and serve</p>
-                    <h1>1.5k+</h1>
+                    <h1>4.2k+</h1>
                     <p>projects</p>
                 </div>
                 <div class="detail-card" style="background: darkviolet">
                     <p>We send</p>
-                    <h1>30 GB+</h1>
+                    <h1>700 GB+</h1>
                     <p>of content monthly</p>
                 </div>
                 <div class="detail-card" style="background: #ffb300">
                     <p>We handle</p>
-                    <h1>5M+</h1>
+                    <h1>20M+</h1>
                     <p>requests monthly</p>
                 </div>
             </div>
