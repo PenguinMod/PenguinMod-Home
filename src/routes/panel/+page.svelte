@@ -524,6 +524,15 @@
                                 >
                                     Remix is an exact copy
                                 </Button>
+                                <Button
+                                    color="gray"
+                                    on:click={(rejectingTextboxArea.value =
+                                        QuickReject["Spam"][
+                                            "Iframe only"
+                                        ])}
+                                >
+                                    Iframe only
+                                </Button>
                             </div>
                         </div>
                     </details>
