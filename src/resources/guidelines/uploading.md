@@ -2,7 +2,7 @@
 These guidelines **only apply to PenguinMod's project sharing**.
 If you are packaging your project for release on other websites, you should follow their rules instead.
 
-Also, let us know of any necessary changes we should make by talking to us in our [Discord server](https://discord.gg/NZ9MBMYTZh) or making an issue on our [GitHub](https://github.com/PenguinMod/PenguinMod-Home/issues).
+Also, let us know of any necessary changes we should make by talking to us [using any of these contact methods here.](https://studio.penguinmod.com/contact.html).
 
 ## Base requirements for a project
 Uploading empty or default projects will get your project removed.
@@ -154,14 +154,15 @@ You **can** however, link to Patreon or Shopify.
 Let us know of any other sites we can allow if you need them.
 
 ## Copyright
-PenguinMod will remove your project if we are told that it violates copyright rules for any specific company.
-Any company or business also reserves the right to take down your project if they believe it violates their copyright.
-We will also remove your project if it contains pirated content or material.
+You are responsible for making sure you have the necessary rights, licenses, or permission for any user-generated content you submit to PenguinMod.
+PenguinMod will remove your project if the project violates copyright rules for any specific company or individual, and you may face further punishment.
+Any company, business, or individual reserves the right to take down your project if they believe it violates their copyright.
+We will also remove your project if it contains pirated content or material, and you may face further punishment.
 
 Reasons your project might be removed are:
-- Using another PenguinMod user's content without their permission
 - Including logos or designs without their owner's explicit permission
 - Using other people's artwork or music without their explicit permission
+- Using another PenguinMod user's content without their permission
 
 If you are a company or individual and believe your copyright has been violated, [please check contact methods here.](https://studio.penguinmod.com/contact.html)
 

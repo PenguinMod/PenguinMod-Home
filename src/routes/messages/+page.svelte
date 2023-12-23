@@ -206,9 +206,16 @@
     }
 </script>
 
-<head>
+<svelte:head>
     <title>PenguinMod - Messages</title>
-</head>
+    <meta name="title"                   content="PenguinMod - Messages" />
+    <meta property="og:title"            content="PenguinMod - Messages" />
+    <meta property="twitter:title"       content="PenguinMod - Messages">
+    <meta name="description"             content="See your messages or alerts.">
+    <meta property="twitter:description" content="See your messages or alerts.">
+    <meta property="og:url"              content="https://penguinmod.com/messages">
+    <meta property="twitter:url"         content="https://penguinmod.com/messages">
+</svelte:head>
 
 <NavigationBar />
 

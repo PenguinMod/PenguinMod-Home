@@ -111,9 +111,16 @@
     });
 </script>
 
-<head>
+<svelte:head>
     <title>PenguinMod - Search</title>
-</head>
+    <meta name="title"                   content="PenguinMod - Search{searchQuery ? ` for ${searchQuery}` : ''}" />
+    <meta property="og:title"            content="PenguinMod - Search{searchQuery ? ` for ${searchQuery}` : ''}" />
+    <meta property="twitter:title"       content="PenguinMod - Search{searchQuery ? ` for ${searchQuery}` : ''}">
+    <meta name="description"             content={searchQuery ? `View things under "${searchQuery}" on PenguinMod.` : 'View some stuff uploaded to PenguinMod under a certain query.'}>
+    <meta property="twitter:description" content={searchQuery ? `View things under "${searchQuery}" on PenguinMod.` : 'View some stuff uploaded to PenguinMod under a certain query.'}>
+    <meta property="og:url"              content="https://penguinmod.com/search">
+    <meta property="twitter:url"         content="https://penguinmod.com/search">
+</svelte:head>
 
 <NavigationBar />
 

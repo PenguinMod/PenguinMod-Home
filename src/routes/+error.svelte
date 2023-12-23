@@ -9,9 +9,16 @@
     import PenguinConfusedSVG from "../icons/Penguin/confused.svelte";
 </script>
 
-<head>
+<svelte:head>
     <title>PenguinMod - {$page.status}</title>
-</head>
+    <meta name="title" content="PenguinMod - Home" />
+    <meta property="og:title" content="PenguinMod - Home" />
+    <meta property="twitter:title" content="PenguinMod - Home">
+    <meta name="description" content="The area where featured projects and community stuff & info is shown.">
+    <meta property="twitter:description" content="The area where featured projects and community stuff & info is shown.">
+    <meta property="og:url" content="https://penguinmod.com/">
+    <meta property="twitter:url" content="https://penguinmod.com/">
+</svelte:head>
 
 <NavigationBar />
 <NavigationMargin />

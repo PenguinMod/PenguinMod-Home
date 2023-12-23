@@ -118,7 +118,8 @@
 
 	// language picker
 	const availableLanguages = Translations.languages;
-	const languageKeys = Object.keys(availableLanguages);
+	const languageKeys = Object.keys(availableLanguages)
+		.sort((a, b) => a.localeCompare(b));
 	function openLanguageMenu(event) {
 		event = event.detail;
 		languageMenu.style.display = "";
@@ -428,7 +429,7 @@
 
 	.languageSelect {
 		position: fixed;
-		width: 192px;
+		width: 256px;
 		max-height: 300px;
 		overflow: auto;
 		background: white;

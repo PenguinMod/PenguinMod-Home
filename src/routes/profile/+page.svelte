@@ -211,9 +211,16 @@
     };
 </script>
 
-<head>
+<svelte:head>
     <title>PenguinMod - {user ? user : "Profile"}</title>
-</head>
+    <meta name="title"                   content="PenguinMod - {user ? user : "User Profile"}" />
+    <meta property="og:title"            content="PenguinMod - {user ? user : "User Profile"}" />
+    <meta property="twitter:title"       content="PenguinMod - {user ? user : "User Profile"}">
+    <meta name="description"             content="View {user ? user : "this user"}'s profile on PenguinMod.">
+    <meta property="twitter:description" content="View {user ? user : "this user"}'s profile on PenguinMod.">
+    <meta property="og:url"              content="https://penguinmod.com/profile">
+    <meta property="twitter:url"         content="https://penguinmod.com/profile">
+</svelte:head>
 
 <NavigationBar />
 

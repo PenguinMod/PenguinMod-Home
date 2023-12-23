@@ -73,6 +73,17 @@
     // }
 </script>
 
+<svelte:head>
+    <title>PenguinMod - Uploading Guidelines</title>
+    <meta name="title"                   content="PenguinMod - Uploading Guidelines" />
+    <meta property="og:title"            content="PenguinMod - Uploading Guidelines" />
+    <meta property="twitter:title"       content="PenguinMod - Uploading Guidelines">
+    <meta name="description"             content="PenguinMod's official rules on uploaded projects">
+    <meta property="twitter:description" content="PenguinMod's official rules on uploaded projects">
+    <meta property="og:url"              content="https://penguinmod.com/guidelines/uploading">
+    <meta property="twitter:url"         content="https://penguinmod.com/guidelines/uploading">
+</svelte:head>
+
 <div class="container">
     <h1>{@html headerHTML}</h1>
 
