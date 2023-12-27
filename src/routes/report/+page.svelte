@@ -35,6 +35,10 @@
     const reportReasons = {
         user: [
             {
+                text: "I do not like this person",
+                key: "report.reason.user.unliked",
+            },
+            {
                 text: "The user has inappropriate off-site behavior",
                 key: "report.reason.user.offsite",
                 pageDetail: "userOffsiteReason",
@@ -53,6 +57,10 @@
             },
         ],
         project: [
+            {
+                text: "I do not like the project",
+                key: "report.reason.project.unliked",
+            },
             {
                 text: "The project contains malware",
                 key: "report.reason.project.malware",
