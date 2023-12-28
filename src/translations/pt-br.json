@@ -227,5 +227,7 @@
     "report.reason.project.sexual": "Este projeto contém conteúdo sexual ou faz referência a ele",
     "report.reason.other": "Outro...",
     "report.reason.other.reason": "Por que isso devia ser denunciado?",
-    "report.reason.clarify": "Clarifique a informação aqui..."
+    "report.reason.clarify": "Clarifique a informação aqui...",
+    "profile.badge.discordadmin": "Moderador do Discord",
+    "profile.badge.birthday": "Primeiro Aniversário"
 }

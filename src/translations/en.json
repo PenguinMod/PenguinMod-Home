@@ -178,7 +178,7 @@
     "uploading.error.instructions4096longer": "Instructions cannot be longer than 4096 characters.",
     "uploading.error.notes4096longer": "Notes & credits cannot be longer than 4096 characters.",
     "uploading.error.formaterrorremixmustbeprojectidasnumber": "Remix Format Error. Report to PenguinMod.",
-    "uploading.error.cannotusethisextensionforthisrank": "You cannot upload this project yet as it contains custom extensions or certain blocked extensions. Upload a few projects and wait a few days to earn the penguin rank.",
+    "uploading.error.cannotusethisextensionforthisrank": "You cannot upload this project yet as it contains custom extensions or certain blocked extensions. Upload a few other projects and wait a few days to rank up before you can post this project.",
     "uploading.error.illegalwordsused": "Words or phrases were used that are not allowed in PenguinMod. Please check through your project's details for any inappropriate words or phrases.",
     "uploading.error.report": "Impossible situation. Report to PenguinMod. Details: $1",
     "uploading.error.unknown": "Unknown error. The file may be too large or something unexpected happened. Full error: $1",

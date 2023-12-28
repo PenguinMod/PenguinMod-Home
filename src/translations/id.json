@@ -178,7 +178,7 @@
     "uploading.error.instructions4096longer": "Instruksi tidak boleh lebih dari 4096 karakter.",
     "uploading.error.notes4096longer": "Catatan & kredit tidak boleh lebih dari 4096 karakter.",
     "uploading.error.formaterrorremixmustbeprojectidasnumber": "Kesalahan Format Remix. Laporkan ke PenguinMod.",
-    "uploading.error.cannotusethisextensionforthisrank": "You cannot upload this project yet as it contains custom extensions or certain blocked extensions. Please try another project and or wait a couple days to be able to rank up your account to trustable.",
+    "uploading.error.cannotusethisextensionforthisrank": "You cannot upload this project yet as it contains custom extensions or certain blocked extensions. Upload a few other projects and wait a few days to rank up before you can post this project.",
     "uploading.error.illegalwordsused": "Words or phrases were used that are not allowed in PenguinMod. Please check through your project's details for any inappropriate words or phrases.",
     "uploading.error.report": "Situasi yang mustahil. Laporkan ke PenguinMod. Detail: $1",
     "uploading.error.unknown": "Kesalahan tidak dikenal. File mungkin terlalu besar atau terjadi sesuatu yang tidak diharapkan. Kesalahan penuh: $1",
