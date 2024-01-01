@@ -1048,7 +1048,7 @@
     .welcome-back-icon-container {
         border: 1px solid rgba(0, 0, 0, 0.25);
         background: transparent;
-        border-radius: 1024px;
+        border-radius: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -1062,6 +1062,16 @@
     }
     .welcome-back-button:active .welcome-back-icon-container {
         background: rgba(0, 0, 0, 0.2);
+    }
+    .welcome-back-row >
+    a:first-child .welcome-back-icon-container {
+        border-top-left-radius: 1024px !important;
+        border-bottom-left-radius: 1024px !important;
+    }
+    .welcome-back-row >
+    a:last-child .welcome-back-icon-container {
+        border-top-right-radius: 1024px !important;
+        border-bottom-right-radius: 1024px !important;
     }
     :global(body.dark-mode)
         .welcome-back-button:active
