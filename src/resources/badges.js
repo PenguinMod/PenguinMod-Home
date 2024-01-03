@@ -3,7 +3,6 @@ export default {
     dev: "developer",
     admin: "admin",
     discordadmin: "discord_mod",
-    approver: "approver",
     donator: "donator",
     birthday: "birthday",
     translator: "translator",
