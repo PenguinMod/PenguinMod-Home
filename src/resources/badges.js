@@ -14,5 +14,4 @@ export default {
     votes: "votes_many",
     likes: "likes_many",
     followers: "followers_many",
-    amongus: "sussy",
 };

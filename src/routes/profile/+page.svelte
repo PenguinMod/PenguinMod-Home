@@ -414,38 +414,40 @@
                             <div class="user-badge-container">
                             <div class="user-badges">
                                 {#each badges as badge, idx}
-                                    <button
-                                        on:click={() => {
-                                            focusedBadge = idx;
-                                        }}
-                                        on:focusout={() => {
-                                            focusedBadge = -1;
-                                        }}
-                                        title={TranslationHandler.text(
-                                            `profile.badge.${badge}`,
-                                            currentLang
-                                        )}
-                                    >
-                                        <img
-                                            src={`/badges/${ProfileBadges[badge]}.png`}
-                                            alt={TranslationHandler.text(
-                                                `profile.badge.${badge}`,
-                                                currentLang
-                                            )}
+                                    {#if ProfileBadges[badge]}
+                                        <button
+                                            on:click={() => {
+                                                focusedBadge = idx;
+                                            }}
+                                            on:focusout={() => {
+                                                focusedBadge = -1;
+                                            }}
                                             title={TranslationHandler.text(
                                                 `profile.badge.${badge}`,
                                                 currentLang
                                             )}
-                                        />
-                                        {#if focusedBadge === idx}
-                                            <div class="badge-info">
-                                                {TranslationHandler.text(
+                                        >
+                                            <img
+                                                src={`/badges/${ProfileBadges[badge]}.png`}
+                                                alt={TranslationHandler.text(
                                                     `profile.badge.${badge}`,
                                                     currentLang
                                                 )}
-                                            </div>
-                                        {/if}
-                                    </button>
+                                                title={TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    currentLang
+                                                )}
+                                            />
+                                            {#if focusedBadge === idx}
+                                                <div class="badge-info">
+                                                    {TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        currentLang
+                                                    )}
+                                                </div>
+                                            {/if}
+                                        </button>
+                                    {/if}
                                 {:else}
                                     <p style="font-size: initial; font-weight: normal; width: 100%; text-align: center;">
                                         <LocalizedText
