@@ -495,6 +495,32 @@
                                 <br />
                             {/if}
                         </p>
+                    {:else if message.type === "guidelines"}
+                        <a
+                            href="/{message.section === 'uploadingguidelines' ? 'guidelines/uploading' : message.section}"
+                        >
+                            {String(
+                                    TranslationHandler.text(
+                                        `messages.alert.${message.section}`,
+                                        currentLang
+                                    ) || TranslationHandler.text(
+                                        `messages.alert.${message.section}`,
+                                        'en'
+                                    )
+                            )
+                            .replace("{{TERMS_OF_SERVICE}}", TranslationHandler.text(
+                                        "home.footer.sections.info.terms",
+                                        currentLang
+                                    ))
+                            .replace("{{PRIVACY_POLICY}}", TranslationHandler.text(
+                                        "home.footer.sections.info.privacy",
+                                        currentLang
+                                    ))
+                            .replace("{{UPLOADING_GUIDELINES}}", TranslationHandler.text(
+                                        "home.footer.sections.info.guidelines",
+                                        currentLang
+                                    ))}
+                        </a>
                     {:else}
                         <!-- what is this? -->
                         <p>

@@ -73,6 +73,12 @@
     let selectedReportDetailed = -1;
     let reportDetails = Object.create({});
 
+    const guidelinesNotifs = {
+        tos: false,
+        pp: false,
+        ug: false
+    };
+
     const loadReportDetails = (id) => {
         let type = "user";
         if (dropdownSelectMenu.value === "project") {
@@ -90,6 +96,17 @@
     const setGetProjects = (allowGetProjects) => {
         if (!confirm("Are you sure?")) return;
         ProjectClient.setErrorAllGetProjects(allowGetProjects)
+            .then(() => {
+                alert("done");
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(err);
+            });
+    };
+    const setUploadProjects = (allowUploadProjects) => {
+        if (!confirm("Are you sure?")) return;
+        ProjectClient.setErrorAllUploadProjects(allowUploadProjects)
             .then(() => {
                 alert("done");
             })
@@ -305,6 +322,26 @@
             messageReplyInfo.id = "";
             messageReplyInfo.text = "";
         });
+    };
+    const sendGuidelinesNotifs = () => {
+        const notifs = [];
+        if (guidelinesNotifs.tos) {
+            notifs.push('terms');
+        }
+        if (guidelinesNotifs.pp) {
+            notifs.push('privacy');
+        }
+        if (guidelinesNotifs.ug) {
+            notifs.push('uploadingguidelines');
+        }
+        if (notifs.length <= 0) return alert("No notifs were selected!");
+        const confirmed = prompt('Are you sure you want to notify ALL users of the site?\nType "ok" to confirm.');
+        if (confirmed !== 'ok') return;
+        for (const notif of notifs) {
+            ProjectClient.addMessage('guidelines', null, {
+                section: notif
+            });
+        }
     };
 
     let rejectedProjectId = 0;
@@ -955,6 +992,43 @@
                         Send
                     </Button>
                 </div>
+                <br />
+                <br />
+                <br />
+                <br />
+                <h3>Guidelines</h3>
+                <p>Send update notifications for TOS, Privacy Policy, or Uploading Guidelines.</p>
+                <p>Will send to all users on the website.</p>
+                <br />
+                <br />
+                <label>
+                    <input
+                        type="checkbox"
+                        bind:checked={guidelinesNotifs.tos}
+                    />
+                    Terms of Service
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        bind:checked={guidelinesNotifs.pp}
+                    />
+                    Privacy Policy
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        bind:checked={guidelinesNotifs.ug}
+                    />
+                    Uploading Guidelines
+                </label>
+                <br />
+                <br />
+                <div class="user-action-row">
+                    <Button color="green" on:click={sendGuidelinesNotifs}>
+                        Send Guidelines Update
+                    </Button>
+                </div>
             </div>
 
             <br />
@@ -1066,6 +1140,12 @@
             >
             <Button on:click={() => setGetProjects(true)} color="remix"
                 >Enable Getting Projects</Button
+            >
+            <Button on:click={() => setUploadProjects(false)} color="red"
+                >Disable Uploading Projects</Button
+            >
+            <Button on:click={() => setUploadProjects(true)} color="remix"
+                >Enable Uploading Projects</Button
             >
 
             <br />
@@ -1443,12 +1523,6 @@
         width: 95%;
         height: 89.25%;
     }
-    .only-in-dark-mode {
-        display: none;
-    }
-    :global(body.dark-mode) .only-in-dark-mode {
-        display: inline;
-    }
     :global(body.dark-mode) .card-page {
         background: #1f1f1f;
     }
@@ -1492,14 +1566,6 @@
         filter: initial;
     }
 
-    .nomargintext {
-        margin-block: 0;
-    }
-    .date {
-        opacity: 0.5;
-        font-size: 12px;
-    }
-
     .guidelines-link {
         background: transparent;
         border: 0;
@@ -1507,9 +1573,5 @@
         text-decoration: underline;
         cursor: pointer;
         margin-top: 16px;
-    }
-    iframe {
-        width: 100%;
-        border: 0;
     }
 </style>

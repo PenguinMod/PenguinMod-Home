@@ -42,7 +42,7 @@ Language.onChange((lang) => {
 
     <main>
         <!-- UPDATE THIS WHEN MAKING CONTENT CHANGES -->
-        <p><i>Updated November 27th, 2023 at 11:44 PM (Mountain Time)</i></p>
+        <p><i>Updated January 4th, 2024 at 3:48 AM (Mountain Time)</i></p>
 
         <!-- some things are intentionally not formatted as they are in the HTML file on the website -->
         <p>
@@ -80,10 +80,10 @@ Language.onChange((lang) => {
                 and diagnostic information such as cache hit ratios.
         </p>
         <p>
-            When using the website, your IP may be logged temporarily, but never permanently, (deleted after a server restart or update).
-            This is to help us identify users who may be spamming or attacking the site. Your IP is only saved if you are blocked from the project servers.
+            When using the website, your IP will be logged and stored to your account's name if you log in.
+            This is to help us identify users who may be spamming or attacking the site.
             <br>
-            Your IP may also be logged temporarily when viewing a project, along with information about the project you viewed.
+            Your IP will also be stored temporarily when viewing a project, along with information about the project you viewed being logged temporarily.
         </p>
 
         <h2>Advertisments</h2>

@@ -43,6 +43,10 @@
     let projects = {
         today: [],
         featured: [],
+        liked: [],
+        voted: [],
+        viewed: [],
+        tagged: [],
     };
 
     let thingyActive = false;
@@ -127,12 +131,14 @@
             });
         });
 
-        ProjectApi.getMaxProjects(15, false, true).then((projs) => {
-            projects.today = projs;
-        });
-        ProjectApi.getMaxProjects(15, true, false)
-            .then((projs) => {
-                projects.featured = projs;
+        // TODO: implement tagged section once studio can handle tags properly
+        ProjectApi.getFrontPage()
+            .then(results => {
+                projects.today = results.latest;
+                projects.featured = results.featured;
+                projects.liked = results.liked;
+                projects.voted = results.voted;
+                projects.viewed = results.viewed;
                 projectsLoaded = true;
             })
             .catch(() => {
@@ -250,7 +256,7 @@
         buttonText={"Donate"}
         buttonHref={"/donate"}
     />
-    <!-- TODO: re-add this, but only have it appear for new users after they login on a date before the alert -->
+    <!-- TODO: should we remove this? -->
     <!-- <Alert
         onlyShowID={"privacee:_1"}
         text={"Our privacy policy has been updated."}
@@ -713,6 +719,114 @@
                             />
                         </p>
                     </div>
+                {:else if projectsFailed === true}
+                    <div
+                        style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                    >
+                        <img
+                            src="/penguins/server.svg"
+                            alt="Server Penguin"
+                            style="width: 15rem"
+                        />
+                        <p>
+                            <LocalizedText
+                                text="Whoops! Our server's having some problems. Try again later."
+                                key="home.server.error"
+                                lang={currentLang}
+                            />
+                        </p>
+                    </div>
+                {:else}
+                    <LoadingSpinner />
+                {/if}
+            </div>
+        </ContentCategory>
+        <ContentCategory
+            header={TranslationHandler.text(
+                "home.sections.mostvoted",
+                currentLang
+            )}
+            seemore={`/search?q=sort%3Avotes`}
+            style="width:65%;"
+            stylec="height: 244px;"
+        >
+            <div class="project-list">
+                {#if projects.voted.length > 0}
+                    {#each projects.voted as project}
+                        <Project {...project} />
+                    {/each}
+                {:else if projectsFailed === true}
+                    <div
+                        style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                    >
+                        <img
+                            src="/penguins/server.svg"
+                            alt="Server Penguin"
+                            style="width: 15rem"
+                        />
+                        <p>
+                            <LocalizedText
+                                text="Whoops! Our server's having some problems. Try again later."
+                                key="home.server.error"
+                                lang={currentLang}
+                            />
+                        </p>
+                    </div>
+                {:else}
+                    <LoadingSpinner />
+                {/if}
+            </div>
+        </ContentCategory>
+        <ContentCategory
+            header={TranslationHandler.text(
+                "home.sections.mostliked",
+                currentLang
+            )}
+            seemore={`/search?q=sort%3Alikes`}
+            style="width:65%;"
+            stylec="height: 244px;"
+        >
+            <div class="project-list">
+                {#if projects.liked.length > 0}
+                    {#each projects.liked as project}
+                        <Project {...project} />
+                    {/each}
+                {:else if projectsFailed === true}
+                    <div
+                        style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                    >
+                        <img
+                            src="/penguins/server.svg"
+                            alt="Server Penguin"
+                            style="width: 15rem"
+                        />
+                        <p>
+                            <LocalizedText
+                                text="Whoops! Our server's having some problems. Try again later."
+                                key="home.server.error"
+                                lang={currentLang}
+                            />
+                        </p>
+                    </div>
+                {:else}
+                    <LoadingSpinner />
+                {/if}
+            </div>
+        </ContentCategory>
+        <ContentCategory
+            header={TranslationHandler.text(
+                "home.sections.mostviewed",
+                currentLang
+            )}
+            seemore={`/search?q=sort%3Aviews`}
+            style="width:65%;"
+            stylec="height: 244px;"
+        >
+            <div class="project-list">
+                {#if projects.viewed.length > 0}
+                    {#each projects.viewed as project}
+                        <Project {...project} />
+                    {/each}
                 {:else if projectsFailed === true}
                     <div
                         style="display:flex;flex-direction:column;align-items: center;width: 100%;"

@@ -139,6 +139,62 @@ class ProjectApi {
                 });
         })
     }
+    /**
+     * @param {string} user username
+     * @param {number} page page
+     * @returns Array of projects
+     */
+    static searchForProjects(query, page, settings) {
+        return new Promise((resolve, reject) => {
+            const urlSections = [];
+            if (query) {
+                urlSections.push(`&includes=${encodeURIComponent(query)}`);
+            }
+            if (settings) {
+                if (settings.user) {
+                    urlSections.push(`&user=${encodeURIComponent(settings.user)}`);
+                }
+                if (settings.featured) {
+                    urlSections.push(`&featured=${encodeURIComponent(settings.featured)}`);
+                }
+                if (settings.sortby) {
+                    urlSections.push(`&sortby=${encodeURIComponent(settings.sortby)}`);
+                }
+            }
+            const url = `${OriginApiUrl}/api/projects/search?page=${page}${urlSections.join('')}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((projectList) => {
+                        resolve(projectList.projects);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+    static getFrontPage() {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/projects/frontPage`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((info) => {
+                        resolve(info);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
 
     static getProjectMeta(id) {
         return new Promise((resolve, reject) => {
