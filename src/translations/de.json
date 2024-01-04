@@ -300,5 +300,16 @@
     "auth.method.profile.subtitle": "Sign in by leaving a comment on *your* Scratch profile.",
     "auth.oneclick.title": "One-click Sign in",
     "auth.oneclick.user": "One Click: $1",
-    "auth.oneclick.lastsignin": "Last signed in $1"
+    "auth.oneclick.lastsignin": "Last signed in $1",
+    "profile.badge.discordadmin": "Discord Moderator",
+    "profile.badge.birthday": "1st Birthday",
+    "event.title": "Event",
+    "event.plural": "Events",
+    "event.nottranslated": "This event is not translated for your language at the moment. Sorry! :(",
+    "event.host": "Hosted by $1",
+    "event.collab": "This event is hosted in collaboration with: $1",
+    "profile.badge.event": "Event Winner",
+    "profile.badge.participant": "Event Participant",
+    "uploading.error.cannotusethisextensionforthisrank": "You cannot upload this project yet as it contains custom extensions or certain blocked extensions. Upload a few other projects and wait a few days to rank up before you can post this project.",
+    "uploading.error.illegalwordsused": "Words or phrases were used that are not allowed in PenguinMod. Please check through your project's details for any inappropriate words or phrases."
 }

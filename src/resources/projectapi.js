@@ -677,6 +677,23 @@ class ProjectApi {
             });
         });
     }
+    setErrorAllUploadProjects(enabled) {
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/errorAllProjectUploads?user=${this.username}&passcode=${this.privateCode}&enabled=${enabled}`).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                });
+            }).catch(err => {
+                reject(err);
+            });
+        });
+    }
     deleteProject(id) {
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/projects/delete?passcode=${this.privateCode}&approver=${this.username}&id=${id}`).then(res => {
@@ -758,6 +775,36 @@ class ProjectApi {
             fetch(`${OriginApiUrl}/api/users/disputeRespond`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+    addMessage(type, target, data) {
+        const gdata = {
+            passcode: this.privateCode,
+            username: this.username,
+            target,
+            message: {
+                ...data,
+                type
+            },
+        };
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/users/addMessage`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(gdata),
                 method: "POST"
             }).then(res => {
                 res.json().then(json => {
