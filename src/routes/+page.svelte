@@ -103,6 +103,7 @@
         }
     };
 
+    let tagForProjects = "";
     onMount(async () => {
         const projectId = Number(location.hash.replace("#", ""));
         if (!isNaN(projectId) && projectId != 0) {
@@ -131,7 +132,6 @@
             });
         });
 
-        // TODO: implement tagged section once studio can handle tags properly
         ProjectApi.getFrontPage()
             .then(results => {
                 projects.today = results.latest;
@@ -139,6 +139,8 @@
                 projects.liked = results.liked;
                 projects.voted = results.voted;
                 projects.viewed = results.viewed;
+                projects.tagged = results.tagged;
+                tagForProjects = results.selectedTag;
                 projectsLoaded = true;
             })
             .catch(() => {
@@ -743,46 +745,10 @@
         </ContentCategory>
         <ContentCategory
             header={TranslationHandler.text(
-                "home.sections.mostvoted",
-                currentLang
-            )}
-            seemore={`/search?q=sort%3Avotes`}
-            style="width:65%;"
-            stylec="height: 244px;"
-        >
-            <div class="project-list">
-                {#if projects.voted.length > 0}
-                    {#each projects.voted as project}
-                        <Project {...project} />
-                    {/each}
-                {:else if projectsFailed === true}
-                    <div
-                        style="display:flex;flex-direction:column;align-items: center;width: 100%;"
-                    >
-                        <img
-                            src="/penguins/server.svg"
-                            alt="Server Penguin"
-                            style="width: 15rem"
-                        />
-                        <p>
-                            <LocalizedText
-                                text="Whoops! Our server's having some problems. Try again later."
-                                key="home.server.error"
-                                lang={currentLang}
-                            />
-                        </p>
-                    </div>
-                {:else}
-                    <LoadingSpinner />
-                {/if}
-            </div>
-        </ContentCategory>
-        <ContentCategory
-            header={TranslationHandler.text(
                 "home.sections.mostliked",
                 currentLang
             )}
-            seemore={`/search?q=sort%3Alikes`}
+            seemore={`/search?q=sort%3Alikes%20featured%3Aexclude`}
             style="width:65%;"
             stylec="height: 244px;"
         >
@@ -815,16 +781,16 @@
         </ContentCategory>
         <ContentCategory
             header={TranslationHandler.text(
-                "home.sections.mostviewed",
+                "home.sections.mostvoted",
                 currentLang
             )}
-            seemore={`/search?q=sort%3Aviews`}
+            seemore={`/search?q=sort%3Avotes%20featured%3Aexclude`}
             style="width:65%;"
             stylec="height: 244px;"
         >
             <div class="project-list">
-                {#if projects.viewed.length > 0}
-                    {#each projects.viewed as project}
+                {#if projects.voted.length > 0}
+                    {#each projects.voted as project}
                         <Project {...project} />
                     {/each}
                 {:else if projectsFailed === true}
@@ -849,12 +815,29 @@
                 {/if}
             </div>
         </ContentCategory>
+        {#if projects.tagged.length > 7}
+            <ContentCategory
+                header={String(TranslationHandler.text(
+                    "home.sections.sortedbytag",
+                    currentLang
+                )).replace('$1', tagForProjects)}
+                seemore={`/search?q=%23${tagForProjects}`}
+                style="width:65%;"
+                stylec="height: 244px;"
+            >
+                <div class="project-list">
+                    {#each projects.tagged as project}
+                        <Project {...project} />
+                    {/each}
+                </div>
+            </ContentCategory>
+        {/if}
         <ContentCategory
             header={TranslationHandler.text(
                 "home.sections.todaysprojects",
                 currentLang
             )}
-            seemore={`/search?q=all%3Aprojects`}
+            seemore={`/search?q=featured%3Aexclude`}
             style="width:65%;"
             stylec="height: 244px;"
         >
