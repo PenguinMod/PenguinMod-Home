@@ -42,7 +42,7 @@
     
         <main>
             <!-- UPDATE THIS WHEN MAKING CONTENT CHANGES -->
-            <p><i>Updated January 27th, 2024 (Mountain Time)</i></p>
+            <p><i>Updated January 7th, 2024 (Mountain Time)</i></p>
 
             <!-- some things are intentionally not formatted as they are in the HTML file on the website -->
             <p>
