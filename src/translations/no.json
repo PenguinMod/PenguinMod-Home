@@ -348,5 +348,7 @@
     "profile.featured.cancel": "Avbryt",
     "profile.featured.chooselabel": "Velg en etikett for dette prosjektet",
     "messages.moderatortitle": "Melding fra moderator",
-    "messages.projectid": "Prosjekt-ID: $1"
+    "messages.projectid": "Prosjekt-ID: $1",
+    "payment.stripe.subtitle": "Stripe (De fleste betalingstyper)",
+    "payment.stripe": "Stripe"
 }
