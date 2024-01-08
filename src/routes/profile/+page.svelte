@@ -445,6 +445,13 @@
         /https:\/\/scratch\.mit\.edu/i,
         /https:\/\/[a-z]+\.turbowarp\.org/i,
         /https:\/\/turbowarp\.org/i,
+        /https:\/\/[a-z]+\.cocrea\.world/i,
+        /https:\/\/cocrea\.world/i,
+        /https:\/\/[a-z]+\.getgandi\.com/i,
+        /https:\/\/getgandi\.com/i,
+        /https:\/\/snail-ide\.js\.org/i,
+        /https:\/\/snail-ide\.github\.io/i,
+        /https:\/\/snail-ide\.vercel\.app/i,
     ];
     md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
         const href = String(tokens[idx].attrGet('href'));
