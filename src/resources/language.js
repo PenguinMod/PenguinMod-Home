@@ -1,5 +1,6 @@
 import TranslationHandler from "./translations";
 
+let lastAlertLang = '';
 class Language {
     static _eventListeners = [];
     static onChange(cb) {
@@ -31,17 +32,20 @@ class Language {
             }
         }
         // scam alert messages
-        const warnings = [
-            TranslationHandler.text("console.warning1", lang),
-            TranslationHandler.text("console.warning2", lang),
-            TranslationHandler.text("console.warning3", lang),
-        ];
-        console.log(
-            `%c${warnings[0]} %c${warnings[1]}`,
-            "color:red;font-family:system-ui;font-size:2rem;-webkit-text-stroke: 1px black;font-weight:bold",
-            "color:white;font-family:system-ui;font-size:1.75rem;-webkit-text-stroke: 1px black;font-weight:bold"
-        );
-        console.log(warnings[2]);
+        if (lang !== lastAlertLang) {
+            const warnings = [
+                TranslationHandler.text("console.warning1", lang),
+                TranslationHandler.text("console.warning2", lang),
+                TranslationHandler.text("console.warning3", lang),
+            ];
+            console.log(
+                `%c${warnings[0]} %c${warnings[1]}`,
+                "color:red;font-family:system-ui;font-size:2rem;-webkit-text-stroke: 1px black;font-weight:bold",
+                "color:black;font-family:system-ui;font-size:1.75rem;font-weight:bold"
+            );
+            console.log(warnings[2]);
+            lastAlertLang = lang;
+        }
         // change page direction if needed
         document.documentElement.dir = "ltr";
         if (TranslationHandler.rtlLanguages.includes(lang)) {

@@ -65,9 +65,9 @@ class ProjectApi {
                 });
         });
     }
-    static getProfile(user) {
+    static getProfile(user, includeBio) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/profile?username=${user}`;
+            const url = `${OriginApiUrl}/api/users/profile?username=${user}${includeBio ? '&bio=true' : ''}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -839,6 +839,60 @@ class ProjectApi {
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/users/requestRankUp`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+    setBio(text, adminForced, adminTarget) {
+        const data = {
+            username: this.username,
+            passcode: this.privateCode,
+            bio: text,
+            target: adminTarget,
+        };
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/users/${adminForced ? 'setUserBioAdmin' : "setBio"}`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+    setMyFeaturedProject(id, title) {
+        const data = {
+            username: this.username,
+            passcode: this.privateCode,
+            id,
+            title
+        };
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/users/setMyFeaturedProject`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
                 method: "POST"

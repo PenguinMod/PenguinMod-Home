@@ -286,7 +286,13 @@
                     on:click={() => markAsRead(message.id)}
                 >
                     {#if message.moderator === true}
-                        <h2>Moderator Message</h2>
+                        <h2>
+                            <LocalizedText
+                                text="Moderator Message"
+                                key="messages.moderatortitle"
+                                lang={currentLang}
+                            />
+                        </h2>
                     {/if}
                     <!-- switch case would be ideal, but we dont have that -->
                     {#if message.type === "reject"}
@@ -337,8 +343,14 @@
                             <br />
                         {/if}
                         <p class="small">
-                            <b>Project ID:</b>
-                            {message.projectId}
+                            <b>
+                                {String(
+                                    TranslationHandler.text(
+                                        "messages.projectid",
+                                        currentLang
+                                    )
+                                ).replace("$1", message.projectId)}
+                            </b>
                         </p>
                         <button
                             class="fake-link"
@@ -710,6 +722,9 @@
     }
     :global(body.dark-mode) .message[data-moderator="true"] {
         border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    :global(html[dir="rtl"]) .message {
+        text-align: right;
     }
 
     textarea {

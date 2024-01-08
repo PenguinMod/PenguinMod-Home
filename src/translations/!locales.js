@@ -48,11 +48,11 @@ const languages = {
     "sv": sv,                      // Swedish
     "sk": sk,                      // Slovak
     "uk": uk,                      // Ukranian
-    "id": id,                      // Bahasa Indonesia
     "he": he,                      // Hebrew
     // uncomment joke languages when we have >30 regular langs to hide them
     // "uwu": uwu,
     // "test": test,
+    // "id": id, // Bahasa Indonesia has no translator anymore, and theres too much untranslated text now
 };
 // add languages that are RTL here
 const rtlLanguages = [
