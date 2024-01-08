@@ -1076,11 +1076,11 @@
                 {#if showUserPerms}
                     <h3>admins</h3>
                     {#each admins as adminName}
-                        {adminName}
+                        <p>{adminName}</p>
                     {/each}
                     <h3>mods</h3>
                     {#each mods as modName}
-                        {modName}
+                        <p>{modName}</p>
                     {/each}
                 {/if}
                 <Button on:click={() => showUserPerms = !showUserPerms}>{showUserPerms ? 'Hide' : 'Show'} Permited Users</Button>
