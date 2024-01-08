@@ -91,6 +91,20 @@
                         <p class="small">Donate using</p>
                         <a
                             target="_blank"
+                            href="https://donate.stripe.com/fZe4hV1jWbmr7sYbII"
+                            style="text-decoration: none !important;"
+                        >
+                            <button
+                                class="donation-container"
+                                title="Stripe - Financial infrastructure for the internet"
+                            >
+                                <img src="/stripe.png" alt="Stripe" />
+                                <span>Stripe (Most payment types)</span>
+                            </button>
+                        </a>
+                        <br />
+                        <a
+                            target="_blank"
                             href="https://www.paypal.com/donate/?hosted_button_id=6UJFR8W3V7KYC"
                             style="text-decoration: none !important;"
                         >
