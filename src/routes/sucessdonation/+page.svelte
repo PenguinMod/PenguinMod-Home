@@ -9,6 +9,7 @@
   // translations
   import LocalizedText from "$lib/LocalizedText/Node.svelte";
   import Language from "../../resources/language.js";
+  import TranslationHandler from "../../resources/translations.js";
 
   let currentLang = "en";
   onMount(() => {
@@ -56,9 +57,9 @@
   <div class="section-info">
     <h1 style="margin-block: 0;">
       <LocalizedText
-        text="Thanks for donating!"
-        key="donate.completed"
-        lang={currentLang}
+          text="Thanks for donating! ✨"
+          key="donated.title"
+          lang={currentLang}
       />
     </h1>
   </div>
@@ -66,10 +67,12 @@
   <div style="height: 16px;" />
 
   <div class="section-content">
-    <h1>Thanks for donating! ✨</h1>
     <p>
-      We hope you continue to support PenguinMod, even if it's not with money
-      but by sharing and using our service!
+      <LocalizedText
+          text="We hope you continue to support PenguinMod, even if it's not with money but by sharing and using our service!"
+          key="donated.subtitle"
+          lang={currentLang}
+      />
     </p>
     <div class="pengfetti-wrapper">
       <Confetti
@@ -85,23 +88,49 @@
     </div>
     <img src="/penguins/cheer.svg" alt="Cheering" class="thank-you" />
     <div class="card">
-        <h2 style="text-align:center;">Want some donator perks?</h2>
+        <h2 style="text-align:center;">
+          <LocalizedText
+              text="Want some donator perks?"
+              key="donated.perks"
+              lang={currentLang}
+          />
+        </h2>
         <p style="text-align:center;">
           <i>
-            Email us at
-            <a href="mailto:penguinmodhelp@gmail.com">penguinmodhelp@gmail.com</a>
-            with your transaction ID and PenguinMod username!
+            {@html String(TranslationHandler.text(
+              "donated.perks.howto",
+              currentLang
+            ) || TranslationHandler.text(
+              "donated.perks.howto",
+              'en'
+            )).replace('{{EMAIL}}', `<a href="mailto:penguinmodhelp@gmail.com">penguinmodhelp@gmail.com</a>`)}
           </i>
         </p>
     </div>
     <div style="height: 32px;" />
     <p>
-      Your donation can help us fund PenguinMod's server and domain!
+      <LocalizedText
+          text="Your donation can help us fund PenguinMod's server and domain!"
+          key="donated.location"
+          lang={currentLang}
+      />
       <br />
-      <b>Thanks for supporting us! 😄</b>
+      <b>
+        <LocalizedText
+            text="Thanks for supporting us! 😄"
+            key="donated.thanks"
+            lang={currentLang}
+        />
+      </b>
     </p>
     <div style="height: 8px;" />
-    <Button link="/donate">Back</Button>
+    <Button link="/donate">
+      <LocalizedText
+          text="Back"
+          key="generic.back"
+          lang={currentLang}
+      />
+    </Button>
   </div>
 </div>
 
