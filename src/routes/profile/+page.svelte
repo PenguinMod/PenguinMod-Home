@@ -192,6 +192,7 @@
             >`;
         });
     };
+    
     onMount(() => {
         const params = new URLSearchParams(location.search);
         const query = params.get("user");
