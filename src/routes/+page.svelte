@@ -1166,11 +1166,29 @@
         border-bottom-left-radius: 36px;
         padding-left: 8px;
     }
+    :global(html[dir="rtl"]) .welcome-back-row >
+    a:first-child .welcome-back-icon-container {
+        border-top-left-radius: initial;
+        border-bottom-left-radius: initial;
+        padding-left: initial;
+        border-top-right-radius: 36px;
+        border-bottom-right-radius: 36px;
+        padding-right: 8px;
+    }
     .welcome-back-row >
     a:last-child .welcome-back-icon-container {
         border-top-right-radius: 36px;
         border-bottom-right-radius: 36px;
         padding-right: 8px;
+    }
+    :global(html[dir="rtl"]) .welcome-back-row >
+    a:last-child .welcome-back-icon-container {
+        border-top-right-radius: initial;
+        border-bottom-right-radius: initial;
+        padding-right: initial;
+        border-top-left-radius: 36px;
+        border-bottom-left-radius: 36px;
+        padding-left: 8px;
     }
     :global(body.dark-mode)
         .welcome-back-button:active
