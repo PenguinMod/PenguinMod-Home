@@ -1063,7 +1063,7 @@
                 <br />
                 <div class="user-action-row">
                     <Button color="green" on:click={sendGuidelinesNotifs}>
-                        spike disk usage to 1 GB (Send Guidelines Update)
+                        Send Guidelines Update
                     </Button>
                 </div>
             </div>

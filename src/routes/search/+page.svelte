@@ -25,7 +25,7 @@
     let page = 0;
     let pageIsLast = false;
 
-    const validTagPrefixes = ["studio", "user", "featured"];
+    const validTagPrefixes = ["studio", "user", "featured", "sort"];
     const tagFilterFunction = (word) => {
         const startsWithTag = validTagPrefixes.some((value) => {
             return String(word).startsWith(`${value}:`);
@@ -54,6 +54,9 @@
             for (const tag of tags) {
                 if (tag.startsWith("user")) {
                     queryExtra += `&user=${tag.replace("user:", "")}`;
+                }
+                if (tag.startsWith("sort")) {
+                    queryExtra += `&sortby=${tag.replace("sort:", "")}`;
                 }
                 if (tag.startsWith("featured")) {
                     const value = tag.replace("featured:", "");
