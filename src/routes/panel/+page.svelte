@@ -24,6 +24,7 @@
 
     let loggedIn = null;
     let projectIdSelection;
+    let serverStats = []
 
     function kickOut() {
         location.href = location.origin + "/bx-tv1.mp4";
@@ -36,6 +37,21 @@
             kickOut();
             return;
         }
+        ProjectApi.getServerInfo()
+            .then((stats) => {
+                serverStats.push(`is new: ${stats.new ? 'yes' : 'no'}`)
+                delete stats.new
+                serverStats.push(`next read: ${new Date(stats.nextRead).getMinutes() - new Date().getMinutes()}mins`)
+                delete stats.nextRead
+                serverStats.push(`memory usage: ${(stats.totalMem - stats.freeMem) / stats.totalMem}`)
+                for (const name in stats) {
+                    serverStats.push(`${name}: ${stats[name]}`)
+                }
+                serverStats = serverStats
+            })
+            .catch((err) => {
+                console.error(err);
+            });
         Authentication.usernameFromCode(privateCode)
             .then(({ username, isAdmin, isApprover }) => {
                 if (username) {
@@ -482,6 +498,19 @@
                 alert(`Failed to moddify users permissions; ${err}`);
             });
     };
+
+    let showUserPerms = false
+    let admins = []
+    let mods = []
+    const loadUserPerms = () => ProjectClient.getAllPermitedUsers()
+        .then(users => {
+            admins = users.admins
+            mods = users.mods
+        })
+        .catch((err) => {
+            console.error(err);
+            alert(`Failed to get permited users; ${err}`);
+        });
 </script>
 
 <svelte:head>
@@ -949,6 +978,14 @@
                 </div>
             </div>
 
+            <div class="card">
+                <h2>Server Stats</h2>
+                {#each serverStats as stat}
+                    <p>{stat}</p>
+                {/each}
+            </div>
+            <br/>
+
             <p>
                 <a
                     class="guidelines-link"
@@ -1035,6 +1072,18 @@
 
             <div class="card">
                 <h2 style="margin-block-start:0">Users</h2>
+                <Button on:click={loadUserPerms}>Load Permited Users</Button>
+                {#if showUserPerms}
+                    <h3>admins</h3>
+                    {#each admins as adminName}
+                        {adminName}
+                    {/each}
+                    <h3>mods</h3>
+                    {#each mods as modName}
+                        {modName}
+                    {/each}
+                {/if}
+                <Button on:click={() => showUserPerms = !showUserPerms}>{showUserPerms ? 'Hide' : 'Show'} Permited Users</Button>
                 <p>Type username:</p>
                 <input
                     type="text"

@@ -10,6 +10,25 @@ class ProjectApi {
     static OriginApiUrl = OriginApiUrl;
     static CachedDonators = {};
 
+    static getServerInfo(user) {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/projects/getSiteStats`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((stats) => {
+                        resolve(stats);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+
     static getUserBadges(user) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/users/getBadges?username=${user}`;
@@ -260,6 +279,25 @@ class ProjectApi {
     }
     setAdmin(bool) {
         this.admin = bool;
+    }
+
+    getAllPermitedUsers() {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/users/getSiteMods?user=${this.username}&passcode=${this.privateCode}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((users) => {
+                        resolve(users);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
 
     isAdmin() {
