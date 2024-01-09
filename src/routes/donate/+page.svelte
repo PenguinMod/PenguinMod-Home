@@ -91,24 +91,23 @@
                 </p>
                 <p>
                     {@html generateMarkdown(`${String(TranslationHandler.text(
-                            "donate.people1",
-                            currentLang
-                        ) || TranslationHandler.text(
-                            "donate.people1",
-                            'en'
-                        ))
-                        .replace('$1', (25000).toLocaleString())
-                        .replace('$2', (55000).toLocaleString())
-                        /* $1 is new people, $2 is returning */}
+                        "donate.people1",
+                        currentLang
+                    ) || TranslationHandler.text(
+                        "donate.people1",
+                        'en'
+                    ))
+                    .replace('$1', (25000).toLocaleString())
+                    .replace('$2', (55000).toLocaleString())
+                    /* $1 is new people, $2 is returning */}
 
 ${String(TranslationHandler.text(
-                            "donate.people2",
-                            currentLang
-                        ) || TranslationHandler.text(
-                            "donate.people2",
-                            'en'
-                        ))}
-                    `)}
+                        "donate.people2",
+                        currentLang
+                    ) || TranslationHandler.text(
+                        "donate.people2",
+                        'en'
+                    ))}`)}
                 </p>
                 <p>
                     <LocalizedText
