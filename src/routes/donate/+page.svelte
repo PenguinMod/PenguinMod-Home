@@ -96,7 +96,10 @@
                         ) || TranslationHandler.text(
                             "donate.people1",
                             'en'
-                        )).replace('$1', '25,000').replace('$2', '55,000') /* $1 is new people, $2 is returning */}
+                        ))
+                        .replace('$1', (25000).toLocaleString())
+                        .replace('$2', (55000).toLocaleString())
+                        /* $1 is new people, $2 is returning */}
 
 ${String(TranslationHandler.text(
                             "donate.people2",
@@ -244,7 +247,9 @@ ${String(TranslationHandler.text(
                     ) || TranslationHandler.text(
                         "donate.served.projects",
                         'en'
-                    )).replace('$1', '10,000')}
+                    ))
+                    // we serve __ projects
+                    .replace('$1', (10000).toLocaleString())}
                 </div>
                 <div class="detail-card" bind:this={forceHtmlClass2} style="background: darkviolet">
                     {@html String(TranslationHandler.text(
@@ -253,7 +258,9 @@ ${String(TranslationHandler.text(
                     ) || TranslationHandler.text(
                         "donate.served.size",
                         'en'
-                    )).replace('$1', '700')}
+                    ))
+                    // we send __ gb of stuff
+                    .replace('$1', (700).toLocaleString())}
                 </div>
                 <div class="detail-card" bind:this={forceHtmlClass3} style="background: #ffb300">
                     {@html String(TranslationHandler.text(
@@ -262,7 +269,9 @@ ${String(TranslationHandler.text(
                     ) || TranslationHandler.text(
                         "donate.served.requests",
                         'en'
-                    )).replace('$1', '20,000,000')}
+                    ))
+                    // we handle ___ reqs
+                    .replace('$1', (20000000).toLocaleString())}
                 </div>
             </div>
         </div>
