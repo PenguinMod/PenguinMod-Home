@@ -1,5 +1,5 @@
 let OriginApiUrl = "https://projects.penguinmod.com";
-// OriginApiUrl = "http://localhost:8080";
+OriginApiUrl = "http://localhost:8080";
 
 class ProjectApi {
     constructor(pv, username) {
