@@ -42,7 +42,7 @@ Language.onChange((lang) => {
 
     <main>
         <!-- UPDATE THIS WHEN MAKING CONTENT CHANGES -->
-        <p><i>Updated January 7th, 2024 (Mountain Time)</i></p>
+        <p><i>Updated January 13th, 2024 (Mountain Time)</i></p>
 
         <!-- some things are intentionally not formatted as they are in the HTML file on the website -->
         <p>
@@ -239,7 +239,7 @@ Language.onChange((lang) => {
         </p>
         <ul>
             <li><a href="https://open-meteo.com/en/terms">OpenMeteo - Terms of Service</a></li>
-            <li><a href="https://osmfoundation.org/wiki/Privacy_Policy">OpenMeteo - Privacy Policy</a></li>
+            <li><a href="https://osmfoundation.org/wiki/Privacy_Policy">OpenStreetMap - Privacy Policy</a></li>
         </ul>
         <p>
             When using the extension, third-party services may be able to access:</p>
