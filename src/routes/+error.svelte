@@ -108,7 +108,7 @@
 <div class="center-div">
     {#if $page.status === 404}
         {#if !gameIsActive}
-            <button class="hidden-button" on:click={startGame}>
+            <button class="hidden-button" on:click={startGame} on:keydown={gameClick}>
                 <PenguinConfusedSVG height="12rem" />
             </button>
         {:else}
