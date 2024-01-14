@@ -192,6 +192,14 @@
         margin-block: 0;
         z-index: 9999;
     }
+    :global(html[dir="rtl"]) .game {
+        transform: scaleX(-1);
+        transform-origin: center;
+    }
+    :global(html[dir="rtl"]) .game-points {
+        transform: scaleX(-1);
+        transform-origin: center;
+    }
 
     .hidden-button {
         padding: 0;
