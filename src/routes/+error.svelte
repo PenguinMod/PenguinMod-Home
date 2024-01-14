@@ -113,7 +113,7 @@
             </button>
         {:else}
             <button class="game" on:click={gameClick}>
-                <p class="game-points">{gameState.points.toLocaleString()}</p>
+                <p class="game-points" on:click{gameClick}>{gameState.points.toLocaleString()}</p>
                 <img
                     src="/secret/pengin.svg"
                     alt="Penguin"
