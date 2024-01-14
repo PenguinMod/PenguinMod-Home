@@ -13,6 +13,8 @@
         penguin: null,
         brick: null
     };
+    const floorHeight = 240;
+    let highScore = 0;
     const gameState = {
         playerY: 0,
         playerFalling: 0,
@@ -47,7 +49,7 @@
             if (gameState.playerFalling < 20) {
                 gameState.playerFalling += 0.25;
             }
-            if (gameState.playerY > 220) {
+            if (gameState.playerY > floorHeight) {
                 resetState();
             }
             if (gameState.playerY < 0) {
@@ -80,6 +82,9 @@
             if (gameState.brickX + 25 < 40 && gameState.canIncreasePoints) {
                 gameState.points += 1;
                 gameState.canIncreasePoints = false;
+                if (gameState.points > highScore) {
+                    highScore = gameState.points;
+                }
             }
             // reset brick if needed
             if (gameState.brickX < -100) {
@@ -113,7 +118,8 @@
             </button>
         {:else}
             <button class="game" on:click={gameClick}>
-                <p class="game-points" on:keydown{gameClick}>{gameState.points.toLocaleString()}</p>
+                <p class="game-points score-counter" on:keydown{gameClick}>{gameState.points.toLocaleString()}</p>
+                <p class="high-score score-counter" on:keydown{gameClick}>highscore<br>{highScore.toLocaleString()}</p>
                 <img
                     src="/secret/pengin.svg"
                     alt="Penguin"
@@ -180,18 +186,30 @@
         position: absolute;
         z-index: 9997;
     }
-    .game-points {
+    
+    .score-counter {
         pointer-events: none;
         font-size: 16px;
         font-weight: bold;
         font-style: italic;
         color: black;
         position: absolute;
-        left: 8px;
-        top: 8px;
         margin-block: 0;
         z-index: 9999;
     }
+
+    .game-points {
+        font-size: 24px;
+        /* center */
+        left: 50%;
+        top: 10%;
+    }
+
+    .high-score {
+        right: 8px;
+        top: 8px;
+    }
+    
     :global(html[dir="rtl"]) .game {
         transform: scaleX(-1);
         transform-origin: center;
