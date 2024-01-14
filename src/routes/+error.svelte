@@ -13,7 +13,10 @@
         penguin: null,
         brick: null
     };
-    const floorHeight = 240;
+    const constants = {
+        floorHeight: 240,
+        jumpHeight: 4
+    };
     let highScore = 0;
     const gameState = {
         playerY: 0,
@@ -26,7 +29,7 @@
     };
     const defaultGameState = JSON.parse(JSON.stringify(gameState));
     const gameClick = () => {
-        gameState.playerFalling = -5;
+        gameState.playerFalling = -constants.jumpHeight;
     };
     const resetState = () => {
         for (const key of Object.keys(defaultGameState)) {
@@ -46,10 +49,12 @@
         gameIsActive = true;
         setInterval(() => {
             gameState.playerY += gameState.playerFalling;
+            // gravity
             if (gameState.playerFalling < 20) {
                 gameState.playerFalling += 0.25;
             }
-            if (gameState.playerY > floorHeight) {
+            // death
+            if (gameState.playerY > constants.floorHeight) {
                 resetState();
             }
             if (gameState.playerY < 0) {
