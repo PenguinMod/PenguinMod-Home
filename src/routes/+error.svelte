@@ -9,6 +9,7 @@
     import PenguinConfusedSVG from "../icons/Penguin/confused.svelte";
 
     let gameIsActive = false;
+    let currentMenu = 'start';
     const gameAssets = {
         penguin: null,
         brick: null
@@ -25,9 +26,13 @@
         brickY: -200,
         grassX: 0,
         points: 0,
+        rotation: 0,
+        mustBeTop: false,
         canIncreasePoints: true,
     };
-    const defaultGameState = JSON.parse(JSON.stringify(gameState));
+    const defaultGameState = {...gameState};
+    let gameButton = null;
+    let buttonUninitialized = true;
     const gameClick = () => {
         gameState.playerFalling = -constants.jumpHeight;
     };
@@ -45,57 +50,94 @@
         }
         return true;
     };
+    const gameStartPressed = () => {
+        buttonUninitialized = true;
+        currentMenu = 'game';
+    }
+    const restartGame = () => {
+        resetState();
+        gameStartPressed();
+    }
+    const die = () => {
+        gameState.mustBeTop = true;
+        currentMenu = 'died';
+        gameState.playerFalling = -constants.jumpHeight;
+        // just incase, push the sprite out of the ground
+        gameState.playerY += gameState.playerFalling;
+    }
+    const openDeathMenu = () => {
+        currentMenu = 'death'
+    }
     const startGame = () => {
         gameIsActive = true;
         setInterval(() => {
-            gameState.playerY += gameState.playerFalling;
-            // gravity
-            if (gameState.playerFalling < 20) {
-                gameState.playerFalling += 0.25;
-            }
-            // death
-            if (gameState.playerY > constants.floorHeight) {
-                resetState();
-            }
-            if (gameState.playerY < 0) {
-                gameState.playerY = 0;
-            }
-            gameState.grassX -= 3;
-            gameState.grassX = gameState.grassX % 400;
-            gameState.brickX -= 3;
-            // collide
-            const playerRect = {
-                x: 40,
-                y: gameState.playerY,
-                width: 33.55,
-                height: 25.98
-            };
-            const brick1Rect = {
-                x: gameState.brickX,
-                y: gameState.brickY,
-                width: 55,
-                height: 300
-            };
-            const brick2Rect = {
-                ...brick1Rect,
-                y: brick1Rect.y + 400
-            };
-            const willReset = rectTouch(playerRect, brick1Rect) || rectTouch(playerRect, brick2Rect);
-            if (willReset) {
-                resetState();
-            }
-            if (gameState.brickX + 25 < 40 && gameState.canIncreasePoints) {
-                gameState.points += 1;
-                gameState.canIncreasePoints = false;
-                if (gameState.points > highScore) {
-                    highScore = gameState.points;
+            switch (currentMenu) {
+            case 'start':
+                gameState.playerY = (Math.sin(Date.now() / 100) * 10) + 100
+                break;
+            case 'died':
+                gameState.playerY += gameState.playerFalling;
+                // gravity
+                if (gameState.playerFalling < 20) {
+                    gameState.playerFalling += 0.25;
                 }
-            }
-            // reset brick if needed
-            if (gameState.brickX < -100) {
-                gameState.brickX = defaultGameState.brickX;
-                gameState.brickY = -160 - (Math.random() * 120); // -160 to -280
-                gameState.canIncreasePoints = true;
+                if (gameState.playerY > 300) openDeathMenu();
+                break;
+            case 'game':
+                if (buttonUninitialized) {
+                    gameButton.focus();
+                    buttonUninitialized = false;
+                }
+                gameState.playerY += gameState.playerFalling;
+                // gravity
+                if (gameState.playerFalling < 20) {
+                    gameState.playerFalling += 0.25;
+                }
+                // death
+                if (gameState.playerY > constants.floorHeight) {
+                    die();
+                }
+                if (gameState.playerY < 0) {
+                    gameState.playerY = 0;
+                }
+                gameState.grassX -= 3;
+                gameState.grassX = gameState.grassX % 400;
+                gameState.brickX -= 3;
+                // collide
+                const playerRect = {
+                    x: 40,
+                    y: gameState.playerY,
+                    width: 33.55,
+                    height: 25.98
+                };
+                const brick1Rect = {
+                    x: gameState.brickX,
+                    y: gameState.brickY,
+                    width: 55,
+                    height: 300
+                };
+                const brick2Rect = {
+                    ...brick1Rect,
+                    y: brick1Rect.y + 400
+                };
+                const willReset = rectTouch(playerRect, brick1Rect) || rectTouch(playerRect, brick2Rect);
+                if (willReset) {
+                    die();
+                }
+                if (gameState.brickX + 25 < 40 && gameState.canIncreasePoints) {
+                    gameState.points += 1;
+                    gameState.canIncreasePoints = false;
+                    if (gameState.points > highScore) {
+                        highScore = gameState.points;
+                    }
+                }
+                // reset brick if needed
+                if (gameState.brickX < -100) {
+                    gameState.brickX = defaultGameState.brickX;
+                    gameState.brickY = -160 - (Math.random() * 120); // -160 to -280
+                    gameState.canIncreasePoints = true;
+                }
+                break;
             }
         }, 1000 / 60);
     };
@@ -122,16 +164,23 @@
                 <PenguinConfusedSVG height="12rem" />
             </button>
         {:else}
-            <button class="game" on:click={gameClick}>
-                <p class="game-points score-counter" on:keydown{gameClick}>{gameState.points.toLocaleString()}</p>
-                <p class="high-score score-counter" on:keydown{gameClick}>highscore<br>{highScore.toLocaleString()}</p>
-                <img
-                    src="/secret/pengin.svg"
-                    alt="Penguin"
-                    class="game-penguin"
-                    style="top: {gameState.playerY}px"
-                    bind:this={gameAssets.penguin}
-                >
+            <button class="game" on:click={gameClick} bind:this={gameButton}>
+                {#if currentMenu === 'start'}
+                    <button class="menuButton" on:click={gameStartPressed}>start game</button>
+                {:else if currentMenu === 'death'}
+                    <img
+                        src="/secret/penginDead.svg"
+                        alt="Penguin Deid"
+                        class="menu-penguin"
+                        style="top: {gameState.playerY}px; z-index: {gameState.mustBeTop ? 9999 : 9990}"
+                        bind:this={gameAssets.penguin}
+                    >
+                    <br/>
+                    <button class="menuButton" on:click={restartGame}>restart game</button>
+                {:else if currentMenu === 'game'}
+                    <p class="game-points score-counter">{gameState.points.toLocaleString()}</p>
+                    <p class="high-score score-counter">highscore<br>{highScore.toLocaleString()}</p>
+                {/if}
                 <img
                     src="/secret/floor.png"
                     alt="Grass"
@@ -143,6 +192,13 @@
                     alt="Brick"
                     style="left: {gameState.brickX}px; top: {gameState.brickY}px;"
                     class="game-bricks"
+                >
+                <img
+                    src="/secret/pengin{currentMenu === 'died' ? 'Dead' : ''}.svg"
+                    alt="Penguin"
+                    class="game-penguin"
+                    style="top: {gameState.playerY}px; z-index: {gameState.mustBeTop ? 9999 : 9990}"
+                    bind:this={gameAssets.penguin}
                 >
             </button>
         {/if}
@@ -179,7 +235,9 @@
         top: 0;
         transform: scale(0.5);
         transform-origin: left top;
-        z-index: 9990;
+    }
+    .menu-penguin {
+        transform: scale(1.5);
     }
     .game-floor {
         position: absolute;
