@@ -5,6 +5,9 @@
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
 
+    // localstorage
+    import { browser } from '$app/environment';
+
     // Icons
     import PenguinConfusedSVG from "../icons/Penguin/confused.svelte";
 
@@ -17,7 +20,6 @@
         floorHeight: 240,
         jumpHeight: 4
     };
-    let highScore = 0;
     const gameState = {
         playerY: 0,
         playerFalling: 0,
@@ -27,6 +29,7 @@
         points: 0,
         canIncreasePoints: true,
     };
+    let highscore = browser ? (localStorage.getItem("flappypangHighscore") || 0) : 0;
     const defaultGameState = JSON.parse(JSON.stringify(gameState));
     const gameClick = () => {
         gameState.playerFalling = -constants.jumpHeight;
@@ -87,8 +90,11 @@
             if (gameState.brickX + 25 < 40 && gameState.canIncreasePoints) {
                 gameState.points += 1;
                 gameState.canIncreasePoints = false;
-                if (gameState.points > highScore) {
-                    highScore = gameState.points;
+                if (gameState.points > highscore) {
+                    highscore = gameState.points;
+                    if (browser) {
+                        localStorage.setItem("flappypangHighscore", highscore);
+                    }
                 }
             }
             // reset brick if needed
@@ -124,7 +130,7 @@
         {:else}
             <button class="game" on:click={gameClick}>
                 <p class="game-points score-counter" on:keydown{gameClick}>{gameState.points.toLocaleString()}</p>
-                <p class="high-score score-counter" on:keydown{gameClick}>highscore<br>{highScore.toLocaleString()}</p>
+                <p class="high-score score-counter" on:keydown{gameClick}>highscore<br>{highscore.toLocaleString()}</p>
                 <img
                     src="/secret/pengin.svg"
                     alt="Penguin"
