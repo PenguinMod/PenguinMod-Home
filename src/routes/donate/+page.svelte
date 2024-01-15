@@ -210,7 +210,7 @@ ${String(TranslationHandler.text(
                 </p>
                 <p class="small">
                     <LocalizedText
-                        text="You can always donate to our parent projects Scratch or TurboWarp too to help them stay online."
+                        text="You can always donate to our parent projects Scratch or TurboWarp as well, to help them stay online."
                         key="donate.parents"
                         lang={currentLang}
                     />
