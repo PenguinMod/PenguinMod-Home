@@ -178,7 +178,7 @@
                         src="/secret/penginDead.svg"
                         alt="Penguin Deid"
                         class="menu-penguin"
-                        style="margin-bottom: 10px;z-index: {gameState.mustBeTop ? 9999 : 9990}"
+                        style="margin-bottom: 10px;position: relative;z-index: {gameState.mustBeTop ? 9999 : 9990}"
                         bind:this={gameAssets.penguin}
                     >
                     <br/>
