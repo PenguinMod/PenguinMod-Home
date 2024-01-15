@@ -22,7 +22,7 @@
         jumpHeight: 4
     };
     const gameState = {
-        playerY: 0,
+        playerY: 150,
         playerFalling: 0,
         brickX: 500,
         brickY: -200,
@@ -178,7 +178,7 @@
                         src="/secret/penginDead.svg"
                         alt="Penguin Deid"
                         class="menu-penguin"
-                        style="top: {gameState.playerY}px; z-index: {gameState.mustBeTop ? 9999 : 9990}"
+                        style="margin-bottom: 10px;z-index: {gameState.mustBeTop ? 9999 : 9990}"
                         bind:this={gameAssets.penguin}
                     >
                     <br/>
