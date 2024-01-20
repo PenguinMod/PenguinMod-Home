@@ -3,14 +3,14 @@
 // "cover" is the locale with the missing keys
 
 const mergeTranslationJSON = () => {
-    const base = {}; // replace JSON here
-    const cover = {}; // replace JSON here
+  const base = {}; // replace JSON here
+  const cover = {}; // replace JSON here
 
-    for (const key in cover) {
-        base[key] = cover[key];
-    }
+  for (const key in cover) {
+    base[key] = cover[key];
+  }
 
-    return base;
+  return base;
 };
 
 // Right-click > Copy string contents in console

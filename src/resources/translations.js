@@ -8,36 +8,36 @@ const languages = Locales.languages;
 const rtlLanguages = Locales.rtlLanguages;
 
 class TranslationHandler {
-    static text(key, lang) {
-        // return key;
-        if (!languages[lang]) lang = 'en';
-        const language = languages[lang];
-        if (language[key]) return language[key];
-        return null;
+  static text(key, lang) {
+    // return key;
+    if (!languages[lang]) lang = "en";
+    const language = languages[lang];
+    if (language[key]) return language[key];
+    return null;
+  }
+  static tokened(key, lang) {
+    const text = TranslationHandler.text(key, lang);
+    if (!text) return null;
+    let newText = text;
+    let idx = 0;
+    for (const name of arguments) {
+      idx++;
+      if (idx === 1) continue; // skip key
+      if (idx === 2) continue; // skip lang
+      newText = String(newText).replace(`$${idx - 1}`, name);
     }
-    static tokened(key, lang) {
-        const text = TranslationHandler.text(key, lang);
-        if (!text) return null;
-        let newText = text;
-        let idx = 0;
-        for (const name of arguments) {
-            idx++;
-            if (idx === 1) continue; // skip key
-            if (idx === 2) continue; // skip lang
-            newText = String(newText).replace(`$${idx - 1}`, name);
-        }
-        return `${newText}`;
-    }
-    static isLanguageAvailable(lang) {
-        return (lang in languages);
-    }
+    return `${newText}`;
+  }
+  static isLanguageAvailable(lang) {
+    return lang in languages;
+  }
 
-    static get languages() {
-        return languages;
-    }
-    static get rtlLanguages() {
-        return rtlLanguages;
-    }
+  static get languages() {
+    return languages;
+  }
+  static get rtlLanguages() {
+    return rtlLanguages;
+  }
 }
 
 export default TranslationHandler;

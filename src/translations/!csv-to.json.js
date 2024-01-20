@@ -5,16 +5,16 @@
 // Run this code in console
 
 const generateJSONForTranslation = () => {
-    const input = []; // the JSON from the website
-    const output = {};
+  const input = []; // the JSON from the website
+  const output = {};
 
-    for (const item of input) {
-        const key = item["Translation Keys"];
-        const value = item["Translation"];
-        output[key] = value;
-    }
+  for (const item of input) {
+    const key = item["Translation Keys"];
+    const value = item["Translation"];
+    output[key] = value;
+  }
 
-    return output;
+  return output;
 };
 
 // Right-click > Copy string contents in console

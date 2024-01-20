@@ -7,16 +7,16 @@
 // Pass result into any online JSON to CSV converters like https://www.convertcsv.com/json-to-csv.htm
 
 const generateCSVForTranslation = () => {
-    const input = {}; // the JSON from the file
-    const output = {
-        "Translation Keys": [],
-        "Translation": []
-    };
+  const input = {}; // the JSON from the file
+  const output = {
+    "Translation Keys": [],
+    Translation: [],
+  };
 
-    output.Translation = Object.values(input);
-    output["Translation Keys"] = Object.keys(input);
+  output.Translation = Object.values(input);
+  output["Translation Keys"] = Object.keys(input);
 
-    return output;
+  return output;
 };
 
 // Right-click > Copy string contents in console
