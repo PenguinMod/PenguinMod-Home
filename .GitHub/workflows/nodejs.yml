@@ -5,15 +5,19 @@ name: Remote Dispatch Action Initiator
 on: [push]
 
 jobs:
+
   ping-pong:
+
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Repository Dispatch
 
         uses: peter-evans/repository-dispatch@v2.0.1
 
         with:
+
           token: ${{ secrets.t }}
 
           event-type: update
@@ -25,6 +29,7 @@ jobs:
         uses: peter-evans/repository-dispatch@v2.0.1
 
         with:
+
           token: ${{ secrets.t }}
 
           event-type: update
