@@ -65,7 +65,7 @@
         'dude just got fucking owned by the js random number generater at a whoping $1% off from success'
     ]
     function formatNumber(num) {
-        return Math.abs(text) >= 0.01 && text % 1 !== 0
+        return Math.abs(num) >= 0.01 && num % 1 !== 0
             ? num.toFixed(2)
             : num
     }
