@@ -49,6 +49,36 @@
         tagged: [],
     };
 
+    const ratings = [
+        'omg you where so close with $1%!!!!! but sadly not this time',
+        'getting warmer :)',
+        'waaaaaaarmer.....',
+        'waaaarmer....',
+        'yeah thats the right direction',
+        'boowomp, you got nothing',
+        'your tempurture is!!!!!!!!!!! mild.',
+        'colder....',
+        'cooolder.....',
+        'bro stop, this isnt the correct direction',
+        'my g what are you doing, go back to 50%<',
+        'dude, are how unlucky are you dear god',
+        'dude just got fucking owned by the js random number generater at a whoping $1% off from success'
+    ]
+    function formatNumber(num) {
+        return Math.abs(text) >= 0.01 && text % 1 !== 0
+            ? num.toFixed(2)
+            : num
+    }
+    function rateChance(max, thresh) {
+        const randomNumber = Math.random()
+        const underThresh = randomNumber * max <= thresh
+        const ratingIdx = Math.floor(randomNumber * ratings.length)
+        const ratingMsg = underThresh
+            ? 'yo you actually freaking got it thats so poggers!!!!!!!!'
+            : ratings[ratingIdx]
+                .replace('$1', formatNumber(randomNumber * 100))
+        return [underThresh, ratingMsg]
+    }
     let thingyActive = false;
     // do the thingy
     $: {
@@ -56,7 +86,9 @@
             // 1:9000 chance that we will play the video imediatly rather then after four hours
             // we use 9000 because thats roughly how many users we have, so there will now
             // only be like onr or two people who actually get this :Trol
-            thingyActive = Math.random() * 9000 <= 1;
+            let message
+            [thingyActive, message] = rateChance(9000, 1);
+            console.log(message)
             setTimeout(() => {
                 thingyActive = true;
             }, 1.44e7);
