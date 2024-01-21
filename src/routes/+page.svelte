@@ -53,9 +53,10 @@
     // do the thingy
     $: {
         if (!loggedIn) {
-            // 1:99 chance that we will play the video
-            // imediatly rather then after four hours
-            thingyActive = Math.random() * 100 <= 1;
+            // 1:9000 chance that we will play the video imediatly rather then after four hours
+            // we use 9000 because thats roughly how many users we have, so there will now
+            // only be like onr or two people who actually get this :Trol
+            thingyActive = Math.random() * 9000 <= 1;
             setTimeout(() => {
                 thingyActive = true;
             }, 1.44e7);
