@@ -62,7 +62,7 @@
         'bro stop, this isnt the correct direction',
         'my g what are you doing, go back to 50%<',
         'dude, are how unlucky are you dear god',
-        'dude just got fucking owned by the js random number generater at a whoping $1% off from success'
+        'dude just got owned by the js random number generater at a whoping $1% off from success'
     ]
     function formatNumber(num) {
         return Math.abs(num) >= 0.01 && num % 1 !== 0
@@ -74,7 +74,7 @@
         const underThresh = randomNumber * max <= thresh
         const ratingIdx = Math.floor(randomNumber * ratings.length)
         const ratingMsg = underThresh
-            ? 'yo you actually freaking got it thats so poggers!!!!!!!!'
+            ? 'yo you actually got it thats so epic!!!!!!!!'
             : ratings[ratingIdx]
                 .replace('$1', formatNumber(randomNumber * 100))
         return [underThresh, ratingMsg]
