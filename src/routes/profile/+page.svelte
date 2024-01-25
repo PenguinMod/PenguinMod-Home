@@ -449,6 +449,8 @@
         /https:\/\/cocrea\.world/i,
         /https:\/\/[a-z]+\.getgandi\.com/i,
         /https:\/\/getgandi\.com/i,
+        /https:\/\/[a-z]+\.snail-ide\.com/i,
+        /https:\/\/snail-ide\.com/i,
         /https:\/\/snail-ide\.js\.org/i,
         /https:\/\/snail-ide\.github\.io/i,
         /https:\/\/snail-ide\.vercel\.app/i,
