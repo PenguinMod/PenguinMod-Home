@@ -6,6 +6,7 @@
     import LINK from "../../resources/urls.js";
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
+    import EmojiList from "../../resources/emojis.js";
     const ProjectClient = new ProjectApi();
 
     // Static values
@@ -27,6 +28,7 @@
 
     // Icons
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
+    import SearchSVG from "../../icons/Search/icon.svelte";
 
     import { page } from "$app/stores";
 
@@ -58,6 +60,7 @@
         isBioInappropriate: false,
         isEditingProject: false,
         isProjectEditLoading: false,
+        bioComponent: null,
     };
     let canSendSaveReq = true;
     let canSendEditedProject = true;
@@ -383,6 +386,92 @@
                 isRankingUpMenu = false;
             });
     };
+
+    // EMOJIS eae
+    // EMOJIS eae
+    // EMOJIS eae
+    // EMOJIS eae
+    // EMOJIS eae
+    // EMOJIS eae
+    // EMOJIS eae
+
+    const emojiPickerRandomEmojis = [
+        'angel',
+        'angry',
+        'annoyed',
+        'bigsad',
+        'cute',
+        'disappointed',
+        'happy',
+        'idk',
+        'meh',
+        'salute',
+        'shocked',
+        'sobbing',
+        'worried',
+        'investigate',
+        'grimacing',
+        'confusedthinking',
+        'cool',
+    ];
+    let emojiPickerRandomEmoji = '';
+    let emojiSearchQuery = '';
+    let emojiSearchBar;
+    let lastSelectedFormArea;
+    const pickRandomEmojiPickerDisplay = () => {
+        emojiPickerRandomEmoji = emojiPickerRandomEmojis
+            [Math.round(Math.random() * (emojiPickerRandomEmojis.length - 1))];
+    };
+    pickRandomEmojiPickerDisplay();
+
+    let emojiPickerListUpdate = 0;
+    const allowEmojiDrop = (ev) => {
+        const data = ev.dataTransfer.getData("emoji");
+        if (data && typeof data === 'string') {
+            ev.preventDefault();
+        }
+    }
+    const useEmojiDrag = (ev, name) => {
+        ev.dataTransfer.setData("emoji", name);
+    }
+    const handleEmojiDrop = (ev) => {
+        const data = ev.dataTransfer.getData("emoji");
+        if (data && typeof data === 'string') {
+            ev.dataTransfer.setData("emoji", '');
+            ev.preventDefault();
+        } else {
+            return;
+        }
+
+        ev.toElement.value += `:${data}:`;
+        // force an update
+        if (profileEditingData.bioComponent) {
+            profileEditingData.bio = profileEditingData.bioComponent.value;
+        }
+        if (emojiSearchBar) {
+            emojiSearchQuery = emojiSearchBar.value;
+        }
+        emojiPickerListUpdate++;
+    }
+    const placeEmojiInTextbox = (emoji) => {
+        if (!lastSelectedFormArea) return;
+        lastSelectedFormArea.value += `:${emoji}:`;
+        // force an update
+        if (profileEditingData.bioComponent) {
+            profileEditingData.bio = profileEditingData.bioComponent.value;
+        }
+        if (emojiSearchBar) {
+            emojiSearchQuery = emojiSearchBar.value;
+        }
+        emojiPickerListUpdate++;
+    };
+
+    let emojiPickerOpened = false;
+    onMount(() => {
+        EmojiList.fetch().finally(() => {
+            emojiPickerListUpdate++;
+        });
+    });
 
     // markdown code
     // markdown code
@@ -748,6 +837,84 @@
                 <div class="user-ordering-stats" style="width:90%">
                     <div class="section-user-stats">
                         {#if profileEditingData.isEditingBio}
+                            <div>
+                                <button
+                                    on:mouseenter={pickRandomEmojiPickerDisplay}
+                                    on:click={() => {
+                                        emojiPickerOpened = !emojiPickerOpened;
+                                    }}
+                                    title="Pick an emoji"
+                                    class="emoji-picker-button"
+                                >
+                                    <img
+                                        src={`https://library.penguinmod.com/files/emojis/${emojiPickerRandomEmoji}.png`}
+                                        alt="Emoji"
+                                        title="Pick an emoji"
+                                        on:dragstart={(ev) => {
+                                            useEmojiDrag(ev, emojiPickerRandomEmoji);
+                                        }}
+                                    >
+                                </button>
+                                <div class="emoji-picker-list" data-opened={emojiPickerOpened}>
+                                    <div class="emoji-picker-search-container">
+                                        <div class="emoji-picker-search-icon">
+                                            <SearchSVG
+                                                width="30px"
+                                                height="20px"
+                                                color="#000000"
+                                                scale="2px"
+                                                style="margin-bottom:5px; margin-top: 5px;"
+                                            />
+                                        </div>
+                                        <input
+                                            on:dragover={allowEmojiDrop}
+                                            on:drop={handleEmojiDrop}
+                                            type="text"
+                                            placeholder="..."
+                                            bind:value={emojiSearchQuery}
+                                            bind:this={emojiSearchBar}
+                                        >
+                                    </div>
+                                    <div class="emoji-picker-emoji-container">
+                                        {#key emojiPickerListUpdate}
+                                            {#if EmojiList.loading}
+                                                <LoadingSpinner></LoadingSpinner>
+                                            {:else if EmojiList.failed}
+                                                <p>
+                                                    <LocalizedText
+                                                        text="Unknown error."
+                                                        key="generic.errorsmall"
+                                                        lang={currentLang}
+                                                    />
+                                                </p>
+                                            {:else}
+                                                {#each EmojiList.emojis as emoji}
+                                                    {#if
+                                                        !emojiSearchQuery
+                                                        || String(emoji).includes(
+                                                            emojiSearchQuery
+                                                                .toLowerCase()
+                                                                .replace(/[^a-z]+/gmi, '')
+                                                        )
+                                                    }
+                                                        <button
+                                                            class="emoji-picker-emoji"
+                                                            on:click={() => placeEmojiInTextbox(emoji)}
+                                                        >
+                                                            <img
+                                                                src={`https://library.penguinmod.com/files/emojis/${emoji}.png`}
+                                                                alt={`:${emoji}:`}
+                                                                title={`:${emoji}:`}
+                                                                draggable="false"
+                                                            >
+                                                        </button>
+                                                    {/if}
+                                                {/each}
+                                            {/if}
+                                        {/key}
+                                    </div>
+                                </div>
+                            </div>
                             <div class="profile-bio-sidenotes">
                                 <div class="profile-bio-sidenote">
                                     <img
@@ -840,7 +1007,16 @@
                             {#if profileEditingData.isEditingBio}
                                 <textarea
                                     class="profile-bio-textarea{profileEditingData.isBioInappropriate ? ' profile-bio-textarea-inappropriate' : ''}"
+                                    on:click={() => {
+                                        lastSelectedFormArea = profileEditingData.bioComponent;
+                                    }}
+                                    on:focus={() => {
+                                        lastSelectedFormArea = profileEditingData.bioComponent;
+                                    }}
+                                    bind:this={profileEditingData.bioComponent}
                                     bind:value={profileEditingData.bio}
+                                    on:dragover={allowEmojiDrop}
+                                    on:drop={handleEmojiDrop}
                                 />
                                 {#if profileEditingData.isBioInappropriate}
                                     <div class="profile-bio-warning-inappropriate">
@@ -1179,6 +1355,137 @@
         color: white;
     }
 
+    .emoji-picker-button {
+        position: absolute;
+        left: -72px;
+        top: 0;
+        width: 64px;
+        height: 64px;
+        border-radius: 1024px;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        background: transparent;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    :global(html[dir="rtl"]) .emoji-picker-button {
+        left: initial;
+        right: -72px;
+    }
+    :global(body.dark-mode) .emoji-picker-button {
+        border-color: rgba(255, 255, 255, 0.35);
+    }
+    .emoji-picker-button img {
+        width: 56px;
+        height: 56px;
+        transform: scale(1);
+        transition-duration: 0.5s;
+    }
+    .emoji-picker-button:hover img {
+        transform: scale(1.5);
+        transition-duration: 0.5s;
+    }
+    .emoji-picker-button:active img {
+        filter: brightness(0.7);
+        transition-duration: 0s;
+    }
+    .emoji-picker-list {
+        position: absolute;
+        top: 8px;
+        left: calc(100% + 8px);
+        background: white;
+        width: 320px;
+        height: 100%;
+        display: none;
+        border-radius: 8px;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        z-index: 4999;
+    }
+    :global(html[dir="rtl"]) .emoji-picker-list {
+        left: initial;
+        right: calc(100% + 8px);
+    }
+    :global(body.dark-mode) .emoji-picker-list {
+        border-color: rgba(255, 255, 255, 0.35);
+        background: #111;
+    }
+    @media screen and (max-width: 1105px) {
+        .emoji-picker-list {
+            left: initial;
+            right: initial;
+            top: 100%;
+            width: 100%;
+            height: 320px;
+        }
+        :global(html[dir="rtl"]) .emoji-picker-list {
+            left: initial;
+            right: initial;
+        }
+    }
+    .emoji-picker-list[data-opened="true"] {
+        display: initial;
+    }
+    .emoji-picker-search-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 32px;
+    }
+    .emoji-picker-search-container input {
+        width: calc(100% - 48px);
+        height: 24px;
+        border: 0;
+        padding: 0 4px;
+        margin: 0;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+    :global(body.dark-mode) .emoji-picker-search-container input {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    .emoji-picker-search-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    :global(body.dark-mode) .emoji-picker-search-icon {
+        filter: invert(1);
+    }
+    .emoji-picker-emoji-container {
+        overflow: auto;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        height: calc(100% - 32px);
+    }
+    .emoji-picker-emoji {
+        background: transparent;
+        border: 0;
+        width: 48px;
+        height: 48px;
+        margin: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .emoji-picker-emoji img {
+        width: 48px;
+        height: 48px;
+    }
+    .emoji-picker-emoji:hover {
+        background: rgba(0, 0, 0, 0.15);
+        border-radius: 4px;
+    }
+    :global(body.dark-mode) .emoji-picker-emoji:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
     .section-projects {
         display: flex;
         flex-direction: column;
@@ -1461,7 +1768,7 @@
         z-index: 1000;
         position: absolute;
         padding: 4px 8px;
-        max-width: 27%;
+        max-width: 50%;
         box-shadow: black 0 0 10px;
     }
 
@@ -1471,7 +1778,7 @@
         left: 100%;
         top: 12px;
         padding: 10px 8px;
-        z-index: 3000;
+        z-index: 900;
         background: white;
         border: 1px solid rgba(0, 0, 0, 0.3);
         border-top-right-radius: 4px;
