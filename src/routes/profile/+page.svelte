@@ -1445,6 +1445,7 @@
     }
     :global(body.dark-mode) .emoji-picker-search-container input {
         background: rgba(255, 255, 255, 0.1);
+        color: white;
     }
     .emoji-picker-search-icon {
         width: 32px;
