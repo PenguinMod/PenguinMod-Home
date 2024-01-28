@@ -67,6 +67,10 @@
     let canSendEditedProject = true;
     const saveEditedBio = () => {
         if (!canSendSaveReq) return;
+        if (profileEditingData.bio.length > 2048) {
+            profileEditingData.isBioTooLong = true;
+            return;
+        }
         canSendSaveReq = false;
         profileEditingData.isBioInappropriate = false;
         profileEditingData.isBioTooLong = false;
