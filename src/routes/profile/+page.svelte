@@ -1029,6 +1029,7 @@
                                     bind:value={profileEditingData.bio}
                                     on:dragover={allowEmojiDrop}
                                     on:drop={handleEmojiDrop}
+                                    maxLength="2048"
                                 />
                                 {#if profileEditingData.isBioInappropriate}
                                     <div class="profile-bio-warning-inappropriate">
