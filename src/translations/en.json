@@ -334,6 +334,7 @@
     "profile.featured.title20": "My Animation",
     "profile.bio.title": "About Me",
     "profile.bio.inappropriate": "Your bio contains inappropriate words or websites we don't allow. Please remove them to change your bio.",
+    "profile.bio.length": "Your bio is too long. Please shorten it to change your bio.",
     "profile.bio.warning1": "Don't say your real name",
     "profile.bio.warning2": "Don't say how old you are or when you were born",
     "profile.bio.warning3": "Don't say where you live",
