@@ -58,7 +58,6 @@
         isEditingBio: false,
         isBioEditLoading: false,
         isBioInappropriate: false,
-        isBioTooLong: false,
         isEditingProject: false,
         isProjectEditLoading: false,
         bioComponent: null,
@@ -67,13 +66,8 @@
     let canSendEditedProject = true;
     const saveEditedBio = () => {
         if (!canSendSaveReq) return;
-        if (profileEditingData.bio.length > 2048) {
-            profileEditingData.isBioTooLong = true;
-            return;
-        }
         canSendSaveReq = false;
         profileEditingData.isBioInappropriate = false;
-        profileEditingData.isBioTooLong = false;
         profileEditingData.isBioEditLoading = true;
         ProjectClient.setBio(profileEditingData.bio, user !== loggedInUser, user).then(() => {
             fullProfile.bio = profileEditingData.bio;
@@ -82,13 +76,8 @@
                 renderScratchBlocks();
             }, 0);
         }).catch(err => {
-            switch (err) {
-                case 'IllegalWordsUsed':
-                    profileEditingData.isBioInappropriate = true;
-                    break;
-                case 'BioLengthMustBeLessThan2048Chars':
-                    profileEditingData.isBioTooLong = true;
-                    break;
+            if (err === 'InappropriateWordsUsed') {
+                profileEditingData.isBioInappropriate = true;
             }
             console.log(err)
         }).finally(() => {
@@ -1018,7 +1007,7 @@
                         <div class="profile-bio">
                             {#if profileEditingData.isEditingBio}
                                 <textarea
-                                    class="profile-bio-textarea{profileEditingData.isBioInappropriate || profileEditingData.isBioTooLong ? ' profile-bio-textarea-inappropriate' : ''}"
+                                    class="profile-bio-textarea{profileEditingData.isBioInappropriate ? ' profile-bio-textarea-inappropriate' : ''}"
                                     on:click={() => {
                                         lastSelectedFormArea = profileEditingData.bioComponent;
                                     }}
@@ -1036,15 +1025,6 @@
                                         <LocalizedText
                                             text="Your bio contains inappropriate words or websites we don't allow. Please remove them to change your bio."
                                             key="profile.bio.inappropriate"
-                                            dontlink={true}
-                                            lang={currentLang}
-                                        />
-                                    </div>
-                                {:else if profileEditingData.isBioTooLong}
-                                    <div class="profile-bio-warning-inappropriate">
-                                        <LocalizedText
-                                            text="Your bio is too long. Please shorten it to change your bio."
-                                            key="profile.bio.length"
                                             dontlink={true}
                                             lang={currentLang}
                                         />
