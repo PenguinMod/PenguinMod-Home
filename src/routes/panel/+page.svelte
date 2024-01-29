@@ -242,6 +242,16 @@
     //         });
     // }
 
+    const filterJSONStuff = {
+        text: ''
+    };
+    filterJSONStuff.get = async () => {
+        filterJSONStuff.text = JSON.stringify(await ProjectClient.getProfanityFilter(), null, 4);
+    };
+    filterJSONStuff.set = (data) => {
+        ProjectClient.setProfanityFilter(data);
+    };
+
     let inspectMenuOpen = false;
     const inspectMenuDetails = {
         downloading: false,
@@ -978,12 +988,6 @@
                 </div>
             </div>
 
-            <div class="card">
-                <h2>Server Stats</h2>
-                {#each serverStats as stat}
-                    <p>{stat}</p>
-                {/each}
-            </div>
             <br/>
 
             <p>
@@ -996,6 +1000,14 @@
                 </a>
             </p>
 
+            <br />
+            
+            <div class="card">
+                <h2>Server Stats</h2>
+                {#each serverStats as stat}
+                    <p>{stat}</p>
+                {/each}
+            </div>
             <br />
 
             <div class="card">
@@ -1183,6 +1195,30 @@
                     </Button>
                 </div>
             </div>
+            
+            <br/>
+            <div class="card">
+                <h2>Profanity Filter JSON</h2>
+                <textarea bind:value={filterJSONStuff.text}></textarea>
+                <br />
+                <div class="user-action-row">
+                    <Button color="remix" on:click={filterJSONStuff.get}>
+                        Load Current Filter JSON
+                    </Button>
+                    <Button on:click={() => {
+                        let json = {};
+                        try {
+                            json = JSON.parse(filterJSONStuff.text);
+                        } catch {
+                            json = {};
+                        }
+                        filterJSONStuff.set(json);
+                    }}>
+                        Update Filter
+                    </Button>
+                </div>
+            </div>
+            <br/>
 
             <Button on:click={() => setGetProjects(false)} color="red"
                 >Disable Getting Projects</Button

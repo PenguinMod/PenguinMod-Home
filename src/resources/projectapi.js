@@ -638,6 +638,55 @@ class ProjectApi {
                 });
         })
     }
+    getProfanityFilter() {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/users/getProfanityList?user=${this.username}&passcode=${this.privateCode}`;
+            fetch(url)
+                .then((res) => {
+                    res.json().then(json => {
+                        if (!res.ok) {
+                            reject(json.error);
+                            return;
+                        }
+                        resolve(json);
+                    }).catch(err => {
+                        reject(err);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+    setProfanityFilter(newData) {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/users/setProfanityList`;
+            const data = {
+                user: this.username,
+                passcode: this.privateCode,
+                json: newData
+            };
+            fetch(url, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            })
+                .then((res) => {
+                    res.json().then(json => {
+                        if (!res.ok) {
+                            reject(json.error);
+                            return;
+                        }
+                        resolve();
+                    }).catch(err => {
+                        reject(err);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
     setUserBadges(target, badges) {
         return new Promise((resolve, reject) => {
             const data = {
