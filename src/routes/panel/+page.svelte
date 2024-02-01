@@ -1314,6 +1314,7 @@
                                     {#if !reportDetails[content.username]}
                                         <LoadingSpinner />
                                     {:else}
+                                        <a href={`https://penguinmod.com/profile?user=${content.username}`}>go to profile</a>
                                         <h3>View reports by</h3>
                                         {#each reportDetails[content.username] as report}
                                             <details>
