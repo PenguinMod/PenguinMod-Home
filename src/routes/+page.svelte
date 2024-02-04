@@ -50,34 +50,34 @@
     };
 
     const ratings = [
-        'omg you where so close with $1%!!!!! but sadly not this time',
-        'getting warmer :)',
-        'waaaaaaarmer.....',
-        'waaaarmer....',
-        'yeah thats the right direction',
-        'boowomp, you got nothing',
-        'your tempurture is!!!!!!!!!!! mild.',
-        'colder....',
-        'cooolder.....',
-        'bro stop, this isnt the correct direction',
-        'my g what are you doing, go back to 50%<',
-        'dude, are how unlucky are you dear god',
-        'dude just got owned by the js random number generater at a whoping $1% off from success'
-    ]
+        "omg you where so close with $1%!!!!! but sadly not this time",
+        "getting warmer :)",
+        "waaaaaaarmer.....",
+        "waaaarmer....",
+        "yeah thats the right direction",
+        "boowomp, you got nothing",
+        "your tempurture is!!!!!!!!!!! mild.",
+        "colder....",
+        "cooolder.....",
+        "bro stop, this isnt the correct direction",
+        "my g what are you doing, go back to 50%<",
+        "dude, are how unlucky are you dear god",
+        "dude just got owned by the js random number generater at a whoping $1% off from success",
+    ];
     function formatNumber(num) {
-        return Math.abs(num) >= 0.01 && num % 1 !== 0
-            ? num.toFixed(2)
-            : num
+        return Math.abs(num) >= 0.01 && num % 1 !== 0 ? num.toFixed(2) : num;
     }
     function rateChance(max, thresh) {
-        const randomNumber = Math.random()
-        const underThresh = randomNumber * max <= thresh
-        const ratingIdx = Math.floor(randomNumber * ratings.length)
+        const randomNumber = Math.random();
+        const underThresh = randomNumber * max <= thresh;
+        const ratingIdx = Math.floor(randomNumber * ratings.length);
         const ratingMsg = underThresh
-            ? 'yo you actually got it thats so epic!!!!!!!!'
-            : ratings[ratingIdx]
-                .replace('$1', formatNumber(randomNumber * 100))
-        return [underThresh, ratingMsg]
+            ? "yo you actually got it thats so epic!!!!!!!!"
+            : ratings[ratingIdx].replace(
+                  "$1",
+                  formatNumber(randomNumber * 100),
+              );
+        return [underThresh, ratingMsg];
     }
     let thingyActive = false;
     // do the thingy
@@ -86,9 +86,9 @@
             // 1:9000 chance that we will play the video imediatly rather then after four hours
             // we use 9000 because thats roughly how many users we have, so there will now
             // only be like onr or two people who actually get this :Trol
-            let message
+            let message;
             [thingyActive, message] = rateChance(9000, 1);
-            console.log(message)
+            console.log(message);
             setTimeout(() => {
                 thingyActive = true;
             }, 1.44e7);
@@ -107,7 +107,7 @@
             case "follow":
                 return TranslationHandler.text(
                     "feed.following",
-                    currentLang
+                    currentLang,
                 ).replace("$1", author);
             case "upload":
                 return TranslationHandler.text("feed.uploaded", currentLang)
@@ -120,7 +120,7 @@
             case "posted":
                 return TranslationHandler.text(
                     "feed.posted",
-                    currentLang
+                    currentLang,
                 ).replace("$1", author);
         }
     };
@@ -166,7 +166,7 @@
         });
 
         ProjectApi.getFrontPage()
-            .then(results => {
+            .then((results) => {
                 projects.today = results.latest;
                 projects.featured = results.featured;
                 projects.liked = results.liked;
@@ -267,11 +267,17 @@
     <title>JoeMod - Home</title>
     <meta name="title" content="JoeMod - Home" />
     <meta property="og:title" content="JoeMod - Home" />
-    <meta property="twitter:title" content="JoeMod - Home">
-    <meta name="description" content="The area where featured projects and community stuff & info is shown.">
-    <meta property="twitter:description" content="The area where featured projects and community stuff & info is shown.">
-    <meta property="og:url" content="https://joemod.vercel.app/">
-    <meta property="twitter:url" content="https://joemod.vercel.app/">
+    <meta property="twitter:title" content="JoeMod - Home" />
+    <meta
+        name="description"
+        content="The area where featured projects and community stuff & info is shown."
+    />
+    <meta
+        property="twitter:description"
+        content="The area where featured projects and community stuff & info is shown."
+    />
+    <meta property="og:url" content="https://joemod.vercel.app/" />
+    <meta property="twitter:url" content="https://joemod.vercel.app/" />
 </svelte:head>
 
 <NavigationBar />
@@ -368,21 +374,21 @@
             </div>
         {/if}
 
-            <Button link={LINK.packager}>
-                <LocalizedText
-                    text="Packager"
-                    key="home.footer.sections.website.packager"
-                    lang={currentLang}
-                />
-            </Button>
-            <Button link={LINK.credits}>
-                <LocalizedText
-                    text="Credits"
-                    key="home.footer.sections.website.credits"
-                    lang={currentLang}
-                />
-            </Button>
-            <!--
+        <Button link={LINK.packager}>
+            <LocalizedText
+                text="Packager"
+                key="home.footer.sections.website.packager"
+                lang={currentLang}
+            />
+        </Button>
+        <Button link={LINK.credits}>
+            <LocalizedText
+                text="Credits"
+                key="home.footer.sections.website.credits"
+                lang={currentLang}
+            />
+        </Button>
+        <!--
             <Button link={"/donate"}>
                 <LocalizedText
                     text="Donate"
@@ -391,8 +397,8 @@
                 />
             </Button>
             -->
-            <Button label="GitHub" link={LINK.github} />
-            <!--
+        <Button label="GitHub" link={LINK.github} />
+        <!--
             <Button link={LINK.wiki}>
                 <LocalizedText
                     text="Community Wiki"
@@ -402,61 +408,56 @@
             </Button>
             -->
     {/if}
-        
+
     {#if isLiveTests && vrIsSupported}
-        <button
-            class="vr-test-button"
-            on:click={vr_openSession}
-        >
+        <button class="vr-test-button" on:click={vr_openSession}>
             Enter VR
         </button>
     {/if}
 
-<h1> no projects for now! </h1>
-<p> maybe in the future if i can get servers :skul: </p>
-            <div class="footer-section">
-                <p>
-                    <LocalizedText
-                        text="Info"
-                        key="home.footer.sections.info"
-                        lang={currentLang}
-                    />
-                </p>
-                <a href={LINK.terms}>
-                    <LocalizedText
-                        text="Terms of Service"
-                        key="home.footer.sections.info.terms"
-                        lang={currentLang}
-                    />
-                </a>
-                <a href={LINK.privacy}>
-                    <LocalizedText
-                        text="Privacy Policy"
-                        key="home.footer.sections.info.privacy"
-                        lang={currentLang}
-                    />
-                </a>
-                <a target="_blank" href={"/guidelines/uploading"}>
-                    <LocalizedText
-                        text="Uploading Guidelines"
-                        key="home.footer.sections.info.guidelines"
-                        lang={currentLang}
-                    />
-                </a>
-            </div>
-            <div class="footer-section">
-                <p>
-                    <LocalizedText
-                        text="Donate"
-                        key="home.footer.sections.donate"
-                        lang={currentLang}
-                    />
-                </p>
-                <a href={"/donate"}>JoeMod</a>
-                <a target="_blank" href={LINK.donate.turbowarp}>TurboWarp</a>
-                <a target="_blank" href={LINK.donate.scratch}>Scratch</a>
-            </div>
-        </div>
+    <h1>no projects for now!</h1>
+    <p>maybe in the future if i can get servers :skul:</p>
+    <div class="footer-section">
+        <p>
+            <LocalizedText
+                text="Info"
+                key="home.footer.sections.info"
+                lang={currentLang}
+            />
+        </p>
+        <a href={LINK.terms}>
+            <LocalizedText
+                text="Terms of Service"
+                key="home.footer.sections.info.terms"
+                lang={currentLang}
+            />
+        </a>
+        <a href={LINK.privacy}>
+            <LocalizedText
+                text="Privacy Policy"
+                key="home.footer.sections.info.privacy"
+                lang={currentLang}
+            />
+        </a>
+        <a target="_blank" href={"/guidelines/uploading"}>
+            <LocalizedText
+                text="Uploading Guidelines"
+                key="home.footer.sections.info.guidelines"
+                lang={currentLang}
+            />
+        </a>
+    </div>
+    <div class="footer-section">
+        <p>
+            <LocalizedText
+                text="Donate"
+                key="home.footer.sections.donate"
+                lang={currentLang}
+            />
+        </p>
+        <a href={"/donate"}>JoeMod</a>
+        <a target="_blank" href={LINK.donate.turbowarp}>TurboWarp</a>
+        <a target="_blank" href={LINK.donate.scratch}>Scratch</a>
     </div>
 </div>
 
@@ -634,14 +635,15 @@
     .welcome-back-button:active .welcome-back-icon-container {
         background: rgba(0, 0, 0, 0.2);
     }
-    .welcome-back-row >
-    a:first-child .welcome-back-icon-container {
+    .welcome-back-row > a:first-child .welcome-back-icon-container {
         border-top-left-radius: 36px;
         border-bottom-left-radius: 36px;
         padding-left: 8px;
     }
-    :global(html[dir="rtl"]) .welcome-back-row >
-    a:first-child .welcome-back-icon-container {
+    :global(html[dir="rtl"])
+        .welcome-back-row
+        > a:first-child
+        .welcome-back-icon-container {
         border-top-left-radius: initial;
         border-bottom-left-radius: initial;
         padding-left: initial;
@@ -649,14 +651,15 @@
         border-bottom-right-radius: 36px;
         padding-right: 8px;
     }
-    .welcome-back-row >
-    a:last-child .welcome-back-icon-container {
+    .welcome-back-row > a:last-child .welcome-back-icon-container {
         border-top-right-radius: 36px;
         border-bottom-right-radius: 36px;
         padding-right: 8px;
     }
-    :global(html[dir="rtl"]) .welcome-back-row >
-    a:last-child .welcome-back-icon-container {
+    :global(html[dir="rtl"])
+        .welcome-back-row
+        > a:last-child
+        .welcome-back-icon-container {
         border-top-right-radius: initial;
         border-bottom-right-radius: initial;
         padding-right: initial;
