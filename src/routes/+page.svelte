@@ -414,27 +414,8 @@
         </button>
     {/if}
 
-    {#if langDecided && currentLang != "en" && loggedIn !== false}
-        <div class="section-language-warning">
-            <img
-                src="/warning.png"
-                draggable="false"
-                style="height: 24px; margin-right: 6px"
-                alt="Warning"
-            />
-            <p>
-                <LocalizedText
-                    text="JoeMod is made by English-speaking developers. Expect minor issues and sorry for any translation errors."
-                    key="translation.warning"
-                    lang={currentLang}
-                />
-            </p>
-        </div>
-    {/if}
-
 <h1> no projects for now! </h1>
 <p> maybe in the future if i can get servers :skul: </p>
-            </div>
             <div class="footer-section">
                 <p>
                     <LocalizedText
