@@ -368,7 +368,6 @@
             </div>
         {/if}
 
-        <div class="section-links">
             <Button link={LINK.packager}>
                 <LocalizedText
                     text="Packager"
@@ -402,7 +401,6 @@
                 />
             </Button>
             -->
-        </div>
     {/if}
         
     {#if isLiveTests && vrIsSupported}
