@@ -24,6 +24,7 @@
 
     let loggedIn = null;
     let projectIdSelection;
+    let serverStats = []
 
     function kickOut() {
         location.href = location.origin + "/bx-tv1.mp4";
@@ -36,6 +37,21 @@
             kickOut();
             return;
         }
+        ProjectApi.getServerInfo()
+            .then((stats) => {
+                serverStats.push(`is new: ${stats.new ? 'yes' : 'no'}`)
+                delete stats.new
+                serverStats.push(`next read: ${new Date(stats.nextRead).getMinutes() - new Date().getMinutes()}mins`)
+                delete stats.nextRead
+                serverStats.push(`memory usage: ${(stats.totalMem - stats.freeMem) / stats.totalMem}`)
+                for (const name in stats) {
+                    serverStats.push(`${name}: ${stats[name]}`)
+                }
+                serverStats = serverStats
+            })
+            .catch((err) => {
+                console.error(err);
+            });
         Authentication.usernameFromCode(privateCode)
             .then(({ username, isAdmin, isApprover }) => {
                 if (username) {
@@ -73,6 +89,12 @@
     let selectedReportDetailed = -1;
     let reportDetails = Object.create({});
 
+    const guidelinesNotifs = {
+        tos: false,
+        pp: false,
+        ug: false
+    };
+
     const loadReportDetails = (id) => {
         let type = "user";
         if (dropdownSelectMenu.value === "project") {
@@ -90,6 +112,17 @@
     const setGetProjects = (allowGetProjects) => {
         if (!confirm("Are you sure?")) return;
         ProjectClient.setErrorAllGetProjects(allowGetProjects)
+            .then(() => {
+                alert("done");
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(err);
+            });
+    };
+    const setUploadProjects = (allowUploadProjects) => {
+        if (!confirm("Are you sure?")) return;
+        ProjectClient.setErrorAllUploadProjects(allowUploadProjects)
             .then(() => {
                 alert("done");
             })
@@ -127,7 +160,7 @@
 
     function openMenu(type) {
         ProjectClient.getTypeWithReports(type).then((projectsWithReports) => {
-            contentWithReports = projectsWithReports.filter(content => content.exists);
+            contentWithReports = projectsWithReports.filter(content => content.exists ?? true);
         });
         // get approved projects anyways cuz we need to update list
         // todo: getProjects is paged breh what we do?
@@ -208,6 +241,16 @@
     //             alert(err);
     //         });
     // }
+
+    const filterJSONStuff = {
+        text: ''
+    };
+    filterJSONStuff.get = async () => {
+        filterJSONStuff.text = JSON.stringify(await ProjectClient.getProfanityFilter(), null, 4);
+    };
+    filterJSONStuff.set = (data) => {
+        ProjectClient.setProfanityFilter(data);
+    };
 
     let inspectMenuOpen = false;
     const inspectMenuDetails = {
@@ -305,6 +348,26 @@
             messageReplyInfo.id = "";
             messageReplyInfo.text = "";
         });
+    };
+    const sendGuidelinesNotifs = () => {
+        const notifs = [];
+        if (guidelinesNotifs.tos) {
+            notifs.push('terms');
+        }
+        if (guidelinesNotifs.pp) {
+            notifs.push('privacy');
+        }
+        if (guidelinesNotifs.ug) {
+            notifs.push('uploadingguidelines');
+        }
+        if (notifs.length <= 0) return alert("No notifs were selected!");
+        const confirmed = prompt('Are you sure you want to notify ALL users of the site?\nType "ok" to confirm.');
+        if (confirmed !== 'ok') return;
+        for (const notif of notifs) {
+            ProjectClient.addMessage('guidelines', null, {
+                section: notif
+            });
+        }
     };
 
     let rejectedProjectId = 0;
@@ -445,6 +508,19 @@
                 alert(`Failed to moddify users permissions; ${err}`);
             });
     };
+
+    let showUserPerms = false
+    let admins = []
+    let mods = []
+    const loadUserPerms = () => ProjectClient.getAllPermitedUsers()
+        .then(users => {
+            admins = users.admins
+            mods = users.mods
+        })
+        .catch((err) => {
+            console.error(err);
+            alert(`Failed to get permited users; ${err}`);
+        });
 </script>
 
 <svelte:head>
@@ -523,6 +599,15 @@
                                         ])}
                                 >
                                     Remix is an exact copy
+                                </Button>
+                                <Button
+                                    color="gray"
+                                    on:click={(rejectingTextboxArea.value =
+                                        QuickReject["Spam"][
+                                            "Iframe only"
+                                        ])}
+                                >
+                                    Iframe only
                                 </Button>
                             </div>
                         </div>
@@ -903,6 +988,8 @@
                 </div>
             </div>
 
+            <br/>
+
             <p>
                 <a
                     class="guidelines-link"
@@ -913,6 +1000,14 @@
                 </a>
             </p>
 
+            <br />
+            
+            <div class="card">
+                <h2>Server Stats</h2>
+                {#each serverStats as stat}
+                    <p>{stat}</p>
+                {/each}
+            </div>
             <br />
 
             <div class="card">
@@ -946,12 +1041,61 @@
                         Send
                     </Button>
                 </div>
+                <br />
+                <br />
+                <br />
+                <br />
+                <h3>Guidelines</h3>
+                <p>Send update notifications for TOS, Privacy Policy, or Uploading Guidelines.</p>
+                <p>Will send to all users on the website.</p>
+                <br />
+                <br />
+                <label>
+                    <input
+                        type="checkbox"
+                        bind:checked={guidelinesNotifs.tos}
+                    />
+                    Terms of Service
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        bind:checked={guidelinesNotifs.pp}
+                    />
+                    Privacy Policy
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        bind:checked={guidelinesNotifs.ug}
+                    />
+                    Uploading Guidelines
+                </label>
+                <br />
+                <br />
+                <div class="user-action-row">
+                    <Button color="green" on:click={sendGuidelinesNotifs}>
+                        Send Guidelines Update
+                    </Button>
+                </div>
             </div>
 
             <br />
 
             <div class="card">
                 <h2 style="margin-block-start:0">Users</h2>
+                <Button on:click={loadUserPerms}>Load Permited Users</Button>
+                {#if showUserPerms}
+                    <h3>admins</h3>
+                    {#each admins as adminName}
+                        <p>{adminName}</p>
+                    {/each}
+                    <h3>mods</h3>
+                    {#each mods as modName}
+                        <p>{modName}</p>
+                    {/each}
+                {/if}
+                <Button on:click={() => showUserPerms = !showUserPerms}>{showUserPerms ? 'Hide' : 'Show'} Permited Users</Button>
                 <p>Type username:</p>
                 <input
                     type="text"
@@ -1051,12 +1195,42 @@
                     </Button>
                 </div>
             </div>
+            
+            <br/>
+            <div class="card">
+                <h2>Profanity Filter JSON</h2>
+                <textarea bind:value={filterJSONStuff.text}></textarea>
+                <br />
+                <div class="user-action-row">
+                    <Button color="remix" on:click={filterJSONStuff.get}>
+                        Load Current Filter JSON
+                    </Button>
+                    <Button on:click={() => {
+                        let json = {};
+                        try {
+                            json = JSON.parse(filterJSONStuff.text);
+                        } catch {
+                            json = {};
+                        }
+                        filterJSONStuff.set(json);
+                    }}>
+                        Update Filter
+                    </Button>
+                </div>
+            </div>
+            <br/>
 
             <Button on:click={() => setGetProjects(false)} color="red"
                 >Disable Getting Projects</Button
             >
             <Button on:click={() => setGetProjects(true)} color="remix"
                 >Enable Getting Projects</Button
+            >
+            <Button on:click={() => setUploadProjects(false)} color="red"
+                >Disable Uploading Projects</Button
+            >
+            <Button on:click={() => setUploadProjects(true)} color="remix"
+                >Enable Uploading Projects</Button
             >
 
             <br />
@@ -1140,6 +1314,7 @@
                                     {#if !reportDetails[content.username]}
                                         <LoadingSpinner />
                                     {:else}
+                                        <a href={`https://penguinmod.com/profile?user=${content.username}`} target=”_blank”>go to profile</a>
                                         <h3>View reports by</h3>
                                         {#each reportDetails[content.username] as report}
                                             <details>
@@ -1434,12 +1609,6 @@
         width: 95%;
         height: 89.25%;
     }
-    .only-in-dark-mode {
-        display: none;
-    }
-    :global(body.dark-mode) .only-in-dark-mode {
-        display: inline;
-    }
     :global(body.dark-mode) .card-page {
         background: #1f1f1f;
     }
@@ -1483,14 +1652,6 @@
         filter: initial;
     }
 
-    .nomargintext {
-        margin-block: 0;
-    }
-    .date {
-        opacity: 0.5;
-        font-size: 12px;
-    }
-
     .guidelines-link {
         background: transparent;
         border: 0;
@@ -1498,9 +1659,5 @@
         text-decoration: underline;
         cursor: pointer;
         margin-top: 16px;
-    }
-    iframe {
-        width: 100%;
-        border: 0;
     }
 </style>

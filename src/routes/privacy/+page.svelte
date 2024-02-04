@@ -42,7 +42,7 @@ Language.onChange((lang) => {
 
     <main>
         <!-- UPDATE THIS WHEN MAKING CONTENT CHANGES -->
-        <p><i>Updated November 27th, 2023 at 11:44 PM (Mountain Time)</i></p>
+        <p><i>Updated January 13th, 2024 (Mountain Time)</i></p>
 
         <!-- some things are intentionally not formatted as they are in the HTML file on the website -->
         <p>
@@ -67,6 +67,7 @@ Language.onChange((lang) => {
         <p>
             A "Project Moderator" is a person who has the ability to remove projects or content from those projects,
             and reply or send messages to users who had moderation actions happen towards their project or account.
+            These users may also be able to edit profile information about another user.
             <br><br>
             These people can contact Administrators aswell, and may have extra permissions such as banning users.
         </p>
@@ -77,13 +78,17 @@ Language.onChange((lang) => {
                 how many people use the site,
                 how often a feature is used,
                 what operating system and browser is used,
+                how much user content is on the site,
                 and diagnostic information such as cache hit ratios.
         </p>
         <p>
-            When using the website, your IP may be logged temporarily, but never permanently, (deleted after a server restart or update).
-            This is to help us identify users who may be spamming or attacking the site. Your IP is only saved if you are blocked from the project servers.
+            When using the website, your IP will be logged and stored to your account's name if you log in.
+            This is to help us identify users who may be spamming or attacking the site.
             <br>
-            Your IP may also be logged temporarily when viewing a project, along with information about the project you viewed.
+            Your IP will also be stored temporarily when viewing a project, along with information about the project you viewed being logged temporarily.
+            <br>
+            <br>
+            This temporary amount of time will be around 1 week, and this applies to all "temporarily stored" content listed here.
         </p>
 
         <h2>Advertisments</h2>
@@ -96,7 +101,7 @@ Language.onChange((lang) => {
             <li><a href="http://www.google.com/policies/privacy/partners/">How Google uses data when you use our partners' sites or apps</a></li>
         </ul>
         
-        <h2>Project Sharing & Accounts</h2>
+        <h2>Project Sharing & Accounts/Profiles</h2>
         <p>
             Accounts are logged into using <a href="https://auth.itinerary.eu.org/">Scratch Auth</a>,
             which requires you to have a <a href="https://scratch.mit.edu/">Scratch</a> account.
@@ -113,12 +118,14 @@ Language.onChange((lang) => {
             or create data to be attached to your username.
         </p>
         <p>
-            When using our Project Sharing:
+            When using our Services:
         </p>
         <ul>
             <li>any projects uploaded will have their project name logged</li>
             <li>any projects uploaded are publicly viewable (including unapproved projects if you have the URL to them)</li>
+            <li>any profile info you set (bio/about me, featured project) is publicly viewable to all users, unless stated otherwise</li>
             <li>any projects uploaded can be modified by admins or hosts of the service in any way (project image, project name, project code, etc.)</li>
+            <li>any profile info you set can be modified by admins or hosts of the service in any way (profile about me, etc.)</li>
         </ul>
         <p>
             Uploaded projects will be publicly visible to all users on the website.
@@ -212,6 +219,43 @@ Language.onChange((lang) => {
             Better Storage can also access any info that Scratch Auth can.
             The owner of Better Storage may also view any saved data using their keys for security and safety.
         </p>
+        <h4>User-submitted (RubyDevs) - TurboWeather</h4>
+        <p>
+            TurboWeather uses Browser APIs to geolocate the user.
+            <br>
+            PenguinMod will ask the user to confirm this action before the extension attempts to do this.
+            <br>
+            <br>
+            PenguinMod will not ask the user to confirm this action if the project is compiled using
+            <a href="https://studio.penguinmod.com/PenguinMod-Packager/">the PenguinMod packager.</a>
+            <br>
+            In this case it is up to the user's browser to prompt the user if they would like to allow the website
+            to access their location.
+        </p>
+        <p>
+            The Ruby Developer team promises that they do not store or keep your location data in any way when using the extension.
+            <br>
+            TurboWeather does however connect to third-party services to get user information that may store your info:
+        </p>
+        <ul>
+            <li><a href="https://open-meteo.com/en/terms">OpenMeteo - Terms of Service</a></li>
+            <li><a href="https://osmfoundation.org/wiki/Privacy_Policy">OpenStreetMap - Privacy Policy</a></li>
+        </ul>
+        <p>
+            When using the extension, third-party services may be able to access:</p>
+            <ul>
+                <li>your IP address</li>
+                <li>your general location</li>
+                <li>info about your location (weather, temperature)</li>
+            </ul>
+            <p>
+            TurboWeather does make efforts to avoid returning private info, such as:
+        </p>
+        <ul>
+            <li>latitude and longitude</li>
+            <li>specifically chosen or user coordinates (provided for geolocation)</li>
+            <li>any other info returned by the third-party services that may be used to find the user in real life</li>
+        </ul>
 
         <h2>Contact</h2>
 

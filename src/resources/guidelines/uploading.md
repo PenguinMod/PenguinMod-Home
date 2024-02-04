@@ -24,14 +24,13 @@ If you keep uploading the same project multiple times, you may not be able to po
 ## Projects uploaded that were shared on Scratch (Scratch Reuploads)
 If you are just taking a Scratch project that was shared on Scratch and uploading it onto PenguinMod, please note the following:
 
-- The PenguinMod version must have a change in the code (ex: changing a costume would not be enough)
-- The code change should be meaningful (ex: a bug fix not in the Scratch version wouldn't count as a meaningful change)
+- You must own the project you are reuploading. Reuploading other user's projects is not allowed as of January 27th, 2024.
+- If you are given permission to reupload another user's project, please include proof in the project's notes.
 
-This means like something extra should have been added, or something important in the project was changed like a gameplay difference or added difficulty.
+Moderators may remove your project if you reupload other people's projects without their permission.
 
-If you are not following any of the above changes:
-- The PenguinMod project has to be a devlog or small message about the project you are planning to upload with PenguinMod-specific changes
-- The PenguinMod project can have changes planned later (in this case, the above rules would be considered after you have updated the project)
+The original creators of the project have the right to remove your PenguinMod reupload if they report the project.
+This is also true even if you have stated you have permission to reupload the project by the original creator.
 
 ## PenguinMod Forks / Mods
 If your project only works outside of PenguinMod, don't upload it to our site.

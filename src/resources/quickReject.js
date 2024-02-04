@@ -4,6 +4,7 @@ const data = {
         "Repost": "Your project was rejected because you uploaded a project that is the same as one you have published before. Please update the original project instead in your My Stuff page.",
         "Repost after Rejection": "Your project was rejected because it is the exact same as your previously rejected project. Please remove any material that broke the Project Uploading Guidelines, or if you believe the project did not break the guidelines, please reply to the original message with your reason.",
         "Remix is an exact copy": "Your remix was rejected because it adds little to no new content or changes to the project. Please only remix a project if you are going to make changes to the project.",
+        "Iframe only": "Your project has been removed because it is only an iframe. We do not allow projects that are only iframes on penguinmod. Read the project uploading guidelines for more information."
     },
     "Scratch Reupload": "Your project was rejected because it is the same as the version you uploaded to Scratch. Please add more content or plan to add some unique features to PenguinMod.",
     "Breaks or disables aspects of the site": "Your project was rejected because it disables or breaks access to parts of the page. This can be abused to force the user to do or watch something, so your project has been removed.",

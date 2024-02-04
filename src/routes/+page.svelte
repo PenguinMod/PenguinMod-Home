@@ -43,15 +43,52 @@
     let projects = {
         today: [],
         featured: [],
+        liked: [],
+        voted: [],
+        viewed: [],
+        tagged: [],
     };
 
+    const ratings = [
+        'omg you where so close with $1%!!!!! but sadly not this time',
+        'getting warmer :)',
+        'waaaaaaarmer.....',
+        'waaaarmer....',
+        'yeah thats the right direction',
+        'boowomp, you got nothing',
+        'your tempurture is!!!!!!!!!!! mild.',
+        'colder....',
+        'cooolder.....',
+        'bro stop, this isnt the correct direction',
+        'my g what are you doing, go back to 50%<',
+        'dude, are how unlucky are you dear god',
+        'dude just got owned by the js random number generater at a whoping $1% off from success'
+    ]
+    function formatNumber(num) {
+        return Math.abs(num) >= 0.01 && num % 1 !== 0
+            ? num.toFixed(2)
+            : num
+    }
+    function rateChance(max, thresh) {
+        const randomNumber = Math.random()
+        const underThresh = randomNumber * max <= thresh
+        const ratingIdx = Math.floor(randomNumber * ratings.length)
+        const ratingMsg = underThresh
+            ? 'yo you actually got it thats so epic!!!!!!!!'
+            : ratings[ratingIdx]
+                .replace('$1', formatNumber(randomNumber * 100))
+        return [underThresh, ratingMsg]
+    }
     let thingyActive = false;
     // do the thingy
     $: {
         if (!loggedIn) {
-            // 1:99 chance that we will play the video
-            // imediatly rather then after four hours
-            thingyActive = Math.random() * 100 <= 1;
+            // 1:9000 chance that we will play the video imediatly rather then after four hours
+            // we use 9000 because thats roughly how many users we have, so there will now
+            // only be like onr or two people who actually get this :Trol
+            let message
+            [thingyActive, message] = rateChance(9000, 1);
+            console.log(message)
             setTimeout(() => {
                 thingyActive = true;
             }, 1.44e7);
@@ -99,6 +136,7 @@
         }
     };
 
+    let tagForProjects = "";
     onMount(async () => {
         const projectId = Number(location.hash.replace("#", ""));
         if (!isNaN(projectId) && projectId != 0) {
@@ -127,12 +165,15 @@
             });
         });
 
-        ProjectApi.getMaxProjects(15, false, true).then((projs) => {
-            projects.today = projs;
-        });
-        ProjectApi.getMaxProjects(15, true, false)
-            .then((projs) => {
-                projects.featured = projs;
+        ProjectApi.getFrontPage()
+            .then(results => {
+                projects.today = results.latest;
+                projects.featured = results.featured;
+                projects.liked = results.liked;
+                projects.voted = results.voted;
+                projects.viewed = results.viewed;
+                projects.tagged = results.tagged;
+                tagForProjects = results.selectedTag;
                 projectsLoaded = true;
             })
             .catch(() => {
@@ -250,7 +291,7 @@
         buttonText={"Donate"}
         buttonHref={"/donate"}
     />
-    <!-- TODO: re-add this, but only have it appear for new users after they login on a date before the alert -->
+    <!-- TODO: should we remove this? -->
     <!-- <Alert
         onlyShowID={"privacee:_1"}
         text={"Our privacy policy has been updated."}
@@ -737,10 +778,99 @@
         </ContentCategory>
         <ContentCategory
             header={TranslationHandler.text(
+                "home.sections.mostliked",
+                currentLang
+            )}
+            seemore={`/search?q=sort%3Alikes%20featured%3Aexclude`}
+            style="width:65%;"
+            stylec="height: 244px;"
+        >
+            <div class="project-list">
+                {#if projects.liked.length > 0}
+                    {#each projects.liked as project}
+                        <Project {...project} />
+                    {/each}
+                {:else if projectsFailed === true}
+                    <div
+                        style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                    >
+                        <img
+                            src="/penguins/server.svg"
+                            alt="Server Penguin"
+                            style="width: 15rem"
+                        />
+                        <p>
+                            <LocalizedText
+                                text="Whoops! Our server's having some problems. Try again later."
+                                key="home.server.error"
+                                lang={currentLang}
+                            />
+                        </p>
+                    </div>
+                {:else}
+                    <LoadingSpinner />
+                {/if}
+            </div>
+        </ContentCategory>
+        <ContentCategory
+            header={TranslationHandler.text(
+                "home.sections.mostvoted",
+                currentLang
+            )}
+            seemore={`/search?q=sort%3Avotes%20featured%3Aexclude`}
+            style="width:65%;"
+            stylec="height: 244px;"
+        >
+            <div class="project-list">
+                {#if projects.voted.length > 0}
+                    {#each projects.voted as project}
+                        <Project {...project} />
+                    {/each}
+                {:else if projectsFailed === true}
+                    <div
+                        style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                    >
+                        <img
+                            src="/penguins/server.svg"
+                            alt="Server Penguin"
+                            style="width: 15rem"
+                        />
+                        <p>
+                            <LocalizedText
+                                text="Whoops! Our server's having some problems. Try again later."
+                                key="home.server.error"
+                                lang={currentLang}
+                            />
+                        </p>
+                    </div>
+                {:else}
+                    <LoadingSpinner />
+                {/if}
+            </div>
+        </ContentCategory>
+        {#if projects.tagged.length > 7}
+            <ContentCategory
+                header={String(TranslationHandler.text(
+                    "home.sections.sortedbytag",
+                    currentLang
+                )).replace('$1', tagForProjects)}
+                seemore={`/search?q=%23${tagForProjects}`}
+                style="width:65%;"
+                stylec="height: 244px;"
+            >
+                <div class="project-list">
+                    {#each projects.tagged as project}
+                        <Project {...project} />
+                    {/each}
+                </div>
+            </ContentCategory>
+        {/if}
+        <ContentCategory
+            header={TranslationHandler.text(
                 "home.sections.todaysprojects",
                 currentLang
             )}
-            seemore={`/search?q=all%3Aprojects`}
+            seemore={`/search?q=featured%3Aexclude`}
             style="width:65%;"
             stylec="height: 244px;"
         >
@@ -1048,20 +1178,50 @@
     .welcome-back-icon-container {
         border: 1px solid rgba(0, 0, 0, 0.25);
         background: transparent;
-        border-radius: 1024px;
+        border-radius: 8px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         width: 72px;
-        height: 72px;
-        margin-bottom: 4px;
+        height: 69px;
+        margin-bottom: 8px;
     }
     :global(body.dark-mode) .welcome-back-icon-container {
         border: 1px solid rgba(255, 255, 255, 0.5);
     }
     .welcome-back-button:active .welcome-back-icon-container {
         background: rgba(0, 0, 0, 0.2);
+    }
+    .welcome-back-row >
+    a:first-child .welcome-back-icon-container {
+        border-top-left-radius: 36px;
+        border-bottom-left-radius: 36px;
+        padding-left: 8px;
+    }
+    :global(html[dir="rtl"]) .welcome-back-row >
+    a:first-child .welcome-back-icon-container {
+        border-top-left-radius: initial;
+        border-bottom-left-radius: initial;
+        padding-left: initial;
+        border-top-right-radius: 36px;
+        border-bottom-right-radius: 36px;
+        padding-right: 8px;
+    }
+    .welcome-back-row >
+    a:last-child .welcome-back-icon-container {
+        border-top-right-radius: 36px;
+        border-bottom-right-radius: 36px;
+        padding-right: 8px;
+    }
+    :global(html[dir="rtl"]) .welcome-back-row >
+    a:last-child .welcome-back-icon-container {
+        border-top-right-radius: initial;
+        border-bottom-right-radius: initial;
+        padding-right: initial;
+        border-top-left-radius: 36px;
+        border-bottom-left-radius: 36px;
+        padding-left: 8px;
     }
     :global(body.dark-mode)
         .welcome-back-button:active

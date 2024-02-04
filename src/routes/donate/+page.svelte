@@ -1,23 +1,44 @@
 <script>
     import { onMount } from "svelte";
+    import MarkdownIt from "markdown-it";
 
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
+    import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
 
     // Static values
     import LINK from "../../resources/urls.js";
 
     let currentLang = "en";
+    let forceHtmlClass;
+    let forceHtmlClass2;
+    let forceHtmlClass3;
     onMount(() => {
         Language.forceUpdate();
+        forceHtmlClass.classList.add('donate-card-html');
+        forceHtmlClass2.classList.add('donate-card-html');
+        forceHtmlClass3.classList.add('donate-card-html');
     });
     Language.onChange((lang) => {
         currentLang = lang;
     });
+    
+    const md = new MarkdownIt({
+        html: false,
+        linkify: false,
+        breaks: true,
+    });
+    
+    const env = {};
+    const generateMarkdown = (mdtext) => {
+        const tokens = md.parse(mdtext, env);
+        const bodyHTML = md.renderer.render(tokens, md.options, env);
+        return bodyHTML;
+    };
 </script>
 
 <svelte:head>
@@ -62,25 +83,38 @@
         <div class="section-discussions">
             <div class="section-discussion">
                 <p>
-                    PenguinMod helps people around the world create the games
-                    that they want and share the fun stuff they make with the
-                    community.
+                    <LocalizedText
+                        text="PenguinMod helps people around the world create the games that they want and share the fun stuff they make with the community."
+                        key="donate.message1"
+                        lang={currentLang}
+                    />
                 </p>
                 <p>
-                    In the last month, <b>
-                        <i>60k+ new people found PenguinMod</i>
-                    </b>
-                    and
-                    <br />
-                    we sent our website to <b><i>100k+</i></b> returning users
-                    from
-                    the <b>United Kingdom</b>, <b>Russia</b>,
-                    <b>Brazil</b>, <b>Japan</b>, and more!
-                    🎉
+                    {@html generateMarkdown(`${String(TranslationHandler.text(
+                        "donate.people1",
+                        currentLang
+                    ) || TranslationHandler.text(
+                        "donate.people1",
+                        'en'
+                    ))
+                    .replace('$1', (25000).toLocaleString())
+                    .replace('$2', (55000).toLocaleString())
+                    /* $1 is new people, $2 is returning */}
+
+${String(TranslationHandler.text(
+                        "donate.people2",
+                        currentLang
+                    ) || TranslationHandler.text(
+                        "donate.people2",
+                        'en'
+                    ))}`)}
                 </p>
                 <p>
-                    We would appreciate if you could donate below to help us pay
-                    for our domain and server costs! 😀
+                    <LocalizedText
+                        text="We would appreciate if you could donate below to help us pay for our domain and server costs! 😀"
+                        key="donate.message2"
+                        lang={currentLang}
+                    />
                 </p>
 
                 <div style="height: 16px;" />
@@ -88,7 +122,33 @@
                 <!-- donation buttons -->
                 <div class="donation-section">
                     <div class="donation-buttons">
-                        <p class="small">Donate using</p>
+                        <p class="small">
+                            <LocalizedText
+                                text="Donate using"
+                                key="donate.methods"
+                                lang={currentLang}
+                            />
+                        </p>
+                        <a
+                            target="_blank"
+                            href="https://donate.stripe.com/fZe4hV1jWbmr7sYbII"
+                            style="text-decoration: none !important;"
+                        >
+                            <button
+                                class="donation-container"
+                                title="Stripe - Financial infrastructure for the internet"
+                            >
+                                <img src="/stripe.png" alt="Stripe" />
+                                <span>
+                                    <LocalizedText
+                                        text="Stripe (Most payment types)"
+                                        key="payment.stripe.subtitle"
+                                        lang={currentLang}
+                                    />
+                                </span>
+                            </button>
+                        </a>
+                        <br />
                         <a
                             target="_blank"
                             href="https://www.paypal.com/donate/?hosted_button_id=6UJFR8W3V7KYC"
@@ -99,7 +159,13 @@
                                 title="PayPal - The safer, easier way to pay online!"
                             >
                                 <img src="/paypal.png" alt="PayPal" />
-                                <span>PayPal / Card</span>
+                                <span>
+                                    <LocalizedText
+                                        text="PayPal / Card"
+                                        key="payment.paypal.card"
+                                        lang={currentLang}
+                                    />
+                                </span>
                             </button>
                         </a>
                         <br />
@@ -113,7 +179,13 @@
                                 title="Cash App - Do more with your money"
                             >
                                 <img src="/cashapp.png" alt="Cash App" />
-                                <span>Cash App</span>
+                                <span>
+                                    <LocalizedText
+                                        text="Cash App"
+                                        key="payment.cashapp"
+                                        lang={currentLang}
+                                    />
+                                </span>
                             </button>
                         </a>
                     </div>
@@ -137,8 +209,11 @@
                     />
                 </p>
                 <p class="small">
-                    You can always donate to our parent projects Scratch or
-                    TurboWarp too to help them stay online.
+                    <LocalizedText
+                        text="You can always donate to our parent projects Scratch or TurboWarp as well, to help them stay online."
+                        key="donate.parents"
+                        lang={currentLang}
+                    />
                 </p>
                 <br />
                 <p class="small">
@@ -157,21 +232,45 @@
                 </a>
             </div>
             <div class="section-details">
-                <p style="text-align: center;">For completely free:</p>
-                <div class="detail-card" style="background: dodgerblue">
-                    <p>We host and serve</p>
-                    <h1>4.2k+</h1>
-                    <p>projects</p>
+                <p style="text-align: center;">
+                    <LocalizedText
+                        text="For completely free:"
+                        key="donate.served.title"
+                        lang={currentLang}
+                    />
+                </p>
+                <div class="detail-card" bind:this={forceHtmlClass} style="background: dodgerblue">
+                    {@html String(TranslationHandler.text(
+                        "donate.served.projects",
+                        currentLang
+                    ) || TranslationHandler.text(
+                        "donate.served.projects",
+                        'en'
+                    ))
+                    // we serve __ projects
+                    .replace('$1', (10000).toLocaleString())}
                 </div>
-                <div class="detail-card" style="background: darkviolet">
-                    <p>We send</p>
-                    <h1>700 GB+</h1>
-                    <p>of content monthly</p>
+                <div class="detail-card" bind:this={forceHtmlClass2} style="background: darkviolet">
+                    {@html String(TranslationHandler.text(
+                        "donate.served.size",
+                        currentLang
+                    ) || TranslationHandler.text(
+                        "donate.served.size",
+                        'en'
+                    ))
+                    // we send __ gb of stuff
+                    .replace('$1', (700).toLocaleString())}
                 </div>
-                <div class="detail-card" style="background: #ffb300">
-                    <p>We handle</p>
-                    <h1>20M+</h1>
-                    <p>requests monthly</p>
+                <div class="detail-card" bind:this={forceHtmlClass3} style="background: #ffb300">
+                    {@html String(TranslationHandler.text(
+                        "donate.served.requests",
+                        currentLang
+                    ) || TranslationHandler.text(
+                        "donate.served.requests",
+                        'en'
+                    ))
+                    // we handle ___ reqs
+                    .replace('$1', (20000000).toLocaleString())}
                 </div>
             </div>
         </div>
@@ -203,13 +302,6 @@
         color: white;
         text-align: center;
     }
-    .detail-card p,
-    .detail-card h1 {
-        margin-block: 0;
-    }
-    .detail-card h1 {
-        font-size: 48px;
-    }
 
     .section-info {
         background: #00c3ffad;
@@ -230,10 +322,23 @@
         margin-block-end: 0;
         margin-left: 32px;
     }
+    :global(html[dir="rtl"]) .section-info h1 {
+        margin-left: initial;
+        margin-right: 32px;
+    }
+    :global(html[dir="rtl"]) .section-info p {
+        margin-left: initial;
+        margin-right: 32px;
+    }
 
     .penguin-donate {
         height: 80%;
         margin-right: 32px;
+    }
+    :global(html[dir="rtl"]) .penguin-donate {
+        margin-right: initial;
+        margin-left: 32px;
+        transform: scaleX(-1);
     }
 
     .section-discussion-wrapper {
@@ -250,6 +355,10 @@
     .section-discussion {
         width: 65%;
         margin-right: 5%;
+    }
+    :global(html[dir="rtl"]) .section-discussion {
+        margin-right: initial;
+        margin-left: 5%;
     }
     .section-details {
         width: 30%;

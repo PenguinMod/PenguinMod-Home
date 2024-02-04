@@ -3,7 +3,6 @@ export default {
     dev: "developer",
     admin: "admin",
     discordadmin: "discord_mod",
-    approver: "approver",
     donator: "donator",
     birthday: "birthday",
     translator: "translator",
@@ -14,5 +13,4 @@ export default {
     votes: "votes_many",
     likes: "likes_many",
     followers: "followers_many",
-    amongus: "sussy",
 };

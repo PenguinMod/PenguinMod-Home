@@ -15,8 +15,14 @@ import ro from '../translations/ro.json';
 import sv from '../translations/sv.json';
 import ru from '../translations/ru.json';
 import cs from '../translations/cs.json';
+import de from '../translations/de.json';
 import hr from '../translations/hr.json';
 import vi from '../translations/vi.json';
+import frCa from '../translations/fr-ca.json';
+import fr from '../translations/fr.json';
+import no from '../translations/no.json';
+import sk from '../translations/sk.json';
+import uk from '../translations/uk.json';
 import uwu from '../translations/uwu.json';
 import test from '../translations/test.json';
 
@@ -32,15 +38,21 @@ const languages = {
     "vi": vi,                      // Viatnamese
     "ro": ro,                      // Romanian
     "ru": ru,                      // Russian
+    "fr": fr,                      // French
+    "fr-ca": frCa,                 // French (Canada)
+    "de": de,                      // German
     "da": da,                      // Danish
     "pl": pl,                      // Polish
+    "no": no,                      // Norwegian
     "tr": tr,                      // Turkish
     "sv": sv,                      // Swedish
-    "id": id,                      // Bahasa Indonesia
+    "sk": sk,                      // Slovak
+    "uk": uk,                      // Ukranian
     "he": he,                      // Hebrew
     // uncomment joke languages when we have >30 regular langs to hide them
     // "uwu": uwu,
     // "test": test,
+    // "id": id, // Bahasa Indonesia has no translator anymore, and theres too much untranslated text now
 };
 // add languages that are RTL here
 const rtlLanguages = [
