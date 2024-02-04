@@ -287,9 +287,9 @@
         hasImage={true}
         imgSrc={"/happy.svg"}
         imgAlt={":D"}
-        hasButton={true}
-        buttonText={"Donate"}
-        buttonHref={"/donate"}
+        has={true}
+        Text={"Donate"}
+        Href={"/donate"}
     />
     <!-- TODO: should we remove this? -->
     <!-- <Alert
@@ -299,9 +299,9 @@
         textColor={"white"}
         backColor={"#009900"}
         hasImage={false}
-        hasButton={true}
-        buttonText={"View"}
-        buttonHref={"https://studio.JoeMod.com/privacy.html"}
+        has={true}
+        Text={"View"}
+        Href={"https://studio.JoeMod.com/privacy.html"}
     /> -->
     <StatusAlert />
 
@@ -396,6 +396,7 @@
                     lang={currentLang}
                 />
             </Button>
+            <!--
             <Button link={"/donate"}>
                 <LocalizedText
                     text="Donate"
@@ -403,7 +404,9 @@
                     lang={currentLang}
                 />
             </Button>
+            -->
             <Button label="GitHub" link={LINK.github} />
+            <!--
             <Button link={LINK.wiki}>
                 <LocalizedText
                     text="Community Wiki"
@@ -411,6 +414,7 @@
                     lang={currentLang}
                 />
             </Button>
+            -->
         </div>
     {/if}
         
