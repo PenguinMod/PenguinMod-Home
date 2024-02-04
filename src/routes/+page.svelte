@@ -896,18 +896,12 @@
 
     <div class="footer">
         <p>
-            <!-- {#if !thingyActive} -->
                 <LocalizedText
                     text="JoeMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
                     key="home.footer.notaffiliated"
                     dontlink={true}
                     lang={currentLang}
                 />
-            <!-- todo: find a better place to put this that isn't, the legal text -->
-            <!-- {:else}
-                EEAAOO EEAAOOEEAAOOEEAAOOEEAAOOEEAAOOEEAAOO EEAAOO
-                EEAAOOEEAAOOEEAAOO EEAAOO
-            {/if} -->
         </p>
         <div class="footer-list">
             <div class="footer-section">
