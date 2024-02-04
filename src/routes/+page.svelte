@@ -291,19 +291,6 @@
         Text={"Donate"}
         Href={"/donate"}
     />
-    <!-- TODO: should we remove this? -->
-    <!-- <Alert
-        onlyShowID={"privacee:_1"}
-        text={"Our privacy policy has been updated."}
-        textBreakup={true}
-        textColor={"white"}
-        backColor={"#009900"}
-        hasImage={false}
-        has={true}
-        Text={"View"}
-        Href={"https://studio.JoeMod.com/privacy.html"}
-    /> -->
-    <StatusAlert />
 
     {#if loggedIn === false}
         <div class="section-info">
