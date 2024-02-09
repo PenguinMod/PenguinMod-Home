@@ -347,7 +347,7 @@
             messageReplyInfo.username = "";
             messageReplyInfo.id = "";
             messageReplyInfo.text = "";
-        });
+        }).catch(err => alert('Failed to send message:' + err));
     };
     const sendGuidelinesNotifs = () => {
         const notifs = [];
@@ -553,7 +553,7 @@
                 <div class="card-reject" style="display:block">
                     <p>Rejecting <b>{rejectingName}</b></p>
                     <!-- svelte-ignore a11y-autofocus -->
-                    <input
+                    <textarea
                         bind:this={rejectingTextboxArea}
                         placeholder="Reason for rejecting..."
                         style="width: 95%;"
@@ -1028,7 +1028,7 @@
                     bind:value={messageReplyInfo.id}
                 />
                 <p>Type reply:</p>
-                <input
+                <textarea
                     type="text"
                     size="50"
                     placeholder="Reply..."
