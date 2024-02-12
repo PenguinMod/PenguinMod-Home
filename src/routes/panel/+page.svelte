@@ -1,8 +1,9 @@
 <script>
     import { onMount } from "svelte";
     import Authentication from "../../resources/authentication.js";
+    import LINK from "../../resources/urls.js";
     import ProfileBadges from "../../resources/badges.js";
-    import QuickReject from "../../resources/quickReject.js";
+    import QuickRejectComponent from "./quickRejects.svelte";
     import ProjectApi from "../../resources/projectapi.js";
     import * as FileSaver from "file-saver";
     import JSZip from "jszip";
@@ -210,6 +211,23 @@
             selectedProjectName = name;
         }
     }
+
+    const openRemoveProjectMenu = async () => {
+        const id = Number(projectIdSelection.value);
+        if (isNaN(id)) return;
+        rejectingId = id;
+        if (selectedProjectName) {
+            rejectingName = selectedProjectName;
+        } else {
+            try {
+                const projectMeta = await ProjectApi.getProjectMeta(id);
+                rejectingName = projectMeta.name;
+            } catch {
+                rejectingName = '';
+            }
+        }
+        rejectionPageOpen = true;
+    };
     // function featureProject(id, name) {
     //     const usure = confirm("Feature " + name + " ?");
     //     if (!usure) return;
@@ -544,276 +562,50 @@
 <div class="main" style={loggedIn ? "" : "display:none"}>
     <NavigationMargin />
 
-    {#if rejectionPageOpen}
-        <div class="front-card-page" style="z-index: 20000;">
-            <div class="card-page big-card-page">
-                <div class="card-header">
-                    <h1>Reject Project</h1>
-                </div>
-                <div class="card-reject" style="display:block">
-                    <p>Rejecting <b>{rejectingName}</b></p>
-                    <!-- svelte-ignore a11y-autofocus -->
-                    <textarea
-                        bind:this={rejectingTextboxArea}
-                        placeholder="Reason for rejecting..."
-                        style="width: 95%;"
-                        autofocus
-                    />
-                    <br />
-                    <br />
-                    <h2><b>Quick-Reject</b></h2>
-                    <details>
-                        <summary>Spam</summary>
-                        <div style="margin-left: 16px">
-                            <div class="button-row">
-                                <Button
-                                    color="gray"
-                                    on:click={(rejectingTextboxArea.value =
-                                        QuickReject["Spam"][
-                                            "No content / Default project"
-                                        ])}
-                                >
-                                    No content / Default project
-                                </Button>
-                                <Button
-                                    color="gray"
-                                    on:click={(rejectingTextboxArea.value =
-                                        QuickReject["Spam"]["Repost"])}
-                                >
-                                    Repost
-                                </Button>
-                                <Button
-                                    color="gray"
-                                    on:click={(rejectingTextboxArea.value =
-                                        QuickReject["Spam"][
-                                            "Repost after Rejection"
-                                        ])}
-                                >
-                                    Repost after Rejection
-                                </Button>
-                                <Button
-                                    color="gray"
-                                    on:click={(rejectingTextboxArea.value =
-                                        QuickReject["Spam"][
-                                            "Remix is an exact copy"
-                                        ])}
-                                >
-                                    Remix is an exact copy
-                                </Button>
-                                <Button
-                                    color="gray"
-                                    on:click={(rejectingTextboxArea.value =
-                                        QuickReject["Spam"][
-                                            "Iframe only"
-                                        ])}
-                                >
-                                    Iframe only
-                                </Button>
-                            </div>
-                        </div>
-                    </details>
-                    <details>
-                        <summary>Be respectful to others</summary>
-                        <div style="margin-left: 16px">
-                            <details>
-                                <summary>Offensive / Extreme Content</summary>
-                                <div style="margin-left: 16px">
-                                    <div class="button-row">
-                                        <Button
-                                            color="gray"
-                                            on:click={(rejectingTextboxArea.value =
-                                                QuickReject[
-                                                    "Be respectful to others"
-                                                ][
-                                                    "Offensive / Extreme Content"
-                                                ]["Gore"])}
-                                        >
-                                            Gore
-                                        </Button>
-                                        <Button
-                                            color="gray"
-                                            on:click={(rejectingTextboxArea.value =
-                                                QuickReject[
-                                                    "Be respectful to others"
-                                                ][
-                                                    "Offensive / Extreme Content"
-                                                ]["Drugs / Illegal material"])}
-                                        >
-                                            Drugs / Illegal material
-                                        </Button>
-                                        <Button
-                                            color="gray"
-                                            on:click={(rejectingTextboxArea.value =
-                                                QuickReject[
-                                                    "Be respectful to others"
-                                                ][
-                                                    "Offensive / Extreme Content"
-                                                ][
-                                                    "Pornography / Disturbing / Sexual or explicit content"
-                                                ])}
-                                        >
-                                            Pornography / Disturbing / Sexual or
-                                            explicit content
-                                        </Button>
-                                        <Button
-                                            color="gray"
-                                            on:click={(rejectingTextboxArea.value =
-                                                QuickReject[
-                                                    "Be respectful to others"
-                                                ][
-                                                    "Offensive / Extreme Content"
-                                                ][
-                                                    "Pornography: Inflation / Vore / Fetish content"
-                                                ])}
-                                        >
-                                            Pornography: Inflation / Vore /
-                                            Fetish content
-                                        </Button>
-                                        <Button
-                                            color="gray"
-                                            on:click={(rejectingTextboxArea.value =
-                                                QuickReject[
-                                                    "Be respectful to others"
-                                                ][
-                                                    "Offensive / Extreme Content"
-                                                ]["Discriminatory Content"])}
-                                        >
-                                            Discriminatory Content
-                                        </Button>
-                                        <Button
-                                            color="gray"
-                                            on:click={(rejectingTextboxArea.value =
-                                                QuickReject[
-                                                    "Be respectful to others"
-                                                ][
-                                                    "Offensive / Extreme Content"
-                                                ]["Threat"])}
-                                        >
-                                            Threat
-                                        </Button>
-                                        <Button
-                                            color="gray"
-                                            on:click={(rejectingTextboxArea.value =
-                                                QuickReject[
-                                                    "Be respectful to others"
-                                                ][
-                                                    "Offensive / Extreme Content"
-                                                ]["Malware"])}
-                                        >
-                                            Malware
-                                        </Button>
-                                    </div>
-                                </div>
-                            </details>
-                        </div>
-                        <div style="margin-left: 16px">
-                            <div class="button-row">
-                                <Button
-                                    color="gray"
-                                    on:click={(rejectingTextboxArea.value =
-                                        QuickReject["Be respectful to others"][
-                                            "Misuse of an external platform"
-                                        ])}
-                                >
-                                    Misuse of an external platform
-                                </Button>
-                                <Button
-                                    color="gray"
-                                    on:click={(rejectingTextboxArea.value =
-                                        QuickReject["Be respectful to others"][
-                                            "References unsafe external platform"
-                                        ])}
-                                >
-                                    References unsafe external platform
-                                </Button>
-                                <Button
-                                    color="gray"
-                                    on:click={(rejectingTextboxArea.value =
-                                        QuickReject["Be respectful to others"][
-                                            "Slurs"
-                                        ])}
-                                >
-                                    Slurs
-                                </Button>
-                                <Button
-                                    color="gray"
-                                    on:click={(rejectingTextboxArea.value =
-                                        QuickReject["Be respectful to others"][
-                                            "Creates Staff Distrust"
-                                        ])}
-                                >
-                                    Creates Staff Distrust
-                                </Button>
-                            </div>
-                        </div>
-                    </details>
-                    <div class="button-row">
-                        <Button
-                            color="gray"
-                            on:click={(rejectingTextboxArea.value =
-                                QuickReject["Scratch Reupload"])}
-                        >
-                            Scratch Reupload
-                        </Button>
-                        <Button
-                            color="gray"
-                            on:click={(rejectingTextboxArea.value =
-                                QuickReject[
-                                    "Breaks or disables aspects of the site"
-                                ])}
-                        >
-                            Breaks or disables aspects of the site
-                        </Button>
-                        <Button
-                            color="gray"
-                            on:click={(rejectingTextboxArea.value =
-                                QuickReject["Sensitive Information"])}
-                        >
-                            Sensitive Information
-                        </Button>
-                        <Button
-                            color="gray"
-                            on:click={(rejectingTextboxArea.value =
-                                QuickReject[
-                                    "Attempts to sell an untrusted product"
-                                ])}
-                        >
-                            Attempts to sell an untrusted product
-                        </Button>
-                        <Button
-                            color="gray"
-                            on:click={(rejectingTextboxArea.value =
-                                QuickReject["Contains loud sounds"])}
-                        >
-                            Contains loud sounds
-                        </Button>
-                        <Button
-                            color="gray"
-                            on:click={(rejectingTextboxArea.value =
-                                QuickReject["Piracy"])}
-                        >
-                            Piracy
-                        </Button>
-                    </div>
-                </div>
-                <div style="display:flex;flex-direction:row;padding:1em">
-                    <Button
-                        label="Reject"
-                        color="red"
-                        on:click={() => {
-                            rejectProject(rejectingId);
-                        }}
-                    />
-                    <Button
-                        label="Cancel"
-                        on:click={() => {
-                            rejectionPageOpen = false;
-                        }}
-                    />
-                </div>
+    <div class="front-card-page" style="z-index: 20000;{rejectionPageOpen ? '' : 'display:none;'}">
+        <div class="card-page big-card-page">
+            <div class="card-header">
+                <h1>Reject Project</h1>
+            </div>
+            <div class="card-reject" style="display:block">
+                <p>Rejecting <b>{rejectingName}</b></p>
+                <img
+                    src={`${LINK.projects}api/pmWrapper/iconUrl?id=${rejectingId}`}
+                    alt="Image of {rejectingName}"
+                    width="240"
+                    height="180"
+                >
+                <!-- svelte-ignore a11y-autofocus -->
+                <textarea
+                    bind:this={rejectingTextboxArea}
+                    placeholder="Reason for rejecting..."
+                    style="width: 95%;"
+                    autofocus
+                />
+                <br />
+                <br />
+                <h2><b>Quick-Reject</b></h2>
+                <QuickRejectComponent on:select={(arg) => {
+                    rejectingTextboxArea.value = arg.detail;
+                }} />
+            </div>
+            <div style="display:flex;flex-direction:row;padding:1em">
+                <Button
+                    label="Reject"
+                    color="red"
+                    on:click={() => {
+                        rejectProject(rejectingId);
+                    }}
+                />
+                <Button
+                    label="Cancel"
+                    on:click={() => {
+                        rejectionPageOpen = false;
+                    }}
+                />
             </div>
         </div>
-    {/if}
+    </div>
     {#if inspectMenuOpen}
         <div class="front-card-page">
             <div class="card-page big-card-page">
@@ -960,13 +752,7 @@
                 <Button
                     label="Remove Project"
                     color="red"
-                    on:click={() => {
-                        const id = Number(projectIdSelection.value);
-                        if (isNaN(id)) return;
-                        rejectingId = id;
-                        rejectingName = selectedProjectName;
-                        rejectionPageOpen = true;
-                    }}
+                    on:click={openRemoveProjectMenu}
                 />
                 <div style="height:24px" />
                 <h3>Removed Projects</h3>
@@ -1576,10 +1362,6 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-    }
-    .button-row {
-        display: flex;
-        flex-direction: column;
     }
 
     .front-card-page {
