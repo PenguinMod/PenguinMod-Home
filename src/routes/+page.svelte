@@ -475,7 +475,8 @@
                                 <button class="update-image-wrapper">
                                     <img
                                         src={update.image}
-                                        alt="Screenshot"
+                                        alt={update.cleanContent}
+                                        title={update.cleanContent}
                                         class="update-image"
                                     />
                                 </button>

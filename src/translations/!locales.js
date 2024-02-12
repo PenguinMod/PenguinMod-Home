@@ -58,8 +58,14 @@ const languages = {
 const rtlLanguages = [
     "he",
 ];
+// set pairs for language codes that should be interpreted as another language code
+const autoLocale = {
+    "nn": "no",
+    "nb": "no",
+};
 
 export default {
     languages,
     rtlLanguages,
+    autoLocale,
 };

@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
+    import HTMLUtility from "../../resources/html.js";
 
     const ProjectClient = new ProjectApi();
 
@@ -33,7 +34,26 @@
     Language.onChange((lang) => {
         currentLang = lang;
     });
+    
+    // dropdown
+    let editProjectDropdownMenu;
+    let editProjectOptions = [];
+    function showEditProjectDropdown(pointer, options) {
+        editProjectOptions = options;
+        editProjectDropdownMenu.style.display = "flex";
+        editProjectDropdownMenu.style.left = `${pointer.x}px`;
+        editProjectDropdownMenu.style.top = `${pointer.y}px`;
+    }
+    onMount(() => {
+        window.addEventListener("mousedown", (e) => {
+            if (!editProjectDropdownMenu) return;
+            if (!HTMLUtility.isDescendantOf(editProjectDropdownMenu, e.target)) {
+                editProjectDropdownMenu.style.display = "none";
+            }
+        });
+    });
 
+    // things
     function fetchNewProjects() {
         ProjectClient.getMyProjects(page).then((projectss) => {
             if (projectss.length <= 0) {
@@ -66,17 +86,20 @@
             });
     }
     function deleteProject(id, name) {
+        const correctCode = Math.round((Math.random() * 500000) + 100000);
         const code = prompt(
             String(
                 TranslationHandler.text("mystuff.confirm.delete", currentLang)
             )
-                .replace("$2", id)
+                .replace("$2", correctCode)
                 .replace("$1", name)
         );
-        if (String(code).replace(/[^0-9]*/gim, "") !== String(id)) {
+        if (String(code).replace(/[^0-9]*/gim, "") !== String(correctCode)) {
             return;
         }
         ProjectClient.deleteProject(id).then(loggedInChange);
+        if (!editProjectDropdownMenu) return;
+        editProjectDropdownMenu.style.display = "none";
     }
 
     onMount(async () => {
@@ -150,6 +173,35 @@
 
 <NavigationBar />
 
+<!-- project editing menu -->
+<div bind:this={editProjectDropdownMenu} class="dropdown-options">
+    {#each editProjectOptions as option}
+        {#if option.href}
+            <a
+                href={option.href}
+                target={option.newtab ? "_blank" : "_self"}
+                class="dropdown-redirect"
+            >
+                <button
+                    class={"dropdown-option dropdown-option-" +
+                        (option.color ? option.color : "default")}
+                    on:click={option.callback ? option.callback : null}
+                >
+                    {option.name}
+                </button>
+            </a>
+        {:else}
+            <button
+                class={"dropdown-option dropdown-option-" +
+                    (option.color ? option.color : "default")}
+                on:click={option.callback ? option.callback : null}
+            >
+                {option.name}
+            </button>
+        {/if}
+    {/each}
+</div>
+
 <div class="main">
     <NavigationMargin />
 
@@ -189,15 +241,8 @@
             </div>
         {:else if projects[0] !== "notfound"}
             {#each projects as project}
-                <Project
-                    id={project.id}
-                    name={project.name}
-                    owner={project.owner}
-                    date={project.date}
-                    style="padding:8px;height:auto"
-                    showdate="true"
-                    dotsmenu="true"
-                    dotsoptions={[
+                <div style="position: relative;">
+                    <button class="dots-menu" on:click={(pointer) => showEditProjectDropdown(pointer, [
                         {
                             name: project.remix
                                 ? TranslationHandler.text(
@@ -226,32 +271,43 @@
                             },
                             color: "red",
                         },
-                    ]}
-                >
-                    <div class="inside-project">
-                        {#if project.hidden}
-                            <p>
-                                <i>
-                                    <LocalizedText
-                                        text="(hidden)"
-                                        key="project.status.hidden"
-                                        lang={currentLang}
-                                    />
-                                </i>
-                            </p>
-                        {:else if !project.accepted}
-                            <p>
-                                <i>
-                                    <LocalizedText
-                                        text="(unapproved)"
-                                        key="project.status.unapproved"
-                                        lang={currentLang}
-                                    />
-                                </i>
-                            </p>
-                        {/if}
-                    </div>
-                </Project>
+                    ])}>
+                        <img class="dots-icon" src="/dots.svg" alt="..." />
+                    </button>
+                    <Project
+                        id={project.id}
+                        name={project.name}
+                        owner={project.owner}
+                        date={project.date}
+                        featured={project.featured}
+                        style="padding:8px;height:auto"
+                        showdate="true"
+                    >
+                        <div class="inside-project">
+                            {#if project.hidden}
+                                <p>
+                                    <i>
+                                        <LocalizedText
+                                            text="(hidden)"
+                                            key="project.status.hidden"
+                                            lang={currentLang}
+                                        />
+                                    </i>
+                                </p>
+                            {:else if !project.accepted}
+                                <p>
+                                    <i>
+                                        <LocalizedText
+                                            text="(unapproved)"
+                                            key="project.status.unapproved"
+                                            lang={currentLang}
+                                        />
+                                    </i>
+                                </p>
+                            {/if}
+                        </div>
+                    </Project>
+                </div>
             {:else}
                 <!-- projects.length === 0 -->
                 <div style="margin-top: 16px;">
@@ -350,5 +406,92 @@
 
     :global(body.dark-mode) a {
         color: dodgerblue;
+    }
+
+    /* edit project dropdown & options */
+    .dots-menu {
+        position: absolute;
+        right: 16px;
+        top: 16px;
+        background: transparent;
+        border: 0;
+        border-radius: 4px;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        transition-duration: 250ms;
+        overflow: hidden;
+        z-index: 500;
+    }
+    .dots-menu:focus,
+    .dots-menu:hover {
+        background: rgba(0, 0, 0, 0.1);
+        transition-duration: 250ms;
+    }
+    .dots-menu:active {
+        background: rgba(0, 0, 0, 0.25);
+        transition-duration: 250ms;
+    }
+
+    .dots-icon {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .dropdown-options {
+        width: 128px;
+        background: white;
+        border-radius: 4px;
+        outline-style: solid;
+        outline-width: 4px;
+        outline-color: rgba(0, 0, 0, 0.25);
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        z-index: 10000;
+        padding: 6px;
+    }
+
+    .dropdown-option {
+        border: 0;
+        border-radius: 4px;
+        margin: 2px 0px;
+        background: transparent;
+        cursor: pointer;
+        padding: 4px 0px;
+    }
+    .dropdown-redirect {
+        text-decoration: none;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .dropdown-option-default:focus,
+    .dropdown-option-default:hover {
+        background: #00c3ff;
+    }
+
+    .dropdown-option-remix:focus,
+    .dropdown-option-remix:hover {
+        background: #48ac72;
+    }
+    .dropdown-option-gray:focus,
+    .dropdown-option-gray:hover {
+        background: #a1a1a1;
+    }
+    .dropdown-option-orange:focus,
+    .dropdown-option-orange:hover {
+        background: #ffab00;
+    }
+    .dropdown-option-red:focus,
+    .dropdown-option-red:hover {
+        background: #ff5151;
     }
 </style>

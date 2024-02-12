@@ -31,6 +31,12 @@ class TranslationHandler {
     static isLanguageAvailable(lang) {
         return (lang in languages);
     }
+    static tryConvertingLocale(languageCode) {
+        if (languageCode in Locales.autoLocale) {
+            return Locales.autoLocale[languageCode];
+        }
+        return languageCode;
+    }
 
     static get languages() {
         return languages;
