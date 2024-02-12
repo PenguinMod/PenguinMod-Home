@@ -16,8 +16,8 @@
     export let owner;
     export let date = 0;
     export let style = "";
+    // TODO: remove dots properties, they have inconsistent behavior between platforms
     export let dotsmenu = false;
-    // TODO: remove dotsoptions, they have inconsistent behavior between platforms
     export let dotsoptions = [];
 
     export let linkOverride = false;

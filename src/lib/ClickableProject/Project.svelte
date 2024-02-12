@@ -1,6 +1,5 @@
 <script>
-    import { onMount, createEventDispatcher } from "svelte";
-    import HTMLUtility from "../../resources/html.js";
+    import { createEventDispatcher } from "svelte";
 
     // Static values
     import LINK from "../../resources/urls.js";
@@ -12,28 +11,12 @@
     export let owner;
     export let date = 0;
     export let style = "";
-    export let dotsmenu = false;
 
     function unixToDisplayDate(unix) {
         return `${new Date(Number(unix)).toDateString()} at ${new Date(
             Number(unix)
         ).toLocaleTimeString()}`;
     }
-
-    let dropdownMenu;
-    function showDropdown(pointer) {
-        dropdownMenu.style.display = "flex";
-        dropdownMenu.style.left = `${pointer.x}px`;
-        dropdownMenu.style.top = `${pointer.y}px`;
-    }
-    onMount(() => {
-        window.addEventListener("mousedown", (e) => {
-            if (!dropdownMenu) return;
-            if (!HTMLUtility.isDescendantOf(dropdownMenu, e.target)) {
-                dropdownMenu.style.display = "none";
-            }
-        });
-    });
 
     const dispatch = createEventDispatcher();
 
@@ -43,11 +26,6 @@
 </script>
 
 <button class="project" data-featured={featured} {style} on:click={event}>
-    {#if dotsmenu}
-        <button class="dots-menu" on:click={showDropdown}>
-            <img class="dots-icon" src="/dots.svg" alt="..." />
-        </button>
-    {/if}
     <div class="project-image">
         <img
             src={`${LINK.projects}api/pmWrapper/iconUrl?id=${id}`}
@@ -186,36 +164,5 @@
     }
     .project[data-featured="true"] .author {
         color: black;
-    }
-
-    .dots-menu {
-        position: absolute;
-        right: 8px;
-        top: 8px;
-        background: transparent;
-        border: 0;
-        border-radius: 4px;
-        width: 24px;
-        height: 24px;
-        cursor: pointer;
-        transition-duration: 250ms;
-        overflow: hidden;
-    }
-    .dots-menu:focus,
-    .dots-menu:hover {
-        background: rgba(0, 0, 0, 0.1);
-        transition-duration: 250ms;
-    }
-    .dots-menu:active {
-        background: rgba(0, 0, 0, 0.25);
-        transition-duration: 250ms;
-    }
-
-    .dots-icon {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
     }
 </style>
