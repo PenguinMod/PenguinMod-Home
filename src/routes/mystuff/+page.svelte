@@ -66,14 +66,15 @@
             });
     }
     function deleteProject(id, name) {
+        const correctCode = Math.round((Math.random() * 500000) + 100000);
         const code = prompt(
             String(
                 TranslationHandler.text("mystuff.confirm.delete", currentLang)
             )
-                .replace("$2", id)
+                .replace("$2", correctCode)
                 .replace("$1", name)
         );
-        if (String(code).replace(/[^0-9]*/gim, "") !== String(id)) {
+        if (String(code).replace(/[^0-9]*/gim, "") !== String(correctCode)) {
             return;
         }
         ProjectClient.deleteProject(id).then(loggedInChange);
