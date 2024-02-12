@@ -17,6 +17,7 @@
     export let date = 0;
     export let style = "";
     export let dotsmenu = false;
+    // TODO: remove dotsoptions, they have inconsistent behavior between platforms
     export let dotsoptions = [];
 
     export let linkOverride = false;

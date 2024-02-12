@@ -13,7 +13,6 @@
     export let date = 0;
     export let style = "";
     export let dotsmenu = false;
-    export let dotsoptions = [];
 
     function unixToDisplayDate(unix) {
         return `${new Date(Number(unix)).toDateString()} at ${new Date(
@@ -42,36 +41,6 @@
         dispatch("click");
     }
 </script>
-
-{#if dotsoptions.length > 0}
-    <div bind:this={dropdownMenu} class="dropdown-options">
-        {#each dotsoptions as option}
-            {#if option.href}
-                <a
-                    href={option.href}
-                    target={option.newtab ? "_blank" : "_self"}
-                    class="dropdown-redirect"
-                >
-                    <button
-                        class={"dropdown-option dropdown-option-" +
-                            (option.color ? option.color : "default")}
-                        on:click={option.callback ? option.callback : null}
-                    >
-                        {option.name}
-                    </button>
-                </a>
-            {:else}
-                <button
-                    class={"dropdown-option dropdown-option-" +
-                        (option.color ? option.color : "default")}
-                    on:click={option.callback ? option.callback : null}
-                >
-                    {option.name}
-                </button>
-            {/if}
-        {/each}
-    </div>
-{/if}
 
 <button class="project" data-featured={featured} {style} on:click={event}>
     {#if dotsmenu}
@@ -248,59 +217,5 @@
         top: 0;
         width: 100%;
         height: 100%;
-    }
-
-    .dropdown-options {
-        width: 128px;
-        background: white;
-        border-radius: 4px;
-        outline-style: solid;
-        outline-width: 4px;
-        outline-color: rgba(0, 0, 0, 0.25);
-        display: none;
-        flex-direction: column;
-        align-items: stretch;
-        position: absolute;
-        left: 0px;
-        top: 0px;
-        z-index: 10000;
-        padding: 6px;
-    }
-
-    .dropdown-option {
-        border: 0;
-        border-radius: 4px;
-        margin: 2px 0px;
-        background: transparent;
-        cursor: pointer;
-        padding: 4px 0px;
-    }
-    .dropdown-redirect {
-        text-decoration: none;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .dropdown-option-default:focus,
-    .dropdown-option-default:hover {
-        background: #00c3ff;
-    }
-
-    .dropdown-option-remix:focus,
-    .dropdown-option-remix:hover {
-        background: #48ac72;
-    }
-    .dropdown-option-gray:focus,
-    .dropdown-option-gray:hover {
-        background: #a1a1a1;
-    }
-    .dropdown-option-orange:focus,
-    .dropdown-option-orange:hover {
-        background: #ffab00;
-    }
-    .dropdown-option-red:focus,
-    .dropdown-option-red:hover {
-        background: #ff5151;
     }
 </style>
