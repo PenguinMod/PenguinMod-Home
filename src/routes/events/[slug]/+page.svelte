@@ -35,7 +35,7 @@
     });
     Language.onChange((lang) => {
         currentLang = lang;
-        if (language !== lang && EventPages[eventPath][lang]) {
+        if (language !== lang && EventPages[eventPath][lang] && window.location.pathname.includes('/events/')) {
             window.location.search = `?l=${lang}`;
         }
     });
