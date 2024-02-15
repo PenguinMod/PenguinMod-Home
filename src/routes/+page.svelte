@@ -13,6 +13,7 @@
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import Button from "$lib/Button/Button.svelte";
+    import EventComponent from "$lib/Event/Component.svelte";
     import ContentCategory from "$lib/ContentCategory/Component.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import UserDisplay from "$lib/UserDisplay/Display.svelte";
@@ -726,6 +727,10 @@
             </div>
         </div>
     {/if}
+    
+    <div style="width:80%; margin:0 10%;">
+        <EventComponent />
+    </div>
 
     <div class="section-projects">
         <ContentCategory

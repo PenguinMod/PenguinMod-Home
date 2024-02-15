@@ -4,9 +4,9 @@
 
     // import { onMount } from "svelte";
     import MarkdownIt from "markdown-it";
-    import GuidelinePages from "../../../resources/guidelines/pages";
+    import GuidelinePages from "../../../guidelines/pages";
 
-    const markdownSource = GuidelinePages[data.slug];
+    const markdownSource = GuidelinePages[data.slug] || "404 no such file exists";
 
     const md = new MarkdownIt({
         html: true,
