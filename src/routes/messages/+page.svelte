@@ -48,7 +48,7 @@
                 pageIsLast = true;
                 return;
             }
-            if (messagess.length < 20) {
+            if (messagess.length < 12) {
                 pageIsLast = true;
             }
             messages.push(...messagess);
@@ -67,7 +67,7 @@
                     return;
                 }
                 messages = messagess;
-                if (messages.length < 20) {
+                if (messages.length < 12) {
                     pageIsLast = true;
                 }
             })
