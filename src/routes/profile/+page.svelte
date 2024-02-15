@@ -1202,6 +1202,9 @@
                                             title={TranslationHandler.text(
                                                 `profile.badge.${badge}`,
                                                 currentLang
+                                            ) || TranslationHandler.text(
+                                                `profile.badge.${badge}`,
+                                                'en'
                                             )}
                                         >
                                             <img
@@ -1209,10 +1212,16 @@
                                                 alt={TranslationHandler.text(
                                                     `profile.badge.${badge}`,
                                                     currentLang
+                                                ) || TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    'en'
                                                 )}
                                                 title={TranslationHandler.text(
                                                     `profile.badge.${badge}`,
                                                     currentLang
+                                                ) || TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    'en'
                                                 )}
                                             />
                                             {#if focusedBadge === idx}
@@ -1220,6 +1229,9 @@
                                                     {TranslationHandler.text(
                                                         `profile.badge.${badge}`,
                                                         currentLang
+                                                    ) || TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        'en'
                                                     )}
                                                 </div>
                                             {/if}
