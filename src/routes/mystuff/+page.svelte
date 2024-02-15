@@ -76,7 +76,11 @@
             .then((projectss) => {
                 if (projectss.length <= 0) {
                     projects = ["notfound"];
+                    pageIsLast = true;
                     return;
+                }
+                if (projectss.length < 20) {
+                    pageIsLast = true;
                 }
                 projects = projectss;
             })
