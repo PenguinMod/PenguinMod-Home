@@ -418,8 +418,10 @@
         const censorSound = await fetchElementAsBlob('/censor/sound.mp3');
         // get info that needs updating
         // NOTE: these include the file type at the end
-        const censoredCostumes = Object.keys(censorMenuDetails.censoredCostumes);
-        const censoredSounds = Object.keys(censorMenuDetails.mutedSounds);
+        const censoredCostumes = Object.keys(censorMenuDetails.censoredCostumes)
+            .filter(key => censorMenuDetails.censoredCostumes[key] === true);
+        const censoredSounds = Object.keys(censorMenuDetails.mutedSounds)
+            .filter(key => censorMenuDetails.mutedSounds[key] === true);
         // update json
         for (const target of project.json.targets) {
             for (const costumeId of censoredCostumes) {
