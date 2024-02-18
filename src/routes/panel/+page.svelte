@@ -1,5 +1,6 @@
 <script>
     import { onMount } from "svelte";
+    import { page } from '$app/stores';
     import Authentication from "../../resources/authentication.js";
     import LINK from "../../resources/urls.js";
     import ProfileBadges from "../../resources/badges.js";
@@ -25,7 +26,8 @@
 
     let loggedIn = null;
     let projectIdSelection;
-    let serverStats = []
+    let serverStats = [];
+    const selectForReject = $page.url.searchParams.get('reject');
 
     function kickOut() {
         location.href = location.origin + "/bx-tv1.mp4";
@@ -185,21 +187,26 @@
     let rejectingId = 0;
     let rejectingName = "";
     let rejectingTextboxArea;
+    let isRejectHard = false;
     function rejectProject(id) {
         id ??= Number(projectIdSelection.value);
         if (isNaN(id)) return;
-        if (!confirm(`Reject "${rejectingName}"?`)) return;
+        const confirmationMessage = `Reject "${rejectingName}"?\n`
+            + `${isRejectHard ?
+                'Hard reject is enabled.\nThe uploader will not be able to edit the original project once you reject it.'
+                : 'Soft reject is enabled.'}`;
+        if (!confirm(confirmationMessage)) return;
         if (rejectingTextboxArea.value.length <= 3) {
             return alert("The action was cancelled.");
         }
-        ProjectClient.rejectProject(id, rejectingTextboxArea.value).then(() => {
+        ProjectClient.rejectProject(id, rejectingTextboxArea.value, isRejectHard).then(() => {
             rejectionPageOpen = false;
             // uhhhhhhh apparently we need to do this ig?
-            const newProjects = projects.filter((proj) => proj.id !== id);
-            projects = [];
-            projects = newProjects;
+            // const newProjects = projects.filter((proj) => proj.id !== id);
+            // projects = [];
+            // projects = newProjects;
             // dont need to do this i think
-            // refreshProjectMenu();
+            refreshProjectMenu();
         });
     }
     let selectedProjectName = "";
@@ -241,6 +248,10 @@
                 selectedProjectName = "";
             }
         };
+        if (selectForReject && String(selectForReject).length > 4) {
+            projectIdSelection.value = selectForReject;
+            openRemoveProjectMenu();
+        }
     });
 
     // let sendWebhook = true;
@@ -582,6 +593,13 @@
                     style="width: 95%;"
                     autofocus
                 />
+                <details>
+                    <summary>Dangerous options</summary>
+                    <label style="color:red">
+                        <input type="checkbox" bind:checked={isRejectHard}>
+                        Don't allow the uploader to edit the project after reject (hard reject)
+                    </label>
+                </details>
                 <br />
                 <br />
                 <h2><b>Quick-Reject</b></h2>
