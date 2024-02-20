@@ -135,14 +135,21 @@
 			languageMenu.style.right = `4px`;
 		}
 	}
+	let accountMenuIsOpen = false;
 	function openAccountMenu(event) {
 		const buttonRect = accountButton.getBoundingClientRect();
 		event = event.detail;
+		if (accountMenuIsOpen) {
+			accountMenu.style.display = "none";
+			accountMenuIsOpen = false;
+			return;
+		}
 		accountMenu.style.display = "";
 		accountMenu.style.right = `${
 			window.innerWidth - buttonRect.right - 8
 		}px`;
 		accountMenu.style.top = `3rem`;
+		accountMenuIsOpen = true;
 	}
 	function langName(lang) {
 		return Translations.text("lang.name", lang);
@@ -165,8 +172,8 @@
 					languageMenu.style.display = "none";
 				}
 			}
-			if (accountMenu) {
-				if (!HTMLUtility.isDescendantOf(accountMenu, e.target)) {
+			if (accountMenu && accountButton) {
+				if (!HTMLUtility.isDescendantOf(accountMenu, e.target) && !HTMLUtility.isDescendantOf(accountButton, e.target)) {
 					accountMenu.style.display = "none";
 				}
 			}
@@ -273,6 +280,11 @@
 			<img src="/discord_white.png" alt="Discord" />
 		</div>
 	</BarButton>
+	<!-- <BarPage
+		link={LINK.discord}
+		label="<img src='/discord_white.png' width='25' alt='Discord'>"
+		style="padding:0.5rem"
+	/> -->
 	{#if loggedIn === true}
 		<BarPage
 			link="/messages"
