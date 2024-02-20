@@ -773,7 +773,7 @@
     <StatusAlert />
 
     {#if projects.all.length > 0}
-        {#if projects.all[0] !== "none" || (loggedIn && user === loggedInUser)}
+        {#if (projects.all[0] !== "none" || isDonator || fullProfile.bio || isFollowingUser || fullProfile.rank > 0) || (loggedIn && user === loggedInUser)}
         <div class="background">
             {#if user}
                 <div class="section-user">
