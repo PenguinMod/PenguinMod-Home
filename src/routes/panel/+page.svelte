@@ -17,7 +17,7 @@
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
-    import Project from "$lib/Project/Project.svelte";
+    import ClickableProject from "$lib/ClickableProject/Project.svelte";
     import Button from "$lib/Button/Button.svelte";
 
     function unixToDisplayDate(unix) {
@@ -90,7 +90,7 @@
     let dropdownSelectMenu;
 
     let contentWithReports = [];
-    let reports = [];
+    let unapprovedProjects = [];
     let selectedReportDetailed = -1;
     let reportDetails = Object.create({});
 
@@ -137,15 +137,20 @@
             });
     };
 
+    let projectListStyle = '';
     const refreshProjectMenu = () => {
-        reports = [];
+        unapprovedProjects = [];
         contentWithReports = [];
+        projectListStyle = '';
         selectedReportDetailed = -1;
         reportDetails = Object.create({});
         switch (dropdownSelectMenu.value) {
             case "user":
             case "project":
-                return openMenu(dropdownSelectMenu.value);
+                return openReportsMenu(dropdownSelectMenu.value);
+            case "removed":
+                projectListStyle = 'flex-direction: row;flex-wrap: wrap;';
+                return openProjectsMenu(dropdownSelectMenu.value);
         }
     };
     const closeUserReports = (idOrName, user) => {
@@ -163,7 +168,18 @@
             });
     };
 
-    function openMenu(type) {
+    let unapprovedPage = 1;
+    function openProjectsMenu(type) {
+        // type is assumed to be unapproved because we have nothing else right now
+        unapprovedProjects = [];
+        contentWithReports = [];
+        ProjectClient.getUnapprovedProjects(unapprovedPage - 1).then(unapprovedProjs => {
+            unapprovedProjects = unapprovedProjs;
+        });
+    }
+    function openReportsMenu(type) {
+        unapprovedProjects = [];
+        contentWithReports = [];
         ProjectClient.getTypeWithReports(type).then((projectsWithReports) => {
             contentWithReports = projectsWithReports.filter(content => content.exists ?? true);
         });
@@ -1312,6 +1328,7 @@
                     <option value="project">Project Reports</option>
                     <option value="" disabled />
                     <optgroup label="Moderation">
+                        <option value="removed">Removed Projects</option>
                         <option value="" disabled>
                             Assets (in development)
                         </option>
@@ -1324,9 +1341,9 @@
                 </p>
             {/if}
 
-            <div class="list-projects">
+            <div class="list-projects" style={projectListStyle}>
                 {#if dropdownSelectMenu?.value}
-                    {#if contentWithReports.length > 0}
+                    {#if contentWithReports.length > 0 || unapprovedProjects.length > 0}
                         {#if dropdownSelectMenu.value === "user"}
                             <p class="selection-info">
                                 Click on a user to expand details
@@ -1341,12 +1358,36 @@
                             <p class="selection-info">
                                 No user reports currently!
                             </p>
+                        {:else if dropdownSelectMenu.value === 'removed'}
+                            <p class="selection-info">
+                                No removed projects currently!
+                            </p>
                         {:else}
                             <p class="selection-info">
                                 No project reports currently!
                             </p>
                         {/if}
                     {/if}
+                    {#if dropdownSelectMenu.value === "removed"}
+                        <p class="selection-info">
+                            Page
+                            <input
+                                type="number"
+                                on:change={openProjectsMenu}
+                                bind:value={unapprovedPage}
+                            >
+                        </p>
+                    {/if}
+                    {#each unapprovedProjects as project}
+                        <div>
+                            <ClickableProject
+                                {...project}
+                                on:click={() => {
+                                    selectProject(project.id, project.name);
+                                }}
+                            />
+                        </div>
+                    {/each}
                     {#each contentWithReports as content, idx}
                         {#if dropdownSelectMenu.value === "user"}
                             <button
@@ -1629,7 +1670,7 @@
     .list-projects {
         display: flex;
         flex-direction: column;
-        width: 485px;
+        width: 512px;
         flex-wrap: nowrap;
         overflow: auto;
         height: calc(100% - 5rem);
