@@ -1259,7 +1259,7 @@
                         currentLang
                     )}
                     style="width:calc(90% - 10px);"
-                    stylec="height: 244px;"
+                    stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
                     seemore={`/search?q=user%3A${user}`}
                 >
                     <div class="project-list">
