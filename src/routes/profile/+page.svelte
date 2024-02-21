@@ -197,6 +197,7 @@
         });
     };
     
+    let fetchedFullProfile = false;
     onMount(() => {
         const params = new URLSearchParams(location.search);
         const query = params.get("user");
@@ -216,6 +217,7 @@
                 badges = fullProfile.badges;
                 isDonator = fullProfile.donator;
                 followerCount = fullProfile.followers;
+                fetchedFullProfile = true;
                 
                 setTimeout(() => {
                     renderScratchBlocks();
@@ -1319,6 +1321,18 @@
                         lang={currentLang}
                     />
                 </p>
+                <br>
+                <!-- only show if we fetched the full profile -->
+                {#if fetchedFullProfile}
+                    <Button link="https://scratch.mit.edu/users/{user}/" noredirect={true}>
+                        <LocalizedText
+                            text="View on Scratch"
+                            key="profile.scratchprofile"
+                            dontlink={true}
+                            lang={currentLang}
+                        />
+                    </Button>
+                {/if}
             </div>
         {/if}
     {:else}
