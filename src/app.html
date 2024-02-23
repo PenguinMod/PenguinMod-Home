@@ -76,7 +76,7 @@
 				prefersDarkMode = false;
 			}
 			const savedDarkMode = localStorage.getItem('darkmode');
-			if (typeof savedDarkMode === "undefined" && prefersDarkMode) {
+			if (savedDarkMode === null && prefersDarkMode) {
 				localStorage.setItem('darkmode', true);
 			}
 			const getDarkModeSetting = () => {
