@@ -93,8 +93,15 @@
 	}
 
 	function switchTheme() {
+		let prefersDarkMode = false;
+		try {
+			prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+		} catch {
+			prefersDarkMode = false;
+		}
 		const darkThemeOption = localStorage.getItem("darkmode");
-		if (String(darkThemeOption) === "true") { 
+		const hasDarkOption = darkThemeOption !== null && darkThemeOption !== undefined;
+		if (String(darkThemeOption) === "true" || (!hasDarkOption && prefersDarkMode)) { 
 			localStorage.setItem("darkmode", false);
 		} else {
 			localStorage.setItem("darkmode", true);
