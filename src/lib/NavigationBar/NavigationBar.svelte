@@ -93,8 +93,9 @@
 	}
 
 	function switchTheme() {
-		if (localStorage.getItem("darkmode")) {
-			localStorage.removeItem("darkmode");
+		const darkThemeOption = localStorage.getItem("darkmode");
+		if (String(darkThemeOption) === "true") { 
+			localStorage.setItem("darkmode", false);
 		} else {
 			localStorage.setItem("darkmode", true);
 		}
