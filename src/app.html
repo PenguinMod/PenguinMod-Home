@@ -54,36 +54,10 @@
 	</head>
 	<body data-sveltekit-preload-data="hover" id="PAGE_BODY">
 		<script>
-			if (location.pathname.replace(/\//gmi, "").startsWith("embed")) {
-				if (location.hash.replace(/#/gmi, "").startsWith("dark=")) {
-					const body = document.getElementById("PAGE_BODY");
-					const loop = () => {
-						const darkmode = location.hash.replace(/#/gmi, "") === "dark=true";
-						if (darkmode) {
-							body.classList.add("dark-mode");
-							body.style.background = "#111";
-							return;
-						}
-						body.classList.remove("dark-mode");
-						body.style.background = "";
-					}
-					setInterval(loop, 100);
-					loop();
-				}
-			} else {
-				const body = document.getElementById("PAGE_BODY");
-				const loop = () => {
-					const darkmode = localStorage.getItem("darkmode");
-					if (darkmode) {
-						body.classList.add("dark-mode");
-						body.style.background = "#111";
-						return;
-					}
-					body.classList.remove("dark-mode");
-					body.style.background = "";
-				}
-				setInterval(loop, 100);
-				loop();
+			const body = document.getElementById("PAGE_BODY");
+			const isEmbed = location.pathname.replace(/\//gmi, "").startsWith("embed");
+
+			const checkAndApplyLauncher = () => {
 				// check for launcher params
 				const urlParams = new URLSearchParams(location.search);
 				const isLauncher = String(urlParams.get('using_launcher')) === 'true';
@@ -92,8 +66,42 @@
 					body.classList.add("launcher-mode");
 					window._isPenguinModLauncher = true;
 				}
+			};
+
+			let prefersDarkMode = false;
+			try {
+				prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+			} catch {
+				prefersDarkMode = false;
+			}
+			const getDarkModeSetting = () => {
+				const savedDarkMode = localStorage.getItem('darkmode');
+				if (typeof savedDarkMode !== "undefined") {
+					return String(savedDarkMode) === "true";
+				}
+				return prefersDarkMode;
+			};
+
+			const loop = () => {
+				const darkmode = isEmbed ?
+					location.hash.replace(/#/gmi, "") === "dark=true"
+					: getDarkModeSetting();
+				if (darkmode) {
+					body.classList.add("dark-mode");
+					body.style.background = "#111";
+					return;
+				}
+				body.classList.remove("dark-mode");
+				body.style.background = "";
+			}
+			setInterval(loop, 100);
+			loop();
+			
+			if (!isEmbed) {
+				checkAndApplyLauncher();
 			}
 			
+			// warning in case of people pasting random code here
 			console.log(
 				"%cSCAM ALERT! %cDo NOT paste things into here that other people sent you!",
 				"color:red;font-family:system-ui;font-size:2rem;-webkit-text-stroke: 1px black;font-weight:bold",
