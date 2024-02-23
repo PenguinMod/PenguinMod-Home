@@ -75,13 +75,13 @@
 				console.warn('failed to get darkmode preference;', e);
 				prefersDarkMode = false;
 			}
-			console.log('browser dark mode', prefersDarkMode);
+			const savedDarkMode = localStorage.getItem('darkmode');
+			if (typeof savedDarkMode === "undefined" && prefersDarkMode) {
+				localStorage.setItem('darkmode', true);
+			}
 			const getDarkModeSetting = () => {
 				const savedDarkMode = localStorage.getItem('darkmode');
-				if (typeof savedDarkMode !== "undefined") {
-					return String(savedDarkMode) === "true";
-				}
-				return prefersDarkMode;
+				return String(savedDarkMode) === "true";
 			};
 
 			const loop = () => {
