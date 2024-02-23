@@ -71,11 +71,9 @@
 			let prefersDarkMode = false;
 			try {
 				prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
-			} catch (e) {
-				console.warn('failed to get darkmode preference;', e);
+			} catch {
 				prefersDarkMode = false;
 			}
-			console.log('browser dark mode', prefersDarkMode);
 			const getDarkModeSetting = () => {
 				const savedDarkMode = localStorage.getItem('darkmode');
 				if (typeof savedDarkMode !== "undefined") {
