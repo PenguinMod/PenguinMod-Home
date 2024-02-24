@@ -22,6 +22,9 @@
     };
 
     onMount(async () => {
+        const loginDetails = await getLoginDetails();
+        console.log(loginDetails);
+
         const params = new URLSearchParams(location.search);
         const importLocation = params.get("external");
         if (!importLocation) return console.warn("No external provided");
@@ -62,6 +65,6 @@
             }
         }
 
-        post("login", await getLoginDetails());
+        post("login", loginDetails);
     });
 </script>
