@@ -109,7 +109,7 @@
     "messages.description": "Alerts from remixes, project activity and staff members.",
     "messages.login": "Please log in to view your messages.",
     "messages.markallread": "Mark all as read",
-    "messages.alert.remix": "Your project \"$1\" was remixed as \"$2",
+    "messages.alert.remix": "Your project \"$1\" was remixed as \"$2\"",
     "messages.alert.featured": "Your project \"$1\" was featured!",
     "messages.alert.badge": "You've recieved the badge \"$1\"!",
     "messages.alert.followeradded": "$1 is now following you",

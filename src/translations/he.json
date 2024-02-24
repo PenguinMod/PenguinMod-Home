@@ -109,9 +109,9 @@
     "messages.description": "הודעות ממיקסוסים, פעילות בפרויקטים ואנשי צוות.",
     "messages.login": "אנא היכנס למשתמש כדי לקרוא את ההודעות שלך.",
     "messages.markallread": "סמן הכל כנקרא",
-    "messages.alert.remix": "הפרויקט שלכם \"$1\" מוקסס ל-\"$2",
+    "messages.alert.remix": "הפרויקט שלכם \"$1\" מוקסס ל-\"$2\"",
     "messages.alert.featured": "הפרויקט שלך \"$1\" נהיה מפורסם!",
-    "messages.alert.badge": "קיבלת את התג \"$1",
+    "messages.alert.badge": "קיבלת את התג \"$1\"",
     "messages.alert.followeradded": "$1 עוקב אחריך",
     "messages.alert.staff.removed.title": "הפרויקט \"$1\" שלך הוסר.",
     "messages.alert.staff.banned.title": "המשתמש שלך נחסם מהעלאת פרויקטים ועוד אפשרויות. תוכל להמשיך להשתמש בעורך ולצפות בפרויקטים של אחרים בכל מקרה.",
@@ -279,7 +279,7 @@
     "donate.served.requests": "<p>אנחנו מטפלים בכ-</p><h1>$1</h1><p>קריאות בכל חודש</p>",
     "payment.paypal.card": "פייפאל / כרטיס אשראי",
     "payment.paypal": "פייפאל",
-    "payment.cashapp": "קאשאפ",
+    "payment.cashapp": "Cash App",
     "donated.title": "תודה על התרומה שלכם! ✨",
     "donated.subtitle": "אנחנו מקווים שתמשיכו לתמוך בPenguinMod, גם אם זה לא עם כסף, אלא על ידי שיתוף פרויקטים ושימוש בשירות שלנו!",
     "donated.perks": "רוצים קצת הטבות כתורמים?",
@@ -348,5 +348,7 @@
     "profile.featured.cancel": "ביטול",
     "profile.featured.chooselabel": "בחר תג לפרויקט זה",
     "messages.moderatortitle": "הודעת מנהל",
-    "messages.projectid": "פרויקט איידי: $1"
+    "messages.projectid": "פרויקט איידי: $1",
+    "payment.stripe.subtitle": "Stripe (תומך ברוב דרכי התשלום)",
+    "payment.stripe": "Stripe"
 }
