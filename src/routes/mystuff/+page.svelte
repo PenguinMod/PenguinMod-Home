@@ -76,7 +76,11 @@
             .then((projectss) => {
                 if (projectss.length <= 0) {
                     projects = ["notfound"];
+                    pageIsLast = true;
                     return;
+                }
+                if (projectss.length < 20) {
+                    pageIsLast = true;
                 }
                 projects = projectss;
             })
@@ -280,6 +284,7 @@
                         owner={project.owner}
                         date={project.date}
                         featured={project.featured}
+                        rejected={project.removedsoft}
                         style="padding:8px;height:auto"
                         showdate="true"
                     >
@@ -304,6 +309,23 @@
                                         />
                                     </i>
                                 </p>
+                            {:else if project.removedsoft}
+                                <p>
+                                    <i>
+                                        <LocalizedText
+                                            text="(under review)"
+                                            key="project.status.reviewing"
+                                            lang={currentLang}
+                                        />
+                                    </i>
+                                </p>
+                                <a href="/edit?id={project.id}">
+                                    <LocalizedText
+                                        text="Edit Project"
+                                        key="project.menu.project.edit"
+                                        lang={currentLang}
+                                    />
+                                </a>
                             {/if}
                         </div>
                     </Project>

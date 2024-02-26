@@ -11,6 +11,7 @@
     export let name;
     export let showdate = false;
     export let featured = false;
+    export let rejected = false;
     export let fromDonator = false;
     export let owner;
     export let date = 0;
@@ -72,7 +73,7 @@
         : `/profile?user=${owner}`;
 </script>
 
-<div data-featured={featured} class="project" {style}>
+<div data-featured={featured} data-rejected={rejected} class="project" {style}>
     <a
         href={projectLink}
         target={openNewtab ? "_blank" : "_self"}
@@ -203,6 +204,9 @@
         );
         background-size: 300% 300%;
         animation: gradient 3s ease infinite;
+    }
+    .project[data-rejected="true"] {
+        border-color: red;
     }
 
     .text {

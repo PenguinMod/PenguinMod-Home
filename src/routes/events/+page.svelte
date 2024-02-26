@@ -1,17 +1,17 @@
 <script>
-    import GuidelinesPages from "../../guidelines/pages";
-    const pages = Object.keys(GuidelinesPages);
+    import EventsPages from "../../events/pages";
+    const pages = Object.keys(EventsPages);
     const amount = pages.length;
 </script>
 
-<h1>Guidelines</h1>
+<h1>Events</h1>
 <br />
 <p class="lil-guy">
     <b>{amount} page{amount > 1 ? "s" : ""} found</b>
 </p>
 
 {#each pages as page}
-    <a href={`/guidelines/${page}`}>{page}</a>
+    <a href={`/events/${page}`}>{page}</a>
 {/each}
 
 <div style="height: 32px;" />

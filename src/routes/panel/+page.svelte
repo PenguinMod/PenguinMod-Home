@@ -1,5 +1,6 @@
 <script>
     import { onMount } from "svelte";
+    import { page } from '$app/stores';
     import Authentication from "../../resources/authentication.js";
     import LINK from "../../resources/urls.js";
     import ProfileBadges from "../../resources/badges.js";
@@ -7,6 +8,8 @@
     import ProjectApi from "../../resources/projectapi.js";
     import * as FileSaver from "file-saver";
     import JSZip from "jszip";
+    import BlobAndDataUrl from "./blobanddataurl.js";
+    import FileTypes from "./filetypes.js";
 
     const ProjectClient = new ProjectApi();
 
@@ -14,7 +17,7 @@
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
-    import Project from "$lib/Project/Project.svelte";
+    import ClickableProject from "$lib/ClickableProject/Project.svelte";
     import Button from "$lib/Button/Button.svelte";
 
     function unixToDisplayDate(unix) {
@@ -25,7 +28,8 @@
 
     let loggedIn = null;
     let projectIdSelection;
-    let serverStats = []
+    let serverStats = [];
+    const selectForReject = $page.url.searchParams.get('reject');
 
     function kickOut() {
         location.href = location.origin + "/bx-tv1.mp4";
@@ -86,7 +90,7 @@
     let dropdownSelectMenu;
 
     let contentWithReports = [];
-    let reports = [];
+    let unapprovedProjects = [];
     let selectedReportDetailed = -1;
     let reportDetails = Object.create({});
 
@@ -133,15 +137,20 @@
             });
     };
 
+    let projectListStyle = '';
     const refreshProjectMenu = () => {
-        reports = [];
+        unapprovedProjects = [];
         contentWithReports = [];
+        projectListStyle = '';
         selectedReportDetailed = -1;
         reportDetails = Object.create({});
         switch (dropdownSelectMenu.value) {
             case "user":
             case "project":
-                return openMenu(dropdownSelectMenu.value);
+                return openReportsMenu(dropdownSelectMenu.value);
+            case "removed":
+                projectListStyle = 'flex-direction: row;flex-wrap: wrap;';
+                return openProjectsMenu(dropdownSelectMenu.value);
         }
     };
     const closeUserReports = (idOrName, user) => {
@@ -159,7 +168,18 @@
             });
     };
 
-    function openMenu(type) {
+    let unapprovedPage = 1;
+    function openProjectsMenu(type) {
+        // type is assumed to be unapproved because we have nothing else right now
+        unapprovedProjects = [];
+        contentWithReports = [];
+        ProjectClient.getUnapprovedProjects(unapprovedPage - 1).then(unapprovedProjs => {
+            unapprovedProjects = unapprovedProjs;
+        });
+    }
+    function openReportsMenu(type) {
+        unapprovedProjects = [];
+        contentWithReports = [];
         ProjectClient.getTypeWithReports(type).then((projectsWithReports) => {
             contentWithReports = projectsWithReports.filter(content => content.exists ?? true);
         });
@@ -185,21 +205,26 @@
     let rejectingId = 0;
     let rejectingName = "";
     let rejectingTextboxArea;
+    let isRejectHard = false;
     function rejectProject(id) {
         id ??= Number(projectIdSelection.value);
         if (isNaN(id)) return;
-        if (!confirm(`Reject "${rejectingName}"?`)) return;
+        const confirmationMessage = `Reject "${rejectingName}"?\n`
+            + `${isRejectHard ?
+                'Hard reject is enabled.\nThe uploader will not be able to edit the original project once you reject it.'
+                : 'Soft reject is enabled.'}`;
+        if (!confirm(confirmationMessage)) return;
         if (rejectingTextboxArea.value.length <= 3) {
             return alert("The action was cancelled.");
         }
-        ProjectClient.rejectProject(id, rejectingTextboxArea.value).then(() => {
+        ProjectClient.rejectProject(id, rejectingTextboxArea.value, isRejectHard).then(() => {
             rejectionPageOpen = false;
             // uhhhhhhh apparently we need to do this ig?
-            const newProjects = projects.filter((proj) => proj.id !== id);
-            projects = [];
-            projects = newProjects;
+            // const newProjects = projects.filter((proj) => proj.id !== id);
+            // projects = [];
+            // projects = newProjects;
             // dont need to do this i think
-            // refreshProjectMenu();
+            refreshProjectMenu();
         });
     }
     let selectedProjectName = "";
@@ -241,6 +266,10 @@
                 selectedProjectName = "";
             }
         };
+        if (selectForReject && String(selectForReject).length > 4) {
+            projectIdSelection.value = selectForReject;
+            openRemoveProjectMenu();
+        }
     });
 
     // let sendWebhook = true;
@@ -271,6 +300,7 @@
     };
 
     let inspectMenuOpen = false;
+    let censorMenuOpen = false;
     const inspectMenuDetails = {
         downloading: false,
         error: false,
@@ -278,6 +308,20 @@
         extensions: [],
         extensionData: {},
         extensionUrls: {},
+    };
+    const censorMenuDetails = {
+        downloading: false,
+        uploading: false,
+        error: false,
+        id: 0,
+        costumes: [],
+        sounds: [],
+        censoredCostumes: {},
+        mutedSounds: {},
+        previewNoBG: true,
+        previewBlack: false,
+        size: 128,
+        rawProject: null,
     };
     let _resettingInspectMenu = true;
     function resetInspectMenu() {
@@ -336,6 +380,142 @@
                 .catch((err) => {
                     inspectMenuDetails.error = true;
                     inspectMenuDetails.errorText = err;
+                });
+        }, 1000);
+    }
+    const addToCensorMenuArray = async (asset, array, zip) => {
+        const assetFile = asset.md5ext;
+        try {
+            /**
+             * @type {Blob}
+             */
+            const blob = await zip
+                .file(assetFile)
+                .async("blob");
+            const fileType = await BlobAndDataUrl.fileTypeFromBlob(blob);
+            const mimeType = FileTypes.mimeTypePairs[fileType];
+            const typedBlob = new Blob([await blob.arrayBuffer()], { type: mimeType });
+            const properURL = URL.createObjectURL(typedBlob);
+            array.push({ name: asset.name, url: properURL, file: assetFile });
+        } catch (e) {
+            console.warn('asset', asset.name, assetFile, 'failed to load', e);
+        }
+    };
+    const fillCensorMenu = async (projectJson, zip) => {
+        const displayCostumes = censorMenuDetails.costumes;
+        const displaySounds = censorMenuDetails.sounds;
+        for (const target of projectJson.targets) {
+            for (const costume of target.costumes) {
+                await addToCensorMenuArray(costume, displayCostumes, zip);
+            }
+            for (const sound of target.sounds) {
+                await addToCensorMenuArray(sound, displaySounds, zip);
+            }
+        }
+        // svelte doesnt react to array.push apparently
+        censorMenuDetails.costumes = displayCostumes;
+        censorMenuDetails.sounds = displaySounds;
+        censorMenuDetails.downloading = false;
+        censorMenuDetails.uploading = false;
+    };
+    const fetchElementAsBlob = async (url) => {
+        const res = await fetch(url);
+        if (!res.ok) throw `${url} not OK`;
+        const arrayBuffer = await res.arrayBuffer();
+        const blob = BlobAndDataUrl.arrayBufferToBlob(arrayBuffer);
+        return blob;
+    };
+    const _applyCensorChanges = async () => {
+        /**
+         * @type {{ zip:JSZip, json:object }}
+         */
+        const project = censorMenuDetails.rawProject;
+        const censorCostume = await fetchElementAsBlob('/censor/costume.svg');
+        const censorSound = await fetchElementAsBlob('/censor/sound.mp3');
+        // get info that needs updating
+        // NOTE: these include the file type at the end
+        const censoredCostumes = Object.keys(censorMenuDetails.censoredCostumes)
+            .filter(key => censorMenuDetails.censoredCostumes[key] === true);
+        const censoredSounds = Object.keys(censorMenuDetails.mutedSounds)
+            .filter(key => censorMenuDetails.mutedSounds[key] === true);
+        // update json
+        for (const target of project.json.targets) {
+            for (const costumeId of censoredCostumes) {
+                for (const costume of target.costumes) {
+                    if (!(costume.md5ext === costumeId)) continue;
+                    costume.rotationCenterX = 32;
+                    costume.rotationCenterY = 32;
+                    costume.bitmapResolution = 1;
+                    costume.dataFormat = "svg";
+                    costume.md5ext = `${costume.assetId}.svg`;
+                }
+            }
+            for (const soundId of censoredSounds) {
+                for (const sound of target.sounds) {
+                    if (!(sound.md5ext === soundId)) continue;
+                    sound.dataFormat = "mp3";
+                    sound.format = "mp3";
+                    sound.md5ext = `${sound.assetId}.mp3`;
+                }
+            }
+        }
+        // update zip
+        for (const costumeId of censoredCostumes) {
+            project.zip.file(costumeId, censorCostume);
+        }
+        for (const soundId of censoredSounds) {
+            project.zip.file(soundId, censorSound);
+        }
+        const penguinModProject = await project.zip.generateAsync({ type: "blob" });
+        const projectId = censorMenuDetails.id;
+        await ProjectClient.updateProject(projectId, {
+            project: await BlobAndDataUrl.blobToDataURL(penguinModProject)
+        });
+    };
+    const applyCensorChanges = async () => {
+        censorMenuDetails.uploading = true;
+        try {
+            await _applyCensorChanges();
+            censorMenuOpen = false;
+        } catch (e) {
+            console.error(e);
+            alert(e);
+        }
+        censorMenuDetails.uploading = false;
+    };
+    function openCensorMenu() {
+        censorMenuOpen = true;
+        censorMenuDetails.downloading = true;
+        censorMenuDetails.uploading = false;
+        censorMenuDetails.error = false;
+        setTimeout(() => {
+            if (!censorMenuOpen) return; // dont download if we closed
+            const id = Number(projectIdSelection.value);
+            censorMenuDetails.id = id;
+            ProjectApi.getProjectFile(id)
+                .then((blob) => {
+                    JSZip.loadAsync(blob)
+                        .then(async (zip) => {
+                            const project = await zip
+                                .file("project.json")
+                                .async("string");
+                            const json = JSON.parse(project);
+                            censorMenuDetails.costumes = [];
+                            censorMenuDetails.sounds = [];
+                            censorMenuDetails.rawProject = {
+                                zip,
+                                json
+                            };
+                            await fillCensorMenu(json, zip);
+                        })
+                        .catch((err) => {
+                            censorMenuDetails.error = true;
+                            censorMenuDetails.errorText = err;
+                        });
+                })
+                .catch((err) => {
+                    censorMenuDetails.error = true;
+                    censorMenuDetails.errorText = err;
                 });
         }, 1000);
     }
@@ -582,6 +762,13 @@
                     style="width: 95%;"
                     autofocus
                 />
+                <details>
+                    <summary>Dangerous options</summary>
+                    <label style="color:red">
+                        <input type="checkbox" bind:checked={isRejectHard}>
+                        Don't allow the uploader to edit the project after reject (hard reject)
+                    </label>
+                </details>
                 <br />
                 <br />
                 <h2><b>Quick-Reject</b></h2>
@@ -665,6 +852,107 @@
             </div>
         </div>
     {/if}
+    {#if censorMenuOpen}
+        <div class="front-card-page">
+            <div class="card-page big-card-page">
+                <div class="card-header">
+                    <h1>Censor Images/Audio</h1>
+                </div>
+                <div class="card-projects" style="display:block">
+                    {#if censorMenuDetails.downloading}
+                        <p style="width:100%;text-align:center;">
+                            Downloading project, this might take a bit...
+                        </p>
+                    {:else}
+                        <h1>Costumes</h1>
+                        <p>Click the Replace button to mark it to be replaced with a 🚫 sign</p>
+                        <p>
+                            <label>
+                                <input type="checkbox" bind:checked={censorMenuDetails.previewBlack}>
+                                Use black background
+                            </label>
+                        </p>
+                        <p>
+                            <label>
+                                <input type="checkbox" bind:checked={censorMenuDetails.previewNoBG}>
+                                Use no background
+                            </label>
+                        </p>
+                        <p>
+                            <label>
+                                Size
+                                <input type="number" bind:value={censorMenuDetails.size}>
+                                (enter nothing to use image size)
+                            </label>
+                        </p>
+                        <div style="display:flex;flex-wrap:wrap;">
+                            {#each censorMenuDetails.costumes as costume}
+                                <div style="padding:4px; border:1px solid black; margin:4px;">
+                                    <img
+                                        src={costume.url}
+                                        alt={costume.name}
+                                        width={censorMenuDetails.size}
+                                        height={censorMenuDetails.size}
+                                        style={censorMenuDetails.previewNoBG ? '' :
+                                            `background:${censorMenuDetails.previewBlack ? 'black' : "white"}`}
+                                    >
+                                    <p>{costume.name}</p>
+                                    <p>
+                                        <label>
+                                            <input type="checkbox" bind:checked={censorMenuDetails.censoredCostumes[costume.file]}>
+                                            Replace
+                                        </label>
+                                    </p>
+                                </div>
+                            {/each}
+                        </div>
+                        <h1>Sounds</h1>
+                        <p>Click the Mute button to mark it to be muted</p>
+                        {#each censorMenuDetails.sounds as sound}
+                            <figure>
+                                <figcaption>{sound.name}</figcaption>
+                                <audio
+                                    volume={0.5}
+                                    src={sound.url}
+                                    controls
+                                />
+                                <br>
+                                <a download="{sound.name}" href={sound.url} target="_blank">
+                                    Download
+                                </a>
+                                <label>
+                                    <input type="checkbox" bind:checked={censorMenuDetails.mutedSounds[sound.file]}>
+                                    Mute
+                                </label>
+                            </figure>
+                        {/each}
+                    {/if}
+                    {#if censorMenuDetails.error}
+                        <p style="width:100%;text-align:center;color:red">
+                            {censorMenuDetails.errorText}
+                        </p>
+                    {/if}
+                </div>
+                <div style="display:flex;flex-direction:row;padding:1em">
+                    {#if censorMenuDetails.uploading}
+                        <LoadingSpinner></LoadingSpinner>
+                    {:else}
+                        <Button
+                            color="red"
+                            label="Apply changes"
+                            on:click={applyCensorChanges}
+                        />
+                    {/if}
+                    <Button
+                        label="Close"
+                        on:click={() => {
+                            censorMenuOpen = false;
+                        }}
+                    />
+                </div>
+            </div>
+        </div>
+    {/if}
 
     <!-- {#if guidelinePageOpen}
         <div class="front-card-page">
@@ -741,6 +1029,10 @@
                     <Button
                         label="Inspect Extensions"
                         on:click={openInspectMenu}
+                    />
+                    <Button
+                        label="Censor Images/Audio"
+                        on:click={openCensorMenu}
                     />
                 </div>
                 <!-- <div style="height:24px" />
@@ -1036,6 +1328,7 @@
                     <option value="project">Project Reports</option>
                     <option value="" disabled />
                     <optgroup label="Moderation">
+                        <option value="removed">Removed Projects</option>
                         <option value="" disabled>
                             Assets (in development)
                         </option>
@@ -1048,9 +1341,9 @@
                 </p>
             {/if}
 
-            <div class="list-projects">
+            <div class="list-projects" style={projectListStyle}>
                 {#if dropdownSelectMenu?.value}
-                    {#if contentWithReports.length > 0}
+                    {#if contentWithReports.length > 0 || unapprovedProjects.length > 0}
                         {#if dropdownSelectMenu.value === "user"}
                             <p class="selection-info">
                                 Click on a user to expand details
@@ -1065,12 +1358,36 @@
                             <p class="selection-info">
                                 No user reports currently!
                             </p>
+                        {:else if dropdownSelectMenu.value === 'removed'}
+                            <p class="selection-info">
+                                No removed projects currently!
+                            </p>
                         {:else}
                             <p class="selection-info">
                                 No project reports currently!
                             </p>
                         {/if}
                     {/if}
+                    {#if dropdownSelectMenu.value === "removed"}
+                        <p class="selection-info">
+                            Page
+                            <input
+                                type="number"
+                                on:change={openProjectsMenu}
+                                bind:value={unapprovedPage}
+                            >
+                        </p>
+                    {/if}
+                    {#each unapprovedProjects as project}
+                        <div>
+                            <ClickableProject
+                                {...project}
+                                on:click={() => {
+                                    selectProject(project.id, project.name);
+                                }}
+                            />
+                        </div>
+                    {/each}
                     {#each contentWithReports as content, idx}
                         {#if dropdownSelectMenu.value === "user"}
                             <button
@@ -1353,7 +1670,7 @@
     .list-projects {
         display: flex;
         flex-direction: column;
-        width: 485px;
+        width: 512px;
         flex-wrap: nowrap;
         overflow: auto;
         height: calc(100% - 5rem);

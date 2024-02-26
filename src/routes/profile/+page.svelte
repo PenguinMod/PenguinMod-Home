@@ -197,6 +197,7 @@
         });
     };
     
+    let fetchedFullProfile = false;
     onMount(() => {
         const params = new URLSearchParams(location.search);
         const query = params.get("user");
@@ -216,6 +217,7 @@
                 badges = fullProfile.badges;
                 isDonator = fullProfile.donator;
                 followerCount = fullProfile.followers;
+                fetchedFullProfile = true;
                 
                 setTimeout(() => {
                     renderScratchBlocks();
@@ -773,7 +775,7 @@
     <StatusAlert />
 
     {#if projects.all.length > 0}
-        {#if projects.all[0] !== "none" || (loggedIn && user === loggedInUser)}
+        {#if (projects.all[0] !== "none" || isDonator || fullProfile.bio || isFollowingUser || fullProfile.rank > 0) || (loggedIn && user === loggedInUser)}
         <div class="background">
             {#if user}
                 <div class="section-user">
@@ -1202,6 +1204,9 @@
                                             title={TranslationHandler.text(
                                                 `profile.badge.${badge}`,
                                                 currentLang
+                                            ) || TranslationHandler.text(
+                                                `profile.badge.${badge}`,
+                                                'en'
                                             )}
                                         >
                                             <img
@@ -1209,10 +1214,16 @@
                                                 alt={TranslationHandler.text(
                                                     `profile.badge.${badge}`,
                                                     currentLang
+                                                ) || TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    'en'
                                                 )}
                                                 title={TranslationHandler.text(
                                                     `profile.badge.${badge}`,
                                                     currentLang
+                                                ) || TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    'en'
                                                 )}
                                             />
                                             {#if focusedBadge === idx}
@@ -1220,6 +1231,9 @@
                                                     {TranslationHandler.text(
                                                         `profile.badge.${badge}`,
                                                         currentLang
+                                                    ) || TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        'en'
                                                     )}
                                                 </div>
                                             {/if}
@@ -1245,7 +1259,7 @@
                         currentLang
                     )}
                     style="width:calc(90% - 10px);"
-                    stylec="height: 244px;"
+                    stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
                     seemore={`/search?q=user%3A${user}`}
                 >
                     <div class="project-list">
@@ -1307,6 +1321,18 @@
                         lang={currentLang}
                     />
                 </p>
+                <br>
+                <!-- only show if we fetched the full profile -->
+                {#if fetchedFullProfile}
+                    <Button link="https://scratch.mit.edu/users/{user}/" noredirect={true}>
+                        <LocalizedText
+                            text="View on Scratch"
+                            key="profile.scratchprofile"
+                            dontlink={true}
+                            lang={currentLang}
+                        />
+                    </Button>
+                {/if}
             </div>
         {/if}
     {:else}
