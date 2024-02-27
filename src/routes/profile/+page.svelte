@@ -45,6 +45,7 @@
     let focusedBadge = -1;
     let isDonator = false;
     let isFollowingUser = false;
+    let wasNotFound = false;
     let followerCount = null;
     let fullProfile = {};
     let isRankingUpMenu = false;
@@ -212,16 +213,12 @@
             if (projects.featured.length <= 0) {
                 projects.featured = ["none"];
             }
+            wasNotFound = false;
             ProjectApi.getProfile(user, true).then((proffile) => {
                 fullProfile = proffile;
                 badges = fullProfile.badges;
                 isDonator = fullProfile.donator;
                 followerCount = fullProfile.followers;
-                fetchedFullProfile = true;
-                
-                setTimeout(() => {
-                    renderScratchBlocks();
-                }, 0);
 
                 const profileFeatured = fullProfile.myFeaturedProject;
                 if (profileFeatured) {
@@ -236,6 +233,17 @@
                 } else if (!profileFeatured && projects.all[0]) {
                     profileFeaturedProject = projects.all[0];
                 }
+            }).catch(err => {
+                err = JSON.parse(err);
+                err = err.error;
+                if (err === 'NotFound') {
+                    wasNotFound = true;
+                }
+            }).finally(() => {
+                fetchedFullProfile = true;
+                setTimeout(() => {
+                    renderScratchBlocks();
+                }, 0);
             });
         });
 
@@ -774,8 +782,11 @@
 
     <StatusAlert />
 
-    {#if projects.all.length > 0}
-        {#if (projects.all[0] !== "none" || isDonator || fullProfile.bio || isFollowingUser || fullProfile.rank > 0) || (loggedIn && user === loggedInUser)}
+    {#if projects.all.length > 0 && fetchedFullProfile}
+        {#if
+            (!(projects.all[0] !== "none" && wasNotFound))
+            && ((projects.all[0] !== "none" || isDonator || fullProfile.bio || isFollowingUser || fullProfile.rank > 0)
+            || (loggedIn && user === loggedInUser))}
         <div class="background">
             {#if user}
                 <div class="section-user">
