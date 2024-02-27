@@ -46,6 +46,7 @@
     let isDonator = false;
     let isFollowingUser = false;
     let wasNotFound = false;
+    let isForceView = false;
     let followerCount = null;
     let fullProfile = {};
     let isRankingUpMenu = false;
@@ -782,11 +783,13 @@
 
     <StatusAlert />
 
-    {#if projects.all.length > 0 && fetchedFullProfile}
+    {#if (projects.all.length > 0 && fetchedFullProfile) || isForceView}
         {#if
-            (!(projects.all[0] !== "none" && wasNotFound))
+            ((!(projects.all[0] !== "none" && wasNotFound))
             && ((projects.all[0] !== "none" || isDonator || fullProfile.bio || isFollowingUser || fullProfile.rank > 0)
-            || (loggedIn && user === loggedInUser))}
+            || (loggedIn && user === loggedInUser)))
+            || isForceView
+        }
         <div class="background">
             {#if user}
                 <div class="section-user">
@@ -1343,6 +1346,13 @@
                             lang={currentLang}
                         />
                     </Button>
+                    {#if loggedInAdmin}
+                        <Button on:click={() => {
+                            isForceView = true;
+                        }}>
+                            (Admin) Force view profile
+                        </Button>
+                    {/if}
                 {/if}
             </div>
         {/if}
