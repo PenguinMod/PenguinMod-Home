@@ -12,16 +12,22 @@
     <details><summary>Spam</summary>
         <button on:click={() => event("Your project was removed because you uploaded a blank project. Your account is not in any trouble though, we just remove blank projects to reduce spam.")}>
         No content / Default project</button>
-        <button on:click={() => event("Your project was removed because you uploaded a project that is the same as one you have published before. Please update the original project instead in your My Stuff page.")}>
-        Repost</button>
+        <button on:click={() => event("Your project was removed because you uploaded a project that is the same as one you have published before. Please update the original project instead in your My Stuff page. Your account is not in any trouble though, we just remove duplicate projects to reduce spam.")}>
+        Repost of their own project</button>
+        <button on:click={() => event("Your project was removed because you uploaded a project that is a copy of someone else's project on PenguinMod.")}>
+        Repost of someone else's project</button>
+        <button on:click={() => event("Your project was removed because you uploaded a project that is owned by someone else on Scratch.")}>
+        Repost of someone else's Scratch project</button>
         <button on:click={() => event("Your project was removed because it is the exact same as your previously removed project. Please remove any material that broke the Project Uploading Guidelines, or if you believe the project did not break the guidelines, please reply to the original message with your reason.")}>
-        Repost after Rejection</button>
+        Repost after original was removed</button>
         <button on:click={() => event("Your project has been removed because it is based around showing content from another website that you did not create. These types of projects are banned in the \"Base requirements for a project\" section of the uploading rules.")}>
         Based around external site content</button>
         <button on:click={() => event("Your project has been removed because it is only an iframe. We do not allow projects that are only iframes on penguinmod. Read the project uploading guidelines for more information.")}>
         Iframe only</button>
     </details>
-    <button on:click={() => event("Your project was removed because it disables or breaks access to parts of the PenguinMod editor.")}>
+    <button on:click={() => event("Your project was removed because it encourages users to try to abuse the reporting system. Please only encourage normal use of the report button if you need to.")}>
+    Encourages mass-reporting or false reporting</button>
+    <button on:click={() => event("Your project was removed because it disables or breaks access to parts of the PenguinMod editor. Please read the uploading guidelines for more information.")}>
     Breaks or disables aspects of the site</button>
     <button on:click={() => event("Your project was removed because it contains sensitive information of either you or another person. We remove these types of projects to protect the people included, so please be careful with what information you share in your project.")}>
     Sensitive Information</button>
@@ -30,7 +36,7 @@
         Misuse of an external platform</button>
         <button on:click={() => event("Your project was removed because it contains a link or references a platform with either offensive, extreme, sexual or unsafe content. Please remove these references from your project.")}>
         References unsafe external platform</button>
-        <button on:click={() => event("Your project was removed because it contains slurs or bypassed slurs. These words are not allowed on our platform, and you may receive punishment.")}>
+        <button on:click={() => event("Your project was removed because it contains slurs or derogatory terms. These words are not allowed on our platform, and you may receive punishment.")}>
         Slurs</button>
     </details>
     <details><summary>Offensive / Extreme Content</summary>
