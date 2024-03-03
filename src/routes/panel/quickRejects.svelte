@@ -25,6 +25,8 @@
         <button on:click={() => event("Your project has been removed because it is only an iframe. We do not allow projects that are only iframes on penguinmod. Read the project uploading guidelines for more information.")}>
         Iframe only</button>
     </details>
+    <button on:click={() => event("Your project was removed as it allows users to chat with each other, while being able to type their own messages. As of November 14th, 2023, PenguinMod has decided to ban uploaded projects based around chatting with other users. Read the project uploading guidelines for more information.")}>
+    Chat Project with free typing</button>
     <button on:click={() => event("Your project was removed because it encourages users to try to abuse the reporting system. Please only encourage normal use of the report button if you need to.")}>
     Encourages mass-reporting or false reporting</button>
     <button on:click={() => event("Your project was removed because it disables or breaks access to parts of the PenguinMod editor. Please read the uploading guidelines for more information.")}>
