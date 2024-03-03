@@ -186,22 +186,22 @@
     let isBusyUploading = false;
     function updateProject() {
         if (isBusyUploading) return;
-        if (projectMetadata.featured) {
-            const code = projectId;
-            const continueEdit = prompt(
-                TranslationHandler.text(
-                    "editing.confirm.featured",
-                    currentLang
-                ).replace("$1", code)
-            );
-            if (continueEdit.trim().replace(/[^0-9]*/gim, "") !== String(code))
-                return;
-            // } else if (projectMetadata.accepted) {
-            //     const continueEdit = confirm(
-            //         TranslationHandler.text("editing.confirm.normal", currentLang)
-            //     );
-            //     if (!continueEdit) return;
-        }
+        // if (projectMetadata.featured) {
+        //     const code = projectId;
+        //     const continueEdit = prompt(
+        //         TranslationHandler.text(
+        //             "editing.confirm.featured",
+        //             currentLang
+        //         ).replace("$1", code)
+        //     );
+        //     if (continueEdit.trim().replace(/[^0-9]*/gim, "") !== String(code))
+        //         return;
+        //     // } else if (projectMetadata.accepted) {
+        //     //     const continueEdit = confirm(
+        //     //         TranslationHandler.text("editing.confirm.normal", currentLang)
+        //     //     );
+        //     //     if (!continueEdit) return;
+        // }
         isBusyUploading = true;
         const newMetadata = {};
         const data = {

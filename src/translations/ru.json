@@ -109,7 +109,7 @@
     "messages.description": "Предупреждение о ремиксах, активности проекта и сотрудниках.",
     "messages.login": "Пожалуйста, войдите, чтобы просмотреть ваши сообщения.",
     "messages.markallread": "Пометить всё как прочитанное",
-    "messages.alert.remix": "У вашего проекта \"$1\" был создан ремикс \"$2",
+    "messages.alert.remix": "У вашего проекта \"$1\" был создан ремикс \"$2\"",
     "messages.alert.featured": "Ваш проект \"$1\" был избран!",
     "messages.alert.badge": "Вы получили значок \"$1\"!",
     "messages.alert.followeradded": "$1 теперь подписан на вас",
@@ -348,5 +348,7 @@
     "profile.featured.cancel": "Отмена",
     "profile.featured.chooselabel": "Выберите вкладку для этого проекта",
     "messages.moderatortitle": "Сообщение от модератора",
-    "messages.projectid": "ID проекта: $1"
+    "messages.projectid": "ID проекта: $1",
+    "payment.stripe.subtitle": "Stripe (Большинство типов оплаты)",
+    "payment.stripe": "Stripe"
 }

@@ -22,10 +22,12 @@ class Language {
         // if no lang, default to browser lang
         if (!lang) {
             lang = navigator.language;
+            lang = TranslationHandler.tryConvertingLocale(lang);
         }
         // if no browser lang, check top level lang
         if (!TranslationHandler.isLanguageAvailable(lang)) {
             lang = navigator.language.split('-')[0];
+            lang = TranslationHandler.tryConvertingLocale(lang);
             // if no top level lang go to en
             if (!TranslationHandler.isLanguageAvailable(lang)) {
                 lang = 'en';

@@ -854,12 +854,13 @@ class ProjectApi {
             })
         })
     }
-    rejectProject(id, reason) {
+    rejectProject(id, reason, hardReject) {
         const data = {
             passcode: this.privateCode,
             approver: this.username,
             id,
             reason,
+            type: hardReject ? 'hard' : 'soft'
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/projects/reject`, {

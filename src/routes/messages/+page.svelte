@@ -48,7 +48,7 @@
                 pageIsLast = true;
                 return;
             }
-            if (messagess.length < 20) {
+            if (messagess.length < 12) {
                 pageIsLast = true;
             }
             messages.push(...messagess);
@@ -67,7 +67,7 @@
                     return;
                 }
                 messages = messagess;
-                if (messages.length < 20) {
+                if (messages.length < 12) {
                     pageIsLast = true;
                 }
             })
@@ -352,25 +352,44 @@
                                 ).replace("$1", message.projectId)}
                             </b>
                         </p>
-                        <button
-                            class="fake-link"
-                            style="display:flex;align-items:center;"
-                            on:click={() =>
-                                downloadRejectedProject(message.projectId)}
-                        >
-                            <img
-                                src="/messages/download.png"
-                                alt="Download"
-                                width="16"
-                                height="16"
-                                style="margin-right:6px"
-                            />
-                            <LocalizedText
-                                text="Download"
-                                key="messages.download"
-                                lang={currentLang}
-                            />
-                        </button>
+                        {#if message.hardReject === false}
+                            <h3>
+                                <a href="/edit?id={message.projectId}" style="display:flex;align-items:center;">
+                                    <img
+                                        src="/pencil.png"
+                                        alt="Edit"
+                                        width="16"
+                                        height="16"
+                                        style="margin-right:6px"
+                                    />
+                                    <LocalizedText
+                                        text="Edit Project"
+                                        key="project.menu.project.edit"
+                                        lang={currentLang}
+                                    />
+                                </a>
+                            </h3>
+                        {:else}
+                            <button
+                                class="fake-link"
+                                style="display:flex;align-items:center;"
+                                on:click={() =>
+                                    downloadRejectedProject(message.projectId)}
+                            >
+                                <img
+                                    src="/messages/download.png"
+                                    alt="Download"
+                                    width="16"
+                                    height="16"
+                                    style="margin-right:6px"
+                                />
+                                <LocalizedText
+                                    text="Download"
+                                    key="messages.download"
+                                    lang={currentLang}
+                                />
+                            </button>
+                        {/if}
                     {:else if message.type === "featured"}
                         <p>
                             <b>
@@ -430,16 +449,23 @@
                         </p>
                     {:else if message.type === "restored"}
                         <p>
+                            {String(
+                                TranslationHandler.text(
+                                    "messages.alert.staff.restoredproject.title",
+                                    currentLang
+                                )
+                            ).replace("$1", message.name)}
+                        </p>
+                        <p>
                             <a
                                 href={`https://studio.penguinmod.com/#${message.projectId}`}
                                 target="_blank"
                             >
-                                {String(
-                                    TranslationHandler.text(
-                                        "messages.alert.staff.restoredproject.title",
-                                        currentLang
-                                    )
-                                ).replace("$1", message.name)}
+                                <LocalizedText
+                                    text="Open in new tab"
+                                    key="uploading.guidelines.newtab"
+                                    lang={currentLang}
+                                />
                             </a>
                         </p>
                     {:else if message.type === "ban"}

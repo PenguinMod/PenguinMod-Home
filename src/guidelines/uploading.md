@@ -8,7 +8,7 @@ Also, let us know of any necessary changes we should make by talking to us [usin
 Uploading empty or default projects will get your project removed.
 Please do not do this multiple times as your account will be limited if we see you doing this.
 
-Projects that are based around using an iframe to display other websites or projects will be removed.
+Projects that are based around using an iframe or other method to display other websites or projects will be removed.
 This is a rule because the only purpose of this is to show content that is not yours or can be viewed anyways in your browser.
 *(This may not apply to projects uploaded before October 6th, 2023 due to communication issues.)*
 

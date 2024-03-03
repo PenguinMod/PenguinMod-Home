@@ -13,6 +13,7 @@
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import Button from "$lib/Button/Button.svelte";
+    import EventComponent from "$lib/Event/Component.svelte";
     import ContentCategory from "$lib/ContentCategory/Component.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import UserDisplay from "$lib/UserDisplay/Display.svelte";
@@ -475,7 +476,8 @@
                                 <button class="update-image-wrapper">
                                     <img
                                         src={update.image}
-                                        alt="Screenshot"
+                                        alt={update.cleanContent}
+                                        title={update.cleanContent}
                                         class="update-image"
                                     />
                                 </button>
@@ -725,6 +727,10 @@
             </div>
         </div>
     {/if}
+    
+    <div style="width:80%; margin:0 10%;">
+        <EventComponent />
+    </div>
 
     <div class="section-projects">
         <ContentCategory
@@ -734,7 +740,7 @@
             )}
             seemore={`/search?q=featured%3Aprojects`}
             style="width:65%;"
-            stylec="height: 244px;"
+            stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
         >
             <div class="project-list">
                 {#if projects.featured.length > 0}
@@ -783,7 +789,7 @@
             )}
             seemore={`/search?q=sort%3Alikes%20featured%3Aexclude`}
             style="width:65%;"
-            stylec="height: 244px;"
+            stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
         >
             <div class="project-list">
                 {#if projects.liked.length > 0}
@@ -819,7 +825,7 @@
             )}
             seemore={`/search?q=sort%3Avotes%20featured%3Aexclude`}
             style="width:65%;"
-            stylec="height: 244px;"
+            stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
         >
             <div class="project-list">
                 {#if projects.voted.length > 0}
@@ -856,7 +862,7 @@
                 )).replace('$1', tagForProjects)}
                 seemore={`/search?q=%23${tagForProjects}`}
                 style="width:65%;"
-                stylec="height: 244px;"
+                stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
             >
                 <div class="project-list">
                     {#each projects.tagged as project}
@@ -872,7 +878,7 @@
             )}
             seemore={`/search?q=featured%3Aexclude`}
             style="width:65%;"
-            stylec="height: 244px;"
+            stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
         >
             <div class="project-list">
                 {#if projects.today.length > 0}

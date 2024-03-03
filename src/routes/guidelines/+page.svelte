@@ -1,5 +1,5 @@
 <script>
-    import GuidelinesPages from "../../resources/guidelines/pages";
+    import GuidelinesPages from "../../guidelines/pages";
     const pages = Object.keys(GuidelinesPages);
     const amount = pages.length;
 </script>
