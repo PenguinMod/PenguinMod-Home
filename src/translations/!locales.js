@@ -24,6 +24,7 @@ import fr from '../translations/fr.json';
 import no from '../translations/no.json';
 import sk from '../translations/sk.json';
 import uk from '../translations/uk.json';
+import ja from '../translations/ja.json';
 import uwu from '../translations/uwu.json';
 import test from '../translations/test.json';
 
@@ -40,6 +41,7 @@ const languages = {
     "vi": vi,                      // Viatnamese
     "ro": ro,                      // Romanian
     "ru": ru,                      // Russian
+    "ja": ja,                      // Japanese
     "fr": fr,                      // French
     "fr-ca": frCa,                 // French (Canada)
     "de": de,                      // German
