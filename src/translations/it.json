@@ -115,7 +115,7 @@
     "messages.alert.followeradded": "$1 ora ti sta seguendo",
     "messages.alert.staff.removed.title": "Il tuo progetto \"$1\" è stato rimosso.",
     "messages.alert.staff.banned.title": "Al tuo account è stato vietato il caricamento di progetti e altre funzionalità. Puoi comunque continuare a utilizzare l'editor o visualizzare i progetti di altre persone.",
-    "messages.alert.staff.unbanned.title": "Your account has been unbanned. You may upload projects again.",
+    "messages.alert.staff.unbanned.title": "Il tuo account è stato sbloccato. Puoi caricare nuovamente i progetti.",
     "messages.alert.staff.restoredproject.title": "Il tuo progetto \"$1\" non è stato rifiutato! Seleziona \"I miei contenuti\" per visualizzare nuovamente il progetto e attendi che il progetto venga approvato.",
     "messages.alert.staff.reason": "Motivo:",
     "messages.alert.staff.translate1": "Se il moderatore non parla la tua lingua, puoi fare clic qui per una traduzione automatica.",
