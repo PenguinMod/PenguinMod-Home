@@ -92,7 +92,7 @@
     let contentWithReports = [];
     let unapprovedProjects = [];
     let selectedReportDetailed = -1;
-    let reportDetails = Object.create({});
+    let reportDetails = Object.create(null);
 
     const guidelinesNotifs = {
         tos: false,
@@ -143,7 +143,7 @@
         contentWithReports = [];
         projectListStyle = '';
         selectedReportDetailed = -1;
-        reportDetails = Object.create({});
+        reportDetails = Object.create(null);
         switch (dropdownSelectMenu.value) {
             case "user":
             case "project":
