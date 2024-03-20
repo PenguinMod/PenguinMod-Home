@@ -26,6 +26,7 @@ import no from '../translations/no.json';
 import sk from '../translations/sk.json';
 import uk from '../translations/uk.json';
 import ja from '../translations/ja.json';
+import fa from '../translations/fa.json';
 import uwu from '../translations/uwu.json';
 import test from '../translations/test.json';
 
@@ -55,14 +56,18 @@ const languages = {
     "sk": sk,                      // Slovak
     "uk": uk,                      // Ukranian
     "he": he,                      // Hebrew
+    "fa": fa,                      // Persian
+    
+    // "id": id,                   // Bahasa Indonesia: has no translator anymore, and theres too much untranslated text now
+    
     // uncomment joke languages when we have >30 regular langs to hide them
     // "uwu": uwu,
     // "test": test,
-    // "id": id, // Bahasa Indonesia has no translator anymore, and theres too much untranslated text now
 };
 // add languages that are RTL here
 const rtlLanguages = [
-    "he",
+    "he",                          // Hebrew
+    "fa",                          // Persian
 ];
 // set pairs for language codes that should be interpreted as another language code
 const autoLocale = {

@@ -42,7 +42,7 @@
     
         <main>
             <!-- UPDATE THIS WHEN MAKING CONTENT CHANGES -->
-            <p><i>Updated January 7th, 2024 (Mountain Time)</i></p>
+            <p><i>Updated March 19th, 2024 (Mountain Time)</i></p>
 
             <!-- some things are intentionally not formatted as they are in the HTML file on the website -->
             <p>
@@ -168,13 +168,13 @@
 
             <h2>Changes to Terms</h2>
             <p>
-                PenguinMod reserves the right to update or modify these terms of service at any time without prior notice. Users are
+                PenguinMod reserves the right to update or modify these terms of service at any time. Users are
                 encouraged to review this document periodically for any changes.
             </p><p>
-                By continuing to use PenguinMod, you agree to abide by the most recent version of these terms.
-            </p><p>
-                PenguinMod will make effort to let users know of any changes to rules, Terms of Service, or Privacy Policy through
+                PenguinMod will make effort to let users know of any changes to Uploading Guidelines, Terms of Service, or Privacy Policy through
                 the website's messaging system.
+            </p><p>
+                By continuing to use PenguinMod, you agree to abide by the most recent version of these terms.
             </p>
 
             <h2>Contact</h2>
@@ -204,25 +204,6 @@
             width: 60%;
         }
     
-        .small {
-            font-size: 12px;
-        }
-    
-        .detail-card {
-            width: calc(100% - 24px);
-            padding: 48px 12px;
-            background: dodgerblue;
-            color: white;
-            text-align: center;
-        }
-        .detail-card p,
-        .detail-card h1 {
-            margin-block: 0;
-        }
-        .detail-card h1 {
-            font-size: 48px;
-        }
-    
         .section-info {
             background: #00c3ffad;
             height: 12rem;
@@ -236,10 +217,6 @@
         }
         .section-info h1 {
             margin-block: 0;
-            margin-left: 32px;
-        }
-        .section-info p {
-            margin-block-end: 0;
             margin-left: 32px;
         }
     
