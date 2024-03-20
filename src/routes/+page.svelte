@@ -978,6 +978,7 @@
                         lang={currentLang}
                     />
                 </a>
+                <a target="_blank" href="https://forum.penguinmod.com/">Forum</a>
             </div>
             <div class="footer-section">
                 <p>
