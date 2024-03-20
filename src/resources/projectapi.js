@@ -1,5 +1,5 @@
 let OriginApiUrl = "https://projects.penguinmod.com";
-// OriginApiUrl = "http://localhost:8080";
+OriginApiUrl = "http://localhost:8080";
 
 class ProjectApi {
     constructor(pv, username) {
@@ -21,6 +21,28 @@ class ProjectApi {
                     }
                     res.json().then((stats) => {
                         resolve(stats);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+    static requestLoginSession() {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/users/requestLoginSession`;
+            fetch(url, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' }
+            })
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+
+                    res.json().then((state) => {
+                        resolve(state.session);
                     });
                 })
                 .catch((err) => {
