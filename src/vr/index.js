@@ -81,6 +81,10 @@ class VRHandler {
             }
         }
     }
+    static requestMessage(key) {
+        console.warn('VRHandler.requestMessage should be overridden, or don\'t use translation keys in this application.');
+        return `!! ${key} !!`;
+    }
 
     _disposeImmersive() {
         this.session = null;

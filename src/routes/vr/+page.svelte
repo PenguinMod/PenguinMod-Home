@@ -3,10 +3,31 @@
     import { page } from '$app/stores';
     import VRHandler from "../../vr";
     import VRPages from "../../vr/menus/index.js";
+
+    // Components
+    import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
+    import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
+    // translations
+    import LocalizedText from "$lib/LocalizedText/Node.svelte";
+    import TranslationHandler from "../../resources/translations.js";
+    import Language from "../../resources/language.js";
     
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
     const ProjectClient = new ProjectApi();
+
+    let currentLang = "en";
+    onMount(() => {
+        Language.forceUpdate();
+    });
+    Language.onChange((lang) => {
+        currentLang = lang;
+    });
+    VRHandler.requestMessage = (key) => {
+        const message = TranslationHandler.text(key, currentLang)
+            || TranslationHandler.text(key, 'en');
+        return String(message || `!! ${key} !!`);
+    };
     
     let loggedIn = false;
     let loggedInUser = '';
@@ -100,20 +121,37 @@
     };
 </script>
 
-{#if isLiveTests && vrIsSupported}
-    <p>{loggedIn}</p>
-    <p>{loggedInUser}</p>
-    <button
-        class="vr-test-button"
-        on:click={openSession}
-    >
-        Enter VR
-    </button>
-{:else}
-    <p>We're working on it! 🐧</p>
-{/if}
+<NavigationBar />
+
+<div class="main">
+    <NavigationMargin />
+    
+    {#if isLiveTests && vrIsSupported}
+        <p>{loggedIn}</p>
+        <p>{loggedInUser}</p>
+        <button
+            class="vr-test-button"
+            on:click={openSession}
+        >
+            Enter VR
+        </button>
+    {:else}
+        <p>We're working on it! 🐧</p>
+    {/if}
+</div>
 
 <style>
+    * {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    .main {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        min-width: 1000px;
+    }
     .vr-test-button {
         padding: 20px;
         margin: 4px;
