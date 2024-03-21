@@ -1,6 +1,8 @@
 import * as Three from "three";
 import { XRControllerModelFactory } from "three/examples/jsm/webxr/XRControllerModelFactory";
 import Direction from "./util/direction";
+import VHTMLRenderer from "./htmlrenderer";
+import NineSlices from "./htmlrenderer/texture/nineslice";
 // import BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 // import { ConvexGeometry } from 'three/examples/jsm/geometries/ConvexGeometry';
 // import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
@@ -23,6 +25,10 @@ class VRHandler {
          * @type {Three.WebGLRenderer}
          */
         this.renderer = null;
+        /**
+         * @type {VHTMLRenderer}
+         */
+        this.htmlRenderer = new VHTMLRenderer(this);
 
         /**
          * Whether or not a session has been created.
@@ -38,6 +44,11 @@ class VRHandler {
          * @type {Three.Group}
          */
         this.group = null;
+        /**
+         * @type {Three.Group}
+         */
+        this.htmlPage = null;
+
         /**
          * @type {Three.Raycaster}
          */
@@ -155,7 +166,10 @@ class VRHandler {
         this.audioElements.background.play();
     }
 
-    initialize() {
+    async initialize() {
+        // load required textures
+        await NineSlices.loadImages();
+
         this.scene = new Three.Scene();
         this.renderer = new Three.WebGLRenderer({
             // TODO: is this appropriate config for our use-case?
@@ -180,6 +194,10 @@ class VRHandler {
 
         this.group = new Three.Group();
         this.scene.add(this.group);
+        this.htmlPage = new Three.Group();
+        this.group.add(this.htmlPage);
+
+        this.htmlRenderer.group = this.htmlPage;
 
         // platform
         const texLoader = new Three.TextureLoader();
@@ -246,6 +264,7 @@ class VRHandler {
         const exitProgressTexture = texLoader.load("https://penguinmod.com/vr/white.png");
         const exitMaterial = new Three.MeshBasicMaterial({
             map: exitTexture,
+            transparent: true,
             side: Three.DoubleSide,
         });
         const exitProgressMaterial = new Three.MeshBasicMaterial({
@@ -254,9 +273,14 @@ class VRHandler {
         });
         const exitObject = new Three.Mesh(platformGeometry, exitMaterial);
         const exitProgressObject = new Three.Mesh(platformGeometry, exitProgressMaterial);
-        exitObject.userData.button = true;
-        exitObject.userData.buttonOpcode = 'exiting';
+        // exitObject.userData.button = true;
+        // exitObject.userData.buttonOpcode = 'exiting';
         exitProgressObject.userData.interactable = false;
+
+        exitObject.position.set(0, 2, 3);
+        exitProgressObject.position.set(0, 2, 2.999);
+        exitProgressObject.scale.set(1, 0, 1);
+
         this.group.add(exitObject);
         this.group.add(exitProgressObject);
     }
@@ -274,12 +298,14 @@ class VRHandler {
         return this.session.end();
     }
     loadPage(html) {
-        console.log(html);
+        this.htmlRenderer.clear();
+        this.htmlRenderer.create(html);
     }
 
     onSelectStart(event) {
         const controller = event.target;
         const intersections = this.getIntersections(controller);
+        console.log(intersections);
         if (intersections.length > 0) {
             const intersection = intersections[0];
 
