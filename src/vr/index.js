@@ -1,5 +1,6 @@
 import * as Three from "three";
 import { XRControllerModelFactory } from "three/examples/jsm/webxr/XRControllerModelFactory";
+import Direction from "./util/direction";
 // import BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 // import { ConvexGeometry } from 'three/examples/jsm/geometries/ConvexGeometry';
 // import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
@@ -8,16 +9,6 @@ import { XRControllerModelFactory } from "three/examples/jsm/webxr/XRControllerM
 
 const SESSION_TYPE = "immersive-vr";
 
-function toRad(deg) {
-    return deg * (Math.PI / 180);
-}
-function toDeg(rad) {
-    return rad * (180 / Math.PI);
-}
-
-class ButtonHandler {
-    
-}
 class VRHandler {
     constructor() {
         /**
@@ -202,7 +193,7 @@ class VRHandler {
         });
         const platformObject = new Three.Mesh(platformGeometry, platformMaterial);
         platformObject.position.set(0, 0, 0);
-        platformObject.rotateX(toRad(90));
+        platformObject.rotateX(Direction.toRad(90));
         this.scene.add(platformObject);
 
         // controllers
@@ -231,7 +222,7 @@ class VRHandler {
         this.scene.add(controllerGrip2);
 
         // light
-        const light = new Three.SpotLight(0xffffff, 60);
+        const light = new Three.SpotLight(0xffffff, 120);
         light.position.set(0, 5, 2.5);
         this.scene.add(light);
 
@@ -268,15 +259,6 @@ class VRHandler {
         exitProgressObject.userData.interactable = false;
         this.group.add(exitObject);
         this.group.add(exitProgressObject);
-
-        // test
-        const testCubeGeometry = new Three.BoxGeometry(1, 1, 1);
-        const testCubeMaterial = new Three.MeshBasicMaterial({
-            color: 0xff0000
-        });
-        const testCubeObject = new Three.Mesh(testCubeGeometry, testCubeMaterial);
-        testCubeObject.position.set(0, 4, -5);
-        this.group.add(testCubeObject);
     }
 
     start() {
@@ -291,6 +273,9 @@ class VRHandler {
         if (!this.session) return;
         return this.session.end();
     }
+    loadPage(html) {
+        console.log(html);
+    }
 
     onSelectStart(event) {
         const controller = event.target;
@@ -299,7 +284,6 @@ class VRHandler {
             const intersection = intersections[0];
 
             const object = intersection.object;
-            // object.material.emissive.b = 1;
             this.audioElements.hover.currentTime = 0;
             this.audioElements.hover.play();
             controller.attach(object);
