@@ -458,7 +458,7 @@
         {:else}
             <div class="welcome-back-card">
                 <img
-                    src={`https://trampoline.turbowarp.org/avatars/by-username/${loggedInUsername}`}
+                    src={`https://pm-bapi.vercel.app/api/failsafe/profilepicture?username=${loggedInUsername}`}
                     alt="Profile"
                     class="profile-picture"
                 />
@@ -547,7 +547,7 @@
                                         message.content
                                     )}
                                     author={message.username}
-                                    image={`https://trampoline.turbowarp.org/avatars/by-username/${message.username}`}
+                                    image={`https://pm-bapi.vercel.app/api/failsafe/profilepicture?username=${message.username}`}
                                 />
                             {/if}
                         {/each}

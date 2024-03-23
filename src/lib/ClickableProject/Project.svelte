@@ -35,7 +35,7 @@
     </div>
     <div class="project-author">
         <img
-            src={`https://trampoline.turbowarp.org/avatars/by-username/${owner}`}
+            src={`https://pm-bapi.vercel.app/api/failsafe/profilepicture?username=${owner}`}
             alt="Project Author"
             class="project-author"
         />
