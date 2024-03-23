@@ -5,6 +5,7 @@
 
 import en from '../translations/en.json';
 import id from '../translations/id.json';
+import it from '../translations/it.json';
 import he from '../translations/he.json';
 import ptBr from '../translations/pt-br.json';
 import es from '../translations/es.json';
@@ -49,6 +50,7 @@ const languages = {
     "da": da,                      // Danish
     "pl": pl,                      // Polish
     "no": no,                      // Norwegian
+    "it": it,                      // Italian
     "tr": tr,                      // Turkish
     "sv": sv,                      // Swedish
     "sk": sk,                      // Slovak
