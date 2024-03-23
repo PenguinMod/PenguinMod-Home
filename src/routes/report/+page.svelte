@@ -292,7 +292,7 @@
             {:else}
                 <img
                     class="project-picture"
-                    src={`https://projects.penguinmod.com/api/pmWrapper/iconUrl?id=${pageDetails.id}`}
+                    src={`${ProjectApi.ProjThumbFailsafeUrl}/api/failsafe/projthumb?id=${pageDetails.id}`}
                     alt={pageDetails.id}
                 />
             {/if}

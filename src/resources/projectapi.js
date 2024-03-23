@@ -1,6 +1,8 @@
 let OriginApiUrl = "https://projects.penguinmod.com";
 // OriginApiUrl = "http://localhost:8080";
 
+let ProjThumbFailsafeUrl = 'https://pm-bapi.vercel.app'
+
 class ProjectApi {
     constructor(pv, username) {
         this.privateCode = pv;
@@ -8,6 +10,7 @@ class ProjectApi {
     }
 
     static OriginApiUrl = OriginApiUrl;
+    static ProjThumbFailsafeUrl = ProjThumbFailsafeUrl;
     static CachedDonators = {};
 
     static getServerInfo(user) {
