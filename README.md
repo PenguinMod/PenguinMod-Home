@@ -1,2 +1,2 @@
-# PenguinMod-Home
-A main home page with community projects and other content.
+# Skibidi.Teach-Home
+A main dashboard page with approved lessons.
