@@ -91,7 +91,7 @@
         class="project-author"
     >
         <img
-            src={`https://pm-bapi.vercel.app/api/failsafe/profilepicture?username=${owner}`}
+            src={`https://trampoline.turbowarp.org/avatars/by-username/${owner}`}
             alt="Project Author"
             class="project-author"
         />

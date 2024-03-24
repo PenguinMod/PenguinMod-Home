@@ -1402,7 +1402,7 @@
                                 }}
                             >
                                 <img
-                                    src={`https://pm-bapi.vercel.app/api/failsafe/profilepicture?username=${content.username}`}
+                                    src={`https://trampoline.turbowarp.org/avatars/by-username/${content.username}`}
                                     alt={content.username}
                                 />
                                 <div class="reports-user-content">

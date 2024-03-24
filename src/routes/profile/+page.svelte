@@ -798,7 +798,7 @@
                             <div class="user-username">
                                 <img
                                     style="border-color:{isDonator ? "#a237db" : "#efefef"}"
-                                    src={`https://pm-bapi.vercel.app/api/failsafe/profilepicture?username=${user}`}
+                                    src={`https://trampoline.turbowarp.org/avatars/by-username/${user}`}
                                     alt="Profile"
                                     class="profile-picture"
                                 />
@@ -1114,7 +1114,7 @@
                                 />
                                 <div class="profile-project-authordiv">
                                     <img
-                                        src="https://pm-bapi.vercel.app/api/failsafe/profilepicture?username={user}"
+                                        src="https://trampoline.turbowarp.org/avatars/by-username/{user}"
                                         alt="Project Author"
                                         title={user}
                                         class="profile-project-author"

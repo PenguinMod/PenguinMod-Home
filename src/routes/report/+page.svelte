@@ -286,7 +286,7 @@
             {#if pageDetails.type === "user"}
                 <img
                     class="profile-picture"
-                    src={`https://pm-bapi.vercel.app/api/failsafe/profilepicture?username=${pageDetails.id}`}
+                    src={`https://trampoline.turbowarp.org/avatars/by-username/${pageDetails.id}`}
                     alt={pageDetails.id}
                 />
             {:else}

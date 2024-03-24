@@ -338,7 +338,7 @@
 			on:click={openAccountMenu}
 		>
 			<img
-				src={`https://pm-bapi.vercel.app/api/failsafe/profilepicture?username=${accountUsername}`}
+				src={`https://trampoline.turbowarp.org/avatars/by-username/${accountUsername}`}
 				alt="Profile Picture"
 				class="profile-picture"
 			/>
