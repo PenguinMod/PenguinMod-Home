@@ -666,7 +666,7 @@
                         src={newProjectImage
                             ? newProjectImage
                             : projectId
-                            ? `${ProjectApi.ProjThumbFailsafeUrl}/api/failsafe/projthumb?id=${projectId}`
+                            ? `${LINK.projects}api/pmWrapper/iconUrl?id=${projectId}`
                             : "/empty-project.png"}
                         style="border-width:1px;border-style:solid;border-color:rgba(0, 0, 0, 0.1);width:100%;"
                         alt="Project Thumbnail"

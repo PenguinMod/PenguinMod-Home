@@ -1,6 +1,5 @@
 <script>
     import { createEventDispatcher } from "svelte";
-    import ProjectApi from "../../resources/projectapi.js";
 
     // Static values
     import LINK from "../../resources/urls.js";
@@ -29,7 +28,7 @@
 <button class="project" data-featured={featured} {style} on:click={event}>
     <div class="project-image">
         <img
-            src={`${ProjectApi.ProjThumbFailsafeUrl}/api/failsafe/projthumb?id=${id}`}
+            src={`${LINK.projects}api/pmWrapper/iconUrl?id=${id}`}
             alt="Project Thumbnail"
             class="project-image"
         />

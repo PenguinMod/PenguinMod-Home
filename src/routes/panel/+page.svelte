@@ -750,7 +750,7 @@
             <div class="card-reject" style="display:block">
                 <p>Rejecting <b>{rejectingName}</b></p>
                 <img
-                    src={`${ProjectApi.ProjThumbFailsafeUrl}/api/failsafe/projthumb?id=${rejectingId}`}
+                    src={`${LINK.projects}api/pmWrapper/iconUrl?id=${rejectingId}`}
                     alt="Image of {rejectingName}"
                     width="240"
                     height="180"
@@ -1019,7 +1019,7 @@
                             Selected <b>{selectedProjectName}</b>
                         </p>
                         <img
-                            src={`${ProjectApi.ProjThumbFailsafeUrl}/api/failsafe/projthumb?id=${lastSelectedProjectId}`}
+                            src={`${ProjectApi.OriginApiUrl}/api/pmWrapper/iconUrl?id=${lastSelectedProjectId}`}
                             alt="Project Thumbnail"
                         />
                     </a>
@@ -1458,7 +1458,7 @@
                                 }}
                             >
                                 <img
-                                    src={`${ProjectApi.ProjThumbFailsafeUrl}/api/failsafe/projthumb?id=${content.id}`}
+                                    src={`https://projects.penguinmod.com/api/pmWrapper/iconUrl?id=${content.id}`}
                                     alt={content.name}
                                 />
                                 <div

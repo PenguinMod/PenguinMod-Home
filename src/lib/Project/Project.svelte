@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import Translations from "../../resources/translations.js";
-    import ProjectApi from "../../resources/projectapi.js";
+    // import ProjectApi from "../../resources/projectapi.js";
     import Language from "../../resources/language.js";
 
     // Static values
@@ -80,7 +80,7 @@
         class="project-image"
     >
         <img
-            src={`${ProjectApi.ProjThumbFailsafeUrl}/api/failsafe/projthumb?id=${id}`}
+            src={`${LINK.projects}api/pmWrapper/iconUrl?id=${id}`}
             alt="Project Thumbnail"
             class="project-image"
         />
