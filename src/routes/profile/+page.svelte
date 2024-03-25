@@ -537,49 +537,31 @@
         return self.renderToken(tokens, idx, options);
     };
 
+    const doesntShowRedirectURLs = [
+        /https:\/\/([a-z]+\.|)penguinmod\.com/i,
+        /https:\/\/([a-z]+\.|)scratch\.org/i,
+        /https:\/\/([a-z]+\.|)scratch\.mit\.edu/i,
+        /https:\/\/(?!share\.)([a-z]+\.)?turbowarp\.org/i,
+    ];
     const safeURLs = [
-        /https:\/\/[a-z]+\.penguinmod\.com/i,
-        /https:\/\/penguinmod\.com/i,
-        /https:\/\/[a-z]+\.scratch\.org/i,
-        /https:\/\/scratch\.org/i,
-        /https:\/\/[a-z]+\.scratch\.mit\.edu/i,
-        /https:\/\/scratch\.mit\.edu/i,
-        /https:\/\/[a-z]+\.turbowarp\.org/i,
-        /https:\/\/turbowarp\.org/i,
-        /https:\/\/[a-z]+\.cocrea\.world/i,
-        /https:\/\/cocrea\.world/i,
-        /https:\/\/[a-z]+\.getgandi\.com/i,
-        /https:\/\/getgandi\.com/i,
-        /https:\/\/[a-z]+\.snail-ide\.com/i,
-        /https:\/\/snail-ide\.com/i,
+        /https:\/\/([a-z]+\.|)penguinmod\.com/i,
+        /https:\/\/([a-z]+\.|)scratch\.org/i,
+        /https:\/\/([a-z]+\.|)scratch\.mit\.edu/i,
+        /https:\/\/([a-z]+\.|)turbowarp\.org/i,
+        /https:\/\/([a-z]+\.|)cocrea\.world/i,
+        /https:\/\/([a-z]+\.|)getgandi\.com/i,
+        /https:\/\/([a-z]+\.|)snail-ide\.com/i,
         /https:\/\/snail-ide\.js\.org/i,
         /https:\/\/snail-ide\.github\.io/i,
         /https:\/\/snail-ide\.vercel\.app/i,
 
-        /https:\/\/(www\.|)github\.com/i,
-        /https:\/\/(www\.|)youtube\.com/i,
-        /https:\/\/(www\.|)discord\.com/i,
+        /https:\/\/(www\.|)(roblox|youtube|discord|twitter|x|patreon|reddit)\.com/i,
+        /https:\/\/old\.reddit\.com/i,
+        /https:\/\/create\.roblox\.com/i,
         /https:\/\/(www\.|)discord\.gg/i,
-        /https:\/\/(www\.|)twitter\.com/i,
-        /https:\/\/(www\.|)x\.com/i,
-    ];
-    const showRedirectURLs = [
-        /https:\/\/[a-z]+\.cocrea\.world/i,
-        /https:\/\/cocrea\.world/i,
-        /https:\/\/[a-z]+\.getgandi\.com/i,
-        /https:\/\/getgandi\.com/i,
-        /https:\/\/[a-z]+\.snail-ide\.com/i,
-        /https:\/\/snail-ide\.com/i,
-        /https:\/\/snail-ide\.js\.org/i,
-        /https:\/\/snail-ide\.github\.io/i,
-        /https:\/\/snail-ide\.vercel\.app/i,
-        
-        /https:\/\/(www\.|)github\.com/i,
-        /https:\/\/(www\.|)youtube\.com/i,
-        /https:\/\/(www\.|)discord\.com/i,
-        /https:\/\/(www\.|)discord\.gg/i,
-        /https:\/\/(www\.|)twitter\.com/i,
-        /https:\/\/(www\.|)x\.com/i,
+        /https:\/\/(www\.|support\.|)guilded\.gg/i,
+        /https:\/\/(www\.|gist\.|)github\.com/i,
+        /https:\/\/(www\.|store\.|support\.|help\.|)(steampowered|steamcommunity)\.com/i,
     ];
     md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
         const href = String(tokens[idx].attrGet('href'));
@@ -588,7 +570,7 @@
             tokens[idx].attrSet('target', '_blank');
         }
         // if we match a URL that should show a redirect, change the href attribute
-        if (showRedirectURLs.some(regex => href.match(regex))) {
+        if (!doesntShowRedirectURLs.some(regex => href.match(regex))) {
             const base64 = encodeURIComponent(btoa(href));
             tokens[idx].attrSet('href', `https://penguinmod.com/redirect?t=${base64}`);
         }
