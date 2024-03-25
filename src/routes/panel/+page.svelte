@@ -31,15 +31,16 @@
     let serverStats = [];
     const selectForReject = $page.url.searchParams.get('reject');
 
-    function kickOut() {
-        location.href = location.origin + "/bx-tv1.mp4";
+    function kickOut(loggedOut) {
+        const error = loggedOut ? 401 : 403;
+        location.href = location.origin + `/error?error=${error}`;
     }
 
     onMount(() => {
         const privateCode = localStorage.getItem("PV");
         if (!privateCode) {
             loggedIn = false;
-            kickOut();
+            kickOut(true);
             return;
         }
         ProjectApi.getServerInfo()
@@ -61,7 +62,7 @@
             .then(({ username, isAdmin, isApprover }) => {
                 if (username) {
                     if (!isAdmin && !isApprover) {
-                        kickOut();
+                        kickOut(false);
                         return;
                     }
                     ProjectClient.setUsername(username);
@@ -70,11 +71,11 @@
                     return;
                 }
                 loggedIn = false;
-                kickOut();
+                kickOut(true);
             })
             .catch(() => {
                 loggedIn = false;
-                kickOut();
+                kickOut(true);
             });
     });
     // we dont need to add an "onAuthenticate" event
