@@ -120,6 +120,12 @@
         location.replace(`${ProjectApi.OriginApiUrl}/api/users/login${useLocal}?privateCode=${PrivateCode}`)
     }
 
+    /**
+     * Usage:
+     * - `username` <string>
+     * - `lastSignedIn` <string> - This is a formatted date
+     * @type {{ username: string, lastSignedIn: string }[]}
+     */
     var OneClickAccounts = []; // { username, lastSignedIn }, lastSignedIn should be a formatted date string.
 
     function OneClickSignInTriggered() {} // This cannot function unless a change is made to penguin mod's projects API
