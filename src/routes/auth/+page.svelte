@@ -1,11 +1,13 @@
 <script>
     import { onMount } from "svelte";
+    import MarkdownIt from "markdown-it";
 
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
+    import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
     import ProjectApi from "../../resources/projectapi.js";
 
@@ -20,6 +22,19 @@
     Language.onChange((lang) => {
         currentLang = lang;
     });
+
+    const md = new MarkdownIt({
+	html: false,
+	linkify: false,
+	breaks: false,
+    });
+
+    const env = {}
+    function generateMarkdown(mdtext) {
+	const tokens = md.parse(mdtext, env);
+	const bodyHTML = md.renderer.render(tokens, md.options, env);
+	return bodyHTML;
+    }
 
     // Page Specific Functions, Constants, & Variables
 
@@ -118,8 +133,20 @@
     <!-- I'm aware this page is bland, I just didn't feel like making Pang illustrations. -->
     <div class="section-info">
         <div>
-            <h1 style="margin-block: 0;">Sign in to PenguinMod</h1>
-            <p>Use your Scratch account to sign in to PenguinMod.</p>
+            <h1 style="margin-block: 0;">
+		    <LocalizedText
+    			text="Sign in to PenguinMod"
+	    		key="auth.title"
+		    	lang={currentLang}
+    		/>
+	        </h1>
+            <p>
+		        <LocalizedText
+		        	text="Use your Scratch account to sign in to PenguinMod"
+        			key="auth.subtitle"
+		        	lang={currentLang}
+		        />
+	        </p>
         </div>
         <div>
             <img
@@ -131,7 +158,10 @@
     <div class="darken" data-opened={ProjectCommentAuthOpen || ProfileCommentAuthOpen}></div>
     <dialog class="auth-method" open="{ProjectCommentAuthOpen}">
         <div class="dialog-head">
-            Project Comment Auth
+            <LocalizedText
+	    	    text="Project Comments"
+		        key="auth.type.project"
+	        />
             <div class="close-button-holder">
                 <button class="close-button" on:click={CloseProjectCommentAuth}>
                     <img
@@ -144,17 +174,39 @@
         <div class="dialog-body">
             <div class="auth-code-holder">
                 <input type="text" readonly="true" value="{AuthCode}" />
-                <button on:click={CopyAuthCode} class="copy-button">Copy</button>
+                <button on:click={CopyAuthCode} class="copy-button">
+			    <LocalizedText
+			    	text="Copy"
+				    key="auth.copy"
+				    lang={currentLang}
+			    />
+		</button>
             </div>
             <div class="auth-finish">
-                <a href="https://scratch.mit.edu/projects/{AuthProject}" class="open-auth-area" target="_blank">Open Auth Project</a>
-                <button on:click={FinishTokenBasedAuth}>Done</button>
+                <a href="https://scratch.mit.edu/projects/{AuthProject}" class="open-auth-area" target="_blank">
+			        <LocalizedText
+                        text="Open Login Project"
+    				    key="auth.openproject"
+	    			    lang={currentLang}
+		    	    />
+		        </a>
+                <button on:click={FinishTokenBasedAuth}>
+			        <LocalizedText
+        				text="Done"
+	        			key="auth.done"
+	        			lang={currentLang}
+	        		/>
+                </button>
             </div>
         </div>
     </dialog>
     <dialog class="auth-method" open="{ProfileCommentAuthOpen}">
         <div class="dialog-head">
-            Profile Comment Auth
+            <LocalizedText
+	        	text="Profile Comments"
+		        key="auth.type.profile"
+                lang={currentLang}
+	        />
             <div class="close-button-holder">
                 <button class="close-button" on:click={CloseProfileCommentAuth}>
                     <img
@@ -167,44 +219,132 @@
         <div class="dialog-body">
             <div class="auth-initiary">
                 <input type="text" value={AuthUser} on:change={SetUsername} />
-                <button>Continue</button>
+                <button>
+    			    <LocalizedText
+	    			    text="Continue"
+    		    		key="auth.continue"
+	    		    	lang={currentLang}
+		    	/>
+		    </button>
             </div>
             <div class="auth-code-holder">
                 <input type="text" readonly="true" value="{AuthCode}" />
-                <button on:click={CopyAuthCode} class="copy-button" disabled="{AuthCode == ""}">Copy</button>
+                <button on:click={CopyAuthCode} class="copy-button" disabled="{AuthCode == ""}">
+			        <LocalizedText
+			    	    text="Copy"
+		    		    key="auth.copy"
+	    			    lang={currentLang}
+    			    />
+		        </button>
             </div>
             <div class="auth-finish">
                 {#if OpenLinkReady}
-                <a href="https://scratch.mit.edu/users/{AuthUser}#comments" class="open-auth-area" target="_blank">Open Profile Comments</a>
+                <a href="https://scratch.mit.edu/users/{AuthUser}#comments" class="open-auth-area" target="_blank">
+        			<LocalizedText
+		        		text="Open Profile Comments"
+				        key="auth.opencomments"
+    	    			lang={currentLang}
+	    	    	/>
+		        </a>
                 {:else}
-                <span class="disabled-link open-auth-area">Open Profile Comments</span>
+                <span class="disabled-link open-auth-area">
+			        <LocalizedText
+        				text="Open Profile Comments"
+		        		key="auth.opencomments"
+				        lang={currentLang}
+			        />
+		        </span>
                 {/if}
-                <button on:click={FinishTokenBasedAuth} disabled="{!OpenLinkReady}">Done</button>
+                <button on:click={FinishTokenBasedAuth} disabled="{!OpenLinkReady}">
+        			<LocalizedText
+		        		text="Done"
+				        key="auth.done"
+        				lang={currentLang}
+		        	/>
+		        </button>
             </div>
         </div>
     </dialog>
     <main class="auth-page-holder"> <!-- use class "one-click-available" if a one click account is available. -->
         <div class="auth-method-sector">
-            <h3 style="opacity: 0.6">Choose a way to sign in</h3>
+            <h3 style="opacity: 0.6">
+        		<LocalizedText
+		        	text="Choos a way to sign in"
+			        key="auth.choosemethod"
+			        lang={currentLang}
+		        />
+	        </h3>
             <button class="auth-button" on:click={ProjectCommentPrompt}>
-                <b>Project Comment Auth</b>
-                <p>Sign in by leaving a comment on a Scratch project.</p>
+                <b>
+			        <LocalizedText
+				        text="Project Comments"
+				        key="auth.type.project"
+				        lang={currentLang}
+			        />
+		        </b>
+                <p>
+			        <LocalizedText
+        				text="Sign in by leaving a comment on a Scratch project."
+		        		key="auth.method.project.subtitle"
+				        lang={currentLang}
+        			/>
+		        </p>
             </button>
             <button class="auth-button" on:click={ProfileCommentPrompt}>
-                <b>Profile Comment Auth</b>
-                <p>Sign in by leaving a comment on <i>your</i> Scratch profile.</p>
+                <b>
+        			<LocalizedText
+		        		text="Profile Comments"
+				        key="auth.type.profile"
+        				lang={currentLang}
+		        	/>
+        		</b>
+		        <p>
+        			{@html generateMarkdown(
+				        TranslationHandler.text(
+						    "auth.method.profile.subtitle",
+						    currentLang
+        				) || TranslationHandler.text(
+		        			"auth.method.profile.subtitle",
+				        	"en"
+        				)
+		        	)}
+		        </p>
             </button>
         </div>
     </main>
     <aside class="one-click-sign-in"> <!-- use class "one-click-available" if a one click account is available. -->
         <div class="auth-method-sector">
-            <h3 style="opacity: 0.6">One click sign in</h3>
+            <h3 style="opacity: 0.6">
+        	    <LocalizedText
+	        		text="One-click Sign in"
+        			key="auth.oneclick.title"
+		        	lang={currentLang}
+        	    />
+	        </h3>
             {#each OneClickAccounts as { username, lastSignedIn }}
             <button class="auth-button" on:click={OneClickSignInTriggered}>
-                <b><i>One Click:</i> {username}</b>
-                <p>Last signed in {lastSignedIn}</p>
+                <b>
+			        <LocalizedText
+			        	text="One Click: $1"
+			        	key="auth.oneclick.user"
+			        	replace={{
+			        		"$1": username
+			        	}}
+			        	lang={currentLang}
+			        />
+		        </b>
+                <p>
+			        <LocalizedText
+        				text="Last signed in $1"
+        				key="auth.oneclick.lastsignin"
+        				replace={{
+        					"$1": lastSignedIn
+        				}}
+        				lang={currentLang}
+			        />
+        		</p>
             </button>
-            {/each}
+            {/each}d
         </div>
     </aside>
 
