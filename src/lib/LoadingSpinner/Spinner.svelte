@@ -2,11 +2,11 @@
     import { onMount, onDestroy } from "svelte";
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import Language from "../../resources/language.js";
-    import tips from './Tips.json'
-    let tipId = Math.floor(Math.random() * tips.length)
+    import { getRandomTipId, getTip } from "./tips.js"
+    let tipId = getRandomTipId()
     export let enableTips = false
     const inter = setInterval(() => {
-        tipId = Math.floor(Math.random() * tips.length)
+        tipId = getRandomTipId()
     }, 7000)
 
     let currentLang = "en";
@@ -23,7 +23,7 @@
     {#if enableTips}
         <p>
             <LocalizedText
-                text={tips[tipId]}
+                text={getTip(tipId}
                 key={`spinner.tips.${tipId}`}
                 lang={currentLang}
             />
