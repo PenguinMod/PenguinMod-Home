@@ -555,6 +555,31 @@
         /https:\/\/snail-ide\.js\.org/i,
         /https:\/\/snail-ide\.github\.io/i,
         /https:\/\/snail-ide\.vercel\.app/i,
+
+        /https:\/\/github\.com/i,
+        /https:\/\/youtube\.com/i,
+        /https:\/\/discord\.com/i,
+        /https:\/\/discord\.gg/i,
+        /https:\/\/twitter\.com/i,
+        /https:\/\/x\.com/i,
+    ];
+    const showRedirectURLs = [
+        /https:\/\/[a-z]+\.cocrea\.world/i,
+        /https:\/\/cocrea\.world/i,
+        /https:\/\/[a-z]+\.getgandi\.com/i,
+        /https:\/\/getgandi\.com/i,
+        /https:\/\/[a-z]+\.snail-ide\.com/i,
+        /https:\/\/snail-ide\.com/i,
+        /https:\/\/snail-ide\.js\.org/i,
+        /https:\/\/snail-ide\.github\.io/i,
+        /https:\/\/snail-ide\.vercel\.app/i,
+        
+        /https:\/\/github\.com/i,
+        /https:\/\/youtube\.com/i,
+        /https:\/\/discord\.com/i,
+        /https:\/\/discord\.gg/i,
+        /https:\/\/twitter\.com/i,
+        /https:\/\/x\.com/i,
     ];
     md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
         const href = String(tokens[idx].attrGet('href'));
@@ -562,6 +587,11 @@
         if (!href.match(safeURLs[1])) {
             // Add a new `target` attribute, or replace the value of the existing one.
             tokens[idx].attrSet('target', '_blank');
+        }
+        // if we match a URL that should show a redirect, change the href attribute
+        if (showRedirectURLs.some(regex => href.match(regex))) {
+            const base64 = encodeURIComponent(btoa(href));
+            tokens[idx].attrSet('href', `https://penguinmod.com/redirect?t=${base64}`);
         }
 
         // disables clicking on non-verified links
