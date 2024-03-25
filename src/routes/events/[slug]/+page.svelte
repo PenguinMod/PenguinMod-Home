@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { page } from '$app/stores';
+    import { browser } from '$app/environment';
     
 
     /** @type {import('./$types').PageData} */
@@ -16,7 +17,11 @@
 
     const eventPath = data.slug;
     const language = $page.url.searchParams.get('l');
-    const markdownSource = EventPages[eventPath][language] || "404 no such file exists";
+    if (!EventPages[eventPath] && browser) {
+        location.href = location.origin + '/error?error=404';
+    }
+
+    const markdownSource = (EventPages[eventPath] || {})[language] || "404 no such file exists";
 
     const md = new MarkdownIt({
         html: true,
@@ -169,7 +174,7 @@
         margin: 0 15%;
         width: 70%;
     }
-    :global(body.dark-mode) a {
+    :global(body.dark-mode) :global(a) {
         color: dodgerblue;
     }
     

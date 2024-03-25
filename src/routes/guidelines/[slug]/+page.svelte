@@ -3,10 +3,14 @@
     export let data;
 
     import { onMount } from "svelte";
+    import { browser } from '$app/environment';
     import MarkdownIt from "markdown-it";
     import GuidelinePages from "../../../guidelines/pages";
 
-    const markdownSource = GuidelinePages[data.slug] || "404 no such file exists";
+    const markdownSource = GuidelinePages[data.slug] || "404 Page Not Found";
+    if (markdownSource === '404 Page Not Found' && browser) {
+        location.href = location.origin + '/error?error=404';
+    }
 
     const md = new MarkdownIt({
         html: true,
