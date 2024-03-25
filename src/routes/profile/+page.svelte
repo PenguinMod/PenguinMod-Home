@@ -556,12 +556,12 @@
         /https:\/\/snail-ide\.github\.io/i,
         /https:\/\/snail-ide\.vercel\.app/i,
 
-        /https:\/\/github\.com/i,
-        /https:\/\/youtube\.com/i,
-        /https:\/\/discord\.com/i,
-        /https:\/\/discord\.gg/i,
-        /https:\/\/twitter\.com/i,
-        /https:\/\/x\.com/i,
+        /https:\/\/(www\.|)github\.com/i,
+        /https:\/\/(www\.|)youtube\.com/i,
+        /https:\/\/(www\.|)discord\.com/i,
+        /https:\/\/(www\.|)discord\.gg/i,
+        /https:\/\/(www\.|)twitter\.com/i,
+        /https:\/\/(www\.|)x\.com/i,
     ];
     const showRedirectURLs = [
         /https:\/\/[a-z]+\.cocrea\.world/i,
@@ -574,18 +574,17 @@
         /https:\/\/snail-ide\.github\.io/i,
         /https:\/\/snail-ide\.vercel\.app/i,
         
-        /https:\/\/github\.com/i,
-        /https:\/\/youtube\.com/i,
-        /https:\/\/discord\.com/i,
-        /https:\/\/discord\.gg/i,
-        /https:\/\/twitter\.com/i,
-        /https:\/\/x\.com/i,
+        /https:\/\/(www\.|)github\.com/i,
+        /https:\/\/(www\.|)youtube\.com/i,
+        /https:\/\/(www\.|)discord\.com/i,
+        /https:\/\/(www\.|)discord\.gg/i,
+        /https:\/\/(www\.|)twitter\.com/i,
+        /https:\/\/(www\.|)x\.com/i,
     ];
     md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
         const href = String(tokens[idx].attrGet('href'));
         // only force open in new tab if we are not penguinmod.com
         if (!href.match(safeURLs[1])) {
-            // Add a new `target` attribute, or replace the value of the existing one.
             tokens[idx].attrSet('target', '_blank');
         }
         // if we match a URL that should show a redirect, change the href attribute
@@ -619,9 +618,11 @@
     // we can handle this horrible behavior properly though:
     try {
         regexRules.project = new RegExp('(?<!\\b(?:https?:\\/\\/|www\\.)\\S*)#(\\w+|\\d+)(?!\\S)', 'g');
+        regexRules.user = new RegExp('(?<!\\b(?:https?:\\/\\/|www\\.)\\S*)@(\\w+|\\d+)(?!\\S)', 'g');
     } catch {
         // iOS users will experience weird gaps and or urls with hashtags leading to 2 different places
         regexRules.project = /#([\w-]+)/g;
+        regexRules.user = /@([\w-]+)/g,
         console.warn('Browser does not support lookbehind assertion in regex');
     }
 
