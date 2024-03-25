@@ -130,7 +130,6 @@
 </head>
 
 <div class="main">
-    <!-- I'm aware this page is bland, I just didn't feel like making Pang illustrations. -->
     <div class="section-info">
         <div>
             <h1 style="margin-block: 0;">
@@ -265,7 +264,7 @@
             </div>
         </div>
     </dialog>
-    <main class="auth-page-holder"> <!-- use class "one-click-available" if a one click account is available. -->
+    <main class="auth-page-holder {(OneClickAccounts.length > 0 && "one-click-available") || ""}">
         <div class="auth-method-sector">
             <h3 style="opacity: 0.6">
         		<LocalizedText
@@ -312,7 +311,7 @@
             </button>
         </div>
     </main>
-    <aside class="one-click-sign-in"> <!-- use class "one-click-available" if a one click account is available. -->
+    <aside class="one-click-sign-in {(OneClickAccounts.length > 0 && "one-click-available") || ""}">
         <div class="auth-method-sector">
             <h3 style="opacity: 0.6">
         	    <LocalizedText
@@ -344,15 +343,9 @@
 			        />
         		</p>
             </button>
-            {/each}d
+            {/each}
         </div>
     </aside>
-
-    <div style="display:none">
-        <!-- tricking the packager into keeping the required CSS that isn't used until page load. -->
-        <div class="auth-page-holder one-click-available"></div>
-        <div class="one-click-sign-in one-click-available"></div>
-    </div>
 </div>
 
 <style>
