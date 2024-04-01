@@ -264,10 +264,10 @@
 </script>
 
 <svelte:head>
-    <title>PenguinMod - Home</title>
-    <meta name="title" content="PenguinMod - Home" />
-    <meta property="og:title" content="PenguinMod - Home" />
-    <meta property="twitter:title" content="PenguinMod - Home">
+    <title>MenguinPod - Home</title>
+    <meta name="title" content="MenguinPod - Home" />
+    <meta property="og:title" content="MenguinPod - Home" />
+    <meta property="twitter:title" content="MenguinPod - Home">
     <meta name="description" content="The area where featured projects and community stuff & info is shown.">
     <meta property="twitter:description" content="The area where featured projects and community stuff & info is shown.">
     <meta property="og:url" content="https://penguinmod.com/">
@@ -281,7 +281,7 @@
 
     <Alert
         onlyShowID={"donatee:_2"}
-        text={"PenguinMod is a free-to-use visual coding website. Your support can help us keep the website working!"}
+        text={"MenguinPod is a free-to-use visual coding website. Your support can help us keep the website working!"}
         textBreakup={true}
         textColor={"white"}
         hasImage={true}
@@ -373,7 +373,7 @@
                 />
                 <p>
                     <LocalizedText
-                        text="PenguinMod is made by English-speaking developers. Expect minor issues and sorry for any translation errors."
+                        text="MenguinPod is made by English-speaking developers. Expect minor issues and sorry for any translation errors."
                         key="translation.warning"
                         lang={currentLang}
                     />
@@ -433,7 +433,7 @@
             />
             <p>
                 <LocalizedText
-                    text="PenguinMod is made by English-speaking developers. Expect minor issues and sorry for any translation errors."
+                    text="MenguinPod is made by English-speaking developers. Expect minor issues and sorry for any translation errors."
                     key="translation.warning"
                     lang={currentLang}
                 />
@@ -444,7 +444,7 @@
     <p style="width: 100%; text-align: center;">
         <i>
             <LocalizedText
-                text="Scratch Note: Please don't mention PenguinMod on Scratch, we have different rules compared to Scratch! 😅"
+                text="Scratch Note: Please don't mention MenguinPod on Scratch, we have different rules compared to Scratch! 😅"
                 key="home.scratchnote"
                 dontlink={true}
                 lang={currentLang}
@@ -907,7 +907,7 @@
         <p>
             <!-- {#if !thingyActive} -->
                 <LocalizedText
-                    text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
+                    text="MenguinPod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
                     key="home.footer.notaffiliated"
                     dontlink={true}
                     lang={currentLang}
@@ -1011,7 +1011,7 @@
                         lang={currentLang}
                     />
                 </p>
-                <a href={"/donate"}>PenguinMod</a>
+                <a href={"/donate"}>MenguinPod</a>
                 <a target="_blank" href={LINK.donate.turbowarp}>TurboWarp</a>
                 <a target="_blank" href={LINK.donate.scratch}>Scratch</a>
             </div>
