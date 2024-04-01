@@ -33,7 +33,7 @@
         const date = new Date(Date.now());
         const urlParams = $page.url.searchParams;
         const isAprilFools = date.getMonth() === 3 && date.getDate() === 1; // month is 0 indexed for literally no reason
-        const runningLocal = String(urlParams.get('forceaprilfools')) === 'true' && $page.url.hostname === 'localhost';
+        const runningLocal = String(urlParams.get('forceaprilfools')) === 'true'; // && $page.url.hostname === 'localhost';
 
         return isAprilFools || runningLocal;
     };
