@@ -1,5 +1,7 @@
 <script>
     import { onMount } from "svelte";
+    import { page } from "$app/stores";
+
     import Authentication from "../resources/authentication.js";
     import ProjectApi from "../resources/projectapi.js";
     import censor from "../resources/basiccensorship.js";
@@ -26,6 +28,15 @@
 
     // Icons
     import PenguinConfusedSVG from "../icons/Penguin/confused.svelte";
+
+    const isAprilFools = () => {
+        const date = new Date(Date.now());
+        const urlParams = $page.url.searchParams;
+        const isAprilFools = date.getMonth() === 3 && date.getDate() === 1; // month is 0 indexed for literally no reason
+        const runningLocal = String(urlParams.get('forceaprilfools')) === 'true' && $page.url.hostname === 'localhost';
+
+        return isAprilFools || runningLocal;
+    };
 
     let loggedIn = null;
     let langDecided = false;
