@@ -67,6 +67,17 @@
 					window._isPenguinModLauncher = true;
 				}
 			};
+			const checkAndApplyAprilFools = () => {
+				// check local date or test params
+				const date = new Date(Date.now());
+				const urlParams = new URLSearchParams(location.search);
+				const isAprilFools = date.getMonth() === 3 && date.getDate() === 1; // month is 0 indexed for literally no reason
+				const runningLocal = String(urlParams.get('forceaprilfools')) === 'true' && location.hostname === 'localhost';
+				window._isAprilFools = isAprilFools || runningLocal;
+				if (isAprilFools || runningLocal) {
+					body.classList.add("april-fools");
+				}
+			};
 
 			let prefersDarkMode = false;
 			try {
@@ -99,6 +110,7 @@
 			
 			if (!isEmbed) {
 				checkAndApplyLauncher();
+				checkAndApplyAprilFools();
 			}
 			
 			// warning in case of people pasting random code here
