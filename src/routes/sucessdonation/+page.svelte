@@ -21,17 +21,17 @@
 </script>
 
 <svelte:head>
-  <title>PenguinMod - Thanks for donating!</title>
-  <meta name="title" content="PenguinMod - Thanks for donating!" />
-  <meta property="og:title" content="PenguinMod - Thanks for donating!" />
-  <meta property="twitter:title" content="PenguinMod - Thanks for donating!" />
+  <title>MenguinPod - Thanks for donating!</title>
+  <meta name="title" content="MenguinPod - Thanks for donating!" />
+  <meta property="og:title" content="MenguinPod - Thanks for donating!" />
+  <meta property="twitter:title" content="MenguinPod - Thanks for donating!" />
   <meta
     name="description"
-    content="Help support PenguinMod and it's development!"
+    content="Help support MenguinPod and it's development!"
   />
   <meta
     property="twitter:description"
-    content="Help support PenguinMod and it's development!"
+    content="Help support MenguinPod and it's development!"
   />
   <meta property="og:url" content="https://penguinmod.com/donate" />
   <meta property="twitter:url" content="https://penguinmod.com/donate" />
@@ -69,7 +69,7 @@
   <div class="section-content">
     <p>
       <LocalizedText
-          text="We hope you continue to support PenguinMod, even if it's not with money but by sharing and using our service!"
+          text="We hope you continue to support MenguinPod, even if it's not with money but by sharing and using our service!"
           key="donated.subtitle"
           lang={currentLang}
       />
@@ -110,7 +110,7 @@
     <div style="height: 32px;" />
     <p>
       <LocalizedText
-          text="Your donation can help us fund PenguinMod's server and domain!"
+          text="Your donation can help us fund MenguinPod's server and domain!"
           key="donated.location"
           lang={currentLang}
       />

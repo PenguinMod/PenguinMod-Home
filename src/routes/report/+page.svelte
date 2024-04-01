@@ -243,12 +243,12 @@
 </script>
 
 <svelte:head>
-    <title>PenguinMod - Report</title>
-    <meta name="title"                   content="PenguinMod - Report" />
-    <meta property="og:title"            content="PenguinMod - Report" />
-    <meta property="twitter:title"       content="PenguinMod - Report">
-    <meta name="description"             content="Report a specific project or user on PenguinMod.">
-    <meta property="twitter:description" content="Report a specific project or user on PenguinMod.">
+    <title>MenguinPod - Report</title>
+    <meta name="title"                   content="MenguinPod - Report" />
+    <meta property="og:title"            content="MenguinPod - Report" />
+    <meta property="twitter:title"       content="MenguinPod - Report">
+    <meta name="description"             content="Report a specific project or user on MenguinPod.">
+    <meta property="twitter:description" content="Report a specific project or user on MenguinPod.">
     <meta property="og:url"              content="https://penguinmod.com/report">
     <meta property="twitter:url"         content="https://penguinmod.com/report">
 </svelte:head>

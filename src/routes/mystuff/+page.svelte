@@ -165,10 +165,10 @@
 </script>
 
 <svelte:head>
-    <title>PenguinMod - My Stuff</title>
-    <meta name="title"                   content="PenguinMod - My Stuff" />
-    <meta property="og:title"            content="PenguinMod - My Stuff" />
-    <meta property="twitter:title"       content="PenguinMod - My Stuff">
+    <title>MenguinPod - My Stuff</title>
+    <meta name="title"                   content="MenguinPod - My Stuff" />
+    <meta property="og:title"            content="MenguinPod - My Stuff" />
+    <meta property="twitter:title"       content="MenguinPod - My Stuff">
     <meta name="description"             content="View your own projects & content.">
     <meta property="twitter:description" content="View your own projects & content.">
     <meta property="og:url"              content="https://penguinmod.com/mystuff">
@@ -230,7 +230,7 @@
             <div class="login-prompt">
                 <p>
                     <LocalizedText
-                        text="Please log in to view your PenguinMod projects."
+                        text="Please log in to view your MenguinPod projects."
                         key="mystuff.login"
                         lang={currentLang}
                     />

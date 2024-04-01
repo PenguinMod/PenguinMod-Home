@@ -478,12 +478,12 @@
 </script>
 
 <svelte:head>
-    <title>PenguinMod - Upload</title>
-    <meta name="title"                   content="PenguinMod - Upload" />
-    <meta property="og:title"            content="PenguinMod - Upload" />
-    <meta property="twitter:title"       content="PenguinMod - Upload">
-    <meta name="description"             content="Upload your project to PenguinMod, for the whole world to see.">
-    <meta property="twitter:description" content="Upload your project to PenguinMod, for the whole world to see.">
+    <title>MenguinPod - Upload</title>
+    <meta name="title"                   content="MenguinPod - Upload" />
+    <meta property="og:title"            content="MenguinPod - Upload" />
+    <meta property="twitter:title"       content="MenguinPod - Upload">
+    <meta name="description"             content="Upload your project to MenguinPod, for the whole world to see.">
+    <meta property="twitter:description" content="Upload your project to MenguinPod, for the whole world to see.">
     <meta property="og:url"              content="https://penguinmod.com/upload">
     <meta property="twitter:url"         content="https://penguinmod.com/upload">
 </svelte:head>
