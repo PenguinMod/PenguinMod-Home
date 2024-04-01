@@ -42,7 +42,7 @@ Language.onChange((lang) => {
 
     <main>
         <!-- UPDATE THIS WHEN MAKING CONTENT CHANGES -->
-        <p><i>Updated January 13th, 2024 (Mountain Time)</i></p>
+        <p><i>Updated March 19th, 2024 (Mountain Time)</i></p>
 
         <!-- some things are intentionally not formatted as they are in the HTML file on the website -->
         <p>
@@ -177,7 +177,7 @@ Language.onChange((lang) => {
         <p>This document does not apply to third-parties, including other users or bots connected to cloud variables, links to external websites, custom extensions, or some advanced URL parameters.</p>
 
         <h2>Editor extensions</h2>
-        <h4>Core - HTML iframes (referred to as "iframes" here)</h4>
+        <h3>Core - HTML iframes (referred to as "iframes" here)</h3>
         <p>
             "iframes" may connect to user-specified websites. These websites may be allowed to access:
         </p>
@@ -194,7 +194,7 @@ Language.onChange((lang) => {
             PenguinMod does not allow projects uploaded to only display content from other websites.
             Uploaded projects must contain content of their own, and certain websites may cause the uploaded project to be deleted or rejected.
         </p>
-        <h4>Core - Scratch Authentication (referred to as "Scratch Auth Extension" here)</h4>
+        <h3>Core - Scratch Authentication (referred to as "Scratch Auth Extension" here)</h3>
         <p>
             The "Scratch Auth Extension" will connect to <a href="https://auth.itinerary.eu.org/">Scratch Auth</a> for Log-In. Scratch Auth can access:
             </p>
@@ -207,7 +207,7 @@ Language.onChange((lang) => {
             The "Scratch Auth Extension" also allows your public Scratch account information to be accessible to the PenguinMod project,
             however other tools, extensions or APIs are required to get information past your Scratch username.
         </p>
-        <h4>User-submitted (G1nX) - Better Storage</h4>
+        <h3>User-submitted (G1nX) - Better Storage</h3>
         <p>
             Better Storage will connect to <a href="https://auth.itinerary.eu.org/">Scratch Auth</a> for Log-In. Scratch Auth can access:</p>
             <ul>
@@ -219,7 +219,20 @@ Language.onChange((lang) => {
             Better Storage can also access any info that Scratch Auth can.
             The owner of Better Storage may also view any saved data using their keys for security and safety.
         </p>
-        <h4>User-submitted (RubyDevs) - TurboWeather</h4>
+        <h3>User-submitted (MubiLop) - PenguinGPT</h3>
+        <p>
+            PenguinGPT will connect to <a href="https://reverse.mubi.tech/">reverse.mubi.tech</a> by default for AI communication. This site can access:</p>
+            <ul>
+                <li>your IP address</li>
+                <li>your general location (using your IP address)</li>
+                <li>any prompt or responses given to any AI on the site</li>
+                <li>any prompt or responses from any AI on the site</li>
+                <li>any images from any AI on the site</li>
+            </ul>
+            <p>
+            The owner of PenguinGPT logs and reads this information for security and preventing malicious attacks.
+        </p>
+        <h3>User-submitted (RubyDevs) - TurboWeather</h3>
         <p>
             TurboWeather uses Browser APIs to geolocate the user.
             <br>
@@ -282,25 +295,6 @@ Language.onChange((lang) => {
         width: 60%;
     }
 
-    .small {
-        font-size: 12px;
-    }
-
-    .detail-card {
-        width: calc(100% - 24px);
-        padding: 48px 12px;
-        background: dodgerblue;
-        color: white;
-        text-align: center;
-    }
-    .detail-card p,
-    .detail-card h1 {
-        margin-block: 0;
-    }
-    .detail-card h1 {
-        font-size: 48px;
-    }
-
     .section-info {
         background: #00c3ffad;
         height: 12rem;
@@ -314,10 +308,6 @@ Language.onChange((lang) => {
     }
     .section-info h1 {
         margin-block: 0;
-        margin-left: 32px;
-    }
-    .section-info p {
-        margin-block-end: 0;
         margin-left: 32px;
     }
 

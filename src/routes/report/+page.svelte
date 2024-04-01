@@ -320,7 +320,13 @@
                                 type="text"
                                 class="custom-reason"
                                 bind:value={pageDetails[reason.pageDetail]}
-                                placeholder="Clarify information here..."
+                                placeholder={String(TranslationHandler.text(
+                                    "report.reason.clarify",
+                                    currentLang
+                                ) || TranslationHandler.text(
+                                    "report.reason.clarify",
+                                    'en'
+                                ))}
                             />
                         {/if}
                     {/each}
@@ -342,7 +348,13 @@
                             type="text"
                             class="custom-reason"
                             bind:value={pageDetails.otherReason}
-                            placeholder="Why should this be reported?"
+                            placeholder={String(TranslationHandler.text(
+                                "report.reason.other.reason",
+                                currentLang
+                            ) || TranslationHandler.text(
+                                "report.reason.other.reason",
+                                'en'
+                            ))}
                         />
                     {/if}
                 </div>

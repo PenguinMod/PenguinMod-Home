@@ -45,6 +45,8 @@
     let focusedBadge = -1;
     let isDonator = false;
     let isFollowingUser = false;
+    let wasNotFound = false;
+    let isForceView = false;
     let followerCount = null;
     let fullProfile = {};
     let isRankingUpMenu = false;
@@ -197,6 +199,7 @@
         });
     };
     
+    let fetchedFullProfile = false;
     onMount(() => {
         const params = new URLSearchParams(location.search);
         const query = params.get("user");
@@ -211,15 +214,12 @@
             if (projects.featured.length <= 0) {
                 projects.featured = ["none"];
             }
+            wasNotFound = false;
             ProjectApi.getProfile(user, true).then((proffile) => {
                 fullProfile = proffile;
                 badges = fullProfile.badges;
                 isDonator = fullProfile.donator;
                 followerCount = fullProfile.followers;
-                
-                setTimeout(() => {
-                    renderScratchBlocks();
-                }, 0);
 
                 const profileFeatured = fullProfile.myFeaturedProject;
                 if (profileFeatured) {
@@ -234,6 +234,17 @@
                 } else if (!profileFeatured && projects.all[0]) {
                     profileFeaturedProject = projects.all[0];
                 }
+            }).catch(err => {
+                err = JSON.parse(err);
+                err = err.error;
+                if (err === 'NotFound') {
+                    wasNotFound = true;
+                }
+            }).finally(() => {
+                fetchedFullProfile = true;
+                setTimeout(() => {
+                    renderScratchBlocks();
+                }, 0);
             });
         });
 
@@ -526,31 +537,42 @@
         return self.renderToken(tokens, idx, options);
     };
 
+    const doesntShowRedirectURLs = [
+        /https:\/\/([a-z]+\.|)penguinmod\.com/i,
+        /https:\/\/([a-z]+\.|)scratch\.org/i,
+        /https:\/\/([a-z]+\.|)scratch\.mit\.edu/i,
+        /https:\/\/(?!share\.)([a-z]+\.)?turbowarp\.org/i,
+    ];
     const safeURLs = [
-        /https:\/\/[a-z]+\.penguinmod\.com/i,
-        /https:\/\/penguinmod\.com/i,
-        /https:\/\/[a-z]+\.scratch\.org/i,
-        /https:\/\/scratch\.org/i,
-        /https:\/\/[a-z]+\.scratch\.mit\.edu/i,
-        /https:\/\/scratch\.mit\.edu/i,
-        /https:\/\/[a-z]+\.turbowarp\.org/i,
-        /https:\/\/turbowarp\.org/i,
-        /https:\/\/[a-z]+\.cocrea\.world/i,
-        /https:\/\/cocrea\.world/i,
-        /https:\/\/[a-z]+\.getgandi\.com/i,
-        /https:\/\/getgandi\.com/i,
-        /https:\/\/[a-z]+\.snail-ide\.com/i,
-        /https:\/\/snail-ide\.com/i,
+        /https:\/\/([a-z]+\.|)penguinmod\.com/i,
+        /https:\/\/([a-z]+\.|)scratch\.org/i,
+        /https:\/\/([a-z]+\.|)scratch\.mit\.edu/i,
+        /https:\/\/([a-z]+\.|)turbowarp\.org/i,
+        /https:\/\/([a-z]+\.|)cocrea\.world/i,
+        /https:\/\/([a-z]+\.|)getgandi\.com/i,
+        /https:\/\/([a-z]+\.|)snail-ide\.com/i,
         /https:\/\/snail-ide\.js\.org/i,
         /https:\/\/snail-ide\.github\.io/i,
         /https:\/\/snail-ide\.vercel\.app/i,
+
+        /https:\/\/(www\.|)(roblox|youtube|discord|twitter|x|patreon|reddit)\.com/i,
+        /https:\/\/old\.reddit\.com/i,
+        /https:\/\/create\.roblox\.com/i,
+        /https:\/\/(www\.|)discord\.gg/i,
+        /https:\/\/(www\.|support\.|)guilded\.gg/i,
+        /https:\/\/(www\.|gist\.|)github\.com/i,
+        /https:\/\/(www\.|store\.|support\.|help\.|)(steampowered|steamcommunity)\.com/i,
     ];
     md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
         const href = String(tokens[idx].attrGet('href'));
         // only force open in new tab if we are not penguinmod.com
         if (!href.match(safeURLs[1])) {
-            // Add a new `target` attribute, or replace the value of the existing one.
             tokens[idx].attrSet('target', '_blank');
+        }
+        // if we match a URL that should show a redirect, change the href attribute
+        if (!doesntShowRedirectURLs.some(regex => href.match(regex))) {
+            const base64 = encodeURIComponent(btoa(href));
+            tokens[idx].attrSet('href', `https://penguinmod.com/redirect?t=${base64}`);
         }
 
         // disables clicking on non-verified links
@@ -578,9 +600,11 @@
     // we can handle this horrible behavior properly though:
     try {
         regexRules.project = new RegExp('(?<!\\b(?:https?:\\/\\/|www\\.)\\S*)#(\\w+|\\d+)(?!\\S)', 'g');
+        regexRules.user = new RegExp('(?<!\\b(?:https?:\\/\\/|www\\.)\\S*)@(\\w+|\\d+)(?!\\S)', 'g');
     } catch {
         // iOS users will experience weird gaps and or urls with hashtags leading to 2 different places
         regexRules.project = /#([\w-]+)/g;
+        regexRules.user = /@([\w-]+)/g,
         console.warn('Browser does not support lookbehind assertion in regex');
     }
 
@@ -772,8 +796,13 @@
 
     <StatusAlert />
 
-    {#if projects.all.length > 0}
-        {#if projects.all[0] !== "none" || (loggedIn && user === loggedInUser)}
+    {#if (projects.all.length > 0 && fetchedFullProfile) || isForceView}
+        {#if
+            ((!(projects.all[0] !== "none" && wasNotFound))
+            && ((projects.all[0] !== "none" || isDonator || fullProfile.bio || isFollowingUser || fullProfile.rank > 0)
+            || (loggedIn && user === loggedInUser)))
+            || isForceView
+        }
         <div class="background">
             {#if user}
                 <div class="section-user">
@@ -1202,6 +1231,9 @@
                                             title={TranslationHandler.text(
                                                 `profile.badge.${badge}`,
                                                 currentLang
+                                            ) || TranslationHandler.text(
+                                                `profile.badge.${badge}`,
+                                                'en'
                                             )}
                                         >
                                             <img
@@ -1209,10 +1241,16 @@
                                                 alt={TranslationHandler.text(
                                                     `profile.badge.${badge}`,
                                                     currentLang
+                                                ) || TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    'en'
                                                 )}
                                                 title={TranslationHandler.text(
                                                     `profile.badge.${badge}`,
                                                     currentLang
+                                                ) || TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    'en'
                                                 )}
                                             />
                                             {#if focusedBadge === idx}
@@ -1220,6 +1258,9 @@
                                                     {TranslationHandler.text(
                                                         `profile.badge.${badge}`,
                                                         currentLang
+                                                    ) || TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        'en'
                                                     )}
                                                 </div>
                                             {/if}
@@ -1245,7 +1286,7 @@
                         currentLang
                     )}
                     style="width:calc(90% - 10px);"
-                    stylec="height: 244px;"
+                    stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
                     seemore={`/search?q=user%3A${user}`}
                 >
                     <div class="project-list">
@@ -1307,6 +1348,25 @@
                         lang={currentLang}
                     />
                 </p>
+                <br>
+                <!-- only show if we fetched the full profile -->
+                {#if fetchedFullProfile}
+                    <Button link="https://scratch.mit.edu/users/{user}/" noredirect={true}>
+                        <LocalizedText
+                            text="View on Scratch"
+                            key="profile.scratchprofile"
+                            dontlink={true}
+                            lang={currentLang}
+                        />
+                    </Button>
+                    {#if loggedInAdmin}
+                        <Button on:click={() => {
+                            isForceView = true;
+                        }}>
+                            (Admin) Force view profile
+                        </Button>
+                    {/if}
+                {/if}
             </div>
         {/if}
     {:else}

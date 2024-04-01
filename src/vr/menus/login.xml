@@ -1,0 +1,5 @@
+<xml>
+    <img src="https://penguinmod.com/vr/warning.png" size="2 2" position="0 1 0" />
+    <p position="0 -0.5 0">You are not logged in. Please exit and follow instructions to login.</p>
+    <button text="Exit VR" position="0 -2 0" padding="24" />
+</xml>

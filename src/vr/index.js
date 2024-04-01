@@ -1,5 +1,8 @@
 import * as Three from "three";
 import { XRControllerModelFactory } from "three/examples/jsm/webxr/XRControllerModelFactory";
+import Direction from "./util/direction";
+import VHTMLRenderer from "./htmlrenderer";
+import NineSlices from "./htmlrenderer/texture/nineslice";
 // import BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 // import { ConvexGeometry } from 'three/examples/jsm/geometries/ConvexGeometry';
 // import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
@@ -8,16 +11,6 @@ import { XRControllerModelFactory } from "three/examples/jsm/webxr/XRControllerM
 
 const SESSION_TYPE = "immersive-vr";
 
-function toRad(deg) {
-    return deg * (Math.PI / 180);
-}
-function toDeg(rad) {
-    return rad * (180 / Math.PI);
-}
-
-class ButtonHandler {
-    
-}
 class VRHandler {
     constructor() {
         /**
@@ -32,6 +25,10 @@ class VRHandler {
          * @type {Three.WebGLRenderer}
          */
         this.renderer = null;
+        /**
+         * @type {VHTMLRenderer}
+         */
+        this.htmlRenderer = new VHTMLRenderer(this);
 
         /**
          * Whether or not a session has been created.
@@ -47,6 +44,11 @@ class VRHandler {
          * @type {Three.Group}
          */
         this.group = null;
+        /**
+         * @type {Three.Group}
+         */
+        this.htmlPage = null;
+
         /**
          * @type {Three.Raycaster}
          */
@@ -78,6 +80,10 @@ class VRHandler {
                 audio.pause();
             }
         }
+    }
+    static requestMessage(key) {
+        console.warn('VRHandler.requestMessage should be overridden, or don\'t use translation keys in this application.');
+        return `!! ${key} !!`;
     }
 
     _disposeImmersive() {
@@ -164,7 +170,10 @@ class VRHandler {
         this.audioElements.background.play();
     }
 
-    initialize() {
+    async initialize() {
+        // load required textures
+        await NineSlices.loadImages();
+
         this.scene = new Three.Scene();
         this.renderer = new Three.WebGLRenderer({
             // TODO: is this appropriate config for our use-case?
@@ -189,6 +198,10 @@ class VRHandler {
 
         this.group = new Three.Group();
         this.scene.add(this.group);
+        this.htmlPage = new Three.Group();
+        this.group.add(this.htmlPage);
+
+        this.htmlRenderer.group = this.htmlPage;
 
         // platform
         const texLoader = new Three.TextureLoader();
@@ -202,7 +215,7 @@ class VRHandler {
         });
         const platformObject = new Three.Mesh(platformGeometry, platformMaterial);
         platformObject.position.set(0, 0, 0);
-        platformObject.rotateX(toRad(90));
+        platformObject.rotateX(Direction.toRad(90));
         this.scene.add(platformObject);
 
         // controllers
@@ -231,7 +244,7 @@ class VRHandler {
         this.scene.add(controllerGrip2);
 
         // light
-        const light = new Three.SpotLight(0xffffff, 60);
+        const light = new Three.SpotLight(0xffffff, 120);
         light.position.set(0, 5, 2.5);
         this.scene.add(light);
 
@@ -255,6 +268,7 @@ class VRHandler {
         const exitProgressTexture = texLoader.load("https://penguinmod.com/vr/white.png");
         const exitMaterial = new Three.MeshBasicMaterial({
             map: exitTexture,
+            transparent: true,
             side: Three.DoubleSide,
         });
         const exitProgressMaterial = new Three.MeshBasicMaterial({
@@ -263,20 +277,16 @@ class VRHandler {
         });
         const exitObject = new Three.Mesh(platformGeometry, exitMaterial);
         const exitProgressObject = new Three.Mesh(platformGeometry, exitProgressMaterial);
-        exitObject.userData.button = true;
-        exitObject.userData.buttonOpcode = 'exiting';
+        // exitObject.userData.button = true;
+        // exitObject.userData.buttonOpcode = 'exiting';
         exitProgressObject.userData.interactable = false;
+
+        exitObject.position.set(0, 2, 3);
+        exitProgressObject.position.set(0, 2, 2.999);
+        exitProgressObject.scale.set(1, 0, 1);
+
         this.group.add(exitObject);
         this.group.add(exitProgressObject);
-
-        // test
-        const testCubeGeometry = new Three.BoxGeometry(1, 1, 1);
-        const testCubeMaterial = new Three.MeshBasicMaterial({
-            color: 0xff0000
-        });
-        const testCubeObject = new Three.Mesh(testCubeGeometry, testCubeMaterial);
-        testCubeObject.position.set(0, 4, -5);
-        this.group.add(testCubeObject);
     }
 
     start() {
@@ -291,15 +301,19 @@ class VRHandler {
         if (!this.session) return;
         return this.session.end();
     }
+    loadPage(html) {
+        this.htmlRenderer.clear();
+        this.htmlRenderer.create(html);
+    }
 
     onSelectStart(event) {
         const controller = event.target;
         const intersections = this.getIntersections(controller);
+        console.log(intersections);
         if (intersections.length > 0) {
             const intersection = intersections[0];
 
             const object = intersection.object;
-            // object.material.emissive.b = 1;
             this.audioElements.hover.currentTime = 0;
             this.audioElements.hover.play();
             controller.attach(object);
