@@ -1,5 +1,16 @@
 <script>
 	import { onMount } from "svelte";
+    import { page } from "$app/stores";
+
+	const isAprilFools = () => {
+        const date = new Date(Date.now());
+        const urlParams = $page.url.searchParams;
+        const isAprilFools = date.getMonth() === 3 && date.getDate() === 1; // month is 0 indexed for literally no reason
+        const runningLocal = String(urlParams.get('forceaprilfools')) === 'true' && $page.url.hostname === 'localhost';
+
+        return isAprilFools || runningLocal;
+    };
+
 	import Authentication from "../../resources/authentication.js";
 	import ProjectApi from "../../resources/projectapi.js";
 	import HTMLUtility from "../../resources/html.js";
@@ -24,6 +35,18 @@
 	let accountUsername = "";
 	let messageCount = 0;
 	let canRankUp = false;
+
+	const isAprilFirst = isAprilFools();
+	const randomColor = (() => {
+		const colors = [
+			"#00c3ff",
+			"#ff4c4c",
+			"#66757f",
+			"#ffd000",
+			"#b200fe"
+		];
+		return colors[Math.round(Math.random() * (colors.length - 1))];
+	})();
 
 	function loggedInCheck() {
 		const privateCode = localStorage.getItem("PV");
@@ -244,7 +267,7 @@
 		/>
 	</button>
 </div>
-<div class="bar">
+<div class="bar" style={isAprilFirst ? `background-color: ${randomColor} !important` : ''}>
 	<a class="logo" href="/">
 		<img class="logo-image" src="/navicon.png" alt="PenguinMod" />
 	</a>

@@ -51,6 +51,53 @@
     let projectsLoaded = false;
     let projectsFailed = false;
 
+    let catText = '⠀';
+    let existingInterval;
+    const catAudio = () => {
+        const audio = new Audio('./cat/speak.mp3');
+        audio.currentTime = 0;
+        audio.volume = 0.5;
+
+        audio.onended = () => {
+            audio.remove();
+        };
+
+        audio.play();
+    };
+    const catSpeak = () => {
+        if (existingInterval) {
+            clearInterval(existingInterval);
+        }
+
+        const randomText = (() => {
+	    	const catEmotions = [
+                "/ᐠ.ꞈ.ᐟ\\",
+                "(^・x・^)",
+                "ฅ^•ﻌ•^ฅ",
+                "(^._.^)",
+                "≧^◡^≦",
+                "ฅ(＾・ω・＾ฅ)",
+                "(^人^)",
+                "ヾ(=^・^=)丿",
+                "ヽ(^◇^*)/",
+                "ฅ(=･ω･=)ฅ"
+            ];
+	    	return catEmotions[Math.round(Math.random() * (catEmotions.length - 1))];
+	    })();
+        let index = 0;
+        catText = '⠀';
+
+        existingInterval = setInterval(() => {
+            catText += randomText.charAt(index);
+            catAudio();
+            index++;
+
+            if (index >= randomText.length) {
+                clearInterval(existingInterval);
+            }
+        }, 100);
+    };
+
     let projects = {
         today: [],
         featured: [],
@@ -885,6 +932,13 @@
                 {/if}
             </div>
         </ContentCategory>
+        
+        {#if isAprilFools()}
+            <button class="cat-button" on:click={catSpeak}>
+                <img src="/cat/dave.png" alt="cat">
+                <p>{catText}</p>
+            </button>
+        {/if}
     </div>
 
     <div class="footer">
@@ -1058,6 +1112,20 @@
         min-width: 1000px;
     }
     :global(body.dark-mode) .main {
+        color: white;
+    }
+
+    .cat-button {
+        background: none;
+        border: 0;
+    }
+    .cat-button p {
+        font-size: 20px;
+        font-family: 'Comic Sans MS', 'Arial', sans-serif;
+        color: black;
+        height: 20px;
+    }
+    :global(body.dark-mode) .cat-button p {
         color: white;
     }
 
