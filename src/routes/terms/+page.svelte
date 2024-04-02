@@ -21,12 +21,12 @@
     </script>
     
     <svelte:head>
-        <title>MenguinPod - Terms of Service</title>
-        <meta name="title" content="MenguinPod - Terms of Service" />
-        <meta property="og:title" content="MenguinPod - Terms of Service" />
-        <meta property="twitter:title" content="MenguinPod - Terms of Service">
-        <meta name="description" content="Terms you must follow if you would like to use MenguinPod.">
-        <meta property="twitter:description" content="Terms you must follow if you would like to use MenguinPod.">
+        <title>PenguinMod - Terms of Service</title>
+        <meta name="title" content="PenguinMod - Terms of Service" />
+        <meta property="og:title" content="PenguinMod - Terms of Service" />
+        <meta property="twitter:title" content="PenguinMod - Terms of Service">
+        <meta name="description" content="Terms you must follow if you would like to use PenguinMod.">
+        <meta property="twitter:description" content="Terms you must follow if you would like to use PenguinMod.">
         <meta property="og:url" content="https://penguinmod.com/terms">
         <meta property="twitter:url" content="https://penguinmod.com/terms">
     </svelte:head>

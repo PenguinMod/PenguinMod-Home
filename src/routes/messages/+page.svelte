@@ -207,10 +207,10 @@
 </script>
 
 <svelte:head>
-    <title>MenguinPod - Messages</title>
-    <meta name="title"                   content="MenguinPod - Messages" />
-    <meta property="og:title"            content="MenguinPod - Messages" />
-    <meta property="twitter:title"       content="MenguinPod - Messages">
+    <title>PenguinMod - Messages</title>
+    <meta name="title"                   content="PenguinMod - Messages" />
+    <meta property="og:title"            content="PenguinMod - Messages" />
+    <meta property="twitter:title"       content="PenguinMod - Messages">
     <meta name="description"             content="See your messages or alerts.">
     <meta property="twitter:description" content="See your messages or alerts.">
     <meta property="og:url"              content="https://penguinmod.com/messages">

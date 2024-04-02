@@ -42,12 +42,12 @@
 </script>
 
 <svelte:head>
-    <title>MenguinPod - Donate</title>
-    <meta name="title"                   content="MenguinPod - Donate" />
-    <meta property="og:title"            content="MenguinPod - Donate" />
-    <meta property="twitter:title"       content="MenguinPod - Donate">
-    <meta name="description"             content="Help support MenguinPod and it's development!">
-    <meta property="twitter:description" content="Help support MenguinPod and it's development!">
+    <title>PenguinMod - Donate</title>
+    <meta name="title"                   content="PenguinMod - Donate" />
+    <meta property="og:title"            content="PenguinMod - Donate" />
+    <meta property="twitter:title"       content="PenguinMod - Donate">
+    <meta name="description"             content="Help support PenguinMod and it's development!">
+    <meta property="twitter:description" content="Help support PenguinMod and it's development!">
     <meta property="og:url"              content="https://penguinmod.com/donate">
     <meta property="twitter:url"         content="https://penguinmod.com/donate">
 </svelte:head>
@@ -68,7 +68,7 @@
             </h1>
             <p>
                 <LocalizedText
-                    text="Help MenguinPod pay for our servers, link & more!"
+                    text="Help PenguinMod pay for our servers, link & more!"
                     key="donate.description"
                     lang={currentLang}
                 />
@@ -84,7 +84,7 @@
             <div class="section-discussion">
                 <p>
                     <LocalizedText
-                        text="MenguinPod helps people around the world create the games that they want and share the fun stuff they make with the community."
+                        text="PenguinMod helps people around the world create the games that they want and share the fun stuff they make with the community."
                         key="donate.message1"
                         lang={currentLang}
                     />
@@ -202,7 +202,7 @@ ${String(TranslationHandler.text(
 
                 <p class="small">
                     <LocalizedText
-                        text="MenguinPod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
+                        text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
                         key="home.footer.notaffiliated"
                         dontlink={true}
                         lang={currentLang}

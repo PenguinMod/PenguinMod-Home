@@ -66,10 +66,10 @@
 </script>
 
 <svelte:head>
-    <title>MenguinPod - Redirecting</title>
-    <meta name="title" content="MenguinPod - Home" />
-    <meta property="og:title" content="MenguinPod - Home" />
-    <meta property="twitter:title" content="MenguinPod - Home">
+    <title>PenguinMod - Redirecting</title>
+    <meta name="title" content="PenguinMod - Home" />
+    <meta property="og:title" content="PenguinMod - Home" />
+    <meta property="twitter:title" content="PenguinMod - Home">
     <meta name="description" content="The area where featured projects and community stuff & info is shown.">
     <meta property="twitter:description" content="The area where featured projects and community stuff & info is shown.">
     <meta property="og:url" content="https://penguinmod.com/">
@@ -88,14 +88,14 @@
     />
     <h1>
         <LocalizedText
-            text="You are leaving MenguinPod"
+            text="You are leaving PenguinMod"
             key="redirect.title"
             lang={currentLang}
         />
     </h1>
     <p>
         <LocalizedText
-            text="You are leaving MenguinPod to visit &qt;{"{{WEBSITE_URL}}"}. Content on this site may not be safe for everyone."
+            text="You are leaving PenguinMod to visit &qt;{"{{WEBSITE_URL}}"}. Content on this site may not be safe for everyone."
             key="redirect.message1"
             html={true}
             replace={{
