@@ -48,7 +48,7 @@
                 pageIsLast = true;
                 return;
             }
-            if (messagess.length < 20) {
+            if (messagess.length < 12) {
                 pageIsLast = true;
             }
             messages.push(...messagess);
@@ -67,7 +67,7 @@
                     return;
                 }
                 messages = messagess;
-                if (messages.length < 20) {
+                if (messages.length < 12) {
                     pageIsLast = true;
                 }
             })
@@ -286,7 +286,13 @@
                     on:click={() => markAsRead(message.id)}
                 >
                     {#if message.moderator === true}
-                        <h2>Moderator Message</h2>
+                        <h2>
+                            <LocalizedText
+                                text="Moderator Message"
+                                key="messages.moderatortitle"
+                                lang={currentLang}
+                            />
+                        </h2>
                     {/if}
                     <!-- switch case would be ideal, but we dont have that -->
                     {#if message.type === "reject"}
@@ -337,28 +343,53 @@
                             <br />
                         {/if}
                         <p class="small">
-                            <b>Project ID:</b>
-                            {message.projectId}
+                            <b>
+                                {String(
+                                    TranslationHandler.text(
+                                        "messages.projectid",
+                                        currentLang
+                                    )
+                                ).replace("$1", message.projectId)}
+                            </b>
                         </p>
-                        <button
-                            class="fake-link"
-                            style="display:flex;align-items:center;"
-                            on:click={() =>
-                                downloadRejectedProject(message.projectId)}
-                        >
-                            <img
-                                src="/messages/download.png"
-                                alt="Download"
-                                width="16"
-                                height="16"
-                                style="margin-right:6px"
-                            />
-                            <LocalizedText
-                                text="Download"
-                                key="messages.download"
-                                lang={currentLang}
-                            />
-                        </button>
+                        {#if message.hardReject === false}
+                            <h3>
+                                <a href="/edit?id={message.projectId}" style="display:flex;align-items:center;">
+                                    <img
+                                        src="/pencil.png"
+                                        alt="Edit"
+                                        width="16"
+                                        height="16"
+                                        style="margin-right:6px"
+                                    />
+                                    <LocalizedText
+                                        text="Edit Project"
+                                        key="project.menu.project.edit"
+                                        lang={currentLang}
+                                    />
+                                </a>
+                            </h3>
+                        {:else}
+                            <button
+                                class="fake-link"
+                                style="display:flex;align-items:center;"
+                                on:click={() =>
+                                    downloadRejectedProject(message.projectId)}
+                            >
+                                <img
+                                    src="/messages/download.png"
+                                    alt="Download"
+                                    width="16"
+                                    height="16"
+                                    style="margin-right:6px"
+                                />
+                                <LocalizedText
+                                    text="Download"
+                                    key="messages.download"
+                                    lang={currentLang}
+                                />
+                            </button>
+                        {/if}
                     {:else if message.type === "featured"}
                         <p>
                             <b>
@@ -418,16 +449,23 @@
                         </p>
                     {:else if message.type === "restored"}
                         <p>
+                            {String(
+                                TranslationHandler.text(
+                                    "messages.alert.staff.restoredproject.title",
+                                    currentLang
+                                )
+                            ).replace("$1", message.name)}
+                        </p>
+                        <p>
                             <a
                                 href={`https://studio.penguinmod.com/#${message.projectId}`}
                                 target="_blank"
                             >
-                                {String(
-                                    TranslationHandler.text(
-                                        "messages.alert.staff.restoredproject.title",
-                                        currentLang
-                                    )
-                                ).replace("$1", message.name)}
+                                <LocalizedText
+                                    text="Open in new tab"
+                                    key="uploading.guidelines.newtab"
+                                    lang={currentLang}
+                                />
                             </a>
                         </p>
                     {:else if message.type === "ban"}
@@ -495,6 +533,32 @@
                                 <br />
                             {/if}
                         </p>
+                    {:else if message.type === "guidelines"}
+                        <a
+                            href="/{message.section === 'uploadingguidelines' ? 'guidelines/uploading' : message.section}"
+                        >
+                            {String(
+                                    TranslationHandler.text(
+                                        `messages.alert.${message.section}`,
+                                        currentLang
+                                    ) || TranslationHandler.text(
+                                        `messages.alert.${message.section}`,
+                                        'en'
+                                    )
+                            )
+                            .replace("{{TERMS_OF_SERVICE}}", TranslationHandler.text(
+                                        "home.footer.sections.info.terms",
+                                        currentLang
+                                    ))
+                            .replace("{{PRIVACY_POLICY}}", TranslationHandler.text(
+                                        "home.footer.sections.info.privacy",
+                                        currentLang
+                                    ))
+                            .replace("{{UPLOADING_GUIDELINES}}", TranslationHandler.text(
+                                        "home.footer.sections.info.guidelines",
+                                        currentLang
+                                    ))}
+                        </a>
                     {:else}
                         <!-- what is this? -->
                         <p>
@@ -684,6 +748,9 @@
     }
     :global(body.dark-mode) .message[data-moderator="true"] {
         border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    :global(html[dir="rtl"]) .message {
+        text-align: right;
     }
 
     textarea {

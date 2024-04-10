@@ -5,8 +5,10 @@
 
 import en from '../translations/en.json';
 import id from '../translations/id.json';
+import it from '../translations/it.json';
 import he from '../translations/he.json';
 import ptBr from '../translations/pt-br.json';
+import es from '../translations/es.json';
 import es419 from '../translations/es-419.json';
 import da from '../translations/da.json';
 import tr from '../translations/tr.json';
@@ -15,8 +17,16 @@ import ro from '../translations/ro.json';
 import sv from '../translations/sv.json';
 import ru from '../translations/ru.json';
 import cs from '../translations/cs.json';
+import de from '../translations/de.json';
 import hr from '../translations/hr.json';
 import vi from '../translations/vi.json';
+import frCa from '../translations/fr-ca.json';
+import fr from '../translations/fr.json';
+import no from '../translations/no.json';
+import sk from '../translations/sk.json';
+import uk from '../translations/uk.json';
+import ja from '../translations/ja.json';
+import fa from '../translations/fa.json';
 import uwu from '../translations/uwu.json';
 import test from '../translations/test.json';
 
@@ -25,6 +35,7 @@ import test from '../translations/test.json';
 // its easy to just duplicate the "en": en, line and then change accordingly
 const languages = {
     "en": en,                      // English
+    "es": es,                      // Espanol (Spain)
     "es-419": es419,               // Espanol (Latin American)
     "pt-br": ptBr,                 // Portuguese (Brasil)
     "cs": cs,                      // Czech
@@ -32,22 +43,40 @@ const languages = {
     "vi": vi,                      // Viatnamese
     "ro": ro,                      // Romanian
     "ru": ru,                      // Russian
+    "ja": ja,                      // Japanese
+    "fr": fr,                      // French
+    "fr-ca": frCa,                 // French (Canada)
+    "de": de,                      // German
     "da": da,                      // Danish
     "pl": pl,                      // Polish
+    "no": no,                      // Norwegian
+    "it": it,                      // Italian
     "tr": tr,                      // Turkish
     "sv": sv,                      // Swedish
-    "id": id,                      // Bahasa Indonesia
+    "sk": sk,                      // Slovak
+    "uk": uk,                      // Ukranian
     "he": he,                      // Hebrew
+    "fa": fa,                      // Persian
+    
+    // "id": id,                   // Bahasa Indonesia: has no translator anymore, and theres too much untranslated text now
+    
     // uncomment joke languages when we have >30 regular langs to hide them
     // "uwu": uwu,
     // "test": test,
 };
 // add languages that are RTL here
 const rtlLanguages = [
-    "he",
+    "he",                          // Hebrew
+    "fa",                          // Persian
 ];
+// set pairs for language codes that should be interpreted as another language code
+const autoLocale = {
+    "nn": "no",
+    "nb": "no",
+};
 
 export default {
     languages,
     rtlLanguages,
+    autoLocale,
 };

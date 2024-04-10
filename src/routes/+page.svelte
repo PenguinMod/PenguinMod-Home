@@ -1,9 +1,10 @@
 <script>
     import { onMount } from "svelte";
+    import { page } from "$app/stores";
+
     import Authentication from "../resources/authentication.js";
     import ProjectApi from "../resources/projectapi.js";
     import censor from "../resources/basiccensorship.js";
-    import VRHandler from "../vr";
     const ProjectClient = new ProjectApi();
 
     // Static values
@@ -13,6 +14,7 @@
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import Button from "$lib/Button/Button.svelte";
+    import EventComponent from "$lib/Event/Component.svelte";
     import ContentCategory from "$lib/ContentCategory/Component.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import UserDisplay from "$lib/UserDisplay/Display.svelte";
@@ -27,6 +29,15 @@
     // Icons
     import PenguinConfusedSVG from "../icons/Penguin/confused.svelte";
 
+    const isAprilFools = () => {
+        const date = new Date(Date.now());
+        const urlParams = $page.url.searchParams;
+        const isAprilFools = date.getMonth() === 3 && date.getDate() === 1; // month is 0 indexed for literally no reason
+        const runningLocal = String(urlParams.get('forceaprilfools')) === 'true' && $page.url.hostname === 'localhost';
+
+        return isAprilFools || runningLocal;
+    };
+
     let loggedIn = null;
     let langDecided = false;
     let currentLang = "en";
@@ -40,18 +51,102 @@
     let projectsLoaded = false;
     let projectsFailed = false;
 
+    let catText = '⠀';
+    let existingInterval;
+    const catAudio = () => {
+        const audio = new Audio('./cat/speak.mp3');
+        audio.currentTime = 0;
+        audio.volume = 0.5;
+
+        audio.onended = () => {
+            audio.remove();
+        };
+
+        audio.play();
+    };
+    const catSpeak = () => {
+        if (existingInterval) {
+            clearInterval(existingInterval);
+        }
+
+        const randomText = (() => {
+	    	const catEmotions = [
+                "/ᐠ.ꞈ.ᐟ\\",
+                "(^・x・^)",
+                "ฅ^•ﻌ•^ฅ",
+                "(^._.^)",
+                "≧^◡^≦",
+                "ฅ(＾・ω・＾ฅ)",
+                "(^人^)",
+                "ヾ(=^・^=)丿",
+                "ヽ(^◇^*)/",
+                "ฅ(=･ω･=)ฅ"
+            ];
+	    	return catEmotions[Math.round(Math.random() * (catEmotions.length - 1))];
+	    })();
+        let index = 0;
+        catText = '⠀';
+
+        existingInterval = setInterval(() => {
+            catText += randomText.charAt(index);
+            catAudio();
+            index++;
+
+            if (index >= randomText.length) {
+                clearInterval(existingInterval);
+            }
+        }, 100);
+    };
+
     let projects = {
         today: [],
         featured: [],
+        liked: [],
+        voted: [],
+        viewed: [],
+        tagged: [],
     };
 
+    const ratings = [
+        'omg you where so close with $1%!!!!! but sadly not this time',
+        'getting warmer :)',
+        'waaaaaaarmer.....',
+        'waaaarmer....',
+        'yeah thats the right direction',
+        'boowomp, you got nothing',
+        'your tempurture is!!!!!!!!!!! mild.',
+        'colder....',
+        'cooolder.....',
+        'bro stop, this isnt the correct direction',
+        'my g what are you doing, go back to 50%<',
+        'dude, are how unlucky are you dear god',
+        'dude just got owned by the js random number generater at a whoping $1% off from success'
+    ]
+    function formatNumber(num) {
+        return Math.abs(num) >= 0.01 && num % 1 !== 0
+            ? num.toFixed(2)
+            : num
+    }
+    function rateChance(max, thresh) {
+        const randomNumber = Math.random()
+        const underThresh = randomNumber * max <= thresh
+        const ratingIdx = Math.floor(randomNumber * ratings.length)
+        const ratingMsg = underThresh
+            ? 'yo you actually got it thats so epic!!!!!!!!'
+            : ratings[ratingIdx]
+                .replace('$1', formatNumber(randomNumber * 100))
+        return [underThresh, ratingMsg]
+    }
     let thingyActive = false;
     // do the thingy
     $: {
         if (!loggedIn) {
-            // 1:99 chance that we will play the video
-            // imediatly rather then after four hours
-            thingyActive = Math.random() * 100 <= 1;
+            // 1:9000 chance that we will play the video imediatly rather then after four hours
+            // we use 9000 because thats roughly how many users we have, so there will now
+            // only be like onr or two people who actually get this :Trol
+            let message
+            [thingyActive, message] = rateChance(9000, 1);
+            console.log(message)
             setTimeout(() => {
                 thingyActive = true;
             }, 1.44e7);
@@ -99,6 +194,7 @@
         }
     };
 
+    let tagForProjects = "";
     onMount(async () => {
         const projectId = Number(location.hash.replace("#", ""));
         if (!isNaN(projectId) && projectId != 0) {
@@ -127,12 +223,15 @@
             });
         });
 
-        ProjectApi.getMaxProjects(15, false, true).then((projs) => {
-            projects.today = projs;
-        });
-        ProjectApi.getMaxProjects(15, true, false)
-            .then((projs) => {
-                projects.featured = projs;
+        ProjectApi.getFrontPage()
+            .then(results => {
+                projects.today = results.latest;
+                projects.featured = results.featured;
+                projects.liked = results.liked;
+                projects.voted = results.voted;
+                projects.viewed = results.viewed;
+                projects.tagged = results.tagged;
+                tagForProjects = results.selectedTag;
                 projectsLoaded = true;
             })
             .catch(() => {
@@ -197,29 +296,6 @@
     });
 
     let selectedFrontTabSelected = "new";
-
-    // VR stuff
-    let isLiveTests = false;
-    let vrIsSupported = null;
-    /**
-     * @type {VRHandler}
-     */
-    let vrSession;
-    onMount(async () => {
-        const urlParams = new URLSearchParams(location.search);
-        if (urlParams.has("livetests")) {
-            isLiveTests = true;
-        }
-
-        if (!isLiveTests) return;
-        vrIsSupported = await VRHandler.isSupported();
-        if (!vrIsSupported) return;
-        vrSession = new VRHandler();
-        vrSession.initialize();
-    });
-    const vr_openSession = () => {
-        vrSession.start();
-    };
 </script>
 
 <svelte:head>
@@ -250,7 +326,7 @@
         buttonText={"Donate"}
         buttonHref={"/donate"}
     />
-    <!-- TODO: re-add this, but only have it appear for new users after they login on a date before the alert -->
+    <!-- TODO: should we remove this? -->
     <!-- <Alert
         onlyShowID={"privacee:_1"}
         text={"Our privacy policy has been updated."}
@@ -372,15 +448,6 @@
             </Button>
         </div>
     {/if}
-        
-    {#if isLiveTests && vrIsSupported}
-        <button
-            class="vr-test-button"
-            on:click={vr_openSession}
-        >
-            Enter VR
-        </button>
-    {/if}
 
     {#if langDecided && currentLang != "en" && loggedIn !== false}
         <div class="section-language-warning">
@@ -434,7 +501,8 @@
                                 <button class="update-image-wrapper">
                                     <img
                                         src={update.image}
-                                        alt="Screenshot"
+                                        alt={update.cleanContent}
+                                        title={update.cleanContent}
                                         class="update-image"
                                     />
                                 </button>
@@ -684,6 +752,10 @@
             </div>
         </div>
     {/if}
+    
+    <div style="width:80%; margin:0 10%;">
+        <EventComponent />
+    </div>
 
     <div class="section-projects">
         <ContentCategory
@@ -693,7 +765,7 @@
             )}
             seemore={`/search?q=featured%3Aprojects`}
             style="width:65%;"
-            stylec="height: 244px;"
+            stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
         >
             <div class="project-list">
                 {#if projects.featured.length > 0}
@@ -737,12 +809,101 @@
         </ContentCategory>
         <ContentCategory
             header={TranslationHandler.text(
+                "home.sections.mostliked",
+                currentLang
+            )}
+            seemore={`/search?q=sort%3Alikes%20featured%3Aexclude`}
+            style="width:65%;"
+            stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
+        >
+            <div class="project-list">
+                {#if projects.liked.length > 0}
+                    {#each projects.liked as project}
+                        <Project {...project} />
+                    {/each}
+                {:else if projectsFailed === true}
+                    <div
+                        style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                    >
+                        <img
+                            src="/penguins/server.svg"
+                            alt="Server Penguin"
+                            style="width: 15rem"
+                        />
+                        <p>
+                            <LocalizedText
+                                text="Whoops! Our server's having some problems. Try again later."
+                                key="home.server.error"
+                                lang={currentLang}
+                            />
+                        </p>
+                    </div>
+                {:else}
+                    <LoadingSpinner />
+                {/if}
+            </div>
+        </ContentCategory>
+        <ContentCategory
+            header={TranslationHandler.text(
+                "home.sections.mostvoted",
+                currentLang
+            )}
+            seemore={`/search?q=sort%3Avotes%20featured%3Aexclude`}
+            style="width:65%;"
+            stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
+        >
+            <div class="project-list">
+                {#if projects.voted.length > 0}
+                    {#each projects.voted as project}
+                        <Project {...project} />
+                    {/each}
+                {:else if projectsFailed === true}
+                    <div
+                        style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                    >
+                        <img
+                            src="/penguins/server.svg"
+                            alt="Server Penguin"
+                            style="width: 15rem"
+                        />
+                        <p>
+                            <LocalizedText
+                                text="Whoops! Our server's having some problems. Try again later."
+                                key="home.server.error"
+                                lang={currentLang}
+                            />
+                        </p>
+                    </div>
+                {:else}
+                    <LoadingSpinner />
+                {/if}
+            </div>
+        </ContentCategory>
+        {#if projects.tagged.length > 7}
+            <ContentCategory
+                header={String(TranslationHandler.text(
+                    "home.sections.sortedbytag",
+                    currentLang
+                )).replace('$1', tagForProjects)}
+                seemore={`/search?q=%23${tagForProjects}`}
+                style="width:65%;"
+                stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
+            >
+                <div class="project-list">
+                    {#each projects.tagged as project}
+                        <Project {...project} />
+                    {/each}
+                </div>
+            </ContentCategory>
+        {/if}
+        <ContentCategory
+            header={TranslationHandler.text(
                 "home.sections.todaysprojects",
                 currentLang
             )}
-            seemore={`/search?q=all%3Aprojects`}
+            seemore={`/search?q=featured%3Aexclude`}
             style="width:65%;"
-            stylec="height: 244px;"
+            stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
         >
             <div class="project-list">
                 {#if projects.today.length > 0}
@@ -771,6 +932,13 @@
                 {/if}
             </div>
         </ContentCategory>
+        
+        {#if isAprilFools()}
+            <button class="cat-button" on:click={catSpeak}>
+                <img src="/cat/dave.png" alt="cat">
+                <p>{catText}</p>
+            </button>
+        {/if}
     </div>
 
     <div class="footer">
@@ -947,6 +1115,20 @@
         color: white;
     }
 
+    .cat-button {
+        background: none;
+        border: 0;
+    }
+    .cat-button p {
+        font-size: 20px;
+        font-family: 'Comic Sans MS', 'Arial', sans-serif;
+        color: black;
+        height: 20px;
+    }
+    :global(body.dark-mode) .cat-button p {
+        color: white;
+    }
+
     .section-info {
         background: #00c3ffad;
         height: 24rem;
@@ -1048,20 +1230,50 @@
     .welcome-back-icon-container {
         border: 1px solid rgba(0, 0, 0, 0.25);
         background: transparent;
-        border-radius: 1024px;
+        border-radius: 8px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         width: 72px;
-        height: 72px;
-        margin-bottom: 4px;
+        height: 69px;
+        margin-bottom: 8px;
     }
     :global(body.dark-mode) .welcome-back-icon-container {
         border: 1px solid rgba(255, 255, 255, 0.5);
     }
     .welcome-back-button:active .welcome-back-icon-container {
         background: rgba(0, 0, 0, 0.2);
+    }
+    .welcome-back-row >
+    a:first-child .welcome-back-icon-container {
+        border-top-left-radius: 36px;
+        border-bottom-left-radius: 36px;
+        padding-left: 8px;
+    }
+    :global(html[dir="rtl"]) .welcome-back-row >
+    a:first-child .welcome-back-icon-container {
+        border-top-left-radius: initial;
+        border-bottom-left-radius: initial;
+        padding-left: initial;
+        border-top-right-radius: 36px;
+        border-bottom-right-radius: 36px;
+        padding-right: 8px;
+    }
+    .welcome-back-row >
+    a:last-child .welcome-back-icon-container {
+        border-top-right-radius: 36px;
+        border-bottom-right-radius: 36px;
+        padding-right: 8px;
+    }
+    :global(html[dir="rtl"]) .welcome-back-row >
+    a:last-child .welcome-back-icon-container {
+        border-top-right-radius: initial;
+        border-bottom-right-radius: initial;
+        padding-right: initial;
+        border-top-left-radius: 36px;
+        border-bottom-left-radius: 36px;
+        padding-left: 8px;
     }
     :global(body.dark-mode)
         .welcome-back-button:active
@@ -1140,12 +1352,5 @@
     .project-list {
         display: flex;
         flex-direction: row;
-    }
-
-    /* test styles, remove later */
-    .vr-test-button {
-        padding: 20px;
-        margin: 4px;
-        font-size: larger;
     }
 </style>

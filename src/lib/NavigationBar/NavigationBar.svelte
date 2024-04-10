@@ -1,5 +1,16 @@
 <script>
 	import { onMount } from "svelte";
+    import { page } from "$app/stores";
+
+	const isAprilFools = () => {
+        const date = new Date(Date.now());
+        const urlParams = $page.url.searchParams;
+        const isAprilFools = date.getMonth() === 3 && date.getDate() === 1; // month is 0 indexed for literally no reason
+        const runningLocal = String(urlParams.get('forceaprilfools')) === 'true' && $page.url.hostname === 'localhost';
+
+        return isAprilFools || runningLocal;
+    };
+
 	import Authentication from "../../resources/authentication.js";
 	import ProjectApi from "../../resources/projectapi.js";
 	import HTMLUtility from "../../resources/html.js";
@@ -24,6 +35,18 @@
 	let accountUsername = "";
 	let messageCount = 0;
 	let canRankUp = false;
+
+	const isAprilFirst = isAprilFools();
+	const randomColor = (() => {
+		const colors = [
+			"#00c3ff",
+			"#ff4c4c",
+			"#66757f",
+			"#ffd000",
+			"#b200fe"
+		];
+		return colors[Math.round(Math.random() * (colors.length - 1))];
+	})();
 
 	function loggedInCheck() {
 		const privateCode = localStorage.getItem("PV");
@@ -93,8 +116,16 @@
 	}
 
 	function switchTheme() {
-		if (localStorage.getItem("darkmode")) {
-			localStorage.removeItem("darkmode");
+		let prefersDarkMode = false;
+		try {
+			prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+		} catch {
+			prefersDarkMode = false;
+		}
+		const darkThemeOption = localStorage.getItem("darkmode");
+		const hasDarkOption = darkThemeOption !== null && darkThemeOption !== undefined;
+		if (String(darkThemeOption) === "true" || (!hasDarkOption && prefersDarkMode)) { 
+			localStorage.setItem("darkmode", false);
 		} else {
 			localStorage.setItem("darkmode", true);
 		}
@@ -135,14 +166,21 @@
 			languageMenu.style.right = `4px`;
 		}
 	}
+	let accountMenuIsOpen = false;
 	function openAccountMenu(event) {
 		const buttonRect = accountButton.getBoundingClientRect();
 		event = event.detail;
+		if (accountMenuIsOpen) {
+			accountMenu.style.display = "none";
+			accountMenuIsOpen = false;
+			return;
+		}
 		accountMenu.style.display = "";
 		accountMenu.style.right = `${
 			window.innerWidth - buttonRect.right - 8
 		}px`;
 		accountMenu.style.top = `3rem`;
+		accountMenuIsOpen = true;
 	}
 	function langName(lang) {
 		return Translations.text("lang.name", lang);
@@ -165,8 +203,8 @@
 					languageMenu.style.display = "none";
 				}
 			}
-			if (accountMenu) {
-				if (!HTMLUtility.isDescendantOf(accountMenu, e.target)) {
+			if (accountMenu && accountButton) {
+				if (!HTMLUtility.isDescendantOf(accountMenu, e.target) && !HTMLUtility.isDescendantOf(accountButton, e.target)) {
 					accountMenu.style.display = "none";
 				}
 			}
@@ -229,7 +267,7 @@
 		/>
 	</button>
 </div>
-<div class="bar">
+<div class="bar" style={isAprilFirst ? `background-color: ${randomColor} !important` : ''}>
 	<a class="logo" href="/">
 		<img class="logo-image" src="/navicon.png" alt="PenguinMod" />
 	</a>
@@ -273,6 +311,11 @@
 			<img src="/discord_white.png" alt="Discord" />
 		</div>
 	</BarButton>
+	<!-- <BarPage
+		link={LINK.discord}
+		label="<img src='/discord_white.png' width='25' alt='Discord'>"
+		style="padding:0.5rem"
+	/> -->
 	{#if loggedIn === true}
 		<BarPage
 			link="/messages"

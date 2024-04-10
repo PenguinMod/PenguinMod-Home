@@ -42,7 +42,7 @@
     
         <main>
             <!-- UPDATE THIS WHEN MAKING CONTENT CHANGES -->
-            <p><i>Updated November 27th, 2023 at 11:44 PM (Mountain Time)</i></p>
+            <p><i>Updated March 19th, 2024 (Mountain Time)</i></p>
 
             <!-- some things are intentionally not formatted as they are in the HTML file on the website -->
             <p>
@@ -66,6 +66,7 @@
             <p>
                 A "Project Moderator" is a person who has the ability to remove projects or content from those projects,
                 and reply or send messages to users who had moderation actions happen towards their project or account.
+                These users may also be able to edit profile information about another user.
             </p><p>
                 These people can contact Administrators aswell, and may have extra permissions such as banning users.
             </p>
@@ -87,12 +88,18 @@
                 abide by these rules, and PenguinMod has the right to cut your access to any services we provide if we believe you
                 are violating these guidelines or the Terms of Service.
             </p>
+            <p>
+                PenguinMod is allowed to disable your ability to publish, update, remix or change any profile info you have if you do not
+                use language appropriate for kids or younger on your profile, and PenguinMod has the right to cut your access to any services
+                we provide if we believe you are violating this ruling or the Terms of Service.
+            </p>
 
             <h2>Copyright</h2>
             <p>
                 You may not include copyrighted content in your projects. You are responsible for making sure you have the necessary
-                rights, licenses, or permission for any user-generated content you submit to PenguinMod. You may get your project removed
-                and or face punishment if you do not properly check whether or not you have permission to include something in your project.
+                rights, licenses, or permission for any user-generated content you submit to PenguinMod. You may get your projects, profile info
+                or posts removed, and or face punishment if you do not properly check whether or not you have permission to include something
+                in your content.
             </p>
             <p>
                 If you are a company, individual, etc. and you believe your copyright has been violated,
@@ -107,7 +114,7 @@
             
             <h2>Data Collection</h2>
             <p>
-                <b>Information Collected:</b> We collect only the user's username and their IP address.
+                <b>Information Collected:</b> We collect only the user's username, the content they upload, and their IP address.
                 <br>
                 <b>Purpose of Collection:</b>
             </p>
@@ -161,8 +168,11 @@
 
             <h2>Changes to Terms</h2>
             <p>
-                PenguinMod reserves the right to update or modify these terms of service at any time without prior notice. Users are
+                PenguinMod reserves the right to update or modify these terms of service at any time. Users are
                 encouraged to review this document periodically for any changes.
+            </p><p>
+                PenguinMod will make effort to let users know of any changes to Uploading Guidelines, Terms of Service, or Privacy Policy through
+                the website's messaging system.
             </p><p>
                 By continuing to use PenguinMod, you agree to abide by the most recent version of these terms.
             </p>
@@ -194,25 +204,6 @@
             width: 60%;
         }
     
-        .small {
-            font-size: 12px;
-        }
-    
-        .detail-card {
-            width: calc(100% - 24px);
-            padding: 48px 12px;
-            background: dodgerblue;
-            color: white;
-            text-align: center;
-        }
-        .detail-card p,
-        .detail-card h1 {
-            margin-block: 0;
-        }
-        .detail-card h1 {
-            font-size: 48px;
-        }
-    
         .section-info {
             background: #00c3ffad;
             height: 12rem;
@@ -226,10 +217,6 @@
         }
         .section-info h1 {
             margin-block: 0;
-            margin-left: 32px;
-        }
-        .section-info p {
-            margin-block-end: 0;
             margin-left: 32px;
         }
     

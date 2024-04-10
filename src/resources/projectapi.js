@@ -10,6 +10,25 @@ class ProjectApi {
     static OriginApiUrl = OriginApiUrl;
     static CachedDonators = {};
 
+    static getServerInfo(user) {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/projects/getSiteStats`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((stats) => {
+                        resolve(stats);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+
     static getUserBadges(user) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/users/getBadges?username=${user}`;
@@ -46,9 +65,9 @@ class ProjectApi {
                 });
         });
     }
-    static getProfile(user) {
+    static getProfile(user, includeBio) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/profile?username=${user}`;
+            const url = `${OriginApiUrl}/api/users/profile?username=${user}${includeBio ? '&bio=true' : ''}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -139,6 +158,62 @@ class ProjectApi {
                 });
         })
     }
+    /**
+     * @param {string} user username
+     * @param {number} page page
+     * @returns Array of projects
+     */
+    static searchForProjects(query, page, settings) {
+        return new Promise((resolve, reject) => {
+            const urlSections = [];
+            if (query) {
+                urlSections.push(`&includes=${encodeURIComponent(query)}`);
+            }
+            if (settings) {
+                if (settings.user) {
+                    urlSections.push(`&user=${encodeURIComponent(settings.user)}`);
+                }
+                if (settings.featured) {
+                    urlSections.push(`&featured=${encodeURIComponent(settings.featured)}`);
+                }
+                if (settings.sortby) {
+                    urlSections.push(`&sortby=${encodeURIComponent(settings.sortby)}`);
+                }
+            }
+            const url = `${OriginApiUrl}/api/projects/search?page=${page}${urlSections.join('')}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((projectList) => {
+                        resolve(projectList.projects);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+    static getFrontPage() {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/projects/frontPage`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((info) => {
+                        resolve(info);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
 
     static getProjectMeta(id) {
         return new Promise((resolve, reject) => {
@@ -204,6 +279,25 @@ class ProjectApi {
     }
     setAdmin(bool) {
         this.admin = bool;
+    }
+
+    getAllPermitedUsers() {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/users/getSiteMods?user=${this.username}&passcode=${this.privateCode}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((users) => {
+                        resolve(users);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
 
     isAdmin() {
@@ -544,6 +638,55 @@ class ProjectApi {
                 });
         })
     }
+    getProfanityFilter() {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/users/getProfanityList?user=${this.username}&passcode=${this.privateCode}`;
+            fetch(url)
+                .then((res) => {
+                    res.json().then(json => {
+                        if (!res.ok) {
+                            reject(json.error);
+                            return;
+                        }
+                        resolve(json);
+                    }).catch(err => {
+                        reject(err);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+    setProfanityFilter(newData) {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/users/setProfanityList`;
+            const data = {
+                user: this.username,
+                passcode: this.privateCode,
+                json: newData
+            };
+            fetch(url, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            })
+                .then((res) => {
+                    res.json().then(json => {
+                        if (!res.ok) {
+                            reject(json.error);
+                            return;
+                        }
+                        resolve();
+                    }).catch(err => {
+                        reject(err);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
     setUserBadges(target, badges) {
         return new Promise((resolve, reject) => {
             const data = {
@@ -677,6 +820,23 @@ class ProjectApi {
             });
         });
     }
+    setErrorAllUploadProjects(enabled) {
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/errorAllProjectUploads?user=${this.username}&passcode=${this.privateCode}&enabled=${enabled}`).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                });
+            }).catch(err => {
+                reject(err);
+            });
+        });
+    }
     deleteProject(id) {
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/projects/delete?passcode=${this.privateCode}&approver=${this.username}&id=${id}`).then(res => {
@@ -694,12 +854,13 @@ class ProjectApi {
             })
         })
     }
-    rejectProject(id, reason) {
+    rejectProject(id, reason, hardReject) {
         const data = {
             passcode: this.privateCode,
             approver: this.username,
             id,
             reason,
+            type: hardReject ? 'hard' : 'soft'
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/projects/reject`, {
@@ -746,6 +907,60 @@ class ProjectApi {
             })
         })
     }
+    setBio(text, adminForced, adminTarget) {
+        const data = {
+            username: this.username,
+            passcode: this.privateCode,
+            bio: text,
+            target: adminTarget,
+        };
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/users/${adminForced ? 'setUserBioAdmin' : "setBio"}`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+    setMyFeaturedProject(id, title) {
+        const data = {
+            username: this.username,
+            passcode: this.privateCode,
+            id,
+            title
+        };
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/users/setMyFeaturedProject`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
     respondToDispute(disputerUsername, messageId, text) {
         const data = {
             passcode: this.privateCode,
@@ -758,6 +973,36 @@ class ProjectApi {
             fetch(`${OriginApiUrl}/api/users/disputeRespond`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+    addMessage(type, target, data) {
+        const gdata = {
+            passcode: this.privateCode,
+            username: this.username,
+            target,
+            message: {
+                ...data,
+                type
+            },
+        };
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/users/addMessage`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(gdata),
                 method: "POST"
             }).then(res => {
                 res.json().then(json => {

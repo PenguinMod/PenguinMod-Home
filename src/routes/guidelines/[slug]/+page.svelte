@@ -2,11 +2,15 @@
     /** @type {import('./$types').PageData} */
     export let data;
 
-    // import { onMount } from "svelte";
+    import { onMount } from "svelte";
+    import { browser } from '$app/environment';
     import MarkdownIt from "markdown-it";
-    import GuidelinePages from "../../../resources/guidelines/pages";
+    import GuidelinePages from "../../../guidelines/pages";
 
-    const markdownSource = GuidelinePages[data.slug];
+    const markdownSource = GuidelinePages[data.slug] || "404 Page Not Found";
+    if (markdownSource === '404 Page Not Found' && browser) {
+        location.href = location.origin + '/error?error=404';
+    }
 
     const md = new MarkdownIt({
         html: true,
@@ -14,7 +18,7 @@
         breaks: true,
     });
 
-    md.renderer.rules.fence = function (tokens, idx, options, env, self) {
+    md.renderer.rules.fence = function (tokens, idx) {
         const token = tokens[idx];
 
         if (token.info === "warning") {
@@ -33,44 +37,7 @@
     const env = {};
     const tokens = md.parse(markdownSource, env);
 
-    // Extract the header
-    let headerHTML = "## file did not contain header ##";
-    let headerText = headerHTML;
-    const headerStart = tokens.findIndex(
-        (token) => token.type === "heading_open" && token.tag === "h1"
-    );
-    const headerEnd = tokens.findIndex(
-        (token) => token.type === "heading_close" && token.tag === "h1"
-    );
-    if (headerStart !== -1 && headerEnd !== -1) {
-        const headerTokens = tokens.splice(
-            headerStart,
-            headerEnd - headerStart + 1
-        );
-
-        // Discard the header tokens themselves, but render the HTML title with any formatting
-        headerTokens.shift();
-        headerTokens.pop();
-        headerHTML = md.renderer.render(headerTokens, md.options, env);
-
-        // We also need a no-formatting version for the title
-        const justTextTokens = headerTokens.filter(
-            (token) => token.type === "inline"
-        );
-        headerText = md.renderer.render(justTextTokens, md.options, env);
-    }
-
     const bodyHTML = md.renderer.render(tokens, md.options, env);
-
-    // const usesScratchBlocks = env.usesScratchBlocks;
-    // if (usesScratchBlocks) {
-    //     onMount(() => {
-    //         scratchblocks.init();
-    //         scratchblocks.module.renderMatching(".render-scratchblocks", {
-    //             style: "scratch3",
-    //         });
-    //     });
-    // }
 </script>
 
 <svelte:head>
@@ -85,8 +52,6 @@
 </svelte:head>
 
 <div class="container">
-    <h1>{@html headerHTML}</h1>
-
     {@html bodyHTML}
 </div>
 
@@ -95,7 +60,20 @@
         margin: 0 20%;
         width: 60%;
     }
-    :global(body.dark-mode) a {
+    
+    :global(h1),
+    :global(h2) {
+        color: rgb(0, 102, 255);
+    }
+    :global(a) {
+        color: rgb(30, 83, 255);
+    }
+
+    :global(body.dark-mode) :global(h1),
+    :global(body.dark-mode) :global(h2) {
+        color: rgb(93, 174, 255);
+    }
+    :global(body.dark-mode) :global(a) {
         color: dodgerblue;
     }
 </style>
