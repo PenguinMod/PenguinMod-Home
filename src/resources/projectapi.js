@@ -172,7 +172,6 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((project) => {
-                        console.log(project, "META");
                         resolve(project);
                     });
                 })
