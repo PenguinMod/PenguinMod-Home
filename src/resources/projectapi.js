@@ -1,9 +1,9 @@
 let OriginApiUrl = "https://projects.penguinmod.com";
-// OriginApiUrl = "http://localhost:8080";
+OriginApiUrl = "http://localhost:8080";
 
 class ProjectApi {
-    constructor(pv, username) {
-        this.privateCode = pv;
+    constructor(token, username) {
+        this.token = token;
         this.username = username;
     }
 
@@ -12,7 +12,7 @@ class ProjectApi {
 
     static getServerInfo(user) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/projects/getSiteStats`;
+            const url = `${OriginApiUrl}/api/v1/projects/getStats`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -31,7 +31,7 @@ class ProjectApi {
 
     static getUserBadges(user) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/getBadges?username=${user}`;
+            const url = `${OriginApiUrl}/api/v1/users/getBadges?username=${user}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -49,7 +49,7 @@ class ProjectApi {
     }
     static getFollowerCount(user) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/getFollowerCount?username=${user}`;
+            const url = `${OriginApiUrl}/api/v1/users/meta/getfollowercount?username=${user}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -67,7 +67,7 @@ class ProjectApi {
     }
     static getProfile(user, includeBio) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/profile?username=${user}${includeBio ? '&bio=true' : ''}`;
+            const url = `${OriginApiUrl}/api/v1/users/profile?username=${user}${includeBio ? '&bio=true' : ''}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -95,7 +95,7 @@ class ProjectApi {
     static getProjects(page, oldFirst) {
         return new Promise((resolve, reject) => {
             const reverseParam = oldFirst ? '&reverse=true' : '';
-            const url = `${OriginApiUrl}/api/projects/getApproved?page=${page}${reverseParam}`;
+            const url = `${OriginApiUrl}/api/v1/projects/getprojects?page=${page}${reverseParam}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -111,30 +111,14 @@ class ProjectApi {
                 });
         });
     }
-    static getMaxProjects(count, onlyFeatured, hideFeatured) {
-        return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/projects/max?amount=${count}` + (onlyFeatured ? '&featured=true' : '') + (hideFeatured ? '&hidefeatured=true' : '');
-            fetch(url)
-                .then((res) => {
-                    if (!res.ok) {
-                        res.text().then(reject);
-                        return;
-                    }
-                    res.json().then((projects) => {
-                        resolve(projects);
-                    }).catch(reject);
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
-    }
+
     /**
      * @deprecated Cannot be used statically anymore.
      */
     static getUnapprovedProjects() {
         throw new Error("Unapproved Projects can only be viewed in a client")
     }
+
     /**
      * @param {string} user username
      * @param {number} page page
@@ -142,7 +126,7 @@ class ProjectApi {
      */
     static getUserProjects(user, page) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/projects/search?page=${page}&user=${user}`;
+            const url = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${user}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -158,47 +142,10 @@ class ProjectApi {
                 });
         })
     }
-    /**
-     * @param {string} user username
-     * @param {number} page page
-     * @returns Array of projects
-     */
-    static searchForProjects(query, page, settings) {
-        return new Promise((resolve, reject) => {
-            const urlSections = [];
-            if (query) {
-                urlSections.push(`&includes=${encodeURIComponent(query)}`);
-            }
-            if (settings) {
-                if (settings.user) {
-                    urlSections.push(`&user=${encodeURIComponent(settings.user)}`);
-                }
-                if (settings.featured) {
-                    urlSections.push(`&featured=${encodeURIComponent(settings.featured)}`);
-                }
-                if (settings.sortby) {
-                    urlSections.push(`&sortby=${encodeURIComponent(settings.sortby)}`);
-                }
-            }
-            const url = `${OriginApiUrl}/api/projects/search?page=${page}${urlSections.join('')}`;
-            fetch(url)
-                .then((res) => {
-                    if (!res.ok) {
-                        res.text().then(reject);
-                        return;
-                    }
-                    res.json().then((projectList) => {
-                        resolve(projectList.projects);
-                    });
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        })
-    }
+    
     static getFrontPage() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/projects/frontPage`;
+            const url = `${OriginApiUrl}/api/v1/projects/frontpage`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -217,7 +164,7 @@ class ProjectApi {
 
     static getProjectMeta(id) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/projects/getPublished?id=${id}`;
+            const url = `${OriginApiUrl}/api/v1/projects/getproject?projectId=${id}&requestType=metadata`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -225,6 +172,7 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((project) => {
+                        console.log(project, "META");
                         resolve(project);
                     });
                 })
@@ -233,9 +181,9 @@ class ProjectApi {
                 });
         })
     }
-    static getProjectRemixes(id) {
+    static getProjectRemixes(id, page=0) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/pmWrapper/remixes?id=${id}`;
+            const url = `${OriginApiUrl}/api/v1/projects/getremixes?id=${id}&page=${page}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -252,9 +200,10 @@ class ProjectApi {
         })
     }
 
+    // TODO: make this convert the pbf to a pmp
     static getProjectFile(id) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/projects/getPublished?type=file&id=${id}`;
+            const url = `${OriginApiUrl}/api/projects/getprojectwrapper?projectId=${id}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -271,8 +220,8 @@ class ProjectApi {
         })
     }
 
-    setPrivateCode(p) {
-        this.privateCode = p;
+    settoken(p) {
+        this.token = p;
     }
     setUsername(u) {
         this.username = u;
@@ -283,7 +232,7 @@ class ProjectApi {
 
     getAllPermitedUsers() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/getSiteMods?user=${this.username}&passcode=${this.privateCode}`;
+            const url = `${OriginApiUrl}/api/v1/users/getmods?username=${this.username}&token=${this.token}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -309,7 +258,7 @@ class ProjectApi {
 
     getMyProjects(page) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/getMyProjects?page=${page}&user=${this.username}&code=${this.privateCode}&sorted=true`;
+            const url = `${OriginApiUrl}/api/v1/projects/getmyprojects?page=${page}&username=${this.username}&token=${this.token}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -327,7 +276,7 @@ class ProjectApi {
     }
     getMyFeed(page) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/getMyFeed?page=${page}&username=${this.username}&passcode=${this.privateCode}`;
+            const url = `${OriginApiUrl}/api/users/getMyFeed?page=${page}&username=${this.username}&token=${this.token}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -346,7 +295,7 @@ class ProjectApi {
     }
     getMyMessages(page) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/getMessages?page=${page}&username=${this.username}&passcode=${this.privateCode}`;
+            const url = `${OriginApiUrl}/api/users/getMessages?page=${page}&username=${this.username}&token=${this.token}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -364,7 +313,7 @@ class ProjectApi {
     }
     getMessageCount() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/getMessageCount?username=${this.username}&passcode=${this.privateCode}`;
+            const url = `${OriginApiUrl}/api/users/getMessageCount?username=${this.username}&token=${this.token}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -382,7 +331,7 @@ class ProjectApi {
     }
     isFollowingUser(username, returnRawInfo) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/isFollowing?username=${this.username}&target=${username}&passcode=${this.privateCode}`;
+            const url = `${OriginApiUrl}/api/users/isFollowing?username=${this.username}&target=${username}&token=${this.token}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -403,7 +352,7 @@ class ProjectApi {
         return new Promise((resolve, reject) => {
             const data = {
                 username: this.username,
-                passcode: this.privateCode,
+                token: this.token,
                 target: username
             };
             const url = `${OriginApiUrl}/api/users/followToggle`;
@@ -418,7 +367,6 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((info) => {
-                        console.log(info);
                         resolve(info);
                     });
                 })
@@ -431,7 +379,7 @@ class ProjectApi {
         return new Promise((resolve, reject) => {
             const data = {
                 username: this.username,
-                passcode: this.privateCode,
+                token: this.token,
             };
             if (typeof id !== 'undefined') {
                 data.id = String(id);
@@ -460,7 +408,7 @@ class ProjectApi {
         return new Promise((resolve, reject) => {
             const data = {
                 username: this.username,
-                passcode: this.privateCode,
+                token: this.token,
                 id,
                 text
             };
@@ -487,7 +435,7 @@ class ProjectApi {
     getUnapprovedProjects(page, oldFirst) {
         return new Promise((resolve, reject) => {
             const reverseParam = oldFirst ? '&reverse=true' : '';
-            const url = `${OriginApiUrl}/api/projects/getUnapproved?page=${page}&user=${this.username}&passcode=${this.privateCode}${reverseParam}`;
+            const url = `${OriginApiUrl}/api/projects/getUnapproved?page=${page}&username=${this.username}&token=${this.token}${reverseParam}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -508,7 +456,7 @@ class ProjectApi {
     getReports(type, userOrId) {
         if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/${type}s/getReports?target=${userOrId}&username=${this.username}&passcode=${this.privateCode}`;
+            const url = `${OriginApiUrl}/api/${type}s/getReports?target=${userOrId}&username=${this.username}&token=${this.token}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -527,7 +475,7 @@ class ProjectApi {
     getTypeWithReports(type) {
         if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/${type}s/getContentWithReports?username=${this.username}&passcode=${this.privateCode}`;
+            const url = `${OriginApiUrl}/api/${type}s/getContentWithReports?username=${this.username}&token=${this.token}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -548,7 +496,7 @@ class ProjectApi {
         return new Promise((resolve, reject) => {
             const data = {
                 username: this.username,
-                passcode: this.privateCode,
+                token: this.token,
                 id: idOrName,
                 target: reporter
             };
@@ -572,7 +520,7 @@ class ProjectApi {
     }
     getRejectedProjectFile(id) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/projects/downloadRejected?id=${id}&approver=${this.username}&passcode=${this.privateCode}`;
+            const url = `${OriginApiUrl}/api/projects/downloadRejected?id=${id}&approver=${this.username}&token=${this.token}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -592,7 +540,7 @@ class ProjectApi {
         return new Promise((resolve, reject) => {
             const data = {
                 approver: this.username,
-                passcode: this.privateCode,
+                token: this.token,
                 id
             };
             const url = `${OriginApiUrl}/api/projects/restoreRejected`;
@@ -617,7 +565,7 @@ class ProjectApi {
         return new Promise((resolve, reject) => {
             const data = {
                 approver: this.username,
-                passcode: this.privateCode,
+                token: this.token,
                 id
             };
             const url = `${OriginApiUrl}/api/projects/deleteRejected`;
@@ -640,7 +588,7 @@ class ProjectApi {
     }
     getProfanityFilter() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/getProfanityList?user=${this.username}&passcode=${this.privateCode}`;
+            const url = `${OriginApiUrl}/api/users/getProfanityList?username=${this.username}&token=${this.token}`;
             fetch(url)
                 .then((res) => {
                     res.json().then(json => {
@@ -663,7 +611,7 @@ class ProjectApi {
             const url = `${OriginApiUrl}/api/users/setProfanityList`;
             const data = {
                 user: this.username,
-                passcode: this.privateCode,
+                token: this.token,
                 json: newData
             };
             fetch(url, {
@@ -691,7 +639,7 @@ class ProjectApi {
         return new Promise((resolve, reject) => {
             const data = {
                 username: this.username,
-                passcode: this.privateCode,
+                token: this.token,
                 badges,
                 target
             };
@@ -718,7 +666,7 @@ class ProjectApi {
         return new Promise((resolve, reject) => {
             const data = {
                 username: this.username,
-                passcode: this.privateCode,
+                token: this.token,
                 target: username,
                 reason
             };
@@ -745,7 +693,7 @@ class ProjectApi {
         return new Promise((resolve, reject) => {
             const data = {
                 username: this.username,
-                passcode: this.privateCode,
+                token: this.token,
                 target: username,
                 reason
             };
@@ -771,7 +719,7 @@ class ProjectApi {
     reportContent(type, nameOrId, reason) {
         if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/${type}s/report?username=${this.username}&passcode=${this.privateCode}&target=${nameOrId}&reason=${reason}`).then(res => {
+            fetch(`${OriginApiUrl}/api/${type}s/report?username=${this.username}&token=${this.token}&target=${nameOrId}&reason=${reason}`).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);
@@ -788,7 +736,7 @@ class ProjectApi {
     }
     assingUsersPermisions(username, admin, approver) {
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/users/assignPossition?user=${this.username}&passcode=${this.privateCode}&target=${username}&admin=${admin}&approver=${approver}`).then(res => {
+            fetch(`${OriginApiUrl}/api/users/assignPossition?username=${this.username}&token=${this.token}&target=${username}&admin=${admin}&approver=${approver}`).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);
@@ -805,7 +753,7 @@ class ProjectApi {
     }
     setErrorAllGetProjects(enabled) {
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/errorAllProjectRequests?user=${this.username}&passcode=${this.privateCode}&enabled=${enabled}`).then(res => {
+            fetch(`${OriginApiUrl}/api/errorAllProjectRequests?username=${this.username}&token=${this.token}&enabled=${enabled}`).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);
@@ -822,7 +770,7 @@ class ProjectApi {
     }
     setErrorAllUploadProjects(enabled) {
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/errorAllProjectUploads?user=${this.username}&passcode=${this.privateCode}&enabled=${enabled}`).then(res => {
+            fetch(`${OriginApiUrl}/api/errorAllProjectUploads?username=${this.username}&token=${this.token}&enabled=${enabled}`).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);
@@ -839,7 +787,7 @@ class ProjectApi {
     }
     deleteProject(id) {
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/projects/delete?passcode=${this.privateCode}&approver=${this.username}&id=${id}`).then(res => {
+            fetch(`${OriginApiUrl}/api/projects/delete?token=${this.token}&approver=${this.username}&id=${id}`).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);
@@ -856,7 +804,7 @@ class ProjectApi {
     }
     rejectProject(id, reason, hardReject) {
         const data = {
-            passcode: this.privateCode,
+            token: this.token,
             approver: this.username,
             id,
             reason,
@@ -884,7 +832,7 @@ class ProjectApi {
     }
     attemptRankUp() {
         const data = {
-            passcode: this.privateCode,
+            token: this.token,
             username: this.username
         };
         return new Promise((resolve, reject) => {
@@ -910,7 +858,7 @@ class ProjectApi {
     setBio(text, adminForced, adminTarget) {
         const data = {
             username: this.username,
-            passcode: this.privateCode,
+            token: this.token,
             bio: text,
             target: adminTarget,
         };
@@ -937,7 +885,7 @@ class ProjectApi {
     setMyFeaturedProject(id, title) {
         const data = {
             username: this.username,
-            passcode: this.privateCode,
+            token: this.token,
             id,
             title
         };
@@ -963,7 +911,7 @@ class ProjectApi {
     }
     respondToDispute(disputerUsername, messageId, text) {
         const data = {
-            passcode: this.privateCode,
+            token: this.token,
             approver: this.username,
             username: disputerUsername,
             id: messageId,
@@ -991,7 +939,7 @@ class ProjectApi {
     }
     addMessage(type, target, data) {
         const gdata = {
-            passcode: this.privateCode,
+            token: this.token,
             username: this.username,
             target,
             message: {
@@ -1022,7 +970,7 @@ class ProjectApi {
     updateProject(id, newData) {
         newData.id = id;
         newData.requestor = this.username;
-        newData.passcode = this.privateCode;
+        newData.token = this.token;
         if (typeof newData.newMeta === "object") {
             newData.newMeta = JSON.stringify(newData.newMeta);
         }
@@ -1051,7 +999,7 @@ class ProjectApi {
     }
     uploadProject(data) {
         data.author = this.username;
-        data.passcode = this.privateCode;
+        data.token = this.token;
         return new Promise((resolve, reject) => {
             fetch(
                 `${OriginApiUrl}/api/projects/publish`,
@@ -1077,7 +1025,7 @@ class ProjectApi {
     }
 
     approveProject(id, webhook) {
-        const url = `${OriginApiUrl}/api/projects/approve?passcode=${this.privateCode}&approver=${this.username}&webhook=${webhook}&id=${id}`;
+        const url = `${OriginApiUrl}/api/projects/approve?token=${this.token}&approver=${this.username}&webhook=${webhook}&id=${id}`;
         return new Promise((resolve, reject) => {
             fetch(url).then(res => {
                 res.json().then(json => {
@@ -1095,7 +1043,7 @@ class ProjectApi {
         })
     }
     featureProject(id, webhook) {
-        const url = `${OriginApiUrl}/api/projects/feature?passcode=${this.privateCode}&approver=${this.username}&webhook=${webhook}&id=${id}`;
+        const url = `${OriginApiUrl}/api/projects/feature?token=${this.token}&approver=${this.username}&webhook=${webhook}&id=${id}`;
         return new Promise((resolve, reject) => {
             fetch(url).then(res => {
                 res.json().then(json => {
@@ -1113,7 +1061,7 @@ class ProjectApi {
         })
     }
 
-    toggleVoteProject(id, type) {
+    toggleVoteProject(id, type, toggle) {
         type = String(type).toLowerCase().trim();
         switch (type) {
             case 'feature':
@@ -1121,28 +1069,28 @@ class ProjectApi {
             case 'featured':
             case 'vote':
             case 'voted':
-                type = 'votes';
+                type = 'vote';
                 break;
             case 'love':
             case 'loved':
             case 'like':
             case 'liked':
             case 'likes':
-                type = 'loves';
+                type = 'love';
                 break;
             default:
-                type = 'votes';
+                type = 'vote';
         }
-        const url = `${OriginApiUrl}/api/projects/toggleProjectVote`;
+        const url = `${OriginApiUrl}/api/v1/projects/interactions/${type}Toggle`;
         return new Promise((resolve, reject) => {
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 method: "POST",
                 body: JSON.stringify({
-                    id: id,
-                    type: type,
-                    user: this.username,
-                    passcode: this.privateCode
+                    projectId: id,
+                    username: this.username,
+                    token: this.token,
+                    toggle: toggle
                 })
             }).then(res => {
                 res.json().then(json => {
@@ -1150,7 +1098,7 @@ class ProjectApi {
                         reject(json.error);
                         return;
                     }
-                    resolve(json.state);
+                    resolve();
                 }).catch(err => {
                     reject(err);
                 })
@@ -1160,7 +1108,7 @@ class ProjectApi {
         })
     }
     getVoteStates(id) {
-        const url = `${OriginApiUrl}/api/projects/getProjectVote?user=${this.username}&passcode=${this.privateCode}&id=${id}`;
+        const url = `${OriginApiUrl}/api/v1/projects/getuserstatewrapper?username=${this.username}&token=${this.token}&projectId=${id}`;
         return new Promise((resolve, reject) => {
             fetch(url).then(res => {
                 res.json().then(json => {
@@ -1168,7 +1116,7 @@ class ProjectApi {
                         reject(json.error);
                         return;
                     }
-                    resolve(json);
+                    resolve({loved: json.hasLoved, voted: json.hasVoted});
                 }).catch(err => {
                     reject(err);
                 })

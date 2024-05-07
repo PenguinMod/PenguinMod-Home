@@ -19,15 +19,17 @@
 
     let userLiked = false;
     let userVoted = false;
+    let userLikedOnLoad = false;
     let userVotedOnLoad = false;
 
     let loaded = false;
-    let loggedIn = null;
+    let loggedIn = true;
     let loggedInAdmin = false;
 
     let projectId = 0;
 
     function vote() {
+        /*
         if (loggedIn === false) {
             Authentication.authenticate().then((privateCode) => {
                 Authentication.usernameFromCode(privateCode)
@@ -46,13 +48,13 @@
             });
             return;
         }
-        ProjectClient.toggleVoteProject(projectId, "feature")
-            .then((featured) => {
-                userVoted = featured;
-            })
+        */
+        ProjectClient.toggleVoteProject(projectId, "vote", !userVoted)
             .catch((err) => alert(String(err)));
+        userVoted = !userVoted;
     }
     function love() {
+        /*
         if (loggedIn === false) {
             Authentication.authenticate().then((privateCode) => {
                 Authentication.usernameFromCode(privateCode)
@@ -71,11 +73,10 @@
             });
             return;
         }
-        ProjectClient.toggleVoteProject(projectId, "love")
-            .then((loved) => {
-                userLiked = loved;
-            })
+        */
+        ProjectClient.toggleVoteProject(projectId, "love", !userLiked)
             .catch((err) => alert(String(err)));
+        userLiked = !userLiked;
     }
 
     function updateVoteStates() {
@@ -83,6 +84,7 @@
             .then((states) => {
                 userLiked = states.loved;
                 userVoted = states.voted;
+                userLikedOnLoad = userLiked;
                 userVotedOnLoad = userVoted;
                 loaded = true;
             })
@@ -97,6 +99,7 @@
         const projId = numberCast(params.get("id"));
         projectId = projId;
         const privateCode = localStorage.getItem("PV");
+        
         if (!privateCode) {
             loggedIn = false;
             updateVoteStates();
@@ -117,19 +120,22 @@
             })
             .catch(() => {
                 loggedIn = false;
-                updateVoteStates();
+                
             });
+        updateVoteStates();
     });
     onMount(() => {
         const params = new URLSearchParams(location.search);
         const projId = numberCast(params.get("id"));
         projectId = projId;
         ProjectApi.getProjectMeta(projId).then((data) => {
+            console.log(data, "DATA");
             likes = numberCast(data.loves);
             votes = numberCast(data.votes);
             views = numberCast(data.views);
         });
     });
+    // RTODO: change this
     Authentication.onAuthentication((privateCode) => {
         ProjectClient.setPrivateCode(privateCode);
         Authentication.usernameFromCode(privateCode).then(({username, isAdmin, isApprover}) => {
@@ -154,7 +160,7 @@
                     data-activated={userLiked}
                 />
             </button>
-            <p>{likes + Number(userLiked)}</p>
+            <p>{likes - Number(userLikedOnLoad) + Number(userLiked)}</p>
         </div>
         <div title="Vote to Feature this project" class="parent button-text">
             <button class="feature" on:click={vote}>
