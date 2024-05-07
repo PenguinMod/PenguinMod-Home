@@ -3,6 +3,21 @@ import ProjectApi from "./projectapi";
 class Authentication {
     static eventListeners = [];
 
+    static createAccount(username, password) {
+        return new Promise((resolve, reject) => {
+            fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/createAccount`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, password })
+            }).then(r => r.json().then(j => {
+                if (j.error) return reject(j.error);
+                resolve(j.token);
+            }).catch(reject)).catch(reject);
+        });
+    }
+
     static authenticate() {
         const isLocal = location.hostname === 'localhost';
         const redirectUrl = `${ProjectApi.OriginApiUrl}/api/users/login` + (isLocal ? 'Local' : '');
@@ -42,6 +57,22 @@ class Authentication {
             };
         });
     }
+
+    static verifyToken(username, token) {
+        return new Promise((resolve, reject) => {
+            fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/tokenlogin`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, token })
+            }).then(r => r.json().then(j => {
+                if (j.error) return reject(j.error);
+                resolve(j.token);
+            }).catch(reject)).catch(reject);
+        });
+    }
+
     static onAuthentication(cb) {
         Authentication.eventListeners.push({ callback: cb, type: "LOGIN" });
     }

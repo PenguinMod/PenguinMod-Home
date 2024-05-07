@@ -363,6 +363,13 @@
 				lang={currentLang}
 			/>
 		</BarPage>
+		<BarPage on:click={() => location.href="/signup"}>
+			<LocalizedText
+				text="Sign up"
+				key="navigation.signup"
+				lang={currentLang}
+			/>
+		</BarPage>
 	{:else if loggedIn === true}
 		<!-- svelte-ignore a11y-img-redundant-alt -->
 		<button
