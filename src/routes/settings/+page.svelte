@@ -163,84 +163,92 @@
     {:else}
         <div style="height: 16px;" />
 
-        <div class="profile-section">
-            <button>
-                <img
-                    src="https://trampoline.turbowarp.org/avatars/by-username/{loggedInUsername}"
-                    alt={loggedInUsername}
-                />
-            </button>
-            <div>
-                <h1 style="margin-block:0;font-size:40px">{loggedInUsername}</h1>
-                <button class="fake-link">
-                    Set Password
+        <div class="center-area">
+            <div class="profile-section">
+                <button class="profile-section-image">
+                    <img
+                        src="https://trampoline.turbowarp.org/avatars/by-username/{loggedInUsername}"
+                        alt={loggedInUsername}
+                    />
+                    <div class="profile-section-image-edit">
+                        <img
+                            src="/pencil.png"
+                            alt="Edit"
+                        />
+                    </div>
                 </button>
-                <button class="fake-link">
-                    Update Login Methods
-                </button>
+                <div class="profile-section-display">
+                    <h1 style="margin-block:0;font-size:40px">{loggedInUsername}</h1>
+                    <button class="edit-link">
+                        Set Password
+                    </button>
+                    <button class="edit-link">
+                        Update Login Methods
+                    </button>
+                </div>
             </div>
-        </div>
-
-        <div>
+    
             <div>
-                <button
-                    class="settings-section"
-                    data-selected={currentTab === 'account'}
-                    on:click={() => changeTab('account')}
-                >
-                    Account
-                </button>
-                <button
-                    class="settings-section"
-                    data-selected={currentTab === 'standing'}
-                    on:click={() => changeTab('standing')}
-                >
-                    Standing
-                </button>
-            </div>
-            <div>
-                {#if currentTab === 'account'}
-                    <h1>Account</h1>
-                    <p>Email: {accountInformation.emailPeek}</p>
-                    <br>
-                    <p>
-                        <label>
-                            <input
-                                type="checkbox"
-                                bind:checked={accountInformation.settings.private}
-                            >
-                            Make my profile private
-                        </label>
-                    </p>
-                    <p>
-                        <label>
-                            <input
-                                type="checkbox"
-                                disabled={!accountInformation.settings.private}
-                                bind:checked={accountInformation.settings.privateToNonFollowers}
-                            >
-                            Allow people I follow to view my profile
-                        </label>
-                    </p>
-                    <p class="small">
-                        <i>(Moderators can always view your profile, ignoring these settings.)</i>
-                    </p>
-                    <br>
-                    <p>
-                        <label>
-                            <input
-                                type="checkbox"
-                                bind:checked={accountInformation.settings.showCubesOnProfile}
-                            >
-                            Show my Ice Cube count on my profile
-                        </label>
-                    </p>
-                    <p class="small">
-                        <i>(Moderators can always see your Ice Cube count, ignoring these settings.)</i>
-                    </p>
-                {:else if currentTab === 'standing'}
-                    <h1>Standing</h1>
-                {/if}
+                <div>
+                    <button
+                        class="settings-section"
+                        data-selected={currentTab === 'account'}
+                        on:click={() => changeTab('account')}
+                    >
+                        Account
+                    </button>
+                    <button
+                        class="settings-section"
+                        data-selected={currentTab === 'standing'}
+                        on:click={() => changeTab('standing')}
+                    >
+                        Standing
+                    </button>
+                </div>
+                <div>
+                    {#if currentTab === 'account'}
+                        <h1>Account</h1>
+                        <p>Email: {accountInformation.emailPeek}</p>
+                        <br>
+                        <p>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    bind:checked={accountInformation.settings.private}
+                                >
+                                Make my profile private
+                            </label>
+                        </p>
+                        <p>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    disabled={!accountInformation.settings.private}
+                                    bind:checked={accountInformation.settings.privateToNonFollowers}
+                                >
+                                Allow people I follow to view my profile
+                            </label>
+                        </p>
+                        <p class="small">
+                            <i>(Moderators can always view your profile, ignoring these settings.)</i>
+                        </p>
+                        <br>
+                        <p>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    bind:checked={accountInformation.settings.showCubesOnProfile}
+                                >
+                                Show my Ice Cube count on my profile
+                            </label>
+                        </p>
+                        <p class="small">
+                            <i>(Moderators can always see your Ice Cube count, ignoring these settings.)</i>
+                        </p>
+                    {:else if currentTab === 'standing'}
+                        <h1>Standing</h1>
+                    {/if}
+                </div>
             </div>
         </div>
 
@@ -287,6 +295,7 @@
         margin-bottom: 16px;
         align-items: center;
     }
+    .edit-link,
     .fake-link {
         color: dodgerblue;
         text-decoration: underline;
@@ -297,12 +306,79 @@
         cursor: pointer;
         font-size: 0.85rem;
     }
+    .edit-link::after {
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        content: "";
+        background-image: url('/pencil.png');
+        background-size: 16px 16px;
+        background-repeat: no-repeat;
+        margin-left: 4px;
+    }
+
+    .center-area {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
 
     /* profile section */
     .profile-section {
         display: flex;
         flex-direction: row;
         align-items: center;
+
+        width: 65%;
+    }
+    .profile-section-image {
+        position: relative;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        margin-right: 8px;
+
+        width: 128px;
+        height: 128px;
+
+        cursor: pointer;
+        background: none;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .profile-section-image-edit {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        transition-duration: 0.1s;
+        transition-property: opacity;
+    }
+    .profile-section-image-edit img {
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 100%;
+        overflow: visible;
+        padding: 8px;
+    }
+    .profile-section-image:focus .profile-section-image-edit,
+    .profile-section-image:active .profile-section-image-edit,
+    .profile-section-image:hover .profile-section-image-edit {
+        opacity: 1;
+        transition-duration: 0.1s;
+        transition-property: opacity;
+    }
+    .profile-section-display {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
     }
 
     /* settings-section */
