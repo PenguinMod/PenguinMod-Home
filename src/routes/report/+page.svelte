@@ -286,7 +286,7 @@
             {#if pageDetails.type === "user"}
                 <img
                     class="profile-picture"
-                    src={`https://trampoline.turbowarp.org/avatars/by-username/${pageDetails.id}`}
+                    src={`http://localhost:8080/api/v1/users/getpfp?username=${pageDetails.id}`}
                     alt={pageDetails.id}
                 />
             {:else}

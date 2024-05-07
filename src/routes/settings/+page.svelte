@@ -167,7 +167,7 @@
             <div class="profile-section">
                 <button class="profile-section-image">
                     <img
-                        src="https://trampoline.turbowarp.org/avatars/by-username/{loggedInUsername}"
+                        src="http://localhost:8080/api/v1/users/getpfp?username={loggedInUsername}"
                         alt={loggedInUsername}
                     />
                     <div class="profile-section-image-edit">

@@ -371,7 +371,7 @@
 			on:click={openAccountMenu}
 		>
 			<img
-				src={`https://trampoline.turbowarp.org/avatars/by-username/${accountUsername}`}
+				src={`http://localhost:8080/api/v1/users/getpfp?username=${accountUsername}`}
 				alt="Profile Picture"
 				class="profile-picture"
 			/>

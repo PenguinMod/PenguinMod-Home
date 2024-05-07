@@ -516,7 +516,7 @@
         {:else}
             <div class="welcome-back-card">
                 <img
-                    src={`https://trampoline.turbowarp.org/avatars/by-username/${loggedInUsername}`}
+                    src={`http://localhost:8080/api/v1/users/getpfp?username=${loggedInUsername}`}
                     alt="Profile"
                     class="profile-picture"
                 />
@@ -605,7 +605,7 @@
                                         message.content
                                     )}
                                     author={message.username}
-                                    image={`https://trampoline.turbowarp.org/avatars/by-username/${message.username}`}
+                                    image={`http://localhost:8080/api/v1/users/getpfp?username=${message.username}`}
                                 />
                             {/if}
                         {/each}

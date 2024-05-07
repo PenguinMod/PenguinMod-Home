@@ -202,7 +202,7 @@ class ProjectApi {
     // TODO: make this convert the pbf to a pmp
     static getProjectFile(id) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/projects/getprojectwrapper?projectId=${id}`;
+            const url = `${OriginApiUrl}/api/v1/projects/getprojectwrapper?projectId=${id}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -431,27 +431,7 @@ class ProjectApi {
                 });
         })
     }
-    getUnapprovedProjects(page, oldFirst) {
-        return new Promise((resolve, reject) => {
-            const reverseParam = oldFirst ? '&reverse=true' : '';
-            const url = `${OriginApiUrl}/api/projects/getUnapproved?page=${page}&username=${this.username}&token=${this.token}${reverseParam}`;
-            fetch(url)
-                .then((res) => {
-                    if (!res.ok) {
-                        res.text().then(reject);
-                        return;
-                    }
-                    res.json().then((projectList) => {
-                        const projects = projectList.projects;
-                        const shown = projects.filter(p => !p.hidden);
-                        resolve(shown);
-                    });
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
-    }
+    
     getReports(type, userOrId) {
         if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
         return new Promise((resolve, reject) => {

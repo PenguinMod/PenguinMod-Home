@@ -91,7 +91,7 @@
         class="project-author"
     >
         <img
-            src={`https://trampoline.turbowarp.org/avatars/by-username/${owner}`}
+            src={`http://localhost:8080/api/v1/users/getpfp?username=${owner}`}
             alt="Project Author"
             class="project-author"
         />

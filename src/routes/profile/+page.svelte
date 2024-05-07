@@ -811,7 +811,7 @@
                             <div class="user-username">
                                 <img
                                     style="border-color:{isDonator ? "#a237db" : "#efefef"}"
-                                    src={`https://trampoline.turbowarp.org/avatars/by-username/${user}`}
+                                    src={`http://localhost:8080/api/v1/users/getpfp?username=${user}`}
                                     alt="Profile"
                                     class="profile-picture"
                                 />
@@ -1127,7 +1127,7 @@
                                 />
                                 <div class="profile-project-authordiv">
                                     <img
-                                        src="https://trampoline.turbowarp.org/avatars/by-username/{user}"
+                                        src="http://localhost:8080/api/v1/users/getpfp?username={user}"
                                         alt="Project Author"
                                         title={user}
                                         class="profile-project-author"

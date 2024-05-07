@@ -151,7 +151,7 @@
                 return openReportsMenu(dropdownSelectMenu.value);
             case "removed":
                 projectListStyle = 'flex-direction: row;flex-wrap: wrap;';
-                return openProjectsMenu(dropdownSelectMenu.value);
+                //return openProjectsMenu(dropdownSelectMenu.value);
         }
     };
     const closeUserReports = (idOrName, user) => {
@@ -170,6 +170,7 @@
     };
 
     let unapprovedPage = 1;
+    /*
     function openProjectsMenu(type) {
         // type is assumed to be unapproved because we have nothing else right now
         unapprovedProjects = [];
@@ -178,6 +179,7 @@
             unapprovedProjects = unapprovedProjs;
         });
     }
+    */
     function openReportsMenu(type) {
         unapprovedProjects = [];
         contentWithReports = [];
@@ -1369,16 +1371,6 @@
                             </p>
                         {/if}
                     {/if}
-                    {#if dropdownSelectMenu.value === "removed"}
-                        <p class="selection-info">
-                            Page
-                            <input
-                                type="number"
-                                on:change={openProjectsMenu}
-                                bind:value={unapprovedPage}
-                            >
-                        </p>
-                    {/if}
                     {#each unapprovedProjects as project}
                         <div>
                             <ClickableProject
@@ -1403,7 +1395,7 @@
                                 }}
                             >
                                 <img
-                                    src={`https://trampoline.turbowarp.org/avatars/by-username/${content.username}`}
+                                    src={`http://localhost:8080/api/v1/users/getpfp?username=${content.username}`}
                                     alt={content.username}
                                 />
                                 <div class="reports-user-content">
