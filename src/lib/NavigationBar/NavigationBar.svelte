@@ -259,6 +259,16 @@
 			/>
 		</button>
 	</a>
+	<a href="/settings">
+		<button>
+			<LocalizedText
+				text="Settings"
+				key="account.settings.title"
+				lang={currentLang}
+			/>
+		</button>
+	</a>
+	<div class="seperated-navopt" />
 	<button on:click={logout}>
 		<LocalizedText
 			text="Logout"
@@ -607,6 +617,12 @@
 	}
 	.profile-dropdown-menu button:hover {
 		background: rgba(0, 0, 0, 0.15);
+	}
+
+	.profile-dropdown-menu .seperated-navopt {
+		border-top: 1px solid rgba(0, 0, 0, 0.15);
+		width: calc(100% - 8px);
+		margin-left: 4px;
 	}
 
 	.only-non-launcher {
