@@ -1451,7 +1451,7 @@
                                 }}
                             >
                                 <img
-                                    src={`https://projects.penguinmod.com/api/pmWrapper/iconUrl?id=${content.id}`}
+                                    src={`http://localhost:8080/api/v1/projects/getproject?projectId=${content.id}&requestType=thumbnail`}
                                     alt={content.name}
                                 />
                                 <div
