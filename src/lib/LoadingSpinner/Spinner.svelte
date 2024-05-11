@@ -15,12 +15,14 @@
     Language.onChange((lang) => {
         currentLang = lang;
     });
+
+    export let icon = "/loading.png";
 </script>
 
 <div class="centerer">
-    <img alt="Loading" src="/loading.png" class="spinner-load" />
-    <br />
+    <img alt="Loading" src={icon} class="spinner-load" />
     {#if enableTips}
+        <br />
         <p>
             <LocalizedText
                 text={tips[tipId]}
