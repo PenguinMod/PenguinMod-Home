@@ -65,10 +65,23 @@
         <h1 style="margin-block:4px">PenguinMod</h1>
         <p>Create your personal account</p>
 
+        <!-- TODO: list username & password requirements,
+        should only appear if the inputs are focused & will have checkmarks
+        that enable next to them when sufficed -->
         <span class="input-title">Username</span>
-        <input bind:value={username} type="text" placeholder="Use something iconic!">
+        <input
+            bind:value={username}
+            type="text"
+            placeholder="Use something iconic!"
+            maxlength="20"
+        />
         <span class="input-title">Password</span>
-        <input bind:value={password} type="password" placeholder="Remember to write it down!">
+        <input
+            bind:value={password}
+            type="password"
+            placeholder="Remember to write it down!"
+            maxlength="50"
+        />
         <button class="create-acc" on:click={createAccountSafe}>
             {#if creatingAccount}
                 <LoadingSpinner icon="/loading_white.png" />
