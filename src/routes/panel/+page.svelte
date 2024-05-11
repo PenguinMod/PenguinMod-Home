@@ -753,7 +753,7 @@
             <div class="card-reject" style="display:block">
                 <p>Rejecting <b>{rejectingName}</b></p>
                 <img
-                    src={`${LINK.projects}api/pmWrapper/iconUrl?id=${rejectingId}`}
+                    src={`${LINK.projects}api/v1/projects/getproject?projectId=${rejectingId}&requestType=thumbnail`}
                     alt="Image of {rejectingName}"
                     width="240"
                     height="180"
@@ -1022,7 +1022,7 @@
                             Selected <b>{selectedProjectName}</b>
                         </p>
                         <img
-                            src={`${ProjectApi.OriginApiUrl}/api/pmWrapper/iconUrl?id=${lastSelectedProjectId}`}
+                            src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectId=${lastSelectedProjectId}&requestType=thumbnail`}
                             alt="Project Thumbnail"
                         />
                     </a>

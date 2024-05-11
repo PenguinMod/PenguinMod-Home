@@ -8,12 +8,11 @@
     import LINK from "../../resources/urls.js";
 
     export let id;
-    export let name;
-    export let showdate = false;
+    export let title;
+    export let lastUpdate = false;
     export let featured = false;
-    export let rejected = false;
     export let fromDonator = false;
-    export let owner;
+    export let author;
     export let date = 0;
     export let style = "";
 
@@ -70,17 +69,17 @@
     const projectLink = linkOverride ? linkOverride : `${LINK.base}#${id}`;
     const projectAuthorLink = linkOverride
         ? linkOverride
-        : `/profile?user=${owner}`;
+        : `/profile?user=${author.username}`;
 </script>
 
-<div data-featured={featured} data-rejected={rejected} class="project" {style}>
+<div data-featured={featured} class="project" {style}>
     <a
         href={projectLink}
         target={openNewtab ? "_blank" : "_self"}
         class="project-image"
     >
         <img
-            src={`${LINK.projects}api/pmWrapper/iconUrl?id=${id}`}
+            src={`${LINK.projects}api/v1/projects/getproject?projectId=${id}&requestType=thumbnail`}
             alt="Project Thumbnail"
             class="project-image"
         />
@@ -91,7 +90,7 @@
         class="project-author"
     >
         <img
-            src={`http://localhost:8080/api/v1/users/getpfp?username=${owner}`}
+            src={`http://localhost:8080/api/v1/users/getpfp?username=${author.username}`}
             alt="Project Author"
             class="project-author"
         />
@@ -101,11 +100,11 @@
             href={projectLink}
             target={openNewtab ? "_blank" : "_self"}
             class="text project-title"
-            title={name}
+            title={title}
         >
-            {@html formatProjectTitle(name)}
+            {@html formatProjectTitle(title)}
         </a>
-        {#if showdate}
+        {#if lastUpdate}
             <a
                 href={projectLink}
                 target={openNewtab ? "_blank" : "_self"}
@@ -119,7 +118,7 @@
                 target={openNewtab ? "_blank" : "_self"}
                 class={"text author" + (fromDonator ? " donator-name" : "")}
             >
-                {owner}
+                {author.username}
                 {#if fromDonator}
                     <img
                         src="/badges/donator2.png"
@@ -204,9 +203,6 @@
         );
         background-size: 300% 300%;
         animation: gradient 3s ease infinite;
-    }
-    .project[data-rejected="true"] {
-        border-color: red;
     }
 
     .text {

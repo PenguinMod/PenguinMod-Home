@@ -1121,7 +1121,7 @@
                         {:else if profileFeaturedProject.owner === user}
                             <a href={`${LINK.base}#${profileFeaturedProject.id}`} style="text-decoration: none">
                                 <img
-                                    src={`${ProjectApi.OriginApiUrl}/api/pmWrapper/iconUrl?id=${profileFeaturedProject.id}&widescreen=true`}
+                                    src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectIdd=${profileFeaturedProject.id}&requestType=thumbnail`}
                                     alt="Project Thumbnail"
                                     class="profile-project-image"
                                 />

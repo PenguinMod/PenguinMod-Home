@@ -28,7 +28,7 @@
 <button class="project" data-featured={featured} {style} on:click={event}>
     <div class="project-image">
         <img
-            src={`${LINK.projects}api/pmWrapper/iconUrl?id=${id}`}
+            src={`${LINK.projects}api/v1/projects/getproject?projectId=${id}&requestType=thumbnail`}
             alt="Project Thumbnail"
             class="project-image"
         />
