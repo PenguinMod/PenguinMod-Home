@@ -29,7 +29,6 @@
     let projectId = 0;
 
     function vote() {
-        /*
         if (loggedIn === false) {
             Authentication.authenticate().then((privateCode) => {
                 Authentication.usernameFromCode(privateCode)
@@ -48,13 +47,11 @@
             });
             return;
         }
-        */
         ProjectClient.toggleVoteProject(projectId, "vote", !userVoted)
             .catch((err) => alert(String(err)));
         userVoted = !userVoted;
     }
     function love() {
-        /*
         if (loggedIn === false) {
             Authentication.authenticate().then((privateCode) => {
                 Authentication.usernameFromCode(privateCode)
@@ -73,7 +70,6 @@
             });
             return;
         }
-        */
         ProjectClient.toggleVoteProject(projectId, "love", !userLiked)
             .catch((err) => alert(String(err)));
         userLiked = !userLiked;
