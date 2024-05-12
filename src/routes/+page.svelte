@@ -242,17 +242,18 @@
     // login code below
     let loggedInUsername = "";
     onMount(async () => {
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
+        const username = localStorage.getItem("username")
+        const token = localStorage.getItem("token")
+        if (!token || !username) {
             loggedIn = false;
             return;
         }
-        Authentication.usernameFromCode(privateCode)
+        Authentication.usernameFromCode(username, token)
             .then(({ username }) => {
                 if (username) {
                     loggedInUsername = username;
                     ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
+                    ProjectClient.setPrivateCode(token);
                     loggedIn = true;
                     getAndUpdateMyFeed();
                     return;
@@ -268,14 +269,14 @@
         loggedIn = false;
         myFeed = [];
     });
-    Authentication.onAuthentication((privateCode) => {
+    Authentication.onAuthentication((username, token) => {
         loggedIn = null;
-        Authentication.usernameFromCode(privateCode)
+        Authentication.usernameFromCode(username, token)
             .then(({ username }) => {
                 if (username) {
                     loggedInUsername = username;
                     ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
+                    ProjectClient.setPrivateCode(token);
                     loggedIn = true;
                     getAndUpdateMyFeed();
                     return;
@@ -340,7 +341,7 @@
     /> -->
     <StatusAlert />
 
-    {#if loggedIn === false}
+    {#if !loggedIn}
         <div class="section-info">
             <div style="margin-left: 8rem;">
                 <h1>
@@ -398,7 +399,7 @@
             {/if}
         </div>
 
-        {#if langDecided && currentLang != "en" && loggedIn === false}
+        {#if langDecided && currentLang != "en" && !loggedIn}
             <div class="section-language-warning">
                 <img
                     src="/warning.png"
@@ -449,7 +450,7 @@
         </div>
     {/if}
 
-    {#if langDecided && currentLang != "en" && loggedIn !== false}
+    {#if langDecided && currentLang != "en" && loggedIn}
         <div class="section-language-warning">
             <img
                 src="/warning.png"
@@ -479,7 +480,7 @@
     </p>
 
     <div class="section-categories">
-        {#if loggedIn !== true}
+        {#if !loggedIn}
             <ContentCategory
                 header={TranslationHandler.text(
                     "home.sections.whatsnew",

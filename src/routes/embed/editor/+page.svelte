@@ -3,14 +3,15 @@
     import Authentication from "../../../resources/authentication.js";
 
     const getLoginDetails = async () => {
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
+        const username = localStorage.getItem("username")
+        const token = localStorage.getItem("token");
+        if (!token || !username) {
             return { loggedIn: false };
         }
 
         try {
-            const { username } = await Authentication.usernameFromCode(privateCode);
-            if (!username) return { loggedIn: false };
+            const { _username } = await Authentication.usernameFromCode(username, token);
+            if (!_username) return { loggedIn: false };
             return {
                 loggedIn: true,
                 username

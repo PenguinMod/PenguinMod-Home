@@ -30,7 +30,7 @@
 
     function vote() {
         if (loggedIn === false) {
-            Authentication.authenticate().then((privateCode) => {
+            Authentication.authenticate().then((username, token) => {
                 Authentication.usernameFromCode(privateCode)
                     .then(({username, isAdmin, isApprover}) => {
                         if (username) {

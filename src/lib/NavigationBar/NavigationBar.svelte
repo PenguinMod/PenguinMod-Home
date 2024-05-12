@@ -49,14 +49,15 @@
 	})();
 
 	function loggedInCheck() {
-		const privateCode = localStorage.getItem("PV");
-		if (!privateCode) {
+		const username = localStorage.getItem("username");
+		const token = localStorage.getItem("token")
+		if (!token || !username) {
 			loggedIn = false;
 			canRankUp = false;
 			messageCount = 0;
 			return;
 		}
-		Authentication.usernameFromCode(privateCode)
+		Authentication.usernameFromCode(username, token)
 			.then(
 				({ username, isAdmin: isAdminn, isApprover: isApproverr }) => {
 					if (username) {
@@ -97,18 +98,17 @@
 
 	function logout() {
 		accountMenu.style.display = "none";
-		const pv = localStorage.getItem("PV");
-		Authentication.usernameFromCode(pv).then(({ username }) => {
-			fetch(
-				`${LINK.projects}api/users/logout?user=${username}&code=${pv}`
-			).then((res) => {
-				if (!res.ok) return;
-				localStorage.removeItem("PV");
-				Authentication.fireLogout();
-				loggedIn = false;
-				canRankUp = false;
-				messageCount = 0;
-			});
+		const username = localStorage.getItem("username")
+		const token = localStorage.getItem("token");
+		fetch(
+			`${LINK.projects}api/c1/users/logout?username=${username}&token=${token}`
+		).then((res) => {
+			if (!res.ok) return;
+			localStorage.removeItem("token");
+			Authentication.fireLogout();
+			loggedIn = false;
+			canRankUp = false;
+			messageCount = 0;
 		});
 	}
 	function login() {

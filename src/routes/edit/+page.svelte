@@ -80,13 +80,14 @@
             return;
         }
 
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
+        const username = localStorage.getItem("username")
+        const token = localStorage.getItem("token");
+        if (!token || !username) {
             loggedIn = false;
             kickOut();
             return;
         }
-        Authentication.usernameFromCode(privateCode)
+        Authentication.usernameFromCode(username, token)
             .then(({ username }) => {
                 if (username) {
                     ProjectApi.getProjectMeta(projectId)
@@ -94,7 +95,7 @@
                             projectName = metadata.name;
                             projectMetadata = metadata;
                             ProjectClient.setUsername(username);
-                            ProjectClient.setPrivateCode(privateCode);
+                            ProjectClient.setPrivateCode(token);
                             loggedIn = true;
                         })
                         .catch((err) => {

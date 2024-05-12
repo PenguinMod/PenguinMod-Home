@@ -18,6 +18,14 @@ class Authentication {
         });
     }
 
+    static passwordAuthenticate(username, password) {
+        const redirectUrl = `${ProjectApi.OriginApiUrl}/api/v1/users/passwordlogin?username=${username}&password=${password}`
+
+        // TODO: open a popup to login.
+        // Authentication.fireAuthenticated(username, token)
+    }
+
+    // DEPRECATED
     static authenticate() {
         const isLocal = location.hostname === 'localhost';
         const redirectUrl = `${ProjectApi.OriginApiUrl}/api/users/login` + (isLocal ? 'Local' : '');
@@ -34,14 +42,14 @@ class Authentication {
                     return;
                 }
 
-                const privateCode = data.pv;
+                const token = data.token;
                 window.removeEventListener("message", handleMessageReciever);
                 login.close();
 
                 localStorage.setItem("SCAM-ALERT", "Do NOT send anyone your PV code! If someone told you to do this, stop now!");
-                localStorage.setItem("PV", privateCode);
-                Authentication.fireAuthenticated(privateCode);
-                resolve(privateCode);
+                localStorage.setItem("token", token);
+                Authentication.fireAuthenticated(username, token);
+                resolve(username, token);
             };
 
             window.addEventListener("message", handleMessageReciever);
@@ -93,12 +101,14 @@ class Authentication {
             }
         })
     }
-    static usernameFromCode(code) {
+    static usernameFromCode(username, token) {
+        // name is a misnomer, was just to lazy to change after new api update.
+        // TODO: make this less misleading 
         return new Promise((resolve, reject) => {
-            fetch(`${ProjectApi.OriginApiUrl}/api/users/usernameFromCode?privateCode=${code}`).then(r => r.json().then(j => {
-                if (j.username == null) return reject(j.error);
+            fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/userfromcode?username=${username}&token=${token}`).then(r => r.json().then(j => {
+                if (j.error) return reject(j.error);
                 resolve({
-                    username: j.username, 
+                    username: username, 
                     isAdmin: j.admin,
                     isApprover: j.approver
                 })
