@@ -18,9 +18,10 @@
         currentLang = lang;
     });
 
-    let username;
-    let password;
+    let username = "";
+    let password = "";
     let creatingAccount = false;
+    let canCreateAccount = false;
 
     async function createAccount() {
         const token = await Authentication.createAccount(username, password);
@@ -35,6 +36,33 @@
         createAccount().finally(() => {
             creatingAccount = false;
         });
+    }
+
+    function checkIfValid() {
+        const usernameDoesNotMeetLength = username.length < 3 || username.length > 20;
+
+        const usernameHasIllegalChars = Boolean(username.match(/[^a-z0-9\-_]/i));
+
+        const userCheck = usernameDoesNotMeetLength || usernameHasIllegalChars;
+
+        console.log("username:", usernameDoesNotMeetLength, usernameHasIllegalChars);
+
+        const passwordDoesNotMeetLength = password.length < 8 || password.length > 50;
+        const passwordMeetsTextInclude = Boolean(password.match(/[a-z]/) && password.match(/[A-Z]/));
+        const passwordMeetsSpecialInclude = Boolean(password.match(/[0-9]/) && password.match(/[^a-z0-9]/i));
+
+        console.log("password:", passwordDoesNotMeetLength, passwordMeetsTextInclude, passwordMeetsSpecialInclude);
+
+        const passwordCheck = passwordDoesNotMeetLength || !(passwordMeetsTextInclude && passwordMeetsSpecialInclude);
+
+        canCreateAccount = !(userCheck || passwordCheck);
+
+        console.log(userCheck, passwordCheck);
+        console.log(canCreateAccount);
+
+        return canCreateAccount;
+
+        // TODO: make a little box or smth that shows what is wrong next to the box
     }
 </script>
     
@@ -74,6 +102,7 @@
             type="text"
             placeholder="Use something iconic!"
             maxlength="20"
+            on:change={checkIfValid}
         />
         <span class="input-title">Password</span>
         <input
@@ -81,8 +110,9 @@
             type="password"
             placeholder="Remember to write it down!"
             maxlength="50"
+            on:change={checkIfValid}
         />
-        <button class="create-acc" on:click={createAccountSafe}>
+        <button class="create-acc" data-canCreate={canCreateAccount} on:click={createAccountSafe}>
             {#if creatingAccount}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}
@@ -150,13 +180,22 @@
         flex-direction: row;
         align-items: center;
         justify-content: center;
-
-        cursor: pointer;
         border: 1px solid rgba(0, 0, 0, 0.2);
-        background: #00c3ff;
-        color: white;
         font-size: 18px;
     }
+    
+    .create-acc[data-canCreate=true] {
+        background: #00c3ff;
+        cursor: pointer;
+        color: white;
+    }
+
+    .create-acc[data-canCreate=false] {
+        background: #2a4e58;
+        color: rgb(99, 99, 99);
+        cursor: default;
+    }
+
     .create-acc {
         transition-duration: 0.3s;
         transition-timing-function: cubic-bezier(0, 0, 0.24, 1.83);
