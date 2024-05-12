@@ -9,6 +9,7 @@
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import Language from "../../resources/language.js";
     import Authentication from "../../resources/authentication.js";
+    import { page } from '$app/stores';
     
     let currentLang = "en";
     onMount(() => {
@@ -25,15 +26,24 @@
 
     async function createAccount() {
         const token = await Authentication.createAccount(username, password);
-        alert("Account created");
         
         localStorage.setItem("username", username);
         localStorage.setItem("token", token);
     }
     const createAccountSafe = () => {
-        if (creatingAccount) return;
+        if (creatingAccount || !canCreateAccount) return;
         creatingAccount = true;
-        createAccount().finally(() => {
+        createAccount()
+        .then(() => {
+            // redirect
+            const redir = $page.url.searchParams.get('redirect');
+        
+            window.location.href = redir ? redir : "https://penguinmod.com";
+        }, (err) => {
+            canCreateAccount = false;
+            console.log(`error: ${err}`)
+        })
+        .finally(() => {
             creatingAccount = false;
         });
     }
@@ -45,20 +55,13 @@
 
         const userCheck = usernameDoesNotMeetLength || usernameHasIllegalChars;
 
-        console.log("username:", usernameDoesNotMeetLength, usernameHasIllegalChars);
-
         const passwordDoesNotMeetLength = password.length < 8 || password.length > 50;
         const passwordMeetsTextInclude = Boolean(password.match(/[a-z]/) && password.match(/[A-Z]/));
         const passwordMeetsSpecialInclude = Boolean(password.match(/[0-9]/) && password.match(/[^a-z0-9]/i));
 
-        console.log("password:", passwordDoesNotMeetLength, passwordMeetsTextInclude, passwordMeetsSpecialInclude);
-
         const passwordCheck = passwordDoesNotMeetLength || !(passwordMeetsTextInclude && passwordMeetsSpecialInclude);
 
         canCreateAccount = !(userCheck || passwordCheck);
-
-        console.log(userCheck, passwordCheck);
-        console.log(canCreateAccount);
 
         return canCreateAccount;
 
