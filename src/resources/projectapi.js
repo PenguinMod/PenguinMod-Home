@@ -312,7 +312,7 @@ class ProjectApi {
     }
     getMessageCount() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/getMessageCount?username=${this.username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/users/getmessagecount?username=${this.username}&token=${this.token}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {

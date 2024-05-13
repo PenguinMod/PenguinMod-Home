@@ -59,32 +59,25 @@
 		}
 		Authentication.usernameFromCode(username, token)
 			.then(
-				({ username, isAdmin: isAdminn, isApprover: isApproverr }) => {
+				({ isAdmin: isAdminn, isApprover: isApproverr }) => {
+					loggedIn = true;
+					accountUsername = username;
+					isAdmin = isAdminn;
+					isApprover = isApproverr;
+					ProjectClient.setUsername(username);
+					ProjectClient.setToken(token);
+					ProjectClient.setAdmin(isAdminn);
+					ProjectClient.getMessageCount().then((amount) => {
+						messageCount = amount;
+					});
 					if (username) {
-						loggedIn = true;
-						accountUsername = username;
-						isAdmin = isAdminn;
-						isApprover = isApproverr;
-						if (username) ProjectClient.setUsername(username);
-						if (privateCode)
-							ProjectClient.setToken(privateCode);
-						ProjectClient.setAdmin(isAdminn);
-						ProjectClient.getMessageCount().then((amount) => {
-							messageCount = amount;
+						ProjectApi.getProfile(username).then((profile) => {
+							canRankUp = profile.canrankup === true;
 						});
-						if (username) {
-							ProjectApi.getProfile(username).then((profile) => {
-								canRankUp = profile.canrankup === true;
-							});
-						}
-						return;
 					}
-					loggedIn = false;
-					canRankUp = false;
-					messageCount = 0;
 				}
 			)
-			.catch(() => {
+			.catch((err) => {
 				loggedIn = false;
 				canRankUp = false;
 				messageCount = 0;

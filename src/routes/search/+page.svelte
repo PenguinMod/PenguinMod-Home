@@ -24,6 +24,7 @@
     let requestFailed = false;
     let page = 0;
     let pageIsLast = false;
+    let searchType = "project";
 
     const validTagPrefixes = ["studio", "user", "featured", "sort"];
 
@@ -35,6 +36,7 @@
         switch (query) {
             case "user":
                 const userQuery = searchQuery.split(":");
+                searchType = "user";
 
                 userQuery.shift();
 
@@ -136,9 +138,27 @@
     </div>
 
     <div class="section-projects">
-        {#if projects[0] !== "notfound"}
+        {#if projects[0] !== "notfound" && searchType === "project"}
             {#each projects as project}
                 <Project {...project} />
+            {:else}
+                <!-- projects.length === 0 -->
+                <div style="margin-top: 16px;">
+                    <LoadingSpinner enableTips={true} />
+                </div>
+            {/each}
+        {:else if projects[0] !== "notfound" && searchType === "user"}
+            {#each projects as project}
+                <a href={`/profile?user=${project.username}`} class="user-block">
+                    <img
+                        src={`${LINK.projects}api/v1/users/getpfp?username=${project.username}`}
+                        alt="User Avatar"
+                        class="profile-picture"
+                    />
+                    <p>
+                        {project.username}
+                    </p>
+                </a>
             {:else}
                 <!-- projects.length === 0 -->
                 <div style="margin-top: 16px;">
@@ -230,4 +250,24 @@
         align-items: center;
         justify-content: center;
     }
+
+    .user-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 16px;
+        text-align: center;
+        text-decoration: none;
+        color: #d6d6d6;
+        background-color: #464646;
+        padding: 16px;
+        border-radius: 8px;
+    }
+
+    .profile-picture {
+		border-radius: 4px;
+		width: 100px;
+        height: 100px;
+	}
 </style>
