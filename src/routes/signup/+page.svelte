@@ -14,6 +14,12 @@
     let currentLang = "en";
     onMount(() => {
         Language.forceUpdate();
+
+        darkMode = localStorage.getItem("darkmode") === "true";
+
+        setInterval(() => {
+            darkMode = localStorage.getItem("darkmode") === "true";
+        }, 100);
     });
     Language.onChange((lang) => {
         currentLang = lang;
@@ -23,6 +29,7 @@
     let password = "";
     let creatingAccount = false;
     let canCreateAccount = false;
+    let darkMode = false;
 
     async function createAccount() {
         const token = await Authentication.createAccount(username, password);
@@ -156,7 +163,11 @@
             <div class="gsi-material-button-state"></div>
             <div class="gsi-material-button-content-wrapper">
                 <div class="gsi-material-button-icon">
-                    <img src="/github-mark/github-mark-white.svg" alt="github" style="display: block;width:20px;height:20px;" >
+                    {#if darkMode}
+                        <img src="/github-mark/github-mark-white.svg" alt="github" style="display: block;width:20px;height:20px;" >
+                    {:else}
+                        <img src="/github-mark/github-mark.svg" alt="github" style="display: block;width:20px;height:20px;" >
+                    {/if}
                 </div>
                 <span class="gsi-material-button-contents">Sign up with Github</span>
                 <span style="display: none;">Sign up with Github</span>
