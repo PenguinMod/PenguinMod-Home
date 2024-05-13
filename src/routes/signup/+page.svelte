@@ -68,14 +68,7 @@
         // TODO: make a little box or smth that shows what is wrong next to the box
     }
 
-    function googleOAuth() {
-        let iframe = window.open("http://localhost:8080/api/v1/users/createoauthaccount?method=google", "Sign up with Google", "width=500,height=500");
-
-        if (!iframe) {
-            alert("Please enable popups to sign up with Google.");
-            return;
-        }
-
+    function addOAuthEventListener() {
         window.addEventListener("message", (event) => {
             if (event.origin !== "http://localhost:8080") return;
             
@@ -90,6 +83,28 @@
 
             location.href = redir ? redir : "http://localhost:5173";
         });
+    }
+
+    function googleOAuth() {
+        let iframe = window.open("http://localhost:8080/api/v1/users/createoauthaccount?method=google", "Sign up with Google", "width=500,height=500");
+
+        if (!iframe) {
+            alert("Please enable popups to sign up with Google.");
+            return;
+        }
+
+        addOAuthEventListener();
+    }
+
+    function githubOAuth() {
+        let iframe = window.open("http://localhost:8080/api/v1/users/createoauthaccount?method=github", "Sign up with Github", "width=500,height=500");
+
+        if (!iframe) {
+            alert("Please enable popups to sign up with Github.");
+            return;
+        }
+
+        addOAuthEventListener();
     }
 </script>
     
@@ -134,6 +149,17 @@
                 </div>
                 <span class="gsi-material-button-contents">Sign up with Google</span>
                 <span style="display: none;">Sign up with Google</span>
+            </div>
+        </button>
+
+        <button class="gsi-material-button" on:click={githubOAuth}>
+            <div class="gsi-material-button-state"></div>
+            <div class="gsi-material-button-content-wrapper">
+                <div class="gsi-material-button-icon">
+                    <img src="/github-mark/github-mark-white.svg" alt="github" style="display: block;width:20px;height:20px;" >
+                </div>
+                <span class="gsi-material-button-contents">Sign up with Github</span>
+                <span style="display: none;">Sign up with Github</span>
             </div>
         </button>
     
@@ -328,7 +354,8 @@
         white-space: nowrap;
         width: auto;
         max-width: 400px;
-        min-width: min-content;
+        min-width: 188px;
+        margin-bottom: 8px;
     }
 
     :global(body.dark-mode) .gsi-material-button {
