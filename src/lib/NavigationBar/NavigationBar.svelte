@@ -94,7 +94,17 @@
 		const username = localStorage.getItem("username")
 		const token = localStorage.getItem("token");
 		fetch(
-			`${LINK.projects}api/c1/users/logout?username=${username}&token=${token}`
+			`${LINK.projects}api/v1/users/logout`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					username: username,
+					token: token,
+				})
+			}
 		).then((res) => {
 			if (!res.ok) return;
 			localStorage.removeItem("token");

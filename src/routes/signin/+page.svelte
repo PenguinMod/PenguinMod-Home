@@ -10,7 +10,6 @@
     import Language from "../../resources/language.js";
     import Authentication from "../../resources/authentication.js";
     import { page } from '$app/stores';
-    import ChecksBox from "$lib/ChecksBox/ChecksBox.svelte";
 
     let currentLang = "en";
     onMount(() => {
@@ -21,8 +20,6 @@
         setInterval(() => {
             darkMode = localStorage.getItem("darkmode") === "true";
         }, 100);
-
-        checkIfValid();
     });
     Language.onChange((lang) => {
         currentLang = lang;
@@ -30,84 +27,32 @@
 
     let username = "";
     let password = "";
-    let creatingAccount = false;
-    let canCreateAccount = false;
+    let logginIn = false;
     let darkMode = false;
-    let focused = "";
 
-    const usernameRequirements = [
-        {name: "Length is between 3 and 20 characters", value: false},
-        {name: "Contains only letters, numbers, hyphens, and underscores", value: false},
-        {name: "Username is not taken", value: false}
-    ]
-
-    const passwordRequirements = [
-        {name: "Length is between 8 and 50 characters", value: false},
-        {name: "Contains at least one uppercase and one lowercase letter", value: false},
-        {name: "Contains at least one number and one special character", value: false}
-    ]
-
-    async function createAccount() {
-        const token = await Authentication.createAccount(username, password);
+    async function login() {
+        const token = await Authentication.verifyPassword(username, password);
         
         localStorage.setItem("username", username);
         localStorage.setItem("token", token);
     }
-    const createAccountSafe = () => {
-        if (creatingAccount || !canCreateAccount) return;
-        creatingAccount = true;
-        createAccount()
+
+    const LoginAccountSafe = () => {
+        if (logginIn) return;
+        logginIn = true;
+        login()
         .then(() => {
             // redirect
             const redir = $page.url.searchParams.get('redirect');
         
             window.location.href = redir ? redir : "http://localhost:5173";
         }, (err) => {
-            canCreateAccount = false;
+            canLoginAccount = false;
             console.log(`error: ${err}`)
         })
         .finally(() => {
-            creatingAccount = false;
+            logginIn = false;
         });
-    }
-
-    async function checkIfValid() {
-        const usernameDoesNotMeetLength = username.length < 3 || username.length > 20;
-
-        const usernameHasIllegalChars = Boolean(username.match(/[^a-z0-9\-_]/i));
-
-        const userCheck = usernameDoesNotMeetLength || usernameHasIllegalChars;
-
-        const passwordDoesNotMeetLength = password.length < 8 || password.length > 50;
-        const passwordMeetsTextInclude = Boolean(password.match(/[a-z]/) && password.match(/[A-Z]/));
-        const passwordMeetsSpecialInclude = Boolean(password.match(/[0-9]/) && password.match(/[^a-z0-9]/i));
-
-        const passwordCheck = passwordDoesNotMeetLength || !(passwordMeetsTextInclude && passwordMeetsSpecialInclude);
-
-        passwordRequirements[0].value = !passwordDoesNotMeetLength;
-        passwordRequirements[1].value = passwordMeetsTextInclude;
-        passwordRequirements[2].value = passwordMeetsSpecialInclude;
-
-        if (!username) {
-            usernameRequirements[0].value = false;
-            usernameRequirements[1].value = true;
-            usernameRequirements[2].value = true;
-
-            canCreateAccount = false;
-            return;
-        }
-
-        const uniqueUsername = !(await checkUsername() || false);
-
-        canCreateAccount = !(userCheck || passwordCheck) && !(await checkUsername() || false);
-
-        usernameRequirements[0].value = !usernameDoesNotMeetLength;
-        usernameRequirements[1].value = !usernameHasIllegalChars;
-        usernameRequirements[2].value = uniqueUsername;
-
-        return canCreateAccount;
-
-        // TODO: make a little box or smth that shows what is wrong next to the box
     }
 
     function addOAuthEventListener() {
@@ -128,10 +73,10 @@
     }
 
     function googleOAuth() {
-        let iframe = window.open("http://localhost:8080/api/v1/users/createoauthaccount?method=google", "Sign up with Google", "width=500,height=500");
+        let iframe = window.open("http://localhost:8080/api/v1/users/loginoauthaccount?method=google", "Login with Google", "width=500,height=500");
 
         if (!iframe) {
-            alert("Please enable popups to sign up with Google.");
+            alert("Please enable popups to login with Google.");
             return;
         }
 
@@ -139,42 +84,24 @@
     }
 
     function githubOAuth() {
-        let iframe = window.open("http://localhost:8080/api/v1/users/createoauthaccount?method=github", "Sign up with Github", "width=500,height=500");
+        let iframe = window.open("http://localhost:8080/api/v1/users/loginoauthaccount?method=github", "Login with Github", "width=500,height=500");
 
         if (!iframe) {
-            alert("Please enable popups to sign up with Github.");
+            alert("Please enable popups to login with Github.");
             return;
         }
 
         addOAuthEventListener();
     }
-
-    function checkUsername() {
-        let url = `http://localhost:8080/api/v1/users/userexists?username=${username}`;
-
-        return new Promise((resolve, reject) => {
-            fetch(url)
-            .then((res) => res.json())
-            .then((res) => {
-                if (res.exists) {
-                    canCreateAccount = false;
-                }
-                resolve(res.exists);
-            })
-            .catch((err) => {
-                reject(err);
-            });
-        });
-    }
 </script>
     
 <svelte:head>
-    <title>PenguinMod - Sign Up</title>
-    <meta name="title" content="PenguinMod - Sign Up" />
-    <meta property="og:title" content="PenguinMod - Sign Up" />
-    <meta property="twitter:title" content="PenguinMod - Sign Up">
-    <meta name="description" content="Sign up for PenguinMod to start sharing your projects!">
-    <meta property="twitter:description" content="Sign up for PenguinMod to start sharing your projects!">
+    <title>PenguinMod - Login</title>
+    <meta name="title" content="PenguinMod - Login" />
+    <meta property="og:title" content="PenguinMod - Login" />
+    <meta property="twitter:title" content="PenguinMod - Login">
+    <meta name="description" content="Login for PenguinMod to start sharing your projects!">
+    <meta property="twitter:description" content="Login for PenguinMod to start sharing your projects!">
     <meta property="og:url" content="https://penguinmod.com/signup">
     <meta property="twitter:url" content="https://penguinmod.com/signup">
 </svelte:head>
@@ -193,7 +120,7 @@
             />
         </div>
         <h1 style="margin-block:4px">PenguinMod</h1>
-        <p>Create your personal account</p>
+        <p>Login with your personal account</p>
 
         <button class="gsi-material-button" on:click={googleOAuth}>
             <div class="gsi-material-button-state"></div>
@@ -207,8 +134,8 @@
                         <path fill="none" d="M0 0h48v48H0z"></path>
                     </svg>
                 </div>
-                <span class="gsi-material-button-contents">Sign up with Google</span>
-                <span style="display: none;">Sign up with Google</span>
+                <span class="gsi-material-button-contents">Login with Google</span>
+                <span style="display: none;">Login with Google</span>
             </div>
         </button>
 
@@ -222,8 +149,8 @@
                         <img src="/github-mark/github-mark.svg" alt="github" style="display: block;width:20px;height:20px;" >
                     {/if}
                 </div>
-                <span class="gsi-material-button-contents">Sign up with Github</span>
-                <span style="display: none;">Sign up with Github</span>
+                <span class="gsi-material-button-contents">Login with Github</span>
+                <span style="display: none;">Login with Github</span>
             </div>
         </button>
     
@@ -234,37 +161,25 @@
         <input
             bind:value={username}
             type="text"
-            placeholder="Use something iconic!"
+            placeholder="Your username"
             maxlength="20"
-            on:input={checkIfValid}
-            on:focusin={() => focused = "username"}
-            on:focusout={() => focused = ""}
         />
         <span class="input-title">Password</span>
         <input
             bind:value={password}
             type="password"
-            placeholder="Remember to write it down!"
+            placeholder="Your password"
             maxlength="50"
-            on:input={checkIfValid}
-            on:focusin={() => focused = "password"}
-            on:focusout={() => focused = ""}
         />
-        <button class="create-acc" data-canCreate={canCreateAccount} on:click={createAccountSafe}>
-            {#if creatingAccount}
+        <button class="Login-acc" on:click={LoginAccountSafe}>
+            {#if logginIn}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}
-                Create
+                Login
             {/if}
         </button>
 
-        <a href="/signin" style="margin-top: 8px">Already have an account? Sign in here!</a>
-
-        {#if focused === "username"}
-            <ChecksBox items={usernameRequirements} />
-        {:else if focused === "password"}
-            <ChecksBox items={passwordRequirements} />
-        {/if}
+        <a href="/signup" style="margin-top: 8px">Don't have an account? Sign up here!</a>
     </main>
 </div>
     
@@ -323,49 +238,34 @@
         text-decoration: none;
     }
 
-    .create-acc {
+    .Login-acc {
         border-radius: 1024px;
         padding: 4px 8px;
         width: 60%;
         margin-top: 4px;
-        
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: center;
         border: 1px solid rgba(0, 0, 0, 0.2);
         font-size: 18px;
-    }
-    
-    .create-acc[data-canCreate=true] {
         background: #00c3ff;
         cursor: pointer;
         color: white;
     }
 
-    :global(body.dark-mode) .create-acc[data-canCreate=false] {
-        background: #2a4e58;
-        color: rgb(99, 99, 99);
-        cursor: default;
-    }
-
-    .create-acc[data-canCreate=false] {
-        background: #2a4e58;
-        color: rgb(168, 168, 168);
-    }
-
-    .create-acc {
+    .Login-acc {
         transition-duration: 0.3s;
         transition-timing-function: cubic-bezier(0, 0, 0.24, 1.83);
         transition-property: transform;
     }
-    .create-acc:active {
+    .Login-acc:active {
         transform: scale(0.9);
         transition-duration: 0.1s;
         transition-timing-function: ease-out;
         transition-property: transform;
     }
-    .create-acc :global(div) :global(img) {
+    .Login-acc :global(div) :global(img) {
         width: 18px;
         height: 18px;
     }

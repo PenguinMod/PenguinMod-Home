@@ -18,12 +18,17 @@ class Authentication {
         });
     }
 
-    static passwordAuthenticate(username, password) {
-        const redirectUrl = `${ProjectApi.OriginApiUrl}/api/v1/users/passwordlogin?username=${username}&password=${password}`
+    static verifyPassword(username, password) {
+        const url = `${ProjectApi.OriginApiUrl}/api/v1/users/passwordlogin?username=${username}&password=${password}`;
 
-        // TODO: open a popup to login.
-        // Authentication.fireAuthenticated(username, token)
+        return new Promise((resolve, reject) => {
+            fetch(url).then(r => r.json().then(j => {
+                if (j.error) return reject(j.error);
+                resolve(j.token);
+            }).catch(reject)).catch(reject);
+        });
     }
+
 
     // DEPRECATED
     static authenticate() {
