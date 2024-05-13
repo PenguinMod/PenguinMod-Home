@@ -154,7 +154,8 @@
     }
 
     const getAndUpdateMyFeed = async () => {
-        const feed = await ProjectClient.getMyFeed();
+        console.log("update feed");
+        const feed = await ProjectClient.getMyFeed(0);
         if (feed.length <= 0) {
             feedIsEmpty = true;
         }
@@ -248,19 +249,18 @@
             loggedIn = false;
             return;
         }
-        Authentication.usernameFromCode(username, token)
-            .then(({ username }) => {
-                if (username) {
-                    loggedInUsername = username;
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(token);
-                    loggedIn = true;
-                    getAndUpdateMyFeed();
-                    return;
-                }
-                loggedIn = false;
+        Authentication.verifyToken(username, token)
+            .then(() => {
+                console.log("then");
+                loggedInUsername = username;
+                ProjectClient.setUsername(username);
+                ProjectClient.setToken(token);
+                loggedIn = true;
+                console.log("should update feed :idkman:")
+                getAndUpdateMyFeed();
             })
-            .catch(() => {
+            .catch((err) => {
+                console.log("catch", err);
                 loggedIn = false;
             });
     });
@@ -276,7 +276,7 @@
                 if (username) {
                     loggedInUsername = username;
                     ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(token);
+                    ProjectClient.setToken(token);
                     loggedIn = true;
                     getAndUpdateMyFeed();
                     return;

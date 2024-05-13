@@ -68,15 +68,10 @@ class Authentication {
 
     static verifyToken(username, token) {
         return new Promise((resolve, reject) => {
-            fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/tokenlogin`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ username, token })
-            }).then(r => r.json().then(j => {
+            fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/tokenlogin?username=${username}&token=${token}`)
+            .then(r => r.json().then(j => {
                 if (j.error) return reject(j.error);
-                resolve(j.token);
+                resolve();
             }).catch(reject)).catch(reject);
         });
     }

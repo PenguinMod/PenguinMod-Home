@@ -95,7 +95,7 @@
                             projectName = metadata.name;
                             projectMetadata = metadata;
                             ProjectClient.setUsername(username);
-                            ProjectClient.setPrivateCode(token);
+                            ProjectClient.setToken(token);
                             loggedIn = true;
                         })
                         .catch((err) => {

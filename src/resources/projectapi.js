@@ -134,7 +134,7 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((projectList) => {
-                        resolve(projectList.projects);
+                        resolve(projectList);
                     });
                 })
                 .catch((err) => {
@@ -219,7 +219,7 @@ class ProjectApi {
         })
     }
 
-    settoken(p) {
+    setToken(p) {
         this.token = p;
     }
     setUsername(u) {
@@ -275,7 +275,7 @@ class ProjectApi {
     }
     getMyFeed(page) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/getMyFeed?page=${page}&username=${this.username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/users/getMyFeed?page=${page}&username=${this.username}&token=${this.token}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -283,7 +283,7 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((feedList) => {
-                        const feed = feedList.items;
+                        const feed = feedList.feed;
                         resolve(feed);
                     });
                 })
@@ -330,7 +330,7 @@ class ProjectApi {
     }
     isFollowingUser(username, returnRawInfo) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/isFollowing?username=${this.username}&target=${username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/users/isfollowing?username=${this.username}&target=${username}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -347,14 +347,15 @@ class ProjectApi {
                 });
         });
     }
-    toggleFollowingUser(username) {
+    toggleFollowingUser(username, toggle) {
         return new Promise((resolve, reject) => {
             const data = {
                 username: this.username,
                 token: this.token,
-                target: username
+                target: username,
+                toggle
             };
-            const url = `${OriginApiUrl}/api/users/followToggle`;
+            const url = `${OriginApiUrl}/api/v1/users/follow`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
@@ -365,8 +366,8 @@ class ProjectApi {
                         res.text().then(reject);
                         return;
                     }
-                    res.json().then((info) => {
-                        resolve(info);
+                    res.json().then(() => {
+                        resolve();
                     });
                 })
                 .catch((err) => {

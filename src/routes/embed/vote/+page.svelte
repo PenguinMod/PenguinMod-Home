@@ -94,25 +94,21 @@
         const params = new URLSearchParams(location.search);
         const projId = numberCast(params.get("id"));
         projectId = projId;
-        const privateCode = localStorage.getItem("PV");
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
         
-        if (!privateCode) {
+        if (!token || !username) {
             loggedIn = false;
             updateVoteStates();
             return;
         }
-        Authentication.usernameFromCode(privateCode)
-            .then(({username, isAdmin, isApprover}) => {
-                if (username) {
-                    ProjectClient.setPrivateCode(privateCode);
-                    ProjectClient.setUsername(username);
-                    updateVoteStates();
-                    loggedIn = true;
-                    loggedInAdmin = isAdmin || isApprover;
-                    return;
-                }
-                loggedIn = false;
+        Authentication.usernameFromCode(username, token)
+            .then(({ isAdmin, isApprover }) => {
+                ProjectClient.setToken(token);
+                ProjectClient.setUsername(username);
                 updateVoteStates();
+                loggedIn = true;
+                loggedInAdmin = isAdmin || isApprover;
             })
             .catch(() => {
                 loggedIn = false;
@@ -132,7 +128,7 @@
     });
     // RTODO: change this
     Authentication.onAuthentication((privateCode) => {
-        ProjectClient.setPrivateCode(privateCode);
+        ProjectClient.setToken(privateCode);
         Authentication.usernameFromCode(privateCode).then(({username, isAdmin, isApprover}) => {
             if (username) {
                 ProjectClient.setUsername(username);

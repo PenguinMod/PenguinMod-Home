@@ -205,7 +205,7 @@
         const query = params.get("user");
         user = query;
 
-        ProjectApi.getUserProjects(user).then((projs) => {
+        ProjectApi.getUserProjects(user, 0).then((projs) => {
             projects.all = projs;
             projects.featured = projs.filter((p) => p.featured);
             if (projects.all.length <= 0) {
@@ -216,10 +216,13 @@
             }
             wasNotFound = false;
             ProjectApi.getProfile(user, true).then((proffile) => {
+                console.log("got profile")
                 fullProfile = proffile;
                 badges = fullProfile.badges;
                 isDonator = fullProfile.donator;
                 followerCount = fullProfile.followers;
+
+                console.log(fullProfile)
 
                 const profileFeatured = fullProfile.myFeaturedProject;
                 if (profileFeatured) {
@@ -235,6 +238,7 @@
                     profileFeaturedProject = projects.all[0];
                 }
             }).catch(err => {
+                console.log(err);
                 err = JSON.parse(err);
                 err = err.error;
                 if (err === 'NotFound') {
@@ -300,8 +304,8 @@
     let canClickFollow = true;
     const followUser = async () => {
         await waitForLogin();
-        const info = await ProjectClient.toggleFollowingUser(user);
-        isFollowingUser = info.following;
+        await ProjectClient.toggleFollowingUser(user, !isFollowingUser);
+        isFollowingUser = !isFollowingUser;
     };
     const safeFollowUser = async () => {
         if (!canClickFollow) return;
@@ -316,28 +320,22 @@
 
     // login code below
     onMount(async () => {
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+        if (!token || !username) {
             loggedIn = false;
             loggedInUser = "";
             loggedInAdmin = false;
             loggedInChange();
             return;
         }
-        Authentication.usernameFromCode(privateCode)
-            .then(({ username, isAdmin, isApprover }) => {
-                if (username) {
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
-                    loggedIn = true;
-                    loggedInUser = username;
-                    loggedInAdmin = isAdmin || isApprover;
-                    loggedInChange();
-                    return;
-                }
-                loggedIn = false;
-                loggedInUser = "";
-                loggedInAdmin = false;
+        Authentication.usernameFromCode(username, token)
+            .then(({ isAdmin, isApprover }) => {
+                ProjectClient.setUsername(username);
+                ProjectClient.setToken(token);
+                loggedIn = true;
+                loggedInUser = username;
+                loggedInAdmin = isAdmin || isApprover;
                 loggedInChange();
             })
             .catch(() => {
@@ -362,7 +360,7 @@
             .then(({ username, isAdmin, isApprover }) => {
                 if (username) {
                     ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
+                    ProjectClient.setToken(privateCode);
                     loggedIn = true;
                     loggedInUser = username;
                     loggedInAdmin = isAdmin || isApprover;
@@ -798,9 +796,7 @@
 
     {#if (projects.all.length > 0 && fetchedFullProfile) || isForceView}
         {#if
-            ((!(projects.all[0] !== "none" && wasNotFound))
-            && ((projects.all[0] !== "none" || isDonator || fullProfile.bio || isFollowingUser || fullProfile.rank > 0)
-            || (loggedIn && user === loggedInUser)))
+            !wasNotFound
             || isForceView
         }
         <div class="background">

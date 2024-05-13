@@ -67,7 +67,7 @@
 						isApprover = isApproverr;
 						if (username) ProjectClient.setUsername(username);
 						if (privateCode)
-							ProjectClient.setPrivateCode(privateCode);
+							ProjectClient.setToken(privateCode);
 						ProjectClient.setAdmin(isAdminn);
 						ProjectClient.getMessageCount().then((amount) => {
 							messageCount = amount;

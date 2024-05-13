@@ -26,58 +26,29 @@
     let pageIsLast = false;
 
     const validTagPrefixes = ["studio", "user", "featured", "sort"];
-    const tagFilterFunction = (word) => {
-        const startsWithTag = validTagPrefixes.some((value) => {
-            return String(word).startsWith(`${value}:`);
-        });
-        if (startsWithTag) {
-            // ex: "studio: abc" should count as searching for abc ONLY
-            return !String(word).endsWith(":");
-        }
-    };
 
     const fetchNewProjects = () => {
-        let api = "";
-        if (searchQuery.trim() === "all:projects") {
-            api = `${LINK.projects}api/projects/search?page=${page}`;
-        } else {
-            // todo: parse tags & apply properly
-            const split = searchQuery.split(" ");
-            const textContent = split.filter((...args) => {
-                return !tagFilterFunction(...args);
-            });
-            const tags = split.filter(tagFilterFunction);
-            const realQuery = textContent.join(" ");
+        let api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(searchQuery)}`;
 
-            // add to query params
-            let queryExtra = "";
-            for (const tag of tags) {
-                if (tag.startsWith("user")) {
-                    queryExtra += `&user=${tag.replace("user:", "")}`;
-                }
-                if (tag.startsWith("sort")) {
-                    queryExtra += `&sortby=${tag.replace("sort:", "")}`;
-                }
-                if (tag.startsWith("featured")) {
-                    const value = tag.replace("featured:", "");
-                    const exclude = value === "false" || value === "exclude";
-                    queryExtra += `&featured=${exclude ? "exclude" : "true"}`;
-                }
-            }
+        const query = searchQuery.split(":", 1)[0]
 
-            api = `${
-                LINK.projects
-            }api/projects/search?page=${page}${queryExtra}&includes=${encodeURIComponent(
-                realQuery
-            )}`;
+        switch (query) {
+            case "user":
+                const userQuery = searchQuery.split(":");
+
+                userQuery.shift();
+
+                console.log(userQuery.join());
+
+                api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}`;
+                break;
         }
 
         fetch(api)
             .then((response) => {
                 response
                     .json()
-                    .then((projectListResult) => {
-                        const result = projectListResult.projects;
+                    .then((result) => {
                         projects.push(...result);
                         projects = projects;
                         if (projects.length <= 0) {
@@ -100,7 +71,7 @@
     onMount(() => {
         const params = new URLSearchParams(location.search);
         const query = params.get("q");
-        searchQuery = query;
+        searchQuery = query ? query : "";
 
         fetchNewProjects();
     });

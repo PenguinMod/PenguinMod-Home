@@ -88,19 +88,16 @@
             });
         }
 
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+        if (!token || !username) {
             loggedIn = false;
         }
-        Authentication.usernameFromCode(privateCode)
-            .then(({ username }) => {
-                if (username) {
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
-                    loggedIn = true;
-                    return;
-                }
-                loggedIn = false;
+        Authentication.usernameFromCode(username, token)
+            .then(() => {
+                ProjectClient.setUsername(username);
+                ProjectClient.setToken(token);
+                loggedIn = true;
             })
             .catch(() => {
                 loggedIn = false;
@@ -248,7 +245,7 @@
             .then(({ username }) => {
                 if (username) {
                     ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
+                    ProjectClient.setToken(privateCode);
                     loggedIn = true;
                     return;
                 }

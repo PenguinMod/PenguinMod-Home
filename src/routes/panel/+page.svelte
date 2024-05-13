@@ -37,12 +37,13 @@
     }
 
     onMount(() => {
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+        if (!token || !username) {
             loggedIn = false;
-            kickOut(true);
             return;
         }
+
         ProjectApi.getServerInfo()
             .then((stats) => {
                 serverStats.push(`is new: ${stats.new ? 'yes' : 'no'}`)
@@ -58,20 +59,15 @@
             .catch((err) => {
                 console.error(err);
             });
-        Authentication.usernameFromCode(privateCode)
-            .then(({ username, isAdmin, isApprover }) => {
-                if (username) {
-                    if (!isAdmin && !isApprover) {
-                        kickOut(false);
-                        return;
-                    }
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
-                    loggedIn = true;
+        Authentication.usernameFromCode(username, token)
+            .then(({ isAdmin, isApprover }) => {
+                if (!isAdmin && !isApprover) {
+                    kickOut(false);
                     return;
                 }
-                loggedIn = false;
-                kickOut(true);
+                ProjectClient.setUsername(username);
+                ProjectClient.setToken(token);
+                loggedIn = true;
             })
             .catch(() => {
                 loggedIn = false;

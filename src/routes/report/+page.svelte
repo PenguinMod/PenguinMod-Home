@@ -184,25 +184,37 @@
 
         pageDetails.loaded = true;
 
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
+        /*
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+        if (!token || !username) {
+            loggedIn = false;
+            return;
+        }
+        Authentication.usernameFromCode(username, token)
+            .then(() => {
+                loggedIn = true;
+                loggedInChange(username, token);
+            })
+            .catch(() => {
+                loggedIn = false;
+            });
+        */
+
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+        if (!token || !username) {
             loggedIn = false;
             loggedInUser = "";
             loggedInChange();
             return;
         }
-        Authentication.usernameFromCode(privateCode)
-            .then(({ username }) => {
-                if (username) {
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
-                    loggedIn = true;
-                    loggedInUser = username;
-                    loggedInChange();
-                    return;
-                }
-                loggedIn = false;
-                loggedInUser = "";
+        Authentication.usernameFromCode(username, token)
+            .then(() => {
+                ProjectClient.setUsername(username);
+                ProjectClient.setToken(token);
+                loggedIn = true;
+                loggedInUser = username;
                 loggedInChange();
             })
             .catch(() => {
@@ -224,7 +236,7 @@
             .then(({ username }) => {
                 if (username) {
                     ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
+                    ProjectClient.setToken(privateCode);
                     loggedIn = true;
                     loggedInUser = username;
                     loggedInChange();

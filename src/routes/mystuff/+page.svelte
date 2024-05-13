@@ -70,7 +70,7 @@
 
     function loggedInChange(username, privateCode) {
         if (username) ProjectClient.setUsername(username);
-        if (privateCode) ProjectClient.setPrivateCode(privateCode);
+        if (privateCode) ProjectClient.setToken(privateCode);
         projects = [];
         ProjectClient.getMyProjects()
             .then((projectss) => {
@@ -107,19 +107,16 @@
     }
 
     onMount(async () => {
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+        if (!token || !username) {
             loggedIn = false;
             return;
         }
-        Authentication.usernameFromCode(privateCode)
-            .then(({username}) => {
-                if (username) {
-                    loggedIn = true;
-                    loggedInChange(username, privateCode);
-                    return;
-                }
-                loggedIn = false;
+        Authentication.usernameFromCode(username, token)
+            .then(() => {
+                loggedIn = true;
+                loggedInChange(username, token);
             })
             .catch(() => {
                 loggedIn = false;
