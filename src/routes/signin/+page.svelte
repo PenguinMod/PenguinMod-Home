@@ -25,41 +25,58 @@
     let loggingIn = false;
     let embed = false;
 
+    let showingPassword = false;
+
+    let wrongInfo = false;
+
+    const togglePasswordView = () => {
+        showingPassword = !showingPassword;
+    };
+
     async function login() {
         const token = await Authentication.verifyPassword(username, password);
-        
-        localStorage.setItem("username", username);
-        localStorage.setItem("token", token);
+
+        if (token) {
+            localStorage.setItem("username", username);
+            localStorage.setItem("token", token);
+            return true;
+        }
+
+        return false;
     }
 
     const LoginAccountSafe = () => {
         if (loggingIn) return;
         loggingIn = true;
         login()
-        .then(() => {
-            if (embed) {
-                const opener = window.opener || window.parent;
+        .then((success) => {
+            if (success) {
+                if (embed) {
+                    const opener = window.opener || window.parent;
 
-                function post(data) {
-                    opener.postMessage(
-                        data,
-                        `http://localhost:5173`
-                    );
+                    function post(data) {
+                        opener.postMessage(
+                            data,
+                            `http://localhost:5173`
+                        );
+                    }
+
+                    post();
+
+                    window.close();
+                    return;
                 }
 
-                post();
-
-                window.close();
-                return;
+                // redirect
+                const redir = $page.url.searchParams.get('redirect');
+            
+                window.location.href = redir ? redir : "http://localhost:5173";
             }
-
-            // redirect
-            const redir = $page.url.searchParams.get('redirect');
-        
-            window.location.href = redir ? redir : "http://localhost:5173";
+            else {
+                wrongInfo = true;
+            }
         }, (err) => {
-            canLoginAccount = false;
-            console.log(`error: ${err}`)
+            wrongInfo = true;
         })
         .finally(() => {
             loggingIn = false;
@@ -193,24 +210,29 @@
                 <span style="display: none;">Login with Scratch</span>
             </div>
         </button>
-    
-        <!-- TODO: list username & password requirements,
-        should only appear if the inputs are focused & will have checkmarks
-        that enable next to them when sufficed -->
+
         <span class="input-title">Username</span>
         <input
             bind:value={username}
             type="text"
-            placeholder="Your username"
+            placeholder="Use something iconic!"
             maxlength="20"
+            on:input={() => wrongInfo = false}
         />
         <span class="input-title">Password</span>
-        <input
-            bind:value={password}
-            type="password"
-            placeholder="Your password"
-            maxlength="50"
-        />
+        <div class="password-wrapper">
+            <input
+                type={showingPassword ? "text" : "password"}
+                placeholder="Remember to write it down!"
+                maxlength="50"
+                on:input={() => wrongInfo = false}
+            />
+            <button
+                class="password-show invert-on-dark"
+                data-visible={showingPassword}
+                on:click={togglePasswordView}
+            />
+        </div>
         <button class="Login-acc" on:click={LoginAccountSafe}>
             {#if loggingIn}
                 <LoadingSpinner icon="/loading_white.png" />
@@ -220,6 +242,10 @@
         </button>
 
         <a href="/signup?embed={embed}" style="margin-top: 8px">Don't have an account? Sign up here!</a>
+
+        {#if wrongInfo}
+            <p style="color: red;margin-bottom:0;">Hm. That doesn't seem quite right. Try again.</p>
+        {/if}
     </main>
 </div>
     
@@ -234,12 +260,11 @@
         top: 0px;
         width: 100%;
         min-width: 1000px;
-        margin-top: 100px;
+        margin-top: 48px;
     }
 
-    /* TODO: RTL language support as this just looks weird in RTL */
     main {
-        margin: 0 calc(35% - 16px);
+        margin: 0 calc(35% - 33px);
         padding: 32px;
         width: 30%;
 
@@ -254,13 +279,28 @@
     }
     main input {
         width: 60%;
-        margin-bottom: 4px;
-        border-radius: 6px;
+        margin-bottom: 8px;
+        border-radius: 8px;
         border: 1px solid rgba(0, 0, 0, 0.5);
+        padding: 4px;
+        font-size: large;
+        outline: unset;
     }
-    main input::placeholder {
-        font-size: 11px;
+    .password-wrapper {
+        width: 60%;
+        margin-left: -10px;
+        margin-bottom: 8px;
+        position: relative;
     }
+    .password-wrapper input {
+        width: 100%;
+        margin-bottom: 0;
+    }
+    :global(html[dir="rtl"]) .password-wrapper {
+        margin-right: -10px;
+        margin-left: initial;
+    }
+
     .input-title {
         width: calc(60% + 8px);
         font-size: small;
@@ -270,6 +310,36 @@
         border-color: rgba(255, 255, 255, 0.3);
         border-radius: 8px;
         background: #111;
+    }
+    :global(body.dark-mode) main input {
+        border-color: rgba(255, 255, 255, 0.3);
+        background: #111;
+        color: white;
+    }
+
+    .password-show {
+        position: absolute;
+        right: -4px;
+        top: 4px;
+        width: 24px;
+        height: calc(100% - 8px);
+        border: 0;
+        background: transparent;
+        background-image: url('account/showpassword.svg');
+        background-size: 100% 100%;
+        opacity: 0.7;
+        cursor: pointer;
+    }
+    .password-show[data-visible="true"] {
+        background-image: url('account/hidepassword.svg');
+        background-size: 100% 100%;
+    }
+    :global(body.dark-mode) .invert-on-dark {
+        filter: invert(1);
+    }
+    :global(html[dir="rtl"]) .password-show {
+        right: initial;
+        left: -4px;
     }
 
     :global(body.dark-mode) .invert-on-dark {

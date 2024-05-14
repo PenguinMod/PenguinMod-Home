@@ -181,7 +181,7 @@
     }
 
     function oauthFrame(method) {
-        return window.open(`http://localhost:8080/api/v1/users/createoauthaccount?method=${method}`, `Sign up with ${method}`, "width=500,height=500");
+        let iframe = window.open(`http://localhost:8080/api/v1/users/createoauthaccount?method=${method}`, `Sign up with ${method}`, "width=500,height=500");
 
         if (!iframe) {
             alert(`Please enable popups to sign up with ${method}.`);

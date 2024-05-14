@@ -23,7 +23,7 @@ class Authentication {
 
         return new Promise((resolve, reject) => {
             fetch(url).then(r => r.json().then(j => {
-                if (j.error) return reject(j.error);
+                if (j.error) return resolve(false);
                 resolve(j.token);
             }).catch(reject)).catch(reject);
         });
