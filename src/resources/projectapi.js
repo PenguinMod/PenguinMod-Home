@@ -306,6 +306,7 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((messageList) => {
+                        console.log(messageList);
                         resolve(messageList.messages);
                     });
                 })
@@ -323,8 +324,8 @@ class ProjectApi {
                         res.text().then(reject);
                         return;
                     }
-                    res.text().then((count) => {
-                        resolve(Number(count));
+                    res.json().then((count) => {
+                        resolve(count.count);
                     });
                 })
                 .catch((err) => {
@@ -332,6 +333,26 @@ class ProjectApi {
                 });
         });
     }
+
+    getUnreadMessageCount() {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/v1/users/getunreadmessagecount?username=${this.username}&token=${this.token}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((count) => {
+                        resolve(count.count);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+
     isFollowingUser(username, returnRawInfo) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/users/isfollowing?username=${this.username}&target=${username}`;
@@ -379,16 +400,18 @@ class ProjectApi {
                 });
         })
     }
-    readMessages(id) {
+    readMessage(id) {
         return new Promise((resolve, reject) => {
             const data = {
                 username: this.username,
                 token: this.token,
+                messageID: id
             };
-            if (typeof id !== 'undefined') {
-                data.id = String(id);
+            if (typeof id !== 'string') {
+                reject();
+                return;
             }
-            const url = `${OriginApiUrl}/api/users/markMessagesAsRead`;
+            const url = `${OriginApiUrl}/api/v1/users/markMessageAsRead`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),

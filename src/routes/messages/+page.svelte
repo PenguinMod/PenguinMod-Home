@@ -51,8 +51,9 @@
             if (messagess.length < 12) {
                 pageIsLast = true;
             }
-            messages.push(...messagess);
+            //messages.push(...messagess);
             messages = messages;
+            console.log(messages, "messages")
         });
     }
 
@@ -67,6 +68,7 @@
                     return;
                 }
                 messages = messagess;
+                console.log(messages, "messages2")
                 if (messages.length < 12) {
                     pageIsLast = true;
                 }
@@ -150,7 +152,7 @@
                 return;
             }
         }
-        ProjectClient.readMessages(id);
+        ProjectClient.readMessage(id);
         if (id) {
             readMessages.push(id);
         } else {
@@ -292,7 +294,7 @@
                         </h2>
                     {/if}
                     <!-- switch case would be ideal, but we dont have that -->
-                    {#if message.type === "reject"}
+                    {#if message.message.type === "reject"}
                         <p>
                             <b>
                                 {String(
@@ -387,7 +389,7 @@
                                 />
                             </button>
                         {/if}
-                    {:else if message.type === "featured"}
+                    {:else if message.message.type === "featured"}
                         <p>
                             <b>
                                 {String(
@@ -398,7 +400,7 @@
                                 ).replace("$1", message.name)}
                             </b> 🌟
                         </p>
-                    {:else if message.type === "followerAdded"}
+                    {:else if message.message.type === "followerAdded"}
                         <p>
                             {String(
                                 TranslationHandler.text(
@@ -407,7 +409,7 @@
                                 )
                             ).replace("$1", message.name)}
                         </p>
-                    {:else if message.type === "newBadge"}
+                    {:else if message.message.type === "newBadge"}
                         <p>
                             {String(
                                 TranslationHandler.text(
@@ -417,12 +419,12 @@
                             ).replace(
                                 "$1",
                                 TranslationHandler.text(
-                                    `profile.badge.${message.name}`,
+                                    `profile.badge.${message.message.badge}`,
                                     currentLang
                                 )
                             )}
                         </p>
-                    {:else if message.type === "remix"}
+                    {:else if message.message.type === "remix"}
                         <p>
                             <a
                                 href={`https://studio.penguinmod.com/#${message.remixId}`}
@@ -440,11 +442,11 @@
                                     .replace("__${{{___2", message.remixName)}
                             </a>
                         </p>
-                    {:else if message.type === "custom"}
+                    {:else if message.message.type === "custom"}
                         <p>
                             {message.text}
                         </p>
-                    {:else if message.type === "restored"}
+                    {:else if message.message.type === "restored"}
                         <p>
                             {String(
                                 TranslationHandler.text(
@@ -465,7 +467,7 @@
                                 />
                             </a>
                         </p>
-                    {:else if message.type === "ban"}
+                    {:else if message.message.type === "ban"}
                         <h3>
                             <LocalizedText
                                 text="Your account has been banned from uploading projects and other features. You can continue to use the editor or view other people's projects though."
@@ -497,7 +499,7 @@
                             </p>
                             <br />
                         {/if}
-                    {:else if message.type === "unban"}
+                    {:else if message.message.type === "unban"}
                         <p>
                             <LocalizedText
                                 text="Your account has been unbanned. You may upload projects again."
@@ -505,7 +507,7 @@
                                 lang={currentLang}
                             />
                         </p>
-                    {:else if message.type === "disputeResponse"}
+                    {:else if message.message.type === "disputeResponse"}
                         <h4>
                             <LocalizedText
                                 text="Reply from a moderator:"
@@ -530,7 +532,7 @@
                                 <br />
                             {/if}
                         </p>
-                    {:else if message.type === "guidelines"}
+                    {:else if message.message.type === "guidelines"}
                         <a
                             href="/{message.section === 'uploadingguidelines' ? 'guidelines/uploading' : message.section}"
                         >

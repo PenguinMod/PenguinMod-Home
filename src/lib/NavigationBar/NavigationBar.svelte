@@ -67,7 +67,7 @@
 					ProjectClient.setUsername(username);
 					ProjectClient.setToken(token);
 					ProjectClient.setAdmin(isAdminn);
-					ProjectClient.getMessageCount().then((amount) => {
+					ProjectClient.getUnreadMessageCount().then((amount) => {
 						messageCount = amount;
 					});
 					if (username) {

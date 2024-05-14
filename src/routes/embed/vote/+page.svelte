@@ -92,7 +92,7 @@
     }
     onMount(() => {
         const params = new URLSearchParams(location.search);
-        const projId = numberCast(params.get("id"));
+        const projId = String(params.get("id"));
         projectId = projId;
         const username = localStorage.getItem("username");
         const token = localStorage.getItem("token");
@@ -118,7 +118,7 @@
     });
     onMount(() => {
         const params = new URLSearchParams(location.search);
-        const projId = numberCast(params.get("id"));
+        const projId = String(params.get("id"));
         projectId = projId;
         ProjectApi.getProjectMeta(projId).then((data) => {
             likes = numberCast(data.loves);
