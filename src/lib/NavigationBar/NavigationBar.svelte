@@ -115,7 +115,9 @@
 		});
 	}
 	function login() {
-		Authentication.authenticate();
+		Authentication.authenticate().then(() => {
+			location.reload();
+		})
 	}
 
 	function switchTheme() {

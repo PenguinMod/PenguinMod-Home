@@ -820,7 +820,7 @@ class ProjectApi {
             username: this.username
         };
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/users/requestRankUp`, {
+            fetch(`${OriginApiUrl}/api/v1/users/requestrankup`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
                 method: "POST"

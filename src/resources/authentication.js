@@ -35,24 +35,11 @@ class Authentication {
             let login;
 
             const handleMessageReciever = (event) => {
-                if (event.origin !== ProjectApi.OriginApiUrl) {
-                    return;
-                }
-                const data = event.data;
-                if (!data) {
+                if (event.origin !== location.origin) {
                     return;
                 }
 
-                const username = data.username;
-                const token = data.token;
-
-                window.removeEventListener("message", handleMessageReciever);
-                login.close();
-
-                localStorage.setItem("SCAM-ALERT", "Do NOT send anyone your PV code! If someone told you to do this, stop now!");
-                localStorage.setItem("token", token);
-                Authentication.fireAuthenticated(username, token);
-                resolve(username, token);
+                resolve();
             };
 
             window.addEventListener("message", handleMessageReciever);

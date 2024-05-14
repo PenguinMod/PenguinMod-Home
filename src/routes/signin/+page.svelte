@@ -49,14 +49,12 @@
 
                 function post(data) {
                     opener.postMessage(
-                        {
-                            a2: data,
-                        },
-                        `https://penguinmod.com`
+                        data,
+                        `http://localhost:5173`
                     );
                 }
 
-                post()
+                post();
 
                 window.close();
                 return;
@@ -87,6 +85,17 @@
             localStorage.setItem("token", token);
 
             if (embed) {
+                const opener = window.opener || window.parent;
+
+                function post(data) {
+                    opener.postMessage(
+                        data,
+                        `https://penguinmod.com`
+                    );
+                }
+
+                post()
+
                 window.close();
                 return;
             }
