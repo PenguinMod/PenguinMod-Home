@@ -30,16 +30,15 @@
 
     function vote() {
         if (loggedIn === false) {
-            Authentication.authenticate().then((username, token) => {
-                Authentication.usernameFromCode(privateCode)
-                    .then(({username, isAdmin, isApprover}) => {
-                        if (username) {
-                            loggedIn = true;
-                            loggedInAdmin = isAdmin || isApprover;
-                            vote();
-                            return;
-                        }
-                        loggedIn = false;
+            Authentication.authenticate().then(() => {
+                const username = localStorage.getItem("username");
+                const token = localStorage.getItem("token");
+                Authentication.usernameFromCode(username, token)
+                    .then(({isAdmin, isApprover}) => {
+                        loggedIn = true;
+                        loggedInAdmin = isAdmin || isApprover;
+                        vote();
+                        return;
                     })
                     .catch(() => {
                         loggedIn = false;
@@ -53,16 +52,17 @@
     }
     function love() {
         if (loggedIn === false) {
-            Authentication.authenticate().then((privateCode) => {
-                Authentication.usernameFromCode(privateCode)
-                    .then(({username, isAdmin, isApprover}) => {
-                        if (username) {
-                            loggedIn = true;
-                            loggedInAdmin = isAdmin || isApprover;
-                            love();
-                            return;
-                        }
-                        loggedIn = false;
+            Authentication.authenticate().then(() => {
+                const username = localStorage.getItem("username");
+                const token = localStorage.getItem("token");
+                Authentication.usernameFromCode(username, token)
+                    .then(({isAdmin, isApprover}) => {
+                        loggedIn = true;
+                        loggedInAdmin = isAdmin || isApprover;
+                        ProjectClient.setUsername(username);
+                        ProjectClient.setToken(token);
+                        love();
+                        return;
                     })
                     .catch(() => {
                         loggedIn = false;

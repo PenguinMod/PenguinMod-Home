@@ -34,6 +34,7 @@
     let canCreateAccount = false;
     let darkMode = false;
     let focused = "";
+    let embed = false;
 
     const usernameRequirements = [
         {name: "Length is between 3 and 20 characters", value: false},
@@ -56,8 +57,25 @@
     const createAccountSafe = () => {
         if (creatingAccount || !canCreateAccount) return;
         creatingAccount = true;
+        
         createAccount()
         .then(() => {
+            if (embed) {
+                const opener = window.opener || window.parent;
+
+                function post(data) {
+                    opener.postMessage(
+                        data,
+                        `http://localhost:5173`
+                    );
+                }
+
+                post();
+
+                window.close();
+                return;
+            }
+
             // redirect
             const redir = $page.url.searchParams.get('redirect');
         
@@ -120,6 +138,22 @@
 
             localStorage.setItem("username", username);
             localStorage.setItem("token", token);
+
+            if (embed) {
+                const opener = window.opener || window.parent;
+
+                function post(data) {
+                    opener.postMessage(
+                        data,
+                        `http://localhost:5173`
+                    );
+                }
+
+                post();
+
+                window.close();
+                return;
+            }
 
             const redir = $page.url.searchParams.get('redirect');
 
@@ -274,7 +308,7 @@
             {/if}
         </button>
 
-        <a href="/signin" style="margin-top: 8px">Already have an account? Sign in here!</a>
+        <a href="/signin?embed={embed}" style="margin-top: 8px">Already have an account? Sign in here!</a>
 
         {#if focused === "username"}
             <ChecksBox items={usernameRequirements} />

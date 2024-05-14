@@ -137,8 +137,8 @@
     <meta property="twitter:title" content="PenguinMod - Login">
     <meta name="description" content="Login for PenguinMod to start sharing your projects!">
     <meta property="twitter:description" content="Login for PenguinMod to start sharing your projects!">
-    <meta property="og:url" content="https://penguinmod.com/signup">
-    <meta property="twitter:url" content="https://penguinmod.com/signup">
+    <meta property="og:url" content="https://penguinmod.com/signin">
+    <meta property="twitter:url" content="https://penguinmod.com/signin">
 </svelte:head>
     
 <NavigationBar />
@@ -229,7 +229,7 @@
             {/if}
         </button>
 
-        <a href="/signup" style="margin-top: 8px">Don't have an account? Sign up here!</a>
+        <a href="/signup?embed={embed}" style="margin-top: 8px">Don't have an account? Sign up here!</a>
     </main>
 </div>
     
