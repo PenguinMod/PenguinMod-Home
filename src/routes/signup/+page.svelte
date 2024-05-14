@@ -5,23 +5,16 @@
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
+    import ChecksBox from "$lib/ChecksBox/ChecksBox.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import Language from "../../resources/language.js";
     import Authentication from "../../resources/authentication.js";
     import { page } from '$app/stores';
-    import ChecksBox from "$lib/ChecksBox/ChecksBox.svelte";
 
     let currentLang = "en";
     onMount(() => {
         Language.forceUpdate();
-
-        darkMode = localStorage.getItem("darkmode") === "true";
-
-        setInterval(() => {
-            darkMode = localStorage.getItem("darkmode") === "true";
-        }, 100);
-
         checkIfValid();
     });
     Language.onChange((lang) => {
@@ -32,19 +25,23 @@
     let password = "";
     let creatingAccount = false;
     let canCreateAccount = false;
-    let darkMode = false;
+    let showingPassword = false;
     let focused = "";
 
+    let usernameValid = false;
+    let passwordValid = false;
+
     const usernameRequirements = [
-        {name: "Length is between 3 and 20 characters", value: false},
-        {name: "Contains only letters, numbers, hyphens, and underscores", value: false},
-        {name: "Username is not taken", value: false}
+        {name: "Is between 3 and 20 letters, numbers or symbols", value: false},
+        {name: "Has only letters (A-Z), numbers (0-9), hyphens (-), and underscores (_)", value: false},
+        {name: "Username is not already taken", value: false}
     ]
 
     const passwordRequirements = [
-        {name: "Length is between 8 and 50 characters", value: false},
-        {name: "Contains at least one uppercase and one lowercase letter", value: false},
-        {name: "Contains at least one number and one special character", value: false}
+        {name: "Is between 8 and 50 letters, numbers or symbols", value: false},
+        {name: "Has at least one uppercase and one lowercase letter", value: false},
+        {name: "Has at least one number", value: false},
+        {name: "Has at least one symbol", value: false},
     ]
 
     async function createAccount() {
@@ -54,7 +51,12 @@
         localStorage.setItem("token", token);
     }
     const createAccountSafe = () => {
-        if (creatingAccount || !canCreateAccount) return;
+        if (!canCreateAccount) {
+            alert("Your username or password do not meet the requirements needed to create an account.");
+            return;
+        }
+
+        if (creatingAccount) return;
         creatingAccount = true;
         createAccount()
         .then(() => {
@@ -79,36 +81,53 @@
         const userCheck = usernameDoesNotMeetLength || usernameHasIllegalChars;
 
         const passwordDoesNotMeetLength = password.length < 8 || password.length > 50;
-        const passwordMeetsTextInclude = Boolean(password.match(/[a-z]/) && password.match(/[A-Z]/));
-        const passwordMeetsSpecialInclude = Boolean(password.match(/[0-9]/) && password.match(/[^a-z0-9]/i));
+        const passwordMeetsTextInclude = password.match(/[a-z]/) && password.match(/[A-Z]/);
+        const passwordHasNumber = !!password.match(/[0-9]/);
+        const passwordMeetsSpecialInclude = !!password.match(/[^a-z0-9]/i);
 
         const passwordCheck = passwordDoesNotMeetLength || !(passwordMeetsTextInclude && passwordMeetsSpecialInclude);
 
         passwordRequirements[0].value = !passwordDoesNotMeetLength;
         passwordRequirements[1].value = passwordMeetsTextInclude;
-        passwordRequirements[2].value = passwordMeetsSpecialInclude;
+        passwordRequirements[2].value = passwordHasNumber;
+        passwordRequirements[3].value = passwordMeetsSpecialInclude;
+        passwordValid = !passwordCheck;
 
         if (!username) {
             usernameRequirements[0].value = false;
-            usernameRequirements[1].value = true;
+            usernameRequirements[1].value = false;
             usernameRequirements[2].value = true;
 
             canCreateAccount = false;
+            usernameValid = false;
             return;
         }
 
-        const uniqueUsername = !(await checkUsername() || false);
+        // TODO: unique username should show a loading icon & only gets checked every 1-2 seconds to avoid api spam for no real reason
+        let uniqueUsername = false;
+        try {
+            uniqueUsername = !(await checkUsername() || false);
+        } catch {
+            uniqueUsername = false;
+        }
 
-        canCreateAccount = !(userCheck || passwordCheck) && !(await checkUsername() || false);
+        canCreateAccount = !(userCheck || passwordCheck) && uniqueUsername;
+        usernameValid = uniqueUsername && !userCheck;
 
         usernameRequirements[0].value = !usernameDoesNotMeetLength;
         usernameRequirements[1].value = !usernameHasIllegalChars;
         usernameRequirements[2].value = uniqueUsername;
 
         return canCreateAccount;
-
-        // TODO: make a little box or smth that shows what is wrong next to the box
     }
+    function passwordInputChanged(event) {
+        password = event.target.value;
+        checkIfValid();
+    }
+
+    const togglePasswordView = () => {
+        showingPassword = !showingPassword;
+    };
 
     function addOAuthEventListener() {
         window.addEventListener("message", (event) => {
@@ -217,14 +236,15 @@
             <div class="gsi-material-button-state"></div>
             <div class="gsi-material-button-content-wrapper">
                 <div class="gsi-material-button-icon">
-                    {#if darkMode}
-                        <img src="/github-mark/github-mark-white.svg" alt="github" style="display: block;width:20px;height:20px;" >
-                    {:else}
-                        <img src="/github-mark/github-mark.svg" alt="github" style="display: block;width:20px;height:20px;" >
-                    {/if}
+                    <img
+                        src="/github-mark/github-mark.svg"
+                        alt="github"
+                        class="invert-on-dark"
+                        style="display: block;width:20px;height:20px;"
+                    />
                 </div>
-                <span class="gsi-material-button-contents">Sign up with Github</span>
-                <span style="display: none;">Sign up with Github</span>
+                <span class="gsi-material-button-contents">Sign up with GitHub</span>
+                <span style="display: none;">Sign up with GitHub</span>
             </div>
         </button>
 
@@ -232,40 +252,58 @@
             <div class="gsi-material-button-state"></div>
             <div class="gsi-material-button-content-wrapper">
                 <div class="gsi-material-button-icon">
-                    {#if darkMode}
-                        <img src="/Scratch_S.svg" alt="Scratch" style="display: block;width:20px;height:20px;" >
-                    {:else}
-                        <img src="/Scratch_S.svg" alt="Scratch" style="display: block;width:20px;height:20px;" >
-                    {/if}
+                    <img src="/Scratch_S.svg" alt="Scratch" style="display:block;width:20px;height:20px;">
                 </div>
                 <span class="gsi-material-button-contents">Login with Scratch</span>
                 <span style="display: none;">Login with Scratch</span>
             </div>
         </button>
+
+        <p class="or-line">or</p>
     
-        <!-- TODO: list username & password requirements,
-        should only appear if the inputs are focused & will have checkmarks
-        that enable next to them when sufficed -->
         <span class="input-title">Username</span>
         <input
             bind:value={username}
             type="text"
             placeholder="Use something iconic!"
+            data-valid={usernameValid}
             maxlength="20"
             on:input={checkIfValid}
             on:focusin={() => focused = "username"}
             on:focusout={() => focused = ""}
         />
+        {#if focused === "username"}
+            <ChecksBox items={usernameRequirements} />
+        {/if}
+
         <span class="input-title">Password</span>
-        <input
-            bind:value={password}
-            type="password"
-            placeholder="Remember to write it down!"
-            maxlength="50"
-            on:input={checkIfValid}
-            on:focusin={() => focused = "password"}
-            on:focusout={() => focused = ""}
-        />
+        <div class="password-wrapper">
+            <input
+                type={showingPassword ? "text" : "password"}
+                placeholder="Remember to write it down!"
+                data-valid={passwordValid}
+                maxlength="50"
+                on:input={passwordInputChanged}
+                on:focusin={() => focused = "password"}
+                on:focusout={() => focused = ""}
+            />
+            <button
+                class="password-show invert-on-dark"
+                data-visible={showingPassword}
+                on:click={togglePasswordView}
+            />
+        </div>
+        {#if focused === "password"}
+            <ChecksBox items={passwordRequirements} />
+        {/if}
+
+        <p>
+            By creating a PenguinMod account through any means provided on this page,
+            you agree to abide by the <a href="/terms" target="_blank">Terms of Service</a>
+            and <a href="/guidelines/uploading" target="_blank">Uploading Guidelines</a>
+            and confirm that you have read the <a href="/privacy" target="_blank">Privacy Policy</a> in its entirety.
+        </p>
+
         <button class="create-acc" data-canCreate={canCreateAccount} on:click={createAccountSafe}>
             {#if creatingAccount}
                 <LoadingSpinner icon="/loading_white.png" />
@@ -275,12 +313,6 @@
         </button>
 
         <a href="/signin" style="margin-top: 8px">Already have an account? Sign in here!</a>
-
-        {#if focused === "username"}
-            <ChecksBox items={usernameRequirements} />
-        {:else if focused === "password"}
-            <ChecksBox items={passwordRequirements} />
-        {/if}
     </main>
 </div>
     
@@ -295,12 +327,11 @@
         top: 0px;
         width: 100%;
         min-width: 1000px;
-        margin-top: 100px;
+        margin-top: 48px;
     }
 
-    /* TODO: RTL language support as this just looks weird in RTL */
     main {
-        margin: 0 calc(35% - 16px);
+        margin: 0 calc(35% - 33px);
         padding: 32px;
         width: 30%;
 
@@ -315,13 +346,28 @@
     }
     main input {
         width: 60%;
-        margin-bottom: 4px;
-        border-radius: 6px;
+        margin-bottom: 8px;
+        border-radius: 8px;
         border: 1px solid rgba(0, 0, 0, 0.5);
+        padding: 4px;
+        font-size: large;
+        outline: unset;
     }
-    main input::placeholder {
-        font-size: 11px;
+    .password-wrapper {
+        width: 60%;
+        margin-left: -10px;
+        margin-bottom: 8px;
+        position: relative;
     }
+    .password-wrapper input {
+        width: 100%;
+        margin-bottom: 0;
+    }
+    :global(html[dir="rtl"]) .password-wrapper {
+        margin-right: -10px;
+        margin-left: initial;
+    }
+
     .input-title {
         width: calc(60% + 8px);
         font-size: small;
@@ -332,11 +378,55 @@
         border-radius: 8px;
         background: #111;
     }
+    :global(body.dark-mode) main input {
+        border-color: rgba(255, 255, 255, 0.3);
+        background: #111;
+        color: white;
+    }
+    
+    main input[data-valid="true"] {
+        border-color: rgb(0, 187, 0) !important;
+    }
+    main input[data-valid="false"] {
+        border-color: rgb(187, 0, 0) !important;
+    }
+
+    .password-show {
+        position: absolute;
+        right: -4px;
+        top: 4px;
+        width: 24px;
+        height: calc(100% - 8px);
+        border: 0;
+        background: transparent;
+        background-image: url('account/showpassword.svg');
+        background-size: 100% 100%;
+        opacity: 0.7;
+        cursor: pointer;
+    }
+    .password-show[data-visible="true"] {
+        background-image: url('account/hidepassword.svg');
+        background-size: 100% 100%;
+    }
+    :global(body.dark-mode) .invert-on-dark {
+        filter: invert(1);
+    }
+    :global(html[dir="rtl"]) .password-show {
+        right: initial;
+        left: -4px;
+    }
 
     main a {
         margin-top: 8px;
-        color: #00c3ff;
+        color: dodgerblue;
         text-decoration: none;
+    }
+    :global(body.dark-mode) main a {
+        color: rgb(73, 164, 255);
+    }
+
+    .or-line {
+        margin-block: 2px;
     }
 
     .create-acc {
@@ -360,14 +450,14 @@
     }
 
     :global(body.dark-mode) .create-acc[data-canCreate=false] {
-        background: #2a4e58;
-        color: rgb(99, 99, 99);
-        cursor: default;
+        background: #9c9c9c;
+        color: rgb(255, 255, 255);
     }
 
     .create-acc[data-canCreate=false] {
-        background: #2a4e58;
-        color: rgb(168, 168, 168);
+        background: #9c9c9c;
+        color: rgb(255, 255, 255);
+        cursor: not-allowed;
     }
 
     .create-acc {
@@ -456,7 +546,7 @@
         transition: background-color .218s, border-color .218s, box-shadow .218s;
         vertical-align: middle;
         white-space: nowrap;
-        width: auto;
+        width: 60%;
         max-width: 400px;
         min-width: 220px;
         margin-bottom: 8px;

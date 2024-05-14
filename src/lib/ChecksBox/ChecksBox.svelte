@@ -20,12 +20,9 @@
     .box {
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        padding: 10px;
-        border-radius: 10px;
-        background-color: #505050;
-        max-width: 300px;
-        margin-top: 10px;
+        justify-content: flex-start;
+        padding: 4px;
+        max-width: 60%;
     }
 
     .item {

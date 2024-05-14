@@ -14,13 +14,7 @@
     let currentLang = "en";
     onMount(() => {
         Language.forceUpdate();
-
-        darkMode = localStorage.getItem("darkmode") === "true";
         embed = $page.url.searchParams.get('embed') === "true";
-
-        setInterval(() => {
-            darkMode = localStorage.getItem("darkmode") === "true";
-        }, 100);
     });
     Language.onChange((lang) => {
         currentLang = lang;
@@ -28,8 +22,7 @@
 
     let username = "";
     let password = "";
-    let logginIn = false;
-    let darkMode = false;
+    let loggingIn = false;
     let embed = false;
 
     async function login() {
@@ -40,8 +33,8 @@
     }
 
     const LoginAccountSafe = () => {
-        if (logginIn) return;
-        logginIn = true;
+        if (loggingIn) return;
+        loggingIn = true;
         login()
         .then(() => {
             if (embed) {
@@ -69,7 +62,7 @@
             console.log(`error: ${err}`)
         })
         .finally(() => {
-            logginIn = false;
+            loggingIn = false;
         });
     }
 
@@ -178,11 +171,12 @@
             <div class="gsi-material-button-state"></div>
             <div class="gsi-material-button-content-wrapper">
                 <div class="gsi-material-button-icon">
-                    {#if darkMode}
-                        <img src="/github-mark/github-mark-white.svg" alt="github" style="display: block;width:20px;height:20px;" >
-                    {:else}
-                        <img src="/github-mark/github-mark.svg" alt="github" style="display: block;width:20px;height:20px;" >
-                    {/if}
+                    <img
+                        src="/github-mark/github-mark.svg"
+                        alt="github"
+                        class="invert-on-dark"
+                        style="display: block;width:20px;height:20px;"
+                    />
                 </div>
                 <span class="gsi-material-button-contents">Login with Github</span>
                 <span style="display: none;">Login with Github</span>
@@ -193,11 +187,7 @@
             <div class="gsi-material-button-state"></div>
             <div class="gsi-material-button-content-wrapper">
                 <div class="gsi-material-button-icon">
-                    {#if darkMode}
-                        <img src="/Scratch_S.svg" alt="Scratch" style="display: block;width:20px;height:20px;" >
-                    {:else}
-                        <img src="/Scratch_S.svg" alt="Scratch" style="display: block;width:20px;height:20px;" >
-                    {/if}
+                    <img src="/Scratch_S.svg" alt="Scratch" style="display:block;width:20px;height:20px;">
                 </div>
                 <span class="gsi-material-button-contents">Login with Scratch</span>
                 <span style="display: none;">Login with Scratch</span>
@@ -222,7 +212,7 @@
             maxlength="50"
         />
         <button class="Login-acc" on:click={LoginAccountSafe}>
-            {#if logginIn}
+            {#if loggingIn}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}
                 Login
@@ -282,6 +272,9 @@
         background: #111;
     }
 
+    :global(body.dark-mode) .invert-on-dark {
+        filter: invert(1);
+    }
     main a {
         margin-top: 8px;
         color: #00c3ff;
