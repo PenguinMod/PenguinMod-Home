@@ -42,6 +42,7 @@
     let loadingExternal = false;
 
     let projectImage;
+    let projectImageURL;
     let projectData;
 
     let projectInputName;
@@ -166,11 +167,8 @@
         }
     });
 
-    function filePicked(input) {
+    function filePicked(file) {
         return new Promise((resolve, reject) => {
-            if (!input) return reject("NoInput");
-            if (!input.files) return reject("NoFiles");
-            const file = input.files[0];
             if (!file) return reject("NoFile");
             const fileReader = new FileReader();
             fileReader.onload = (e) => {
@@ -183,15 +181,14 @@
 
     async function imageFilePicked(input) {
         input = input.target;
-        const imageUrl = await filePicked(input);
-        projectImage = imageUrl;
+        projectImage = input.files[0];
+        projectImageURL = await filePicked(projectImage);
     }
     async function projectFilePicked(input) {
         input = input.target;
         const file = input.files[0];
         if (!file) return;
-        const projectUri = await filePicked(input);
-        projectData = projectUri;
+        projectData = file;
         projectInputName.innerText = TranslationHandler.text(
             "uploading.project.ownfile.picked",
             currentLang
@@ -201,20 +198,23 @@
     }
 
     let isBusyUploading = false;
-    function uploadProject() {
+    async function uploadProject() {
         if (isBusyUploading) return;
         isBusyUploading = true;
+
+        const image = await fetch("/empty-project.png").then(res => res.blob());
+
         ProjectClient.uploadProject({
             title: components.projectName.value,
             instructions: components.projectInstructions.value,
             notes: components.projectNotes.value,
-            image: projectImage,
+            image: image,
             remix: remixProjectId,
             project: projectData,
         })
-            .then((projectId) => {
-                window.open(`${LINK.base}#${projectId}`);
-            })
+        .then((projectId) => {
+            window.open(`${LINK.base}#${projectId}`);
+        })
             .catch((err) => {
                 const message = TranslationHandler.text(
                     `uploading.error.${String(err).toLowerCase()}`,
@@ -846,7 +846,7 @@
                 </div>
                 <div style="width:50%;">
                     <img
-                        src={projectImage ? projectImage : "/empty-project.png"}
+                        src={projectImage ? projectImageURL : "/empty-project.png"}
                         style="border-width:1px;border-style:solid;border-color:rgba(0, 0, 0, 0.1);width:100%;"
                         alt="Project Thumbnail"
                     />

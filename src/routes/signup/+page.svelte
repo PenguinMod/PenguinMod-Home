@@ -116,7 +116,7 @@
             
             if (!event.data) return;
 
-            const { username, token } = event.data.a2;
+            const { username, token } = event.data;
 
             localStorage.setItem("username", username);
             localStorage.setItem("token", token);

@@ -29,12 +29,8 @@ class Authentication {
         });
     }
 
-
-    // DEPRECATED
     static authenticate() {
-        const isLocal = location.hostname === 'localhost';
-        const redirectUrl = `${ProjectApi.OriginApiUrl}/api/users/login` + (isLocal ? 'Local' : '');
-        const base64 = btoa(redirectUrl);
+        const url = `${window.location.origin}/signin?redirect=${window.location.pathname}&embed=true`;
         return new Promise((resolve, reject) => {
             let login;
 
@@ -42,12 +38,14 @@ class Authentication {
                 if (event.origin !== ProjectApi.OriginApiUrl) {
                     return;
                 }
-                const data = event.data && event.data.a2;
+                const data = event.data;
                 if (!data) {
                     return;
                 }
 
+                const username = data.username;
                 const token = data.token;
+
                 window.removeEventListener("message", handleMessageReciever);
                 login.close();
 
@@ -60,8 +58,8 @@ class Authentication {
             window.addEventListener("message", handleMessageReciever);
 
             login = window.open(
-                `https://auth.itinerary.eu.org/auth/?redirect=${base64}&name=PenguinMod`,
-                "Scratch Authentication",
+                url,
+                "Login",
                 `scrollbars=yes,resizable=yes,status=no,location=yes,toolbar=no,menubar=no,width=1024,height=512,left=200,top=200`
             );
             if (!login) {

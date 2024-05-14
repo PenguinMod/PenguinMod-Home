@@ -16,6 +16,7 @@
         Language.forceUpdate();
 
         darkMode = localStorage.getItem("darkmode") === "true";
+        embed = $page.url.searchParams.get('embed') === "true";
 
         setInterval(() => {
             darkMode = localStorage.getItem("darkmode") === "true";
@@ -29,6 +30,7 @@
     let password = "";
     let logginIn = false;
     let darkMode = false;
+    let embed = false;
 
     async function login() {
         const token = await Authentication.verifyPassword(username, password);
@@ -42,6 +44,24 @@
         logginIn = true;
         login()
         .then(() => {
+            if (embed) {
+                const opener = window.opener || window.parent;
+
+                function post(data) {
+                    opener.postMessage(
+                        {
+                            a2: data,
+                        },
+                        `https://penguinmod.com`
+                    );
+                }
+
+                post()
+
+                window.close();
+                return;
+            }
+
             // redirect
             const redir = $page.url.searchParams.get('redirect');
         
@@ -61,10 +81,15 @@
             
             if (!event.data) return;
 
-            const { username, token } = event.data.a2;
+            const { username, token } = event.data;
 
             localStorage.setItem("username", username);
             localStorage.setItem("token", token);
+
+            if (embed) {
+                window.close();
+                return;
+            }
 
             const redir = $page.url.searchParams.get('redirect');
 
