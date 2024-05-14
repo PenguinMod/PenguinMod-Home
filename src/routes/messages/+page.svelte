@@ -161,6 +161,15 @@
         }
         readMessages = readMessages;
     }
+
+    function markAllMessagesAsRead() {
+        ProjectClient.markAllMessagesAsRead();
+
+        readMessages = readMessages.concat(
+            messages.map((message) => message.id)
+        );
+    }
+
     function disputeMessage(id) {
         if (
             !confirm(
@@ -264,7 +273,7 @@
             <div style="margin-top: 16px; width: 100%;" />
             {#if messages.length > 0}
                 <div class="action-bar">
-                    <Button on:click={() => markAsRead()}>
+                    <Button on:click={() => markAllMessagesAsRead()}>
                         <LocalizedText
                             text="Mark all as read"
                             key="messages.markallread"
@@ -387,7 +396,7 @@
                                 />
                             </button>
                         {/if}
-                    {:else if message.message.type === "featured"}
+                    {:else if message.message.type === "projectFeatured"}
                         <p>
                             <b>
                                 {String(
@@ -395,7 +404,7 @@
                                         "messages.alert.featured",
                                         currentLang
                                     )
-                                ).replace("$1", message.name)}
+                                ).replace("$1", message.message.project.title)}
                             </b> 🌟
                         </p>
                     {:else if message.message.type === "followerAdded"}
@@ -405,7 +414,7 @@
                                     "messages.alert.followeradded",
                                     currentLang
                                 )
-                            ).replace("$1", message.name)}
+                            ).replace("$1", message.message.user.username)}
                         </p>
                     {:else if message.message.type === "newBadge"}
                         <p>

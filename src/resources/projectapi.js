@@ -397,6 +397,7 @@ class ProjectApi {
                 });
         })
     }
+
     readMessage(id) {
         return new Promise((resolve, reject) => {
             const data = {
@@ -428,6 +429,34 @@ class ProjectApi {
                 });
         })
     }
+
+    markAllMessagesAsRead() {
+        return new Promise((resolve, reject) => {
+            const data = {
+                username: this.username,
+                token: this.token
+            };
+            const url = `${OriginApiUrl}/api/v1/users/markAllMessagesAsRead`;
+            fetch(url, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            })
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then(() => {
+                        resolve();
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+
     disputeMessage(id, text) {
         return new Promise((resolve, reject) => {
             const data = {
