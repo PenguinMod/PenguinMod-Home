@@ -127,26 +127,27 @@
         });
     }
 
-    function googleOAuth() {
-        let iframe = window.open("http://localhost:8080/api/v1/users/createoauthaccount?method=google", "Sign up with Google", "width=500,height=500");
+    function oauthFrame(method) {
+        return window.open(`http://localhost:8080/api/v1/users/createoauthaccount?method=${method}`, `Sign up with ${method}`, "width=500,height=500");
 
         if (!iframe) {
-            alert("Please enable popups to sign up with Google.");
+            alert(`Please enable popups to sign up with ${method}.`);
             return;
         }
 
         addOAuthEventListener();
     }
 
+    function googleOAuth() {
+        oauthFrame("google");
+    }
+
     function githubOAuth() {
-        let iframe = window.open("http://localhost:8080/api/v1/users/createoauthaccount?method=github", "Sign up with Github", "width=500,height=500");
+        oauthFrame("github");
+    }
 
-        if (!iframe) {
-            alert("Please enable popups to sign up with Github.");
-            return;
-        }
-
-        addOAuthEventListener();
+    function scratchOauth() {
+        oauthFrame("scratch");
     }
 
     function checkUsername() {
@@ -224,6 +225,21 @@
                 </div>
                 <span class="gsi-material-button-contents">Sign up with Github</span>
                 <span style="display: none;">Sign up with Github</span>
+            </div>
+        </button>
+
+        <button class="gsi-material-button" on:click={scratchOauth}>
+            <div class="gsi-material-button-state"></div>
+            <div class="gsi-material-button-content-wrapper">
+                <div class="gsi-material-button-icon">
+                    {#if darkMode}
+                        <img src="/Scratch_S.svg" alt="Scratch" style="display: block;width:20px;height:20px;" >
+                    {:else}
+                        <img src="/Scratch_S.svg" alt="Scratch" style="display: block;width:20px;height:20px;" >
+                    {/if}
+                </div>
+                <span class="gsi-material-button-contents">Login with Scratch</span>
+                <span style="display: none;">Login with Scratch</span>
             </div>
         </button>
     
@@ -442,7 +458,7 @@
         white-space: nowrap;
         width: auto;
         max-width: 400px;
-        min-width: 188px;
+        min-width: 220px;
         margin-bottom: 8px;
     }
 

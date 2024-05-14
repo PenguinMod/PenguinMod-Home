@@ -97,26 +97,27 @@
         });
     }
 
-    function googleOAuth() {
-        let iframe = window.open("http://localhost:8080/api/v1/users/loginoauthaccount?method=google", "Login with Google", "width=500,height=500");
+    function oauthFrame(method) {
+        let iframe = window.open(`http://localhost:8080/api/v1/users/loginoauthaccount?method=${method}`, `Login with ${method}`, "width=500,height=500");
 
         if (!iframe) {
-            alert("Please enable popups to login with Google.");
+            alert(`Please enable popups to login with ${method}.`);
             return;
         }
 
         addOAuthEventListener();
     }
 
+    function googleOAuth() {
+        oauthFrame("google");
+    }
+
     function githubOAuth() {
-        let iframe = window.open("http://localhost:8080/api/v1/users/loginoauthaccount?method=github", "Login with Github", "width=500,height=500");
+        oauthFrame("github");
+    }
 
-        if (!iframe) {
-            alert("Please enable popups to login with Github.");
-            return;
-        }
-
-        addOAuthEventListener();
+    function scratchOauth() {
+        oauthFrame("scratch");
     }
 </script>
     
@@ -176,6 +177,21 @@
                 </div>
                 <span class="gsi-material-button-contents">Login with Github</span>
                 <span style="display: none;">Login with Github</span>
+            </div>
+        </button>
+
+        <button class="gsi-material-button" on:click={scratchOauth}>
+            <div class="gsi-material-button-state"></div>
+            <div class="gsi-material-button-content-wrapper">
+                <div class="gsi-material-button-icon">
+                    {#if darkMode}
+                        <img src="/Scratch_S.svg" alt="Scratch" style="display: block;width:20px;height:20px;" >
+                    {:else}
+                        <img src="/Scratch_S.svg" alt="Scratch" style="display: block;width:20px;height:20px;" >
+                    {/if}
+                </div>
+                <span class="gsi-material-button-contents">Login with Scratch</span>
+                <span style="display: none;">Login with Scratch</span>
             </div>
         </button>
     
@@ -367,8 +383,8 @@
         white-space: nowrap;
         width: auto;
         max-width: 400px;
-        min-width: 188px;
-        margin-bottom: 8px;
+        min-width: 220px;
+        margin-bottom: 5px;
     }
 
     :global(body.dark-mode) .gsi-material-button {
