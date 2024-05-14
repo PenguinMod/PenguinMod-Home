@@ -265,12 +265,11 @@ class ProjectApi {
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
+                        console.log("errrmmmm");
                         res.text().then(reject);
                         return;
                     }
-                    res.json().then((projectList) => {
-                        resolve(projectList.projects);
-                    });
+                    res.json().then(resolve);
                 })
                 .catch((err) => {
                     reject(err);
