@@ -45,6 +45,7 @@
     let focusedBadge = -1;
     let isDonator = false;
     let isFollowingUser = false;
+    let followOnLoad = false;
     let wasNotFound = false;
     let isForceView = false;
     let followerCount = null;
@@ -206,6 +207,7 @@
         user = query;
 
         ProjectApi.getUserProjects(user, 0).then((projs) => {
+            console.log(projs);
             projects.all = projs;
             projects.featured = projs.filter((p) => p.featured);
             if (projects.all.length <= 0) {
@@ -216,13 +218,10 @@
             }
             wasNotFound = false;
             ProjectApi.getProfile(user, true).then((proffile) => {
-                console.log("got profile")
                 fullProfile = proffile;
                 badges = fullProfile.badges;
                 isDonator = fullProfile.donator;
                 followerCount = fullProfile.followers;
-
-                console.log(fullProfile)
 
                 const profileFeatured = fullProfile.myFeaturedProject;
                 if (profileFeatured) {
@@ -322,6 +321,7 @@
     onMount(async () => {
         const username = localStorage.getItem("username");
         const token = localStorage.getItem("token");
+
         if (!token || !username) {
             loggedIn = false;
             loggedInUser = "";
@@ -330,12 +330,14 @@
             return;
         }
         Authentication.usernameFromCode(username, token)
-            .then(({ isAdmin, isApprover }) => {
+            .then(async ({ isAdmin, isApprover }) => {
                 ProjectClient.setUsername(username);
                 ProjectClient.setToken(token);
                 loggedIn = true;
                 loggedInUser = username;
                 loggedInAdmin = isAdmin || isApprover;
+                const isFollowing = await ProjectClient.isFollowingUser(user);
+                followOnLoad = isFollowing;
                 loggedInChange();
             })
             .catch(() => {
@@ -824,7 +826,7 @@
                                 {TranslationHandler.text(
                                     "profile.followers",
                                     currentLang
-                                ).replace("$1", followerCount)}
+                                ).replace("$1", followerCount - Number(followOnLoad) + Number(isFollowingUser))}
                             </p>
                             <div>
                                 {#if !(loggedIn && user === loggedInUser)}
