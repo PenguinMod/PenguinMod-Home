@@ -62,7 +62,7 @@
     "home.footer.sections.info.privacy": "Privacy Policy",
     "home.footer.sections.info.guidelines": "Uploading Guidelines",
     "home.footer.sections.donate": "Donate",
-    "feed.following": "$1 followed you",
+    "feed.following": "$1 followed $2",
     "feed.uploaded": "$1 uploaded $2",
     "feed.remixed": "$1 remixed $2",
     "feed.posted": "$1 made a post",

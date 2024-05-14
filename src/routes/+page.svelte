@@ -161,13 +161,15 @@
         }
         myFeed = feed;
     };
+
     const getFeedText = (type, author, content) => {
         switch (type) {
             case "follow":
                 return TranslationHandler.text(
                     "feed.following",
                     currentLang
-                ).replace("$1", author);
+                ).replace("$1", author)
+                .replace("$2", content.username === localStorage.getItem("username") ? "you" : content.username)
             case "upload":
                 return TranslationHandler.text("feed.uploaded", currentLang)
                     .replace("$1", author)
@@ -532,7 +534,7 @@
                         <button class="welcome-back-button">
                             <div class="welcome-back-icon-container">
                                 <img
-                                    src="/messages/create.svg"
+                                    src="/messagesstatic/create.svg"
                                     alt="Create"
                                     draggable="false"
                                 />
@@ -548,7 +550,7 @@
                         <button class="welcome-back-button">
                             <div class="welcome-back-icon-container">
                                 <img
-                                    src="/messages/mystuff.svg"
+                                    src="/messagesstatic/mystuff.svg"
                                     alt="My Stuff"
                                     draggable="false"
                                 />
@@ -567,7 +569,7 @@
                         <button class="welcome-back-button">
                             <div class="welcome-back-icon-container">
                                 <img
-                                    src="/messages/profile.svg"
+                                    src="/messagesstatic/profile.svg"
                                     alt="Profile"
                                     draggable="false"
                                 />
@@ -596,17 +598,16 @@
                                 <UserDisplay
                                     link={getFeedUrl(
                                         message.type,
-                                        message.username,
-                                        message.content
+                                        message.data.username
                                     )}
-                                    userLink={`/profile?user=${message.username}`}
+                                    userLink={`/profile?user=${message.user.username}`}
                                     text={getFeedText(
                                         message.type,
-                                        message.username,
-                                        message.content
+                                        message.user.username,
+                                        message.data
                                     )}
-                                    author={message.username}
-                                    image={`http://localhost:8080/api/v1/users/getpfp?username=${message.username}`}
+                                    author={message.user.username}
+                                    image={`http://localhost:8080/api/v1/users/getpfp?username=${message.user.username}`}
                                 />
                             {/if}
                         {/each}

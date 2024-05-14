@@ -138,6 +138,11 @@
     function scratchOauth() {
         oauthFrame("scratch");
     }
+
+    function passwordInputChanged(event) {
+        password = event.target.value;
+        wrongInfo = false
+    }
 </script>
     
 <svelte:head>
@@ -225,7 +230,7 @@
                 type={showingPassword ? "text" : "password"}
                 placeholder="Remember to write it down!"
                 maxlength="50"
-                on:input={() => wrongInfo = false}
+                on:input={passwordInputChanged}
             />
             <button
                 class="password-show invert-on-dark"

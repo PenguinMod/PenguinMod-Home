@@ -334,7 +334,7 @@
 	{#if loggedIn === true}
 		<BarPage
 			link="/messages"
-			label={"<img src='/messages/messages.svg' width='25' alt='Messages'>"}
+			label={"<img src='/messagesstatic/messages.svg' width='25' alt='Messages'>"}
 			style="padding:0.5rem"
 		>
 			{#if messageCount > 0}
@@ -349,14 +349,14 @@
 		</BarPage>
 		<BarPage
 			link="/mystuff"
-			label="<img src='/messages/mystuff.svg' width='25' alt='My Stuff'>"
+			label="<img src='/messagesstatic/mystuff.svg' width='25' alt='My Stuff'>"
 			style="padding:0.5rem"
 		/>
 	{/if}
 	{#if (isAdmin || isApprover) && loggedIn}
 		<BarPage
 			link="/panel"
-			label="<img src='/messages/panel.svg' width='25' alt='Panel'>"
+			label="<img src='/messagesstatic/panel.svg' width='25' alt='Panel'>"
 			style="padding:0.5rem"
 		/>
 	{/if}

@@ -286,6 +286,7 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((feedList) => {
+                        console.log(feedList);
                         const feed = feedList.feed;
                         resolve(feed);
                     });
@@ -297,7 +298,7 @@ class ProjectApi {
     }
     getMyMessages(page) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/getMessages?page=${page}&username=${this.username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/users/getmessages?page=${page}&username=${this.username}&token=${this.token}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -305,7 +306,7 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((messageList) => {
-                        resolve(messageList.items);
+                        resolve(messageList.messages);
                     });
                 })
                 .catch((err) => {

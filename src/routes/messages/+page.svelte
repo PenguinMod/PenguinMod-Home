@@ -313,7 +313,7 @@
                                     autoTranslate(message.id, message.reason)}
                             >
                                 <img
-                                    src="/messages/translate.png"
+                                    src="/messagesstatic/translate.png"
                                     alt="Translate"
                                     width="30"
                                     height="30"
@@ -374,7 +374,7 @@
                                     downloadRejectedProject(message.projectId)}
                             >
                                 <img
-                                    src="/messages/download.png"
+                                    src="/messagesstatic/download.png"
                                     alt="Download"
                                     width="16"
                                     height="16"
@@ -487,7 +487,7 @@
                             <br />
                             <p style="display:flex;align-items:center;">
                                 <img
-                                    src="/messages/translate.png"
+                                    src="/messagesstatic/translate.png"
                                     alt="Translate"
                                     width="30"
                                     height="30"
@@ -519,7 +519,7 @@
                                 <br />
                                 <p style="display:flex;align-items:center;">
                                     <img
-                                        src="/messages/translate.png"
+                                        src="/messagesstatic/translate.png"
                                         alt="Translate"
                                         width="30"
                                         height="30"

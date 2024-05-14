@@ -90,7 +90,6 @@
     };
     const updateProjectFeaturedTitle = (element) => {
         const projectTitle = Number(element.target.value);
-        console.log(projectTitle);
         profileEditingData.projectTitle = projectTitle;
     };
     const saveEditedProject = (id) => {
@@ -207,7 +206,6 @@
         user = query;
 
         ProjectApi.getUserProjects(user, 0).then((projs) => {
-            console.log(projs);
             projects.all = projs;
             projects.featured = projs.filter((p) => p.featured);
             if (projects.all.length <= 0) {
