@@ -253,16 +253,13 @@
         }
         Authentication.verifyToken(username, token)
             .then(() => {
-                console.log("then");
                 loggedInUsername = username;
                 ProjectClient.setUsername(username);
                 ProjectClient.setToken(token);
                 loggedIn = true;
-                console.log("should update feed :idkman:")
                 getAndUpdateMyFeed();
             })
             .catch((err) => {
-                console.log("catch", err);
                 loggedIn = false;
             });
     });

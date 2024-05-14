@@ -53,7 +53,6 @@
             }
             //messages.push(...messagess);
             messages = messages;
-            console.log(messages, "messages")
         });
     }
 
@@ -68,7 +67,6 @@
                     return;
                 }
                 messages = messagess;
-                console.log(messages, "messages2")
                 if (messages.length < 12) {
                     pageIsLast = true;
                 }

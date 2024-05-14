@@ -265,7 +265,6 @@ class ProjectApi {
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
-                        console.log("errrmmmm");
                         res.text().then(reject);
                         return;
                     }
@@ -286,7 +285,6 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((feedList) => {
-                        console.log(feedList);
                         const feed = feedList.feed;
                         resolve(feed);
                     });
@@ -306,7 +304,6 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((messageList) => {
-                        console.log(messageList);
                         resolve(messageList.messages);
                     });
                 })
