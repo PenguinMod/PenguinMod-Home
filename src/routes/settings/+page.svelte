@@ -331,8 +331,7 @@
         margin-bottom: 16px;
         align-items: center;
     }
-    .edit-link,
-    .fake-link {
+    .edit-link {
         color: dodgerblue;
         text-decoration: underline;
         background: transparent;
