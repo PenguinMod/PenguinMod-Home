@@ -95,10 +95,26 @@ class Authentication {
                 resolve({
                     username: username, 
                     isAdmin: j.admin,
-                    isApprover: j.approver
+                    isApprover: j.approver,
+                    loginMethods: j.loginMethods
                 })
             }).catch(reject)).catch(reject)
         })
+    }
+
+    static changePassword(username, oldPassword, newPassword) {
+        return new Promise((resolve, reject) => {
+            fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/changePassword`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, old_password: oldPassword, new_password: newPassword })
+            }).then(r => r.json().then(j => {
+                if (j.error) return reject(j.error);
+                resolve(j.token);
+            }).catch(reject)).catch(reject);
+        });
     }
 }
 export default Authentication;

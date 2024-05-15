@@ -21,22 +21,13 @@
         currentLang = lang;
     });
 
-    let username = "";
     let password = "";
     let changingPassword = false;
     let canChangePassword = false;
     let showingPassword = false;
     let focused = false;
-    let embed = false;
 
-    let usernameValid = false;
     let passwordValid = false;
-
-    const usernameRequirements = [
-        {name: "Is between 3 and 20 letters, numbers or symbols", value: false},
-        {name: "Has only letters (A-Z), numbers (0-9), hyphens (-), and underscores (_)", value: false},
-        {name: "Username is not already taken", value: false}
-    ]
 
     const passwordRequirements = [
         {name: "Is between 8 and 50 letters, numbers or symbols", value: false},
@@ -72,7 +63,7 @@
     }
     const changePasswordRedirectSafe = () => {
         if (!canChangePassword) {
-            alert("Your username or password do not meet the requirements needed to create an account.");
+            alert("Your password does not meet the requirements needed to change your password.");
             return;
         }
 

@@ -21,6 +21,7 @@
 
     let loggedIn = null;
     let loggedInUsername = null;
+    let loginMethods = [];
 
     const accountInformation = {
         emailPeek: "", // a peek of the email (censors most of it), probably made by the api
@@ -61,9 +62,11 @@
             return;
         }
         Authentication.usernameFromCode(username, token)
-            .then(() => {
+            .then(({ loginMethods: _loginMethods }) => {
                 loggedIn = true;
                 loggedInChange(username, token);
+                loginMethods = _loginMethods;
+                
             })
             .catch(() => {
                 loggedIn = false;
@@ -106,6 +109,42 @@
                 loggedIn = false;
             });
     });
+
+    function changePassword() {
+        const url = "/changepassword";
+        let login;
+
+        const handleMessageReciever = (event) => {
+            if (event.origin !== "http://localhost:8080") {
+                return;
+            }
+
+            if (event.data) {
+                const username = event.data.username;
+                const token = event.data.token;
+
+                if (username && token) {
+                    console.log(token);
+                    localStorage.setItem("username", username);
+                    localStorage.setItem("token", token);
+                    location.reload();
+                }
+            }
+        };
+
+        window.addEventListener("message", handleMessageReciever);
+
+        login = window.open(
+            url,
+            "Login",
+            `scrollbars=yes,resizable=yes,status=no,location=yes,toolbar=no,menubar=no,width=1024,height=512,left=200,top=200`
+        );
+
+        if (!login) {
+            window.removeEventListener("message", handleMessageReciever);
+            alert("Please allow popups for this site.");
+        };
+    }
 </script>
 
 <svelte:head>
@@ -176,8 +215,8 @@
                 </button>
                 <div class="profile-section-display">
                     <h1 style="margin-block:0;font-size:40px">{loggedInUsername}</h1>
-                    <button class="edit-link">
-                        Set Password
+                    <button class="edit-link" on:click={changePassword}>
+                        {loginMethods.includes("password") ? "Change Password" : "Set Password"}
                     </button>
                     <button class="edit-link">
                         Update Login Methods
