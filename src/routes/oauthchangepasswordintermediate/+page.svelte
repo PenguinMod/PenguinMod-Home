@@ -148,13 +148,6 @@
             <ChecksBox items={passwordRequirements} />
         {/if}
 
-        <p>
-            By creating a PenguinMod account through any means provided on this page,
-            you agree to abide by the <a href="/terms" target="_blank">Terms of Service</a>
-            and <a href="/guidelines/uploading" target="_blank">Uploading Guidelines</a>
-            and confirm that you have read the <a href="/privacy" target="_blank">Privacy Policy</a> in its entirety.
-        </p>
-
         <button class="create-acc" data-canCreate={canChangePassword} on:click={changePasswordRedirectSafe}>
             {#if changingPassword}
                 <LoadingSpinner icon="/loading_white.png" />
