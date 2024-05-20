@@ -258,15 +258,6 @@
         left: -4px;
     }
 
-    main a {
-        margin-top: 8px;
-        color: dodgerblue;
-        text-decoration: none;
-    }
-    :global(body.dark-mode) main a {
-        color: rgb(73, 164, 255);
-    }
-
     .create-acc {
         border-radius: 1024px;
         padding: 4px 8px;
