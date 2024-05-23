@@ -57,7 +57,7 @@ export default {
     /**
      * PenguinMod's home page
      */
-    home: "https://home.penguinmod.com/",
+    home: "https://penguinmod.com/",
 
     /**
      * PenguinMod's packager page
@@ -67,7 +67,7 @@ export default {
     /**
      * PenguinMod's unofficial wiki
      */
-    wiki: "https://penguinmod.fandom.com/wiki/Penguinmod",
+    wiki: "https://pmod.miraheze.org/wiki/Main_Page",
 
     /**
      * PenguinMod's Discord invite
