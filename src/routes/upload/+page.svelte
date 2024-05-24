@@ -134,7 +134,7 @@
             // when WE get a post from PM
             window.addEventListener("message", (e) => {
                 if (e.origin !== importLocation) {
-                    return;
+                    r//eturn;
                 }
                 const data = e.data && e.data.p4;
                 if (!data) {
@@ -146,7 +146,9 @@
                 }
                 // image: uri of thumbnail image
                 if (data.type === "image") {
-                    projectImage = data.uri;
+                    console.log("haiii");
+                    projectImage = true;
+                    projectImageURL = data.uri;
                 }
                 // project: uri of project data
                 if (data.type === "project") {
@@ -321,7 +323,8 @@
         // when WE get a post from edit site
         window.addEventListener("message", (e) => {
             if (!e.origin.startsWith(location.origin)) {
-                return;
+                console.log(e.origin, location.origin);
+                //return;
             }
             const data = e.data && e.data.p4;
             if (!data) {
