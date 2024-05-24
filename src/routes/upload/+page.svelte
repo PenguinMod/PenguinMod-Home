@@ -146,7 +146,6 @@
                 }
                 // image: uri of thumbnail image
                 if (data.type === "image") {
-                    console.log("haiii");
                     projectImage = true;
                     projectImageURL = data.uri;
                 }
@@ -323,8 +322,7 @@
         // when WE get a post from edit site
         window.addEventListener("message", (e) => {
             if (!e.origin.startsWith(location.origin)) {
-                console.log(e.origin, location.origin);
-                //return;
+                return;
             }
             const data = e.data && e.data.p4;
             if (!data) {
