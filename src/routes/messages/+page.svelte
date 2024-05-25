@@ -358,7 +358,7 @@
                                 ).replace("$1", message.projectId)}
                             </b>
                         </p>
-                        {#if message.hardReject === false}
+                        {#if message.message.hardReject === false}
                             <h3>
                                 <a href="/edit?id={message.projectId}" style="display:flex;align-items:center;">
                                     <img
@@ -451,7 +451,7 @@
                         </p>
                     {:else if message.message.type === "custom"}
                         <p>
-                            {message.text}
+                            {message.message.text}
                         </p>
                     {:else if message.message.type === "restored"}
                         <p>
