@@ -461,10 +461,10 @@ class ProjectApi {
             const data = {
                 username: this.username,
                 token: this.token,
-                id,
-                text
+                messageID: id,
+                dispute: text
             };
-            const url = `${OriginApiUrl}/api/users/dispute`;
+            const url = `${OriginApiUrl}/api/v1/projects/dispute`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
@@ -835,16 +835,15 @@ class ProjectApi {
             })
         })
     }
-    rejectProject(id, reason, hardReject) {
+    rejectProject(id, reason) {
         const data = {
             token: this.token,
-            approver: this.username,
-            id,
-            reason,
-            type: hardReject ? 'hard' : 'soft'
+            username: this.username,
+            project: id,
+            message: reason,
         };
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/projects/reject`, {
+            fetch(`${OriginApiUrl}/api/v1/projects/softreject`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
                 method: "POST"
@@ -942,16 +941,15 @@ class ProjectApi {
             })
         })
     }
-    respondToDispute(disputerUsername, messageId, text) {
+    respondToDispute(messageId, text) {
         const data = {
             token: this.token,
-            approver: this.username,
-            username: disputerUsername,
-            id: messageId,
-            reason: text,
+            username: this.username,
+            disputeID: messageId,
+            message: text,
         };
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/users/disputeRespond`, {
+            fetch(`${OriginApiUrl}/api/v1/projects/modresponse`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
                 method: "POST"

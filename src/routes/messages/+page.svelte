@@ -309,10 +309,10 @@
                                         "messages.alert.staff.removed.title",
                                         currentLang
                                     )
-                                ).replace("$1", message.name)}
+                                ).replace("$1", message.message.project.title)}
                             </b>
                         </p>
-                        <p>{message.reason}</p>
+                        <p>{message.message.message}</p>
                         {#if canAutoTranslate && !autoTranslations[message.id] && !autoTranslationCode.startsWith("en")}
                             <br />
                             <button
@@ -355,7 +355,7 @@
                                         "messages.projectid",
                                         currentLang
                                     )
-                                ).replace("$1", message.projectId)}
+                                ).replace("$1", message.message.project.id)}
                             </b>
                         </p>
                         {#if message.message.hardReject === false}

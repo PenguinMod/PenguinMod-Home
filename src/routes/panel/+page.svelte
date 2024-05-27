@@ -520,28 +520,24 @@
     }
 
     const messageReplyInfo = {
-        username: "",
         id: "",
         text: "",
     };
     const replyToMessage = () => {
-        if (!messageReplyInfo.username) return alert("No user specified.");
         if (!messageReplyInfo.id) return alert("Message ID is not specified.");
         if (!messageReplyInfo.text)
             return alert("No message text was specified.");
         if (
             !confirm(
-                `Reply to ${messageReplyInfo.username}'s message with "${messageReplyInfo.text}"?`
+                `Reply to message with "${messageReplyInfo.text}"?`
             )
         )
             return;
         ProjectClient.respondToDispute(
-            messageReplyInfo.username,
             messageReplyInfo.id,
             messageReplyInfo.text
         ).then(() => {
             alert("Sent!");
-            messageReplyInfo.username = "";
             messageReplyInfo.id = "";
             messageReplyInfo.text = "";
         }).catch(err => alert('Failed to send message:' + err));
@@ -1091,12 +1087,6 @@
                 <h2 style="margin-block-start:0">Messages</h2>
                 <p>Respond to a project dispute/reply here.</p>
                 <p>Type username:</p>
-                <input
-                    type="text"
-                    size="50"
-                    placeholder="Scratch username..."
-                    bind:value={messageReplyInfo.username}
-                />
                 <p>Type message ID:</p>
                 <input
                     type="text"
