@@ -1365,7 +1365,6 @@ class ProjectApi {
         })
     }
     getVoteStates(id) {
-        console.log(`username: ${this.username}, token: ${this.token}, projectId: ${id}`);
         const url = `${OriginApiUrl}/api/v1/projects/getuserstatewrapper?username=${this.username}&token=${this.token}&projectId=${id}`;
         return new Promise((resolve, reject) => {
             fetch(url).then(res => {
