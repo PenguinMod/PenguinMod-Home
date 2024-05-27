@@ -91,7 +91,6 @@ class ProjectApi {
         if (user in ProjectApi.CachedDonators) {
             return ProjectApi.CachedDonators[user];
         }
-        console.log("getting badges for", user);
         const badges = await ProjectApi.getUserBadges(user);
         ProjectApi.CachedDonators[user] = badges.includes('donator');
         return badges.includes('donator');

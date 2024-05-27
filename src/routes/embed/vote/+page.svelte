@@ -100,10 +100,8 @@
                 likes = numberCast(meta.loves);
                 votes = numberCast(meta.votes);
                 views = numberCast(meta.views);
-                console.log(likes, votes, views);
             })
             .catch(() => {
-                console.log("catch!?!?!");
                 likes = 0;
                 votes = 0;
                 views = 0;
