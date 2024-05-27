@@ -94,38 +94,48 @@
         const params = new URLSearchParams(location.search);
         const projId = String(params.get("id"));
         projectId = projId;
+        
+        ProjectApi.getProjectMeta(projId)
+            .then((meta) => {
+                likes = numberCast(meta.loves);
+                votes = numberCast(meta.votes);
+                views = numberCast(meta.views);
+                console.log(likes, votes, views);
+            })
+            .catch(() => {
+                console.log("catch!?!?!");
+                likes = 0;
+                votes = 0;
+                views = 0;
+            });
+
         const username = localStorage.getItem("username");
         const token = localStorage.getItem("token");
         
         if (!token || !username) {
             loggedIn = false;
-            updateVoteStates();
+            userLiked = false;
+            userVoted = false;
+            loaded = true;
             return;
         }
         Authentication.usernameFromCode(username, token)
             .then(({ isAdmin, isApprover }) => {
                 ProjectClient.setToken(token);
                 ProjectClient.setUsername(username);
+
                 updateVoteStates();
                 loggedIn = true;
                 loggedInAdmin = isAdmin || isApprover;
             })
             .catch(() => {
                 loggedIn = false;
-                
+                userLiked = false;
+                userVoted = false;
+                loaded = true;
             });
-        updateVoteStates();
     });
-    onMount(() => {
-        const params = new URLSearchParams(location.search);
-        const projId = String(params.get("id"));
-        projectId = projId;
-        ProjectApi.getProjectMeta(projId).then((data) => {
-            likes = numberCast(data.loves);
-            votes = numberCast(data.votes);
-            views = numberCast(data.views);
-        });
-    });
+
     // RTODO: change this
     Authentication.onAuthentication((privateCode) => {
         ProjectClient.setToken(privateCode);
