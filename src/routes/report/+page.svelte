@@ -304,7 +304,7 @@
             {:else}
                 <img
                     class="project-picture"
-                    src={`http://localhost:8080/api/v1/projects/getproject?projectId=${pageDetails.id}&requestType=thumbnail`}
+                    src={`http://localhost:8080/api/v1/projects/getproject?projectID=${pageDetails.id}&requestType=thumbnail`}
                     alt={pageDetails.id}
                 />
             {/if}

@@ -667,7 +667,7 @@
                         src={newProjectImage
                             ? newProjectImage
                             : projectId
-                            ? `${LINK.projects}api/v1/projects/getproject?projectId=${projectId}&requestType=thumbnail`
+                            ? `${LINK.projects}api/v1/projects/getproject?projectID=${projectId}&requestType=thumbnail`
                             : "/empty-project.png"}
                         style="border-width:1px;border-style:solid;border-color:rgba(0, 0, 0, 0.1);width:100%;"
                         alt="Project Thumbnail"

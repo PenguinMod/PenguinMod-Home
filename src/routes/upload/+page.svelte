@@ -72,7 +72,16 @@
         return Number(newNumber);
     }
 
-    onMount(() => {
+    function dataURLtoBlob(dataurl) {
+        var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while(n--){
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], {type:mime});
+    }
+
+    onMount(async () => {
         const params = new URLSearchParams(location.search);
         const projName = params.get("name");
         const remixId = params.get("remix");
@@ -133,8 +142,8 @@
             }
             // when WE get a post from PM
             window.addEventListener("message", (e) => {
-                if (e.origin !== importLocation) {
-                    r//eturn;
+                if (e.origin !== importLocation) { // disable if running locally
+                    //return;
                 }
                 const data = e.data && e.data.p4;
                 if (!data) {
@@ -146,12 +155,13 @@
                 }
                 // image: uri of thumbnail image
                 if (data.type === "image") {
-                    projectImage = true;
                     projectImageURL = data.uri;
+                    projectImage = dataURLtoBlob(data.uri);
+                    console.log(projectImage);
                 }
                 // project: uri of project data
                 if (data.type === "project") {
-                    projectData = data.uri;
+                    projectData = dataURLtoBlob(data.uri);
                 }
 
                 // we done here
@@ -203,13 +213,15 @@
         if (isBusyUploading) return;
         isBusyUploading = true;
 
-        const image = await fetch("/empty-project.png").then(res => res.blob());
+        if (!projectImage) {
+            projectImage = await fetch("/empty-project.png").then(res => res.blob());
+        }
 
         ProjectClient.uploadProject({
             title: components.projectName.value,
             instructions: components.projectInstructions.value,
             notes: components.projectNotes.value,
-            image: image,
+            image: projectImage,
             remix: remixProjectId,
             project: projectData,
         })

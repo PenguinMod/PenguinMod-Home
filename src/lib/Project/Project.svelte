@@ -79,7 +79,7 @@
         class="project-image"
     >
         <img
-            src={`${LINK.projects}api/v1/projects/getproject?projectId=${id}&requestType=thumbnail`}
+            src={`${LINK.projects}api/v1/projects/getproject?projectID=${id}&requestType=thumbnail`}
             alt="Project Thumbnail"
             class="project-image"
         />

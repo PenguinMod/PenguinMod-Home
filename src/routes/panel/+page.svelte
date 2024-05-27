@@ -749,7 +749,7 @@
             <div class="card-reject" style="display:block">
                 <p>Rejecting <b>{rejectingName}</b></p>
                 <img
-                    src={`${LINK.projects}api/v1/projects/getproject?projectId=${rejectingId}&requestType=thumbnail`}
+                    src={`${LINK.projects}api/v1/projects/getproject?projectID=${rejectingId}&requestType=thumbnail`}
                     alt="Image of {rejectingName}"
                     width="240"
                     height="180"
@@ -1018,7 +1018,7 @@
                             Selected <b>{selectedProjectName}</b>
                         </p>
                         <img
-                            src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectId=${lastSelectedProjectId}&requestType=thumbnail`}
+                            src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectID=${lastSelectedProjectId}&requestType=thumbnail`}
                             alt="Project Thumbnail"
                         />
                     </a>
@@ -1447,7 +1447,7 @@
                                 }}
                             >
                                 <img
-                                    src={`http://localhost:8080/api/v1/projects/getproject?projectId=${content.id}&requestType=thumbnail`}
+                                    src={`http://localhost:8080/api/v1/projects/getproject?projectID=${content.id}&requestType=thumbnail`}
                                     alt={content.name}
                                 />
                                 <div

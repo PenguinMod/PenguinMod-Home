@@ -16,7 +16,7 @@ class ProjectApi {
 
     static getServerInfo(user) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getStats`;
+            const url = `${OriginApiUrl}/api/v1/misc/getStats`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -168,7 +168,7 @@ class ProjectApi {
 
     static getProjectMeta(id) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getproject?projectId=${id}&requestType=metadata`;
+            const url = `${OriginApiUrl}/api/v1/projects/getproject?projectID=${id}&requestType=metadata`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -597,11 +597,11 @@ class ProjectApi {
     deleteRejectedProject(id) {
         return new Promise((resolve, reject) => {
             const data = {
-                approver: this.username,
+                username: this.username,
                 token: this.token,
-                id
+                projectID: id
             };
-            const url = `${OriginApiUrl}/api/projects/deleteRejected`;
+            const url = `${OriginApiUrl}/api/v1/projects/hardDeleteProject`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
@@ -701,9 +701,10 @@ class ProjectApi {
                 username: this.username,
                 token: this.token,
                 target: username,
-                reason
+                reason,
+                toggle: true,
             };
-            fetch(`${OriginApiUrl}/api/users/ban`, {
+            fetch(`${OriginApiUrl}/api/v1/users/ban`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
                 method: "POST"
