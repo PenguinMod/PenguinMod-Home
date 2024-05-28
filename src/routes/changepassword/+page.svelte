@@ -47,7 +47,8 @@
     let password = "";
     let changingPassword = false;
     let canChangePassword = false;
-    let showingPassword = false;
+    let showingOldPassword = false;
+    let showingNewPassword = false;
     let focused = false;
     let username = "";
     let token = "";
@@ -90,8 +91,11 @@
         checkIfValid();
     }
 
-    const togglePasswordView = () => {
-        showingPassword = !showingPassword;
+    const toggleOldPasswordView = () => {
+        showingOldPassword = !showingOldPassword;
+    };
+    const toggleNewPasswordView = () => {
+        showingNewPassword = !showingNewPassword;
     };
 
     function toOAuthPage(method) {
@@ -210,22 +214,22 @@
             <span class="input-title">Old Password</span>
             <div class="password-wrapper">
                 <input
-                    type={showingPassword ? "text" : "Old Password"}
+                    type={showingOldPassword ? "text" : "password"}
                     placeholder="You won't need this anymore!"
                     maxlength="50"
                     on:input={oldPasswordInputChanged}
                 />
                 <button
                     class="password-show invert-on-dark"
-                    data-visible={showingPassword}
-                    on:click={togglePasswordView}
+                    data-visible={showingOldPassword}
+                    on:click={toggleOldPasswordView}
                 />
             </div>
             
             <span class="input-title">Password</span>
             <div class="password-wrapper">
                 <input
-                    type={showingPassword ? "text" : "password"}
+                    type={showingNewPassword ? "text" : "password"}
                     placeholder="Remember to write it down!"
                     data-valid={passwordValid}
                     maxlength="50"
@@ -235,22 +239,15 @@
                 />
                 <button
                     class="password-show invert-on-dark"
-                    data-visible={showingPassword}
-                    on:click={togglePasswordView}
+                    data-visible={showingNewPassword}
+                    on:click={toggleNewPasswordView}
                 />
             </div>
             {#if focused}
                 <ChecksBox items={passwordRequirements} />
             {/if}
 
-            <p>
-                By creating a PenguinMod account through any means provided on this page,
-                you agree to abide by the <a href="/terms" target="_blank">Terms of Service</a>
-                and <a href="/guidelines/uploading" target="_blank">Uploading Guidelines</a>
-                and confirm that you have read the <a href="/privacy" target="_blank">Privacy Policy</a> in its entirety.
-            </p>
-
-            <button class="create-acc" data-canCreate={canChangePassword} on:click={Authentication}>
+            <button class="create-acc" data-canCreate={canChangePassword} on:click={changePassword}>
                 {#if changingPassword}
                     <LoadingSpinner icon="/loading_white.png" />
                 {:else}
@@ -361,14 +358,14 @@
         left: -4px;
     }
 
-    main a {
+    /* main a {
         margin-top: 8px;
         color: dodgerblue;
         text-decoration: none;
     }
     :global(body.dark-mode) main a {
         color: rgb(73, 164, 255);
-    }
+    } */
 
     .create-acc {
         border-radius: 1024px;

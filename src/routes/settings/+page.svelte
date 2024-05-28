@@ -11,6 +11,7 @@
     import Button from "$lib/Button/Button.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import StatusAlert from "$lib/Alert/StatusAlert.svelte";
+    import AccountStatus from "$lib/AccountStatus/Standing.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
@@ -24,7 +25,7 @@
     let loginMethods = [];
 
     const accountInformation = {
-        emailPeek: "", // a peek of the email (censors most of it), probably made by the api
+        emailPeek: "...", // a peek of the email (censors most of it), probably made by the api
         standing: 0, // 0 for good, 1 for limited, 2 for tempban, 3 for banned (ideally returned by api because of temp ban)
         tempBanExpire: 0, // a timestamp when the ban expires
 
@@ -160,6 +161,7 @@
 
 <NavigationBar />
 
+<!-- TODO: make this work in RTL languages -->
 <div class="main">
     <NavigationMargin />
 
@@ -224,8 +226,8 @@
                 </div>
             </div>
     
-            <div>
-                <div>
+            <div class="settings-area">
+                <div class="settings-area-sections">
                     <button
                         class="settings-section"
                         data-selected={currentTab === 'account'}
@@ -241,11 +243,10 @@
                         Standing
                     </button>
                 </div>
-                <div>
+                <div class="settings-area-content">
                     {#if currentTab === 'account'}
                         <h1>Account</h1>
                         <p>Email: {accountInformation.emailPeek}</p>
-                        <br>
                         <p>
                             <label>
                                 <input
@@ -268,7 +269,7 @@
                         <p class="small">
                             <i>(Moderators can always view your profile, ignoring these settings.)</i>
                         </p>
-                        <br>
+                        <!-- <br>
                         <p>
                             <label>
                                 <input
@@ -280,9 +281,16 @@
                         </p>
                         <p class="small">
                             <i>(Moderators can always see your Ice Cube count, ignoring these settings.)</i>
-                        </p>
+                        </p> -->
                     {:else if currentTab === 'standing'}
                         <h1>Standing</h1>
+                        <AccountStatus
+                            username={loggedInUsername}
+                            image="http://localhost:8080/api/v1/users/getpfp?username={loggedInUsername}"
+                            showname={false}
+                            status={1}
+                            detail={4}
+                        />
                     {/if}
                 </div>
             </div>
@@ -381,6 +389,10 @@
         border-radius: 8px;
         overflow: hidden;
     }
+    .profile-section-image > img {
+        width: 128px;
+        height: 128px;
+    }
     .profile-section-image-edit {
         position: absolute;
         left: 0;
@@ -416,9 +428,66 @@
         flex-direction: column;
     }
 
+    .settings-area {
+        margin-top: 8px;
+        width: 65%;
+        height: 520px;
+
+        display: flex;
+        align-items: center;
+    }
+    .settings-area-sections {
+        width: 20%;
+        height: 100%;
+        border: 1px solid rgba(0, 0, 0, 0.35);
+        border-right: none;
+        overflow-y: auto;
+    }
+    .settings-area-content {
+        width: calc(80% - 16px);
+        height: calc(100% - 16px);
+        border: 1px solid rgba(0, 0, 0, 0.35);
+        padding: 8px;
+        overflow-y: auto;
+    }
+    
+    :global(body.dark-mode) .settings-area-sections,
+    :global(body.dark-mode) .settings-area-content {
+        border-color: rgba(255, 255, 255, 0.35);
+    }
+
     /* settings-section */
+    .settings-section {
+        width: 100%;
+
+        background: none;
+        border: 0;
+
+        padding: 8px 4px;
+        text-align: left;
+        cursor: pointer;
+    }
+    .settings-section:hover {
+        background: rgba(0, 0, 0, 0.1);
+    }
+    .settings-section:active {
+        background: rgba(0, 0, 0, 0.25);
+    }
     .settings-section[data-selected="true"] {
-        background: #00c3ff;
+        background: #008cff;
         color: white;
+    }
+
+    :global(body.dark-mode) .settings-section {
+        color: white;
+    }
+    :global(body.dark-mode) .settings-section:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    :global(body.dark-mode) .settings-section:active {
+        background: rgba(255, 255, 255, 0.25);
+    }
+    :global(body.dark-mode) .settings-section[data-selected="true"] {
+        background: #0059ff;
     }
 </style>
