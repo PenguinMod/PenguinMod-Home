@@ -539,6 +539,36 @@
                                 <br />
                             {/if}
                         </p>
+                        <p>
+                            <b>
+                                Original Dispute:
+                                <!-- BTODO: uncomment this :bleh:
+                                {String(
+                                    TranslationHandler.text(
+                                        "messages.alert.staff.reply.original",
+                                        currentLang
+                                    )
+                                )}
+                                -->
+                            </b>
+                        </p>
+                        <p>
+                            {message.dispute}
+                            {#if canAutoTranslate && !autoTranslationCode.startsWith("en")}
+                                <br />
+                                <p style="display:flex;align-items:center;">
+                                    <img
+                                        src="/messagesstatic/translate.png"
+                                        alt="Translate"
+                                        width="30"
+                                        height="30"
+                                        style="margin-right:6px"
+                                    />
+                                    <AutoLocalizedText text={message.dispute} />
+                                </p>
+                                <br />
+                            {/if}
+                        </p>
                     {:else if message.message.type === "guidelines"}
                         <a
                             href="/{message.section === 'uploadingguidelines' ? 'guidelines/uploading' : message.section}"
