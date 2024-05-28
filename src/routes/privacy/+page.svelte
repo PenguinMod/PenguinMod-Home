@@ -111,7 +111,7 @@ Language.onChange((lang) => {
             or <a href="https://github.com/">"GitHub"</a> requiring a "GitHub" account.
         </p>
         <p>When you use the <a href="https://oauth2.scratch-wiki.info/">"Scratch OAuth2"</a>,
-            <a href="https://google.com/">"Google"</a>
+            <a href="https://google.com/">"Google"</a>,
             or <a href="https://github.com/">"GitHub"</a>
             login methods, they can access:</p>
             <ul>
