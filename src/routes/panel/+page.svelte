@@ -237,15 +237,14 @@
     }
 
     const openRemoveProjectMenu = async () => {
-        const id = Number(projectIdSelection.value);
-        if (isNaN(id)) return;
+        const id = String(projectIdSelection.value);
         rejectingId = id;
         if (selectedProjectName) {
             rejectingName = selectedProjectName;
         } else {
             try {
                 const projectMeta = await ProjectApi.getProjectMeta(id);
-                rejectingName = projectMeta.name;
+                rejectingName = projectMeta.title;
             } catch {
                 rejectingName = '';
             }
@@ -999,7 +998,7 @@
                 <p>
                     Project ID:
                     <input
-                        type="number"
+                        type="string"
                         bind:this={projectIdSelection}
                         value="0"
                     />
@@ -1083,10 +1082,11 @@
             </div>
             <br />
 
+            <!-- BTODO: add mod message (just send a message to the user, not a dispute response) -->
+
             <div class="card">
                 <h2 style="margin-block-start:0">Messages</h2>
                 <p>Respond to a project dispute/reply here.</p>
-                <p>Type username:</p>
                 <p>Type message ID:</p>
                 <input
                     type="text"

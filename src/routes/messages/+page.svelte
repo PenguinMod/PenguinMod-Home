@@ -286,12 +286,12 @@
             {#each messages as message}
                 <button
                     class="message"
-                    data-moderator={message.moderator === true}
+                    data-moderator={message.message.type === "modresponse"}
                     data-read={message.read === true ||
                         readMessages.includes(message.id)}
                     on:click={() => markAsRead(message.id)}
                 >
-                    {#if message.moderator === true}
+                    {#if message.message.type === "modresponse"}
                         <h2>
                             <LocalizedText
                                 text="Moderator Message"
@@ -523,7 +523,7 @@
                             />
                         </h4>
                         <p>
-                            {message.reason}
+                            {message.message.message}
                             {#if canAutoTranslate && !autoTranslationCode.startsWith("en")}
                                 <br />
                                 <p style="display:flex;align-items:center;">
@@ -534,7 +534,7 @@
                                         height="30"
                                         style="margin-right:6px"
                                     />
-                                    <AutoLocalizedText text={message.reason} />
+                                    <AutoLocalizedText text={message.message.message} />
                                 </p>
                                 <br />
                             {/if}
