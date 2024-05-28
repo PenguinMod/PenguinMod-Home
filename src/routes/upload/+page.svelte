@@ -157,7 +157,6 @@
                 if (data.type === "image") {
                     projectImageURL = data.uri;
                     projectImage = dataURLtoBlob(data.uri);
-                    console.log(projectImage);
                 }
                 // project: uri of project data
                 if (data.type === "project") {
@@ -282,7 +281,6 @@
         //       just do one of them and then await it idk
         //       gonna do that later
         //       (aka in like 3 months when i finally look at this code again)
-        console.log(projectPage);
         if (pageType === "remix") {
             ProjectApi.getProjects(projectPage).then((projectss) => {
                 canRemix.push(...projectss);
@@ -389,7 +387,7 @@
     });
 
     function selectToRemixProject(id) {
-        remixProjectId = Number(id);
+        remixProjectId = String(id);
         if (isNaN(remixProjectId)) {
             remixProjectId = 1;
         }
@@ -591,7 +589,7 @@
                             date={project.date}
                             featured={project.featured}
                             showdate={true}
-                            on:click={selectToRemixProject(project.id)}
+                            on:click={() => {selectToRemixProject(project.id)}}
                         />
                     {/each}
                     {#if !lastProjectPage}
