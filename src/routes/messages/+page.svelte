@@ -434,7 +434,7 @@
                     {:else if message.message.type === "remix"}
                         <p>
                             <a
-                                href={`https://studio.penguinmod.com/#${message.remixId}`}
+                                href={`https://studio.penguinmod.com/#${message.message.newProject.id}`}
                                 target="_blank"
                             >
                                 {String(
@@ -445,8 +445,8 @@
                                 )
                                     .replace("$1", "__${{{___1")
                                     .replace("$2", "__${{{___2")
-                                    .replace("__${{{___1", message.name)
-                                    .replace("__${{{___2", message.remixName)}
+                                    .replace("__${{{___1", message.message.oldProject.title)
+                                    .replace("__${{{___2", message.message.newProject.title)}
                             </a>
                         </p>
                     {:else if message.message.type === "custom"}
