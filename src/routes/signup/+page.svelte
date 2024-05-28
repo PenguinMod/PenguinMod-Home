@@ -29,6 +29,9 @@
     let focused = "";
     let embed = false;
 
+    let lastUsernameCheck = 0;
+    let lastUsernameCheckVal = false;
+
     let usernameValid = false;
     let passwordValid = false;
 
@@ -121,7 +124,6 @@
             return;
         }
 
-        // TODO: unique username should show a loading icon & only gets checked every 1-2 seconds to avoid api spam for no real reason
         let uniqueUsername = false;
         try {
             uniqueUsername = !(await checkUsername() || false);
@@ -204,6 +206,9 @@
     }
 
     function checkUsername() {
+        if (Date.now() - lastUsernameCheck < 1000) {
+            return lastUsernameCheckVal;
+        }
         let url = `http://localhost:8080/api/v1/users/userexists?username=${username}`;
 
         return new Promise((resolve, reject) => {
@@ -213,6 +218,8 @@
                 if (res.exists) {
                     canCreateAccount = false;
                 }
+                lastUsernameCheck = Date.now();
+                lastUsernameCheckVal = res.exists;
                 resolve(res.exists);
             })
             .catch((err) => {
