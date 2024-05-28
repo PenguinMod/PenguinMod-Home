@@ -43,7 +43,8 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((badges) => {
-                        resolve(badges);
+                        console.log(badges);
+                        resolve(badges.badges);
                     });
                 })
                 .catch((err) => {
@@ -130,6 +131,32 @@ class ProjectApi {
     static getUserProjects(user, page) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${user}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((projectList) => {
+                        resolve(projectList);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+
+    /**
+     * @param {number} page page
+     * @returns Array of projects
+     */
+    static getMyProjects(page) {
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/v1/projects/getmyprojects?page=${page}&username=${username}&token=${token}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -620,7 +647,7 @@ class ProjectApi {
     }
     getProfanityFilter() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/getProfanityList?username=${this.username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/misc/getProfanityList?username=${this.username}&token=${this.token}`;
             fetch(url)
                 .then((res) => {
                     res.json().then(json => {
@@ -640,9 +667,9 @@ class ProjectApi {
     }
     setProfanityFilter(newData) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/users/setProfanityList`;
+            const url = `${OriginApiUrl}/api/v1/misc/setProfanityList`;
             const data = {
-                user: this.username,
+                username: this.username,
                 token: this.token,
                 json: newData
             };
@@ -895,7 +922,7 @@ class ProjectApi {
             target: adminTarget,
         };
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/users/${adminForced ? 'setUserBioAdmin' : "setBio"}`, {
+            fetch(`${OriginApiUrl}/api/v1/users/${adminForced ? 'setBioAdmin' : "setBio"}`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
                 method: "POST"

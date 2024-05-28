@@ -48,6 +48,12 @@
     // translation
     let currentLang = "en";
     onMount(() => {
+        if (typeof author === "string") {
+            author = {
+                username: localStorage.getItem("username"),
+                id: author
+            };
+        }
         Language.forceUpdate();
     });
     Language.onChange((lang) => {

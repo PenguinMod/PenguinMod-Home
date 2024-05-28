@@ -205,7 +205,9 @@
         const query = params.get("user");
         user = query;
 
-        ProjectApi.getUserProjects(user, 0).then((projs) => {
+        const username = localStorage.getItem("username");
+
+        const then = (projs) => {
             projects.all = projs;
             projects.featured = projs.filter((p) => p.featured);
             if (projects.all.length <= 0) {
@@ -218,11 +220,13 @@
             ProjectApi.getProfile(user, true).then((proffile) => {
                 fullProfile = proffile;
                 badges = fullProfile.badges;
+                console.log(badges);
                 isDonator = fullProfile.donator;
                 followerCount = fullProfile.followers;
 
                 const profileFeatured = fullProfile.myFeaturedProject;
                 if (profileFeatured) {
+                    console.log(profileFeatured);
                     ProjectApi.getProjectMeta(profileFeatured).then(metadata => {
                         profileFeaturedProject = metadata;
                     }).catch((err) => {
@@ -234,20 +238,33 @@
                 } else if (!profileFeatured && projects.all[0]) {
                     profileFeaturedProject = projects.all[0];
                 }
-            }).catch(err => {
-                console.log(err);
-                err = JSON.parse(err);
-                err = err.error;
-                if (err === 'NotFound') {
-                    wasNotFound = true;
-                }
-            }).finally(() => {
-                fetchedFullProfile = true;
-                setTimeout(() => {
-                    renderScratchBlocks();
-                }, 0);
             });
-        });
+        };
+
+        const catch_func = (err) => {
+            console.log(err);
+            err = JSON.parse(err);
+            err = err.error;
+            if (err === 'NotFound') {
+                wasNotFound = true;
+            }
+        };
+
+        if (username && username === user) {
+            ProjectApi.getMyProjects(0).then(then).catch(catch_func).finally(() => {
+                    fetchedFullProfile = true;
+                    setTimeout(() => {
+                        renderScratchBlocks();
+                    }, 0);
+                });
+        } else {
+            ProjectApi.getUserProjects(user, 0).then(then).catch(catch_func).finally(() => {
+                    fetchedFullProfile = true;
+                    setTimeout(() => {
+                        renderScratchBlocks();
+                    }, 0);
+                });
+        }
 
         page.subscribe(v => {
             if (!v.url.searchParams.get("user") || !user) return;
@@ -1114,7 +1131,7 @@
                                     lang={currentLang}
                                 />
                             </p>
-                        {:else if profileFeaturedProject.owner === user}
+                        {:else if profileFeaturedProject.author.username === user}
                             <a href={`${LINK.base}#${profileFeaturedProject.id}`} style="text-decoration: none">
                                 <img
                                     src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectIdd=${profileFeaturedProject.id}&requestType=thumbnail`}
