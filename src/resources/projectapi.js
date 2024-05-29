@@ -33,6 +33,24 @@ class ProjectApi {
         });
     }
 
+    static getUsernameById(id) {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/v1/users/getusername?ID=${id}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((result) => {
+                        resolve(result.username);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
     static getUserBadges(user) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/users/getBadges?username=${user}`;
