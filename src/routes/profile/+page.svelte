@@ -200,10 +200,27 @@
     };
     
     let fetchedFullProfile = false;
-    onMount(() => {
+    onMount(async () => {
         const params = new URLSearchParams(location.search);
         const query = params.get("user");
+        const idQuery = params.get("id");
         user = query;
+
+        if (idQuery) {
+            // set user to the result of fetching the username by id
+            const username = await new Promise((resolve) => {
+                ProjectApi.getUsernameById(idQuery)
+                    .then((username) => {
+                        resolve(username)
+                    })
+                    .catch(() => {
+                        resolve();
+                    });
+            });
+            if (username) {
+                user = username;
+            }
+        }
 
         const username = localStorage.getItem("username");
 
