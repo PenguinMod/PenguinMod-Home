@@ -43,7 +43,6 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((badges) => {
-                        console.log(badges);
                         resolve(badges.badges);
                     });
                 })

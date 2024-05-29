@@ -220,13 +220,11 @@
             ProjectApi.getProfile(user, true).then((proffile) => {
                 fullProfile = proffile;
                 badges = fullProfile.badges;
-                console.log(badges);
                 isDonator = fullProfile.donator;
                 followerCount = fullProfile.followers;
 
                 const profileFeatured = fullProfile.myFeaturedProject;
                 if (profileFeatured) {
-                    console.log(profileFeatured);
                     ProjectApi.getProjectMeta(profileFeatured).then(metadata => {
                         profileFeaturedProject = metadata;
                     }).catch((err) => {
