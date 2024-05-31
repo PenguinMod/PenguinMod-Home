@@ -46,11 +46,6 @@
 
         ProjectApi.getServerInfo()
             .then((stats) => {
-                serverStats.push(`is new: ${stats.new ? 'yes' : 'no'}`)
-                delete stats.new
-                serverStats.push(`next read: ${new Date(stats.nextRead).getMinutes() - new Date().getMinutes()}mins`)
-                delete stats.nextRead
-                serverStats.push(`memory usage: ${(stats.totalMem - stats.freeMem) / stats.totalMem}`)
                 for (const name in stats) {
                     serverStats.push(`${name}: ${stats[name]}`)
                 }
@@ -706,6 +701,7 @@
     let mods = []
     const loadUserPerms = () => ProjectClient.getAllPermitedUsers()
         .then(users => {
+            console.log(users);
             admins = users.admins
             mods = users.mods
         })
@@ -1154,12 +1150,12 @@
                 <Button on:click={loadUserPerms}>Load Permited Users</Button>
                 {#if showUserPerms}
                     <h3>admins</h3>
-                    {#each admins as adminName}
-                        <p>{adminName}</p>
+                    {#each admins as admin}
+                        <p>{admin.username}</p>
                     {/each}
                     <h3>mods</h3>
-                    {#each mods as modName}
-                        <p>{modName}</p>
+                    {#each mods as mod}
+                        <p>{mod.username}</p>
                     {/each}
                 {/if}
                 <Button on:click={() => showUserPerms = !showUserPerms}>{showUserPerms ? 'Hide' : 'Show'} Permited Users</Button>

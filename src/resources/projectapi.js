@@ -286,7 +286,22 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((users) => {
-                        resolve(users);
+                        const mods = users.mods;
+                        const url = `${OriginApiUrl}/api/v1/users/getadmins?username=${this.username}&token=${this.token}`;
+                        fetch(url)
+                            .then((res) => {
+                                if (!res.ok) {
+                                    res.text().then(reject);
+                                    return;
+                                }
+                                res.json().then((users) => {
+                                    const admins = users.admins;
+                                    resolve({ mods, admins });
+                                });
+                            })
+                            .catch((err) => {
+                                reject(err);
+                            });
                     });
                 })
                 .catch((err) => {
@@ -813,7 +828,20 @@ class ProjectApi {
     }
     assingUsersPermisions(username, admin, approver) {
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/users/assignPossition?username=${this.username}&token=${this.token}&target=${username}&admin=${admin}&approver=${approver}`).then(res => {
+            const body = {
+                username: this.username,
+                token: this.token,
+                target: username,
+                admin,
+                approver
+            }
+            fetch(`${OriginApiUrl}/api/v1/users/assignPossition`, {
+                method:"POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify(body)
+            }).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);
