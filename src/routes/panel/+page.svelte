@@ -332,9 +332,9 @@
         inspectMenuOpen = true;
         inspectMenuDetails.downloading = true;
         inspectMenuDetails.error = false;
-        setTimeout(() => {
+        setTimeout(async () => {
             if (!inspectMenuOpen) return; // dont download if we closed
-            const id = Number(projectIdSelection.value);
+            const id = String(projectIdSelection.value);
             ProjectApi.getProjectFile(id)
                 .then((blob) => {
                     JSZip.loadAsync(blob)
@@ -588,14 +588,14 @@
                 alert(`Failed to restore project; ${err}`);
             });
     };
-    const deleteRejectedProject = () => {
+    const deleteProject = () => {
         if (
             !confirm(
                 "Are you sure you want to PERMANENTLY delete this project?\nYou should only do this if the project contains some really bad stuff."
             )
         )
             return;
-        ProjectClient.deleteRejectedProject(rejectedProjectId)
+        ProjectClient.deleteProject(rejectedProjectId)
             .then(() => {
                 alert("Deleted.");
             })
@@ -1054,7 +1054,7 @@
                         Restore
                     </Button>
                     <div style="margin-right:24px" />
-                    <Button color="red" on:click={deleteRejectedProject}>
+                    <Button color="red" on:click={deleteProject}>
                         Delete
                     </Button>
                 </div>
