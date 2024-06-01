@@ -1,5 +1,6 @@
 <script>
     import { onMount } from "svelte";
+    import { browser } from "$app/environment";
     
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
@@ -28,9 +29,6 @@
     let showingPassword = false;
     let focused = "";
     let embed = false;
-
-    let lastUsernameCheck = 0;
-    let lastUsernameCheckVal = false;
 
     let usernameValid = false;
     let passwordValid = false;
@@ -94,7 +92,10 @@
         });
     }
 
-    async function checkIfValid() {
+    let isUsernameUnique = false;
+    let hasDoneUsernameCheck = false;
+    let usernameUniqueCheckId = 0; // used to fix problems when we type while checking if a username is unique
+    function checkIfValid() {
         const usernameDoesNotMeetLength = username.length < 3 || username.length > 20;
 
         const usernameHasIllegalChars = Boolean(username.match(/[^a-z0-9\-_]/i));
@@ -124,25 +125,86 @@
             return;
         }
 
-        let uniqueUsername = false;
-        try {
-            uniqueUsername = !(await checkUsername() || false);
-        } catch {
-            uniqueUsername = false;
-        }
-
-        canCreateAccount = !(userCheck || passwordCheck) && uniqueUsername;
-        usernameValid = uniqueUsername && !userCheck;
+        canCreateAccount = !(userCheck || passwordCheck) && (isUsernameUnique && hasDoneUsernameCheck);
+        usernameValid = (isUsernameUnique && hasDoneUsernameCheck) && !userCheck;
 
         usernameRequirements[0].value = !usernameDoesNotMeetLength;
         usernameRequirements[1].value = !usernameHasIllegalChars;
-        usernameRequirements[2].value = uniqueUsername;
+        usernameRequirements[2].value = hasDoneUsernameCheck ? isUsernameUnique : "loading";
+
+        if (userCheck) {
+            // the username is unique if it doesnt meet any of the other requirements
+            usernameRequirements[2].value = true;
+        }
 
         return canCreateAccount;
+    }
+
+    let lastUsernameType = Infinity;
+    function usernameInputChanged(event) {
+        lastUsernameType = Date.now();
+        hasDoneUsernameCheck = false;
+        usernameUniqueCheckId += 1;
+
+        username = event.target.value;
+        checkIfValid();
     }
     function passwordInputChanged(event) {
         password = event.target.value;
         checkIfValid();
+    }
+    
+    function checkIsUsernameUnique(username) {
+        let url = `http://localhost:8080/api/v1/users/userexists?username=${username}`;
+
+        return new Promise((resolve, reject) => {
+            fetch(url)
+            .then((res) => res.json())
+            .then((res) => {
+                // if it doesnt exist, its unique
+                resolve(!res.exists);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+        });
+    }
+
+    if (browser) {
+        // we dont want to query the api if the tab isnt focused
+        let tabIsFocused = document.hasFocus();
+        document.addEventListener("focus", () => {
+            tabIsFocused = true;
+        });
+        document.addEventListener("blur", () => {
+            tabIsFocused = false;
+        });
+
+        let lastCheckedValue = "";
+        setInterval(() => {
+            if (!tabIsFocused) return;
+            if (lastCheckedValue === username) return;
+            
+            // we dont want to query the api while they are typing
+            if (Date.now() - lastUsernameType < 600) return;
+            // username should be valid before we check anything
+            if (!usernameRequirements[0].value) return;
+            if (!usernameRequirements[1].value) return;
+
+            // update the event id before saving it, otherwise we will always assume another event is now running
+            usernameUniqueCheckId += 1;
+            let checkIdThisEvent = usernameUniqueCheckId;
+
+            checkIsUsernameUnique(username)
+                .then(isUnique => {
+                    // this affectively acts like restartExistingThreads in scratch, since the username changed
+                    if (checkIdThisEvent != usernameUniqueCheckId) return;
+                    hasDoneUsernameCheck = true;
+                    isUsernameUnique = isUnique;
+                    checkIfValid();
+                });
+            lastCheckedValue = username;
+        }, 1000);
     }
 
     const togglePasswordView = () => {
@@ -203,29 +265,6 @@
 
     function scratchOauth() {
         oauthFrame("scratch");
-    }
-
-    function checkUsername() {
-        if (Date.now() - lastUsernameCheck < 1000) {
-            return lastUsernameCheckVal;
-        }
-        let url = `http://localhost:8080/api/v1/users/userexists?username=${username}`;
-
-        return new Promise((resolve, reject) => {
-            fetch(url)
-            .then((res) => res.json())
-            .then((res) => {
-                if (res.exists) {
-                    canCreateAccount = false;
-                }
-                lastUsernameCheck = Date.now();
-                lastUsernameCheckVal = res.exists;
-                resolve(res.exists);
-            })
-            .catch((err) => {
-                reject(err);
-            });
-        });
     }
 </script>
     
@@ -304,12 +343,11 @@
     
         <span class="input-title">Username</span>
         <input
-            bind:value={username}
             type="text"
             placeholder="Use something iconic!"
             data-valid={usernameValid}
             maxlength="20"
-            on:input={checkIfValid}
+            on:input={usernameInputChanged}
             on:focusin={() => focused = "username"}
             on:focusout={() => focused = ""}
         />
