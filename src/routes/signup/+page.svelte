@@ -106,7 +106,7 @@
         const passwordHasNumber = !!password.match(/[0-9]/);
         const passwordMeetsSpecialInclude = !!password.match(/[^a-z0-9]/i);
 
-        const passwordCheck = passwordDoesNotMeetLength || !(passwordMeetsTextInclude && passwordMeetsSpecialInclude);
+        const passwordCheck = passwordDoesNotMeetLength || !(passwordMeetsTextInclude && passwordMeetsSpecialInclude && passwordHasNumber);
 
         passwordRequirements[0].value = !passwordDoesNotMeetLength;
         passwordRequirements[1].value = passwordMeetsTextInclude;
