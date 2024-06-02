@@ -70,11 +70,9 @@
 					ProjectClient.getUnreadMessageCount().then((amount) => {
 						messageCount = amount;
 					});
-					if (username) {
-						ProjectApi.getProfile(username).then((profile) => {
-							canRankUp = profile.canrankup === true;
-						});
-					}
+					ProjectApi.getProfile(username, false, token).then((profile) => {
+						canRankUp = profile.canrankup === true;
+					});
 				}
 			)
 			.catch((err) => {

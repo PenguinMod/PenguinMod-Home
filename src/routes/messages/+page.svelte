@@ -491,7 +491,7 @@
                                 />
                             </b>
                         </p>
-                        <p>{message.reason}</p>
+                        <p>{message.message.reason}</p>
                         {#if canAutoTranslate && !autoTranslationCode.startsWith("en")}
                             <br />
                             <p style="display:flex;align-items:center;">
@@ -502,7 +502,7 @@
                                     height="30"
                                     style="margin-right:6px"
                                 />
-                                <AutoLocalizedText text={message.reason} />
+                                <AutoLocalizedText text={message.message.reason} />
                             </p>
                             <br />
                         {/if}

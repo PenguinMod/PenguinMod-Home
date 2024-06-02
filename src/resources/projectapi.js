@@ -87,9 +87,9 @@ class ProjectApi {
                 });
         });
     }
-    static getProfile(user, includeBio) {
+    static getProfile(user, includeBio, token="") {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/profile?username=${user}${includeBio ? '&bio=true' : ''}`;
+            const url = `${OriginApiUrl}/api/v1/users/profile?username=${user}${includeBio ? '&bio=true' : ''}&token=${token}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -753,43 +753,16 @@ class ProjectApi {
             });
         });
     }
-    banUser(username, reason) {
+    banUser(username, reason, toggle) {
         return new Promise((resolve, reject) => {
             const data = {
                 username: this.username,
                 token: this.token,
                 target: username,
                 reason,
-                toggle: true,
+                toggle: toggle,
             };
             fetch(`${OriginApiUrl}/api/v1/users/ban`, {
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-                method: "POST"
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                });
-            }).catch(err => {
-                reject(err);
-            });
-        });
-    }
-    unbanUser(username, reason) {
-        return new Promise((resolve, reject) => {
-            const data = {
-                username: this.username,
-                token: this.token,
-                target: username,
-                reason
-            };
-            fetch(`${OriginApiUrl}/api/users/unban`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
                 method: "POST"

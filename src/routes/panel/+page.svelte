@@ -611,7 +611,7 @@
             `Are you sure you want to ban ${banOrUnbanData.username} for "${banOrUnbanData.reason}"? Type "ok" to confirm.`
         );
         if (promptMessage !== "ok") return;
-        ProjectClient.banUser(banOrUnbanData.username, banOrUnbanData.reason)
+        ProjectClient.banUser(banOrUnbanData.username, banOrUnbanData.reason, true)
             .then(() => {
                 alert(`Banned ${banOrUnbanData.username}.`);
             })
@@ -625,7 +625,7 @@
             `Are you sure you want to unban ${banOrUnbanData.username}? Type "ok" to confirm.`
         );
         if (promptMessage !== "ok") return;
-        ProjectClient.unbanUser(banOrUnbanData.username, banOrUnbanData.reason)
+        ProjectClient.banUser(banOrUnbanData.username, banOrUnbanData.reason, false)
             .then(() => {
                 alert(`Unbanned ${banOrUnbanData.username}.`);
             })
