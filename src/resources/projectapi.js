@@ -256,9 +256,27 @@ class ProjectApi {
                         res.text().then(reject);
                         return;
                     }
-                    res.arrayBuffer().then((blob) => {
-                        resolve(blob);
-                    });
+                    return res.json();
+                })
+                .then((res) => {
+                    const blob = new Uint8Array(res.project.data);
+
+                    const pbf = new Pbf(blob);
+                    const json = this.protobufToJson(pbf);
+
+                    let zip = new JSZip();
+                    zip.file("project.json", JSON.stringify(json));
+
+                    for (const asset of res.assets) {
+                        zip.file(asset.id, new Uint8Array(asset.data).buffer);
+                    }
+
+                    const arrayBuffer = zip.generateAsync({ type: "arraybuffer" });
+
+                    return arrayBuffer;
+                })
+                .then((arrayBuffer) => {
+                    resolve(arrayBuffer);
                 })
                 .catch((err) => {
                     reject(err);
@@ -1292,6 +1310,152 @@ class ProjectApi {
         const pbf = new Pbf();
         Project.write(newjson, pbf);
         return pbf.finish();
+    }
+
+    static protobufToJson(pbf) {
+        const json = Project.read(pbf);
+
+        const newJson = {
+            targets: [],
+            monitors: [],
+            extensionData: {},
+            extensions: json.extensions,
+            extensionURLs: {},
+            meta: {
+                semver: json.metaSemver,
+                vm: json.metaVm,
+                agent: json.metaAgent || ""
+            }
+        };
+
+        for (const target of json.targets) {
+            let newTarget = {
+                isStage: target.isStage,
+                name: target.name,
+                variables: {},
+                lists: {},
+                broadcasts: {},
+                customVars: [],
+                blocks: {},
+                comments: {},
+                currentCostume: target.currentCostume,
+                costumes: [],
+                sounds: [],
+                id: target.id,
+                volume: target.volume,
+                layerOrder: target.layerOrder,
+                tempo: target.tempo,
+                videoTransparency: target.videoTransparency,
+                videoState: target.videoState,
+                textToSpeechLanguage: target.textToSpeechLanguage || null,
+                visible: target.visible,
+                x: target.x,
+                y: target.y,
+                size: target.size,
+                direction: target.direction,
+                draggable: target.draggable,
+                rotationStyle: target.rotationStyle
+            };
+
+            for (const variable in target.variables) {
+                newTarget.variables[variable] = [target.variables[variable].name, target.variables[variable].value];
+            }
+
+            for (const list in target.lists) {
+                newTarget.lists[list] = [target.lists[list].name, target.lists[list].value];
+            }
+
+            for (const broadcast in target.broadcasts) {
+                newTarget.broadcasts[broadcast] = target.broadcasts[broadcast];
+            }
+
+            for (const customVar in target.customVars) {
+                newTarget.customVars.push(target.customVars[customVar]);
+            }
+
+            for (const block in target.blocks) {
+                newTarget.blocks[block] = {
+                    opcode: target.blocks[block].opcode,
+                    next: target.blocks[block].next || null,
+                    parent: target.blocks[block].parent || null,
+                    inputs: {},
+                    fields: {},
+                    shadow: target.blocks[block].shadow,
+                    topLevel: target.blocks[block].topLevel,
+                    x: target.blocks[block].x,
+                    y: target.blocks[block].y
+                }
+
+                if (target.blocks[block].mutation) {
+                    newTarget.blocks[block].mutation = {
+                        tagName: target.blocks[block].mutation.tagName,
+                        proccode: target.blocks[block].mutation.proccode,
+                        argumentids: target.blocks[block].mutation.argumentids,
+                        argumentnames: target.blocks[block].mutation.argumentnames,
+                        argumentdefaults: target.blocks[block].mutation.argumentdefaults,
+                        warp: target.blocks[block].mutation.warp,
+                        returns: target.blocks[block].mutation._returns,
+                        edited: target.blocks[block].mutation.edited,
+                        optype: target.blocks[block].mutation.optype,
+                        color: target.blocks[block].mutation.color,
+                        children: []
+                    }
+                }
+
+                for (const input in target.blocks[block].inputs) {
+                    newTarget.blocks[block].inputs[input] = JSON.parse(target.blocks[block].inputs[input]);
+                }
+
+                for (const field in target.blocks[block].fields) {
+                    newTarget.blocks[block].fields[field] = JSON.parse(target.blocks[block].fields[field]);
+                }
+            }
+
+            for (const comment in target.comments) {
+                newTarget.comments[comment] = target.comments[comment];
+            }
+
+            for (const costume in target.costumes) {
+                newTarget.costumes[costume] = target.costumes[costume];
+            }
+
+            for (const sound in target.sounds) {
+                newTarget.sounds[sound] = target.sounds[sound];
+            }
+
+            newJson.targets.push(newTarget);
+        }
+
+        for (const monitor in json.monitors) {
+            let newMonitor = {
+                id: json.monitors[monitor].id,
+                mode: json.monitors[monitor].mode,
+                opcode: json.monitors[monitor].opcode,
+                params: json.monitors[monitor].params,
+                spriteName: json.monitors[monitor].spriteName || null,
+                value: json.monitors[monitor].value,
+                width: json.monitors[monitor].width,
+                height: json.monitors[monitor].height,
+                x: json.monitors[monitor].x,
+                y: json.monitors[monitor].y,
+                visible: json.monitors[monitor].visible,
+                sliderMin: json.monitors[monitor].sliderMin,
+                sliderMax: json.monitors[monitor].sliderMax,
+                isDiscrete: json.monitors[monitor].isDiscrete
+            }
+
+            newJson.monitors.push(newMonitor);
+        }
+
+        for (const extensionData in json.extensionData) {
+            newJson.extensionData[extensionData] = JSON.parse(json.extensionData[extensionData]);
+        }
+
+        for (const extensionURL in json.extensionURLs) {
+            newJson.extensionURLs[extensionURL] = json.extensionURLs[extensionURL];
+        }
+
+        return newJson;
     }
 
     uploadProject(data) {

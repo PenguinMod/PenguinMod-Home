@@ -338,11 +338,13 @@
                                 .file("project.json")
                                 .async("string");
                             const json = JSON.parse(project);
+
                             const extensionList = json.extensions;
                             inspectMenuDetails.extensions = extensionList;
                             const extensionData = json.extensionURLs
                                 ? json.extensionURLs
                                 : {};
+                            
                             inspectMenuDetails.extensionData = extensionData;
                             inspectMenuDetails.extensionUrls = JSON.parse(
                                 JSON.stringify(extensionData)
@@ -350,6 +352,7 @@
                             inspectMenuDetails.downloading = false;
                             // get all urls
                             for (const extensionId of extensionList) {
+                                console.log(extensionData, extensionId);
                                 if (!extensionData[extensionId]) {
                                     extensionData[extensionId] =
                                         "(Core Extension)";
@@ -800,31 +803,37 @@
                         {#each inspectMenuDetails.extensions as extensionId}
                             <p>
                                 {extensionId}:
-                                <a
-                                    href={inspectMenuDetails.extensionUrls[
-                                        extensionId
-                                    ]}
-                                    target="_blank"
-                                >
-                                    {String(
-                                        inspectMenuDetails.extensionUrls[
+                                {#if inspectMenuDetails.extensionUrls[extensionId]}
+                                    <a
+                                        href={inspectMenuDetails.extensionUrls[
                                             extensionId
-                                        ]
-                                    ).length > 456
-                                        ? "Extension URL is too long"
-                                        : String(
-                                              inspectMenuDetails.extensionUrls[
-                                                  extensionId
-                                              ]
-                                          )}
-                                </a>
+                                        ]}
+                                        target="_blank"
+                                    >
+                                        {String(
+                                            inspectMenuDetails.extensionUrls[
+                                                extensionId
+                                            ]
+                                        ).length > 456
+                                            ? "Extension URL is too long"
+                                            : String(
+                                                inspectMenuDetails.extensionUrls[
+                                                    extensionId
+                                                ]
+                                            )}
+                                    </a>
+
+                                    <textarea
+                                        value={inspectMenuDetails.extensionData[
+                                            extensionId
+                                        ]}
+                                        style="width:90%;height:256px;font-family:monospace"
+                                    />
+                                {:else}
+                                    (Core Extension)
+                                {/if}
                             </p>
-                            <textarea
-                                value={inspectMenuDetails.extensionData[
-                                    extensionId
-                                ]}
-                                style="width:90%;height:256px;font-family:monospace"
-                            />
+                            
                         {/each}
                     {/if}
                     {#if inspectMenuDetails.error}
