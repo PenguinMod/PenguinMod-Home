@@ -734,7 +734,7 @@ class ProjectApi {
                 badges,
                 target
             };
-            fetch(`${OriginApiUrl}/api/users/setBadges`, {
+            fetch(`${OriginApiUrl}/api/v1/users/setBadges`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
                 method: "POST"

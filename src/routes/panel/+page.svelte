@@ -654,12 +654,14 @@
     };
     const applyUserBadges = () => {
         if (!confirm("Apply badges to this user?")) return;
-        const newBadges = [];
+        
+        const newBadges = []
         for (const badgeName in currentUserBadges) {
             if (currentUserBadges[badgeName] === true) {
                 newBadges.push(badgeName);
             }
         }
+
         ProjectClient.setUserBadges(userBadgesUsername, newBadges)
             .then(() => {
                 alert("Badges are set!");
