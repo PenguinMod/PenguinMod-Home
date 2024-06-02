@@ -352,7 +352,6 @@
                             inspectMenuDetails.downloading = false;
                             // get all urls
                             for (const extensionId of extensionList) {
-                                console.log(extensionData, extensionId);
                                 if (!extensionData[extensionId]) {
                                     extensionData[extensionId] =
                                         "(Core Extension)";
