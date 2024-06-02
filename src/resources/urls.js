@@ -67,7 +67,7 @@ export default {
     /**
      * PenguinMod's unofficial wiki
      */
-    wiki: "https://pmod.miraheze.org/wiki/Main_Page",
+    wiki: "https://wiki.penguinmod.com/wiki/Main_Page",
 
     /**
      * PenguinMod's Discord invite
