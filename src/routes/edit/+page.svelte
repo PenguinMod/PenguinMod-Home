@@ -306,7 +306,6 @@
         'angry',
         'annoyed',
         'bigsad',
-        'cute',
         'disappointed',
         'happy',
         'idk',
