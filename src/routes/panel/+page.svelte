@@ -557,7 +557,7 @@
         }
     };
 
-    let rejectedProjectId = 0;
+    let rejectedProjectId = "0";
     const downloadRejectedProject = async () => {
         try {
             const projectFile = await ProjectClient.getRejectedProjectFile(
@@ -1040,7 +1040,7 @@
                 <h3>Removed Projects</h3>
                 <p>
                     Target Removed Project:
-                    <input type="number" bind:value={rejectedProjectId} />
+                    <input type="text" bind:value={rejectedProjectId} />
                 </p>
                 <div
                     style="display: flex; flex-direction: row; align-items: center;"

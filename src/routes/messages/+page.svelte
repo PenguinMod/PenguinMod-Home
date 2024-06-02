@@ -460,11 +460,11 @@
                                     "messages.alert.staff.restoredproject.title",
                                     currentLang
                                 )
-                            ).replace("$1", message.name)}
+                            ).replace("$1", message.message.project.title)}
                         </p>
                         <p>
                             <a
-                                href={`https://studio.penguinmod.com/#${message.projectId}`}
+                                href={`https://studio.penguinmod.com/#${message.message.project.id}`}
                                 target="_blank"
                             >
                                 <LocalizedText

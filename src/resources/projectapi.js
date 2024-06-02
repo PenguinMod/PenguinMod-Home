@@ -630,11 +630,11 @@ class ProjectApi {
     restoreRejectedProject(id) {
         return new Promise((resolve, reject) => {
             const data = {
-                approver: this.username,
+                username: this.username,
                 token: this.token,
-                id
+                project: id
             };
-            const url = `${OriginApiUrl}/api/projects/restoreRejected`;
+            const url = `${OriginApiUrl}/api/v1/projects/restore`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
@@ -831,7 +831,18 @@ class ProjectApi {
     }
     setErrorAllGetProjects(enabled) {
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/errorAllProjectRequests?username=${this.username}&token=${this.token}&enabled=${enabled}`).then(res => {
+            const body = JSON.stringify({
+                username: this.username,
+                token: this.token,
+                toggle: enabled
+            })
+            fetch(`${OriginApiUrl}/api/v1/projects/toggleviewing`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);
@@ -848,7 +859,18 @@ class ProjectApi {
     }
     setErrorAllUploadProjects(enabled) {
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/errorAllProjectUploads?username=${this.username}&token=${this.token}&enabled=${enabled}`).then(res => {
+            const body = JSON.stringify({
+                username: this.username,
+                token: this.token,
+                toggle: enabled
+            })
+            fetch(`${OriginApiUrl}/api/v1/projects/toggleuploading`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);
@@ -863,6 +885,7 @@ class ProjectApi {
             });
         });
     }
+    // BTODO: make this work
     deleteProject(id) {
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/projects/delete?token=${this.token}&approver=${this.username}&id=${id}`).then(res => {
