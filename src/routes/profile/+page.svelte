@@ -45,6 +45,8 @@
     let focusedBadge = -1;
     let isDonator = false;
     let isFollowingUser = false;
+    let isProfilePrivate = false;
+    let isProfilePrivateToFollowers = false;
     let followOnLoad = false;
     let wasNotFound = false;
     let isForceView = false;
@@ -848,48 +850,75 @@
                                     {:else}
                                         <h1>{user}</h1>
                                     {/if}
+                                    
+                                    {#if isProfilePrivate}
+                                        <img
+                                            src="/account/lock.svg"
+                                            alt="Private"
+                                            title="Private"
+                                        />
+                                    {/if}
                                 </div>
                             </div>
-                        <div class="follower-section">
-                            <p class="follower-count">
-                                {TranslationHandler.text(
-                                    "profile.followers",
-                                    currentLang
-                                ).replace("$1", followerCount - Number(followOnLoad) + Number(isFollowingUser))}
-                            </p>
-                            <div>
-                                {#if !(loggedIn && user === loggedInUser)}
-                                    {#key isFollowingUser}
-                                        <button
-                                            class={`follower-button
-                                                ${isDonator ? ' follower-button-donator' : ''}
-                                                ${isFollowingUser ? ' follower-button-following' : ''}`}
-                                            on:click={safeFollowUser}
-                                        >
-                                            {#if isFollowingUser}
-                                                <LocalizedText
-                                                    text="Unfollow"
-                                                    key="profile.unfollow"
-                                                    dontlink={true}
-                                                    lang={currentLang}
-                                                />
-                                            {:else}
-                                                <LocalizedText
-                                                    text="Follow"
-                                                    key="profile.follow"
-                                                    dontlink={true}
-                                                    lang={currentLang}
-                                                />
-                                            {/if}
-                                        </button>
-                                    {/key}
-                                {/if}
-                            </div>
-                        </div>
+                            <!-- TODO: add condition where the user is following the logged in user -->
+                            {#if !isProfilePrivate || loggedInUser === user}
+                                <div class="follower-section">
+                                    <p class="follower-count">
+                                        {TranslationHandler.text(
+                                            "profile.followers",
+                                            currentLang
+                                        ).replace("$1", followerCount - Number(followOnLoad) + Number(isFollowingUser))}
+                                    </p>
+                                    <div>
+                                        {#if !(loggedIn && user === loggedInUser)}
+                                            {#key isFollowingUser}
+                                                <button
+                                                    class={`follower-button
+                                                        ${isDonator ? ' follower-button-donator' : ''}
+                                                        ${isFollowingUser ? ' follower-button-following' : ''}`}
+                                                    on:click={safeFollowUser}
+                                                >
+                                                    {#if isFollowingUser}
+                                                        <LocalizedText
+                                                            text="Unfollow"
+                                                            key="profile.unfollow"
+                                                            dontlink={true}
+                                                            lang={currentLang}
+                                                        />
+                                                    {:else}
+                                                        <LocalizedText
+                                                            text="Follow"
+                                                            key="profile.follow"
+                                                            dontlink={true}
+                                                            lang={currentLang}
+                                                        />
+                                                    {/if}
+                                                </button>
+                                            {/key}
+                                        {/if}
+                                    </div>
+                                </div>
+                            {/if}
                         </div>
                     </div>
                 </div>
             {/if}
+            <!-- TODO: add condition where the user is following the logged in user -->
+            {#if isProfilePrivate && loggedInUser !== user}
+                <div class="section-private">
+                    <img
+                        src="/account/lock.svg"
+                        alt="Private"
+                        title="Private"
+                    />
+                    
+                    {#if isProfilePrivateToFollowers}
+                        <p>This profile is private. Only people {user} follows can see their profile.</p>
+                    {:else}
+                        <p>This profile is private. You cannot view it.</p>
+                    {/if}
+                </div>
+            {:else}
             <div class="section-projects">
                 <div class="user-ordering-stats" style="width:90%">
                     <div class="section-user-stats">
@@ -1363,6 +1392,7 @@
                     </div>
                 {/if}
             </div>
+            {/if}
         </div>
         {:else}
             <div style="height:32px;" />
@@ -1574,6 +1604,19 @@
     }
     :global(body.dark-mode) .emoji-picker-emoji:hover {
         background: rgba(255, 255, 255, 0.15);
+    }
+
+    .section-private {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin: 0px;
+        margin-top: 32px;
+    }
+    .section-private > img {
+        height: 96px;
     }
 
     .section-projects {
@@ -1975,7 +2018,12 @@
     }
     .user-after-image {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        align-items: center;
+    }
+    .user-after-image img {
+        margin: 0 8px;
+        transform: scale(0.75);
     }
     .user-after-image > h1 {
         font-size: 3em;
