@@ -465,8 +465,16 @@
         }
         const penguinModProject = await project.zip.generateAsync({ type: "blob" });
         const projectId = censorMenuDetails.id;
+
+        const meta = await ProjectApi.getProjectMeta(projectId);
+        const thumbnail = await ProjectApi.getProjectThumbnail(projectId);
+
         await ProjectClient.updateProject(projectId, {
-            project: await BlobAndDataUrl.blobToDataURL(penguinModProject)
+            project: penguinModProject,
+            title: meta.title,
+            instructions: meta.instructions,
+            notes: meta.notes,
+            image: thumbnail
         });
     };
     const applyCensorChanges = async () => {
@@ -487,7 +495,7 @@
         censorMenuDetails.error = false;
         setTimeout(() => {
             if (!censorMenuOpen) return; // dont download if we closed
-            const id = Number(projectIdSelection.value);
+            const id = String(projectIdSelection.value);
             censorMenuDetails.id = id;
             ProjectApi.getProjectFile(id)
                 .then((blob) => {

@@ -227,6 +227,24 @@ class ProjectApi {
                 });
         })
     }
+
+    static getProjectThumbnail(id) {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/v1/projects/getproject?projectID=${id}&requestType=thumbnail`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.blob().then(resolve);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+
     static getProjectRemixes(id, page=0) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/projects/getremixes?id=${id}&page=${page}`;
@@ -246,7 +264,6 @@ class ProjectApi {
         })
     }
 
-    // TODO: make this convert the pbf to a pmp
     static getProjectFile(id) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/projects/getprojectwrapper?projectId=${id}`;
@@ -262,13 +279,13 @@ class ProjectApi {
                     const blob = new Uint8Array(res.project.data);
 
                     const pbf = new Pbf(blob);
-                    const json = this.protobufToJson(pbf);
+                    const json = this.prototype.protobufToJson(pbf);
 
                     let zip = new JSZip();
                     zip.file("project.json", JSON.stringify(json));
 
                     for (const asset of res.assets) {
-                        zip.file(asset.id, new Uint8Array(asset.data).buffer);
+                        zip.file(asset.id, new Uint8Array(asset.buffer.data).buffer);
                     }
 
                     const arrayBuffer = zip.generateAsync({ type: "arraybuffer" });
@@ -281,7 +298,7 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
 
     async downloadHardRejectedProject(id) {
@@ -290,9 +307,7 @@ class ProjectApi {
             const url = `${OriginApiUrl}/api/v1/projects/downloadHardReject?${params}`;
             fetch(url)
                 .then((res) => {
-                    console.log(res);
                     if (!res.ok) {
-                        console.log("not okay :pensive:");
                         res.text().then(reject);
                         return;
                     }
@@ -306,8 +321,6 @@ class ProjectApi {
 
                     let zip = new JSZip();
                     zip.file("project.json", JSON.stringify(json));
-
-                    console.log(res.assets);
 
                     for (const asset of res.assets) {
                         zip.file(asset.id, new Uint8Array(asset.buffer.data).buffer);
@@ -1139,35 +1152,55 @@ class ProjectApi {
             })
         })
     }
-    updateProject(id, newData) {
-        newData.id = id;
-        newData.requestor = this.username;
-        newData.token = this.token;
-        if (typeof newData.newMeta === "object") {
-            newData.newMeta = JSON.stringify(newData.newMeta);
-        }
-        return new Promise((resolve, reject) => {
-            fetch(
-                `${OriginApiUrl}/api/projects/update`,
-                {
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newData),
-                    method: "POST"
-                }
-            ).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
+    updateProject(id, data) {
+        const username = this.username;
+        const token = this.token;
+        const title = data.title;
+        const instructions = data.instructions;
+        const notes = data.notes;
+
+
+        return new Promise(async (resolve, reject) => {
+            JSZip.loadAsync(data.project).then(async zip => {
+                const projectJSON = JSON.parse(await zip.file("project.json").async("text"))
+
+                const protobuf = this.jsonToProtobuf(projectJSON);
+
+                const assets = [];
+                zip.forEach((relativePath, file) => {
+                    if (file.dir) return;
+                    if (relativePath === "project.json") return;
+                    assets.push(file);
+                });
+
+                
+                const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/updateProject?username=${username}&token=${token}&title=${title}&instructions=${instructions}&notes=${notes}&projectID=${id}`;
+                const request = new XMLHttpRequest();
+                const formData = new FormData();
+
+                request.open("POST", API_ENDPOINT, true);
+                request.onload = () => {
+                    const response = JSON.parse(request.response);
+
+                    if (response.error) {
+                        reject(response.error);
                         return;
                     }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
-            })
-        })
+
+                    resolve(response.id);
+                };
+
+                for (let i = 0; i < assets.length; i++) {
+                    // convert to blob
+                    formData.append("assets", await assets[i].async("blob"), assets[i].name);
+                }
+
+                formData.append("jsonFile", new Blob([protobuf]));
+                formData.append("thumbnail", data.image);
+
+                request.send(formData);
+            });
+        });
     }
 
     jsonToProtobuf(json) {
