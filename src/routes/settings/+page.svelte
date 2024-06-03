@@ -29,7 +29,7 @@
         standing: 0, // 0 for good, 1 for limited, 2 for tempban, 3 for banned (ideally returned by api because of temp ban)
         tempBanExpire: 0, // a timestamp when the ban expires
 
-        settings: { // change to match what the api internally calls these props
+        settings: { // change to match what the api internally calls these props - mmmmmm no
             private: false,
             privateToNonFollowers: false,
             showCubesOnProfile: false,
@@ -63,11 +63,13 @@
             return;
         }
         Authentication.usernameFromCode(username, token)
-            .then(({ loginMethods: _loginMethods }) => {
+            .then(({ loginMethods: _loginMethods, privateProfile: _privateProfile, canFollowingSeeProfile: _cfsp }) => {
                 loggedIn = true;
                 loggedInChange(username, token);
                 loginMethods = _loginMethods;
                 
+                accountInformation.settings.private = _privateProfile;
+                accountInformation.settings.privateToNonFollowers = _cfsp;
             })
             .catch(() => {
                 loggedIn = false;
@@ -145,6 +147,13 @@
             window.removeEventListener("message", handleMessageReciever);
             alert("Please allow popups for this site.");
         };
+    }
+
+    function updatePrivateProfile() {
+        const privateProfile = accountInformation.settings.private || false;
+        const privateToNonFollowers = accountInformation.settings.privateToNonFollowers || false;
+
+        ProjectClient.updatePrivateProfile(privateProfile, privateToNonFollowers);
     }
 </script>
 
@@ -252,6 +261,7 @@
                                 <input
                                     type="checkbox"
                                     bind:checked={accountInformation.settings.private}
+                                    on:change={updatePrivateProfile}
                                 >
                                 Make my profile private
                             </label>
@@ -262,6 +272,7 @@
                                     type="checkbox"
                                     disabled={!accountInformation.settings.private}
                                     bind:checked={accountInformation.settings.privateToNonFollowers}
+                                    on:change={updatePrivateProfile}
                                 >
                                 Allow people I follow to view my profile
                             </label>

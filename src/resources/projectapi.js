@@ -87,9 +87,9 @@ class ProjectApi {
                 });
         });
     }
-    static getProfile(user, includeBio, token="") {
+    static getProfile(user, includeBio) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/profile?username=${user}${includeBio ? '&bio=true' : ''}&token=${token}`;
+            const url = `${OriginApiUrl}/api/v1/users/profile?target=${user}${includeBio ? '&bio=true' : ''}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -481,9 +481,9 @@ class ProjectApi {
         });
     }
 
-    isFollowingUser(username, returnRawInfo) {
+    isFollowing(username, target, raw) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/isfollowing?username=${this.username}&target=${username}`;
+            const url = `${OriginApiUrl}/api/v1/users/isfollowing?username=${username}&target=${target}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -491,7 +491,7 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((info) => {
-                        if (returnRawInfo) return resolve(info);
+                        if (raw) return resolve(info);
                         resolve(info.following);
                     });
                 })
@@ -499,6 +499,10 @@ class ProjectApi {
                     reject(err);
                 });
         });
+    }
+
+    isFollowingUser(username, returnRawInfo) {
+        return this.isFollowing(this.username, username, returnRawInfo);
     }
     toggleFollowingUser(username, toggle) {
         return new Promise((resolve, reject) => {
@@ -1774,6 +1778,39 @@ class ProjectApi {
                     username: this.username,
                     token: this.token
                 })
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
+
+    updatePrivateProfile(privateProfile, privateToFollowing) {
+        const url = `${OriginApiUrl}/api/v1/users/privateProfile`;
+
+        const body = JSON.stringify({
+            username: this.username,
+            token: this.token,
+            privateProfile,
+            privateToFollowing
+        });
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
             }).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {

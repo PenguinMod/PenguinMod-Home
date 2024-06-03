@@ -45,8 +45,9 @@
     let focusedBadge = -1;
     let isDonator = false;
     let isFollowingUser = false;
+    let isFollowedByUser = false;
     let isProfilePrivate = false;
-    let isProfilePrivateToFollowers = false;
+    let isProfilePublicToFollowers = false;
     let followOnLoad = false;
     let wasNotFound = false;
     let isForceView = false;
@@ -242,6 +243,9 @@
                 isDonator = fullProfile.donator;
                 followerCount = fullProfile.followers;
 
+                isProfilePrivate = fullProfile.privateProfile;
+                isProfilePublicToFollowers = fullProfile.canFollowingSeeProfile;
+
                 const profileFeatured = fullProfile.myFeaturedProject;
                 if (profileFeatured) {
                     ProjectApi.getProjectMeta(profileFeatured).then(metadata => {
@@ -289,6 +293,8 @@
             
             window.location.reload();
         });
+
+        isFollowedByUser = await ProjectClient.isFollowing(user, username);
     });
 
     let currentLang = "en";
@@ -308,19 +314,12 @@
                 loggedInAdmin = false;
                 Authentication.usernameFromCode(privateCode)
                     .then(({ username, isAdmin, isApprover }) => {
-                        if (username) {
-                            loggedIn = true;
-                            loggedInUser = username;
-                            loggedInAdmin = isAdmin || isApprover;
-                            loggedInChange();
-                            resolve();
-                            return;
-                        }
-                        loggedIn = false;
-                        loggedInUser = "";
-                        loggedInAdmin = false;
+                        loggedIn = true;
+                        loggedInUser = username;
+                        loggedInAdmin = isAdmin || isApprover;
+
                         loggedInChange();
-                        reject();
+                        resolve();
                     })
                     .catch(() => {
                         loggedIn = false;
@@ -861,7 +860,7 @@
                                 </div>
                             </div>
                             <!-- TODO: add condition where the user is following the logged in user -->
-                            {#if !isProfilePrivate || loggedInUser === user}
+                            {#if !isProfilePrivate || loggedInUser === user || (isProfilePublicToFollowers && isFollowedByUser)}
                                 <div class="follower-section">
                                     <p class="follower-count">
                                         {TranslationHandler.text(
@@ -904,7 +903,7 @@
                 </div>
             {/if}
             <!-- TODO: add condition where the user is following the logged in user -->
-            {#if isProfilePrivate && loggedInUser !== user}
+            {#if isProfilePrivate && loggedInUser !== user && !(isProfilePublicToFollowers && isFollowedByUser)}
                 <div class="section-private">
                     <img
                         src="/account/lock.svg"
@@ -912,7 +911,7 @@
                         title="Private"
                     />
                     
-                    {#if isProfilePrivateToFollowers}
+                    {#if isProfilePublicToFollowers}
                         <p>This profile is private. Only people {user} follows can see their profile.</p>
                     {:else}
                         <p>This profile is private. You cannot view it.</p>

@@ -96,8 +96,7 @@ class Authentication {
                     username: username, 
                     isAdmin: j.admin,
                     isApprover: j.approver,
-                    loginMethods: j.loginMethods,
-                    lastPolicyRead: j.lastPolicyRead,
+                    ...j
                 })
             }).catch(reject)).catch(reject)
         })
