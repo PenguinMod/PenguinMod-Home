@@ -284,6 +284,48 @@ class ProjectApi {
         })
     }
 
+    async downloadHardRejectedProject(id) {
+        return new Promise(((resolve, reject) => {
+            const params = `project=${id}&username=${this.username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/projects/downloadHardReject?${params}`;
+            fetch(url)
+                .then((res) => {
+                    console.log(res);
+                    if (!res.ok) {
+                        console.log("not okay :pensive:");
+                        res.text().then(reject);
+                        return;
+                    }
+                    return res.json();
+                })
+                .then(((res) => {
+                    const blob = new Uint8Array(res.project.data);
+
+                    const pbf = new Pbf(blob);
+                    const json = this.protobufToJson(pbf);
+
+                    let zip = new JSZip();
+                    zip.file("project.json", JSON.stringify(json));
+
+                    console.log(res.assets);
+
+                    for (const asset of res.assets) {
+                        zip.file(asset.id, new Uint8Array(asset.buffer.data).buffer);
+                    }
+
+                    const arrayBuffer = zip.generateAsync({ type: "arraybuffer" });
+
+                    return arrayBuffer;
+                }).bind(this))
+                .then((arrayBuffer) => {
+                    resolve(arrayBuffer);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        }).bind(this))
+    }
+
     setToken(p) {
         this.token = p;
     }
@@ -627,24 +669,7 @@ class ProjectApi {
                 });
         });
     }
-    getRejectedProjectFile(id) {
-        return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/projects/downloadRejected?id=${id}&approver=${this.username}&token=${this.token}`;
-            fetch(url)
-                .then((res) => {
-                    if (!res.ok) {
-                        res.text().then(reject);
-                        return;
-                    }
-                    res.arrayBuffer().then((arrayBuffer) => {
-                        resolve(arrayBuffer);
-                    });
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        })
-    }
+
     restoreRejectedProject(id) {
         return new Promise((resolve, reject) => {
             const data = {
@@ -921,6 +946,7 @@ class ProjectApi {
             })
         })
     }
+
     rejectProject(id, reason) {
         const data = {
             token: this.token,
@@ -948,6 +974,35 @@ class ProjectApi {
             })
         })
     }
+
+    hardRejectProject(id, reason) {
+        const data = {
+            token: this.token,
+            username: this.username,
+            project: id,
+            message: reason,
+        };
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/v1/projects/hardreject`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+
     attemptRankUp() {
         const data = {
             token: this.token,
@@ -1312,7 +1367,7 @@ class ProjectApi {
         return pbf.finish();
     }
 
-    static protobufToJson(pbf) {
+    protobufToJson(pbf) {
         const json = Project.read(pbf);
 
         const newJson = {

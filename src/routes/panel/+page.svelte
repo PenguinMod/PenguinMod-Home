@@ -211,15 +211,17 @@
         if (rejectingTextboxArea.value.length <= 3) {
             return alert("The action was cancelled.");
         }
-        ProjectClient.rejectProject(id, rejectingTextboxArea.value, isRejectHard).then(() => {
-            rejectionPageOpen = false;
-            // uhhhhhhh apparently we need to do this ig?
-            // const newProjects = projects.filter((proj) => proj.id !== id);
-            // projects = [];
-            // projects = newProjects;
-            // dont need to do this i think
-            refreshProjectMenu();
-        });
+        if (!isRejectHard) {
+            ProjectClient.rejectProject(id, rejectingTextboxArea.value).then(() => {
+                rejectionPageOpen = false;
+                refreshProjectMenu();
+            });
+        } else {
+            ProjectClient.hardRejectProject(id, rejectingTextboxArea.value).then(() => {
+                rejectionPageOpen = false;
+                refreshProjectMenu();
+            });
+        }
     }
     let selectedProjectName = "";
     let lastSelectedProjectId = 0;
@@ -562,7 +564,7 @@
     let rejectedProjectId = "0";
     const downloadRejectedProject = async () => {
         try {
-            const projectFile = await ProjectClient.getRejectedProjectFile(
+            const projectFile = await ProjectClient.downloadHardRejectedProject(
                 rejectedProjectId
             );
             FileSaver.saveAs(
