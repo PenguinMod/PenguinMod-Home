@@ -91,7 +91,7 @@
     // }
     const downloadRejectedProject = async (projectId) => {
         try {
-            const projectFile = await ProjectClient.getRejectedProjectFile(
+            const projectFile = await ProjectClient.downloadHardRejectedProject(
                 projectId
             );
             FileSaver.saveAs(
@@ -380,7 +380,7 @@
                                 class="fake-link"
                                 style="display:flex;align-items:center;"
                                 on:click={() =>
-                                    downloadRejectedProject(message.projectId)}
+                                    downloadRejectedProject(message.message.project.id)}
                             >
                                 <img
                                     src="/messagesstatic/download.png"
