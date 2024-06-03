@@ -1699,5 +1699,95 @@ class ProjectApi {
             })
         })
     }
+
+    setLastPolicyUpdate(policies) {
+        const body = JSON.stringify({
+            username: this.username,
+            token: this.token,
+            types: policies
+        });
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/v1/misc/setLastPolicyUpdate`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
+
+    getLastPolicyUpdate() {
+        const url = `${OriginApiUrl}/api/v1/misc/getLastPolicyUpdate`
+        return new Promise((resolve, reject) => {
+            fetch(url).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve(json);
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
+
+    markPolicyAsRead(policy) {
+        let url;
+        switch (policy) {
+            case "TOS":
+                url = `${OriginApiUrl}/api/v1/misc/markTOSAsRead`;
+                break;
+            case "privacyPolicy":
+                url = `${OriginApiUrl}/api/v1/misc/markPrivacyPolicyAsRead`;
+                break;
+            case "guidelines":
+                url = `${OriginApiUrl}/api/v1/misc/markGuidelinesAsRead`;
+                break;
+            default:
+                throw new Error("Invalid policy type");
+        }
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: this.username,
+                    token: this.token
+                })
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
 }
 export default ProjectApi;

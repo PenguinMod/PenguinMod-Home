@@ -551,22 +551,18 @@
     const sendGuidelinesNotifs = () => {
         const notifs = [];
         if (guidelinesNotifs.tos) {
-            notifs.push('terms');
+            notifs.push('tos');
         }
         if (guidelinesNotifs.pp) {
-            notifs.push('privacy');
+            notifs.push('privacyPolicy');
         }
         if (guidelinesNotifs.ug) {
-            notifs.push('uploadingguidelines');
+            notifs.push('guidelines');
         }
         if (notifs.length <= 0) return alert("No notifs were selected!");
         const confirmed = prompt('Are you sure you want to notify ALL users of the site?\nType "ok" to confirm.');
         if (confirmed !== 'ok') return;
-        for (const notif of notifs) {
-            ProjectClient.addMessage('guidelines', null, {
-                section: notif
-            });
-        }
+        ProjectClient.setLastPolicyUpdate(notifs)
     };
 
     let rejectedProjectId = "0";

@@ -29,6 +29,20 @@
     let pageIsLast = false;
     let canAutoTranslate = false;
     let autoTranslationCode = "en";
+
+    const now = Date.now();
+    let lastPolicyRead = {
+        privacyPolicy: now,
+        TOS: now,
+        guidelines: now
+    }
+
+    let lastPolicyUpdate = {
+        privacyPolicy: now,
+        TOS: now,
+        guidelines: now
+    }
+
     const disputeTexts = {};
     const autoTranslations = {};
 
@@ -52,20 +66,55 @@
                 pageIsLast = true;
             }
             //messages.push(...messagess);
-            messages = messages;
+            messages = messagess;
         });
+    }
+
+    function updateGuidelinesMessages() {
+        const messages = [];
+
+        if (lastPolicyUpdate.privacyPolicy > lastPolicyRead.privacyPolicy) {
+            messages.push({
+                message: {
+                    type: "privacyPolicy",
+                },
+                id: "privacyPolicy"
+            });
+        }
+        if (lastPolicyUpdate.TOS > lastPolicyRead.TOS) {
+            messages.push({
+                message: {
+                    type: "TOS",
+                },
+                id: "TOS"
+            });
+        }
+        if (lastPolicyUpdate.guidelines > lastPolicyRead.guidelines) {
+            messages.push({
+                message: {
+                    type: "guidelines",
+                    
+                },
+                id: "guidelines"
+            });
+        }
+
+        return messages;
     }
 
     function loggedInChange(username, privateCode) {
         if (username) ProjectClient.setUsername(username);
         if (privateCode) ProjectClient.setToken(privateCode);
         messages = [];
-        ProjectClient.getMyMessages()
+        ProjectClient.getMyMessages(0)
             .then((messagess) => {
+                messagess = messagess.concat(updateGuidelinesMessages());
+
                 if (messagess.length <= 0) {
                     messages = ["notfound"];
                     return;
                 }
+                
                 messages = messagess;
                 if (messages.length < 12) {
                     pageIsLast = true;
@@ -111,15 +160,29 @@
             loggedIn = false;
             return;
         }
+
+        ProjectClient.getLastPolicyUpdate().then((lastUpdate) => {
+            lastPolicyUpdate = lastUpdate;
+        });
+
         Authentication.usernameFromCode(username, token)
-            .then(() => {
+            .then(({ lastPolicyRead: _lastPolicyRead }) => {
                 loggedIn = true;
+
+                lastPolicyRead = _lastPolicyRead;
+
                 loggedInChange(username, token);
             })
             .catch(() => {
                 loggedIn = false;
             });
     });
+
+    function markPolicyAsRead(policy) {
+        ProjectClient.markPolicyAsRead(policy).then(() => {
+            lastPolicyRead[policy] = Date.now();
+        });
+    }
 
     function askForLogin() {
         Authentication.authenticate().then((privateCode) => {
@@ -150,7 +213,13 @@
                 return;
             }
         }
-        ProjectClient.readMessage(id);
+
+        if (id === "privacyPolicy" || id === "TOS" || id === "guidelines") {
+            markPolicyAsRead(id);
+        } else {
+            ProjectClient.readMessage(id);
+        }
+
         if (id) {
             readMessages.push(id);
         } else {
@@ -163,6 +232,10 @@
     }
 
     function markAllMessagesAsRead() {
+        markPolicyAsRead("privacyPolicy");
+        markPolicyAsRead("TOS");
+        markPolicyAsRead("guidelines");
+
         ProjectClient.markAllMessagesAsRead();
 
         readMessages = readMessages.concat(
@@ -569,31 +642,61 @@
                                 <br />
                             {/if}
                         </p>
-                    {:else if message.message.type === "guidelines"}
+                    {:else if message.message.type === "privacyPolicy"}
                         <a
-                            href="/{message.section === 'uploadingguidelines' ? 'guidelines/uploading' : message.section}"
+                            href="/privacy"
                         >
-                            {String(
+                            {
+                                String(
                                     TranslationHandler.text(
-                                        `messages.alert.${message.section}`,
+                                        `messages.alert.privacy`,
                                         currentLang
                                     ) || TranslationHandler.text(
-                                        `messages.alert.${message.section}`,
+                                        `messages.alert.privacy`,
                                         'en'
                                     )
-                            )
-                            .replace("{{TERMS_OF_SERVICE}}", TranslationHandler.text(
-                                        "home.footer.sections.info.terms",
+                                )
+                                .replace("{{PRIVACY_POLICY}}", TranslationHandler.text(
+                                    "home.footer.sections.info.privacy",
+                                    currentLang
+                                ))
+                            }
+                        </a>
+                    {:else if message.message.type === "guidelines"}
+                        <a href="/guidelines/uploading">
+                            {
+                                String(
+                                    TranslationHandler.text(
+                                        `messages.alert.uploadingguidelines`,
                                         currentLang
-                                    ))
-                            .replace("{{PRIVACY_POLICY}}", TranslationHandler.text(
-                                        "home.footer.sections.info.privacy",
+                                    ) || TranslationHandler.text(
+                                        `messages.alert.uploadingguidelines`,
+                                        'en'
+                                    )
+                                )
+                                .replace("{{UPLOADING_GUIDELINES}}", TranslationHandler.text(
+                                    "home.footer.sections.info.guidelines",
+                                    currentLang
+                                ))
+                            }
+                        </a>
+                    {:else if message.message.type === "TOS"}
+                        <a href="/terms">
+                            {
+                                String(
+                                    TranslationHandler.text(
+                                        `messages.alert.terms`,
                                         currentLang
-                                    ))
-                            .replace("{{UPLOADING_GUIDELINES}}", TranslationHandler.text(
-                                        "home.footer.sections.info.guidelines",
-                                        currentLang
-                                    ))}
+                                    ) || TranslationHandler.text(
+                                        `messages.alert.terms`,
+                                        'en'
+                                    )
+                                )
+                                .replace("{{TERMS_OF_SERVICE}}", TranslationHandler.text(
+                                    "home.footer.sections.info.terms",
+                                    currentLang
+                                ))
+                            }
                         </a>
                     {:else}
                         <!-- what is this? -->
