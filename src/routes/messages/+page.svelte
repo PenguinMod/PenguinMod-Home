@@ -469,6 +469,18 @@
                                 />
                             </button>
                         {/if}
+                    {:else if message.message.type === "removed"} 
+                        <p>
+                            <b>
+                                {String(
+                                    TranslationHandler.text(
+                                        "messages.alert.staff.removed.title",
+                                        currentLang
+                                    )
+                                ).replace("$1", message.message.title)}
+                            </b>
+                        </p>
+                        {message.message.message}
                     {:else if message.message.type === "projectFeatured"}
                         <p>
                             <b>
