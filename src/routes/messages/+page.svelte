@@ -579,6 +579,58 @@
                             </p>
                             <br />
                         {/if}
+                        {:else if message.message.type === "tempban"}
+                        <h3>
+                            <LocalizedText
+                                text="Your account has been banned from uploading projects and other features. You can continue to use the editor or view other people's projects though."
+                                key="messages.alert.staff.banned.title"
+                                lang={currentLang}
+                            />
+                        </h3>
+                        <p>
+                            <b>
+                                <LocalizedText
+                                    text="Reason:"
+                                    key="messages.alert.staff.reason"
+                                    lang={currentLang}
+                                />
+                            </b>
+                        </p>
+                        <p>{message.message.reason}</p>
+                        <p>
+                            <b>
+                                {
+                                    String(
+                                        TranslationHandler.text(
+                                            `account.settings.standing.dateunban`,
+                                            currentLang
+                                        ) || TranslationHandler.text(
+                                            `account.settings.standing.dateunban`,
+                                            'en'
+                                        ) || "Unban Date: {{DATE}}"
+                                    ).replace("{{DATE}}", new Date(message.message.time + Date.now()).toLocaleDateString(currentLang, {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                        hour: 'numeric',
+                                    }))
+                                }
+                            </b>
+                        </p>
+                        {#if canAutoTranslate && !autoTranslationCode.startsWith("en")}
+                            <br />
+                            <p style="display:flex;align-items:center;">
+                                <img
+                                    src="/messagesstatic/translate.png"
+                                    alt="Translate"
+                                    width="30"
+                                    height="30"
+                                    style="margin-right:6px"
+                                />
+                                <AutoLocalizedText text={message.message.reason} />
+                            </p>
+                            <br />
+                        {/if}
                     {:else if message.message.type === "unban"}
                         <p>
                             <LocalizedText

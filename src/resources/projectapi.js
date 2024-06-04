@@ -813,7 +813,7 @@ class ProjectApi {
             });
         });
     }
-    banUser(username, reason, toggle) {
+    banUser(username, reason, time, toggle) {
         return new Promise((resolve, reject) => {
             const data = {
                 username: this.username,
@@ -821,6 +821,7 @@ class ProjectApi {
                 target: username,
                 reason,
                 toggle: toggle,
+                time,
             };
             fetch(`${OriginApiUrl}/api/v1/users/ban`, {
                 headers: { "Content-Type": "application/json" },

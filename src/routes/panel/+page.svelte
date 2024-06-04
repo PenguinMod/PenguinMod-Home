@@ -611,6 +611,7 @@
     const banOrUnbanData = {
         username: "",
         reason: "",
+        time: 0,
     };
     let admin = false;
     let approver = false;
@@ -619,7 +620,7 @@
             `Are you sure you want to ban ${banOrUnbanData.username} for "${banOrUnbanData.reason}"? Type "ok" to confirm.`
         );
         if (promptMessage !== "ok") return;
-        ProjectClient.banUser(banOrUnbanData.username, banOrUnbanData.reason, true)
+        ProjectClient.banUser(banOrUnbanData.username, banOrUnbanData.reason, 0, true)
             .then(() => {
                 alert(`Banned ${banOrUnbanData.username}.`);
             })
@@ -628,12 +629,28 @@
                 alert(`Failed to ban user; ${err}`);
             });
     };
+
+    const tempBanUser = () => {
+        const promptMessage = prompt(
+            `Are you sure you want to temp ban ${banOrUnbanData.username} for "${banOrUnbanData.reason}" for ${banOrUnbanData.time} seconds (${banOrUnbanData.time / (60 * 60)} hours)? Type "ok" to confirm.`
+        );
+        if (promptMessage !== "ok") return;
+        ProjectClient.banUser(banOrUnbanData.username, banOrUnbanData.reason, Math.ceil(banOrUnbanData.time*1000), true)
+            .then(() => {
+                alert(`Banned ${banOrUnbanData.username}.`);
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to ban user; ${err}`);
+            });
+    };
+
     const unbanUser = () => {
         const promptMessage = prompt(
             `Are you sure you want to unban ${banOrUnbanData.username}? Type "ok" to confirm.`
         );
         if (promptMessage !== "ok") return;
-        ProjectClient.banUser(banOrUnbanData.username, banOrUnbanData.reason, false)
+        ProjectClient.banUser(banOrUnbanData.username, banOrUnbanData.reason, 0, false)
             .then(() => {
                 alert(`Unbanned ${banOrUnbanData.username}.`);
             })
@@ -1190,6 +1207,13 @@
                     placeholder="Action reason..."
                     bind:value={banOrUnbanData.reason}
                 />
+                <br />
+                <br />
+                <input
+                    type="number"
+                    size="50"
+                    bind:value={banOrUnbanData.time}
+                /> temp ban time (in seconds)
                 <p>
                     Action reasons for user punishments must be translatable.
                     <br />
@@ -1214,6 +1238,7 @@
                 <div class="user-action-row">
                     <Button on:click={unbanUser}>Unban User</Button>
                     <Button color="red" on:click={banUser}>Ban User</Button>
+                    <Button color="red" on:click={tempBanUser}>Temp Ban User</Button>
                     <Button on:click={setUsersPerms}>Assign User Perms</Button>
                 </div>
             </div>
