@@ -1,5 +1,9 @@
 <script>
     import { onMount } from "svelte";
+    import { page } from '$app/stores';
+    
+    // Static values
+    import LINK from "../../resources/urls.js";
     
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
@@ -8,8 +12,8 @@
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import Language from "../../resources/language.js";
+    import TranslationHandler from "../../resources/translations.js";
     import Authentication from "../../resources/authentication.js";
-    import { page } from '$app/stores';
 
     let currentLang = "en";
     onMount(() => {
@@ -120,7 +124,11 @@
         let iframe = window.open(`http://localhost:8080/api/v1/users/loginoauthaccount?method=${method}`, `Login with ${method}`, "width=500,height=500");
 
         if (!iframe) {
-            alert(`Please enable popups to login with ${method}.`);
+            alert(TranslationHandler.textSafe(
+                "login.oauth.nopopup",
+                currentLang,
+                "Please enable popups to login with {{WEBSITE}}."
+            ).replace('{{WEBSITE}}', method));
             return;
         }
 
@@ -166,11 +174,16 @@
             <img
                 src="/account/profile_sheet.png"
                 alt="Profiles"
-                title="Feel free to draw your own profile picture to get ready for your new account!"
             />
         </div>
         <h1 style="margin-block:4px">PenguinMod</h1>
-        <p>Login with your personal account</p>
+        <p>
+            <LocalizedText
+                text="Login with your personal account"
+                key="login.title"
+                lang={currentLang}
+            />
+        </p>
 
         <button class="gsi-material-button" on:click={googleOAuth}>
             <div class="gsi-material-button-state"></div>
@@ -184,8 +197,20 @@
                         <path fill="none" d="M0 0h48v48H0z"></path>
                     </svg>
                 </div>
-                <span class="gsi-material-button-contents">Login with Google</span>
-                <span style="display: none;">Login with Google</span>
+                <span class="gsi-material-button-contents">
+                    <LocalizedText
+                        text="Login with Google"
+                        key="login.oauth.google"
+                        lang={currentLang}
+                    />
+                </span>
+                <span style="display: none;">
+                    <LocalizedText
+                        text="Login with Google"
+                        key="login.oauth.google"
+                        lang={currentLang}
+                    />
+                </span>
             </div>
         </button>
 
@@ -200,8 +225,20 @@
                         style="display: block;width:20px;height:20px;"
                     />
                 </div>
-                <span class="gsi-material-button-contents">Login with Github</span>
-                <span style="display: none;">Login with Github</span>
+                <span class="gsi-material-button-contents">
+                    <LocalizedText
+                        text="Login with GitHub"
+                        key="login.oauth.github"
+                        lang={currentLang}
+                    />
+                </span>
+                <span style="display: none;">
+                    <LocalizedText
+                        text="Login with GitHub"
+                        key="login.oauth.github"
+                        lang={currentLang}
+                    />
+                </span>
             </div>
         </button>
 
@@ -211,24 +248,64 @@
                 <div class="gsi-material-button-icon">
                     <img src="/Scratch_S.svg" alt="Scratch" style="display:block;width:20px;height:20px;">
                 </div>
-                <span class="gsi-material-button-contents">Login with Scratch</span>
-                <span style="display: none;">Login with Scratch</span>
+                <span class="gsi-material-button-contents">
+                    <LocalizedText
+                        text="Login with Scratch"
+                        key="login.oauth.scratch"
+                        lang={currentLang}
+                    />
+                </span>
+                <span style="display: none;">
+                    <LocalizedText
+                        text="Login with Scratch"
+                        key="login.oauth.scratch"
+                        lang={currentLang}
+                    />
+                </span>
             </div>
         </button>
+        
+        <p class="or-line">
+            <LocalizedText
+                text="or"
+                key="account.methods.orline"
+                lang={currentLang}
+            />
+        </p>
 
-        <span class="input-title">Username</span>
+        <span class="input-title">
+            <LocalizedText
+                text="Username"
+                key="account.fields.username"
+                lang={currentLang}
+            />
+        </span>
         <input
             bind:value={username}
             type="text"
-            placeholder="Use something iconic!"
+            placeholder={TranslationHandler.textSafe(
+                "generic.typehere",
+                currentLang,
+                "Type here..."
+            )}
             maxlength="20"
             on:input={() => wrongInfo = false}
         />
-        <span class="input-title">Password</span>
+        <span class="input-title">
+            <LocalizedText
+                text="Password"
+                key="account.fields.password"
+                lang={currentLang}
+            />
+        </span>
         <div class="password-wrapper">
             <input
                 type={showingPassword ? "text" : "password"}
-                placeholder="Remember to write it down!"
+                placeholder={TranslationHandler.textSafe(
+                    "generic.typehere",
+                    currentLang,
+                    "Type here..."
+                )}
                 maxlength="50"
                 on:input={passwordInputChanged}
             />
@@ -242,16 +319,56 @@
             {#if loggingIn}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}
-                Login
+                <LocalizedText
+                    text="Login"
+                    key="login.confirm"
+                    lang={currentLang}
+                />
             {/if}
         </button>
 
-        <a href="/signup?embed={embed}" style="margin-top: 8px">Don't have an account? Sign up here!</a>
+        <a href="/signup?embed={embed}" style="margin-top: 8px">
+            <LocalizedText
+                text="Don't have an account? Sign up here!"
+                key="login.linkto.signup"
+                lang={currentLang}
+            />
+        </a>
 
         {#if wrongInfo}
-            <p style="color: red;margin-bottom:0;">Hm. That doesn't seem quite right. Try again.</p>
+            <p style="color: red;margin-bottom:0;">
+                <LocalizedText
+                    text="Hm. That doesn't seem quite right. Try again."
+                    key="login.error.invalid"
+                    lang={currentLang}
+                />
+            </p>
         {/if}
     </main>
+    
+    <div class="footer-links">
+        <a target="_blank" href={LINK.terms}>
+            <LocalizedText
+                text="Terms of Service"
+                key="home.footer.sections.info.terms"
+                lang={currentLang}
+            />
+        </a>
+        <a target="_blank" href={LINK.privacy}>
+            <LocalizedText
+                text="Privacy Policy"
+                key="home.footer.sections.info.privacy"
+                lang={currentLang}
+            />
+        </a>
+        <a target="_blank" href={LINK.contact}>
+            <LocalizedText
+                text="Contact Us"
+                key="home.footer.sections.info.contact"
+                lang={currentLang}
+            />
+        </a>
+    </div>
 </div>
     
 <style>
@@ -350,10 +467,29 @@
     :global(body.dark-mode) .invert-on-dark {
         filter: invert(1);
     }
+    
+    .or-line {
+        margin-block: 2px;
+    }
+    .footer-links {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        margin-top: 8px;
+    }
+    .footer-links a {
+        margin: 0 8px;
+    }
+
     main a {
         margin-top: 8px;
-        color: #00c3ff;
+        color: dodgerblue;
         text-decoration: none;
+    }
+    :global(body.dark-mode) :global(a),
+    :global(body.dark-mode) a {
+        color: rgb(73, 164, 255);
     }
 
     .Login-acc {
@@ -427,7 +563,6 @@
         animation-delay: 3s;
     }
 
-
     /* google stuff */
     .gsi-material-button {
         -moz-user-select: none;
@@ -458,10 +593,10 @@
         transition: background-color .218s, border-color .218s, box-shadow .218s;
         vertical-align: middle;
         white-space: nowrap;
-        width: auto;
+        width: 60%;
         max-width: 400px;
         min-width: 220px;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
     }
 
     :global(body.dark-mode) .gsi-material-button {
@@ -512,7 +647,6 @@
         top: 0;
     }
 
-
     .gsi-material-button:disabled {
         cursor: default;
         background-color: #ffffff61;
@@ -522,7 +656,6 @@
         background-color: #13131461;
         border-color: #8e918f1f;
     }
-
 
     .gsi-material-button:disabled .gsi-material-button-state {
         background-color: #e3e3e31f;
@@ -548,12 +681,10 @@
         opacity: 12%;
     }
 
-
     .gsi-material-button:not(:disabled):hover {
         -webkit-box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
         box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
     }
-
 
     .gsi-material-button:not(:disabled):hover .gsi-material-button-state {
         background-color: #303030;
@@ -563,6 +694,4 @@
         background-color: white;
         opacity: 8%;
     }
-
-
 </style>

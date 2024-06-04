@@ -1,6 +1,11 @@
 <script>
     import { onMount } from "svelte";
+    import { page } from '$app/stores';
     import { browser } from "$app/environment";
+    import MarkdownIt from "markdown-it";
+    
+    // Static values
+    import LINK from "../../resources/urls.js";
     
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
@@ -10,8 +15,8 @@
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import Language from "../../resources/language.js";
+    import TranslationHandler from "../../resources/translations.js";
     import Authentication from "../../resources/authentication.js";
-    import { page } from '$app/stores';
 
     let currentLang = "en";
     onMount(() => {
@@ -34,16 +39,16 @@
     let passwordValid = false;
 
     const usernameRequirements = [
-        {name: "Is between 3 and 20 letters, numbers or symbols", value: false},
-        {name: "Has only letters (A-Z), numbers (0-9), hyphens (-), and underscores (_)", value: false},
-        {name: "Username is not already taken", value: false}
+        {name: "username.requirement.length", value: false},
+        {name: "username.requirement.letters", value: false},
+        {name: "username.requirement.unique", value: false}
     ]
 
     const passwordRequirements = [
-        {name: "Is between 8 and 50 letters, numbers or symbols", value: false},
-        {name: "Has at least one uppercase and one lowercase letter", value: false},
-        {name: "Has at least one number", value: false},
-        {name: "Has at least one symbol", value: false},
+        {name: "password.requirement.length", value: false},
+        {name: "password.requirement.casing", value: false},
+        {name: "password.requirement.number", value: false},
+        {name: "password.requirement.symbol", value: false},
     ]
 
     async function createAccount() {
@@ -54,7 +59,11 @@
     }
     const createAccountSafe = () => {
         if (!canCreateAccount) {
-            alert("Your username or password do not meet the requirements needed to create an account.");
+            alert(TranslationHandler.textSafe(
+                "username.requirement.notmet",
+                currentLang,
+                "Your username or password do not meet the requirements needed to create an account."
+            ));
             return;
         }
 
@@ -248,7 +257,11 @@
         let iframe = window.open(`http://localhost:8080/api/v1/users/createoauthaccount?method=${method}`, `Sign up with ${method}`, "width=500,height=500");
 
         if (!iframe) {
-            alert(`Please enable popups to sign up with ${method}.`);
+            alert(TranslationHandler.textSafe(
+                "signup.oauth.nopopup",
+                currentLang,
+                "Please enable popups to sign up with {{WEBSITE}}."
+            ).replace('{{WEBSITE}}', method));
             return;
         }
 
@@ -266,6 +279,31 @@
     function scratchOauth() {
         oauthFrame("scratch");
     }
+
+    // translation MD
+    const md = new MarkdownIt({
+        html: false,
+        linkify: false,
+        breaks: true,
+    });
+    
+    const defaultLinkOpenRender = md.renderer.rules.link_open || function (tokens, idx, options, env, self) {
+        return self.renderToken(tokens, idx, options);
+    };
+    md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
+        // we should not exit the signup page
+        tokens[idx].attrSet('target', '_blank');
+
+        // Pass the token to the default renderer.
+        return defaultLinkOpenRender(tokens, idx, options, env, self);
+    };
+    
+    const env = {};
+    const generateMarkdown = (mdtext) => {
+        const tokens = md.parse(mdtext, env);
+        const bodyHTML = md.renderer.render(tokens, md.options, env);
+        return bodyHTML;
+    };
 </script>
     
 <svelte:head>
@@ -289,11 +327,21 @@
             <img
                 src="/account/profile_sheet.png"
                 alt="Profiles"
-                title="Feel free to draw your own profile picture to get ready for your new account!"
+                title={TranslationHandler.textSafe(
+                    "signup.profilewheel",
+                    currentLang,
+                    "Feel free to draw your own profile picture to get ready for your new account!"
+                )}
             />
         </div>
         <h1 style="margin-block:4px">PenguinMod</h1>
-        <p>Create your personal account</p>
+        <p>
+            <LocalizedText
+                text="Create your personal account"
+                key="signup.title"
+                lang={currentLang}
+            />
+        </p>
 
         <button class="gsi-material-button" on:click={googleOAuth}>
             <div class="gsi-material-button-state"></div>
@@ -307,8 +355,20 @@
                         <path fill="none" d="M0 0h48v48H0z"></path>
                     </svg>
                 </div>
-                <span class="gsi-material-button-contents">Sign up with Google</span>
-                <span style="display: none;">Sign up with Google</span>
+                <span class="gsi-material-button-contents">
+                    <LocalizedText
+                        text="Sign up with Google"
+                        key="signup.oauth.google"
+                        lang={currentLang}
+                    />
+                </span>
+                <span style="display: none;">
+                    <LocalizedText
+                        text="Sign up with Google"
+                        key="signup.oauth.google"
+                        lang={currentLang}
+                    />
+                </span>
             </div>
         </button>
 
@@ -323,8 +383,20 @@
                         style="display: block;width:20px;height:20px;"
                     />
                 </div>
-                <span class="gsi-material-button-contents">Sign up with GitHub</span>
-                <span style="display: none;">Sign up with GitHub</span>
+                <span class="gsi-material-button-contents">
+                    <LocalizedText
+                        text="Sign up with GitHub"
+                        key="signup.oauth.github"
+                        lang={currentLang}
+                    />
+                </span>
+                <span style="display: none;">
+                    <LocalizedText
+                        text="Sign up with GitHub"
+                        key="signup.oauth.github"
+                        lang={currentLang}
+                    />
+                </span>
             </div>
         </button>
 
@@ -334,17 +406,45 @@
                 <div class="gsi-material-button-icon">
                     <img src="/Scratch_S.svg" alt="Scratch" style="display:block;width:20px;height:20px;">
                 </div>
-                <span class="gsi-material-button-contents">Sign up with Scratch</span>
-                <span style="display: none;">Sign up with Scratch</span>
+                <span class="gsi-material-button-contents">
+                    <LocalizedText
+                        text="Sign up with Scratch"
+                        key="signup.oauth.scratch"
+                        lang={currentLang}
+                    />
+                </span>
+                <span style="display: none;">
+                    <LocalizedText
+                        text="Sign up with Scratch"
+                        key="signup.oauth.scratch"
+                        lang={currentLang}
+                    />
+                </span>
             </div>
         </button>
 
-        <p class="or-line">or</p>
+        <p class="or-line">
+            <LocalizedText
+                text="or"
+                key="account.methods.orline"
+                lang={currentLang}
+            />
+        </p>
     
-        <span class="input-title">Username</span>
+        <span class="input-title">
+            <LocalizedText
+                text="Username"
+                key="account.fields.username"
+                lang={currentLang}
+            />
+        </span>
         <input
             type="text"
-            placeholder="Use something iconic!"
+            placeholder={TranslationHandler.textSafe(
+                "account.fields.username.placeholder",
+                currentLang,
+                "Use something iconic!"
+            )}
             data-valid={usernameValid}
             maxlength="20"
             on:input={usernameInputChanged}
@@ -355,11 +455,21 @@
             <ChecksBox items={usernameRequirements} />
         {/if}
 
-        <span class="input-title">Password</span>
+        <span class="input-title">
+            <LocalizedText
+                text="Password"
+                key="account.fields.password"
+                lang={currentLang}
+            />
+        </span>
         <div class="password-wrapper">
             <input
                 type={showingPassword ? "text" : "password"}
-                placeholder="Remember to write it down!"
+                placeholder={TranslationHandler.textSafe(
+                    "account.fields.password.placeholder",
+                    currentLang,
+                    "Remember to write it down!"
+                )}
                 data-valid={passwordValid}
                 maxlength="50"
                 on:input={passwordInputChanged}
@@ -377,22 +487,43 @@
         {/if}
 
         <p>
-            By creating a PenguinMod account through any means provided on this page,
-            you agree to abide by the <a href="/terms" target="_blank">Terms of Service</a>
-            and <a href="/guidelines/uploading" target="_blank">Uploading Guidelines</a>
-            and confirm that you have read the <a href="/privacy" target="_blank">Privacy Policy</a> in its entirety.
+            {@html generateMarkdown(`${TranslationHandler.textSafe(
+                "signup.confirm.legal",
+                currentLang,
+                "By creating a PenguinMod account through any means provided on this page, you agree to abide by the [Terms of Service](/terms) and [Uploading Guidelines](/guidelines/uploading) and confirm that you have read the [Privacy Policy](/privacy) in its entirety."
+            )}`)}
         </p>
 
         <button class="create-acc" data-canCreate={canCreateAccount} on:click={createAccountSafe}>
             {#if creatingAccount}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}
-                Create
+                <LocalizedText
+                    text="Create"
+                    key="signup.confirm"
+                    lang={currentLang}
+                />
             {/if}
         </button>
 
-        <a href="/signin?embed={embed}" style="margin-top: 8px">Already have an account? Sign in here!</a>
+        <a href="/signin?embed={embed}" style="margin-top: 8px">
+            <LocalizedText
+                text="Already have an account? Sign in here!"
+                key="signup.linkto.signin"
+                lang={currentLang}
+            />
+        </a>
     </main>
+
+    <div class="footer-links">
+        <a target="_blank" href={LINK.contact}>
+            <LocalizedText
+                text="Contact Us"
+                key="home.footer.sections.info.contact"
+                lang={currentLang}
+            />
+        </a>
+    </div>
 </div>
     
 <style>
@@ -495,17 +626,28 @@
         left: -4px;
     }
 
+    .or-line {
+        margin-block: 2px;
+    }
+    .footer-links {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        margin-top: 8px;
+    }
+    .footer-links a {
+        margin: 0 8px;
+    }
+    
     main a {
         margin-top: 8px;
         color: dodgerblue;
         text-decoration: none;
     }
-    :global(body.dark-mode) main a {
+    :global(body.dark-mode) :global(a),
+    :global(body.dark-mode) a {
         color: rgb(73, 164, 255);
-    }
-
-    .or-line {
-        margin-block: 2px;
     }
 
     .create-acc {
@@ -594,7 +736,6 @@
         animation-delay: 3s;
     }
 
-
     /* google stuff */
     .gsi-material-button {
         -moz-user-select: none;
@@ -679,7 +820,6 @@
         top: 0;
     }
 
-
     .gsi-material-button:disabled {
         cursor: default;
         background-color: #ffffff61;
@@ -689,7 +829,6 @@
         background-color: #13131461;
         border-color: #8e918f1f;
     }
-
 
     .gsi-material-button:disabled .gsi-material-button-state {
         background-color: #e3e3e31f;
@@ -715,12 +854,10 @@
         opacity: 12%;
     }
 
-
     .gsi-material-button:not(:disabled):hover {
         -webkit-box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
         box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
     }
-
 
     .gsi-material-button:not(:disabled):hover .gsi-material-button-state {
         background-color: #303030;
@@ -730,6 +867,4 @@
         background-color: white;
         opacity: 8%;
     }
-
-
 </style>

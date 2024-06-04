@@ -15,6 +15,11 @@ export default {
      * PenguinMod's credits page
      */
     credits: "https://studio.penguinmod.com/credits.html",
+    
+    /**
+     * PenguinMod's contact page
+     */
+    contact: "https://studio.penguinmod.com/contact.html",
 
     /**
      * PenguinMod's terms of service page

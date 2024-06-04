@@ -13,9 +13,15 @@
     export let style = "";
 
     function unixToDisplayDate(unix) {
-        return `${new Date(Number(unix)).toDateString()} at ${new Date(
-            Number(unix)
-        ).toLocaleTimeString()}`;
+        unix = Number(unix);
+        return `${new Date(unix).toLocaleString([], {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true
+        })}`;
     }
 
     const dispatch = createEventDispatcher();

@@ -1,5 +1,18 @@
 <script>
+    import { onMount } from "svelte";
+
     export let items;
+	import LocalizedText from "$lib/LocalizedText/Node.svelte";
+	import Translations from "../../resources/translations.js";
+	import Language from "../../resources/language.js";
+    
+	let currentLang = "en";
+	onMount(() => {
+		Language.forceUpdate();
+	});
+	Language.onChange((lang) => {
+		currentLang = lang;
+	});
 </script>
 
 <div class="box">
@@ -14,7 +27,12 @@
             {:else}
                 <img src="/notallowed.png" alt="Fail">
             {/if}
-            {item.name}
+
+            <LocalizedText
+                text={item.name}
+                key={item.name}
+                lang={currentLang}
+            />
         </div>
     {/each}
 </div>

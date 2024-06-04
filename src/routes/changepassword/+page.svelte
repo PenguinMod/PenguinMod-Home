@@ -9,6 +9,7 @@
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import Language from "../../resources/language.js";
+    import TranslationHandler from "../../resources/translations.js";
     import Authentication from "../../resources/authentication.js";
     import { page } from '$app/stores';
 
@@ -56,10 +57,10 @@
     let passwordValid = false;
 
     const passwordRequirements = [
-        {name: "Is between 8 and 50 letters, numbers or symbols", value: false},
-        {name: "Has at least one uppercase and one lowercase letter", value: false},
-        {name: "Has at least one number", value: false},
-        {name: "Has at least one symbol", value: false},
+        {name: "password.requirement.length", value: false},
+        {name: "password.requirement.casing", value: false},
+        {name: "password.requirement.number", value: false},
+        {name: "password.requirement.symbol", value: false},
     ]
 
     async function checkIfValid() {
@@ -120,7 +121,11 @@
         Authentication.changePassword(username, oldPassword, password)
             .then(() => {
                 changingPassword = false;
-                alert("Password changed successfully!");
+                alert(TranslationHandler.textSafe(
+                    "password.update.success",
+                    currentLang,
+                    "Password changed successfully!"
+                ));
                 location.href = "/";
             })
             .catch((error) => {
@@ -154,7 +159,13 @@
             />
         </div>
         <h1 style="margin-block:4px">PenguinMod</h1>
-        <p>Change Your Password</p>
+        <p>
+            <LocalizedText
+                text="Change Your Password"
+                key="password.update.title"
+                lang={currentLang}
+            />
+        </p>
 
         {#if loginMethods.includes("google")}
             <button class="gsi-material-button" on:click={googleOAuth}>
@@ -169,8 +180,20 @@
                             <path fill="none" d="M0 0h48v48H0z"></path>
                         </svg>
                     </div>
-                    <span class="gsi-material-button-contents">Change your password with Google</span>
-                    <span style="display: none;">Change your password with Google</span>
+                    <span class="gsi-material-button-contents">
+                        <LocalizedText
+                            text="Change your password with Google"
+                            key="password.update.oauth.google"
+                            lang={currentLang}
+                        />
+                    </span>
+                    <span style="display: none;">
+                        <LocalizedText
+                            text="Change your password with Google"
+                            key="password.update.oauth.google"
+                            lang={currentLang}
+                        />
+                    </span>
                 </div>
             </button>
         {/if}
@@ -187,8 +210,20 @@
                             style="display: block;width:20px;height:20px;"
                         />
                     </div>
-                    <span class="gsi-material-button-contents">Change your password with GitHub</span>
-                    <span style="display: none;">Change your password with GitHub</span>
+                    <span class="gsi-material-button-contents">
+                        <LocalizedText
+                            text="Change your password with GitHub"
+                            key="password.update.oauth.github"
+                            lang={currentLang}
+                        />
+                    </span>
+                    <span style="display: none;">
+                        <LocalizedText
+                            text="Change your password with GitHub"
+                            key="password.update.oauth.github"
+                            lang={currentLang}
+                        />
+                    </span>
                 </div>
             </button>
         {/if}
@@ -200,22 +235,50 @@
                     <div class="gsi-material-button-icon">
                         <img src="/Scratch_S.svg" alt="Scratch" style="display:block;width:20px;height:20px;">
                     </div>
-                    <span class="gsi-material-button-contents">Change your password with Scratch</span>
-                    <span style="display: none;">Change your password with Scratch</span>
+                    <span class="gsi-material-button-contents">
+                        <LocalizedText
+                            text="Change your password with Scratch"
+                            key="password.update.oauth.scratch"
+                            lang={currentLang}
+                        />
+                    </span>
+                    <span style="display: none;">
+                        <LocalizedText
+                            text="Change your password with Scratch"
+                            key="password.update.oauth.scratch"
+                            lang={currentLang}
+                        />
+                    </span>
                 </div>
             </button>
         {/if}
 
         {#if loginMethods.length > 1 && loginMethods.includes("password")}
-            <p class="or-line">or</p>
+            <p class="or-line">
+                <LocalizedText
+                    text="or"
+                    key="account.methods.orline"
+                    lang={currentLang}
+                />
+            </p>
         {/if}
 
         {#if loginMethods.includes("password")}
-            <span class="input-title">Old Password</span>
+            <span class="input-title">
+                <LocalizedText
+                    text="Old Password"
+                    key="password.update.old.title"
+                    lang={currentLang}
+                />
+            </span>
             <div class="password-wrapper">
                 <input
                     type={showingOldPassword ? "text" : "password"}
-                    placeholder="You won't need this anymore!"
+                    placeholder={TranslationHandler.textSafe(
+                        "password.update.old.placeholder",
+                        currentLang,
+                        "You won't need this anymore!"
+                    )}
                     maxlength="50"
                     on:input={oldPasswordInputChanged}
                 />
@@ -226,11 +289,21 @@
                 />
             </div>
             
-            <span class="input-title">Password</span>
+            <span class="input-title">
+                <LocalizedText
+                    text="Password"
+                    key="account.fields.password"
+                    lang={currentLang}
+                />
+            </span>
             <div class="password-wrapper">
                 <input
                     type={showingNewPassword ? "text" : "password"}
-                    placeholder="Remember to write it down!"
+                    placeholder={TranslationHandler.textSafe(
+                        "account.fields.password.placeholder",
+                        currentLang,
+                        "Remember to write it down!"
+                    )}
                     data-valid={passwordValid}
                     maxlength="50"
                     on:input={passwordInputChanged}
@@ -251,7 +324,11 @@
                 {#if changingPassword}
                     <LoadingSpinner icon="/loading_white.png" />
                 {:else}
-                    Change
+                    <LocalizedText
+                        text="Change"
+                        key="password.update.confirm"
+                        lang={currentLang}
+                    />
                 {/if}
             </button>
         {/if}

@@ -45,9 +45,6 @@
     let focusedBadge = -1;
     let isDonator = false;
     let isFollowingUser = false;
-    let isFollowedByUser = false;
-    let isProfilePrivate = false;
-    let isProfilePublicToFollowers = false;
     let followOnLoad = false;
     let wasNotFound = false;
     let isForceView = false;
@@ -56,6 +53,10 @@
     let isRankingUpMenu = false;
     let isAttemptingRankUp = false;
     let profileFeaturedProject = null;
+    
+    let isProfilePrivate = false;
+    let isProfilePublicToFollowers = false;
+    let isFollowedByUser = false;
 
     const profileEditingData = {
         bio: '',
@@ -854,7 +855,11 @@
                                         <img
                                             src="/account/lock.svg"
                                             alt="Private"
-                                            title="Private"
+                                            title={TranslationHandler.textSafe(
+                                                "profile.private.note",
+                                                currentLang,
+                                                "This profile is private."
+                                            )}
                                         />
                                     {/if}
                                 </div>
@@ -881,14 +886,12 @@
                                                         <LocalizedText
                                                             text="Unfollow"
                                                             key="profile.unfollow"
-                                                            dontlink={true}
                                                             lang={currentLang}
                                                         />
                                                     {:else}
                                                         <LocalizedText
                                                             text="Follow"
                                                             key="profile.follow"
-                                                            dontlink={true}
                                                             lang={currentLang}
                                                         />
                                                     {/if}
@@ -912,9 +915,24 @@
                     />
                     
                     {#if isProfilePublicToFollowers}
-                        <p>This profile is private. Only people {user} follows can see their profile.</p>
+                        <p>
+                            <LocalizedText
+                                text={"This profile is private. Only people {{NAME}} follows can see their profile."}
+                                key="profile.private.followers"
+                                lang={currentLang}
+                                replace={{
+                                    "{{NAME}}": user,
+                                }}
+                            />
+                        </p>
                     {:else}
-                        <p>This profile is private. You cannot view it.</p>
+                        <p>
+                            <LocalizedText
+                                text="This profile is private. You cannot view it."
+                                key="profile.private"
+                                lang={currentLang}
+                            />
+                        </p>
                     {/if}
                 </div>
             {:else}
@@ -1010,7 +1028,6 @@
                                     <LocalizedText
                                         text="Don't say your real name"
                                         key="profile.bio.warning1"
-                                        dontlink={true}
                                         lang={currentLang}
                                     />
                                 </div>
@@ -1023,7 +1040,6 @@
                                     <LocalizedText
                                         text="Don't say how old you are or when you were born"
                                         key="profile.bio.warning2"
-                                        dontlink={true}
                                         lang={currentLang}
                                     />
                                 </div>
@@ -1036,7 +1052,6 @@
                                     <LocalizedText
                                         text="Don't say where you live"
                                         key="profile.bio.warning3"
-                                        dontlink={true}
                                         lang={currentLang}
                                     />
                                 </div>
@@ -1049,7 +1064,6 @@
                                     <LocalizedText
                                         text="Don't say your password or your email"
                                         key="profile.bio.warning4"
-                                        dontlink={true}
                                         lang={currentLang}
                                     />
                                 </div>
@@ -1059,7 +1073,6 @@
                             <LocalizedText
                                 text="About Me"
                                 key="profile.bio.title"
-                                dontlink={true}
                                 lang={currentLang}
                             />
                             {#if profileEditingData.isEditingBio}
@@ -1109,7 +1122,6 @@
                                         <LocalizedText
                                             text="Your bio contains inappropriate words or websites we don't allow. Please remove them to change your bio."
                                             key="profile.bio.inappropriate"
-                                            dontlink={true}
                                             lang={currentLang}
                                         />
                                     </div>
@@ -1123,14 +1135,12 @@
                                             <LocalizedText
                                                 text="There's nothing here.. yet! Write some things you want to share here!"
                                                 key="profile.bio.none"
-                                                dontlink={true}
                                                 lang={currentLang}
                                             />
                                         {:else}
                                             <LocalizedText
                                                 text="Nothing yet!"
                                                 key="generic.noneyet"
-                                                dontlink={true}
                                                 lang={currentLang}
                                             />
                                         {/if}
@@ -1144,7 +1154,6 @@
                             <LocalizedText
                                 text={projectTitleStrings[(fullProfile.myFeaturedProjectTitle || 1) - 1]}
                                 key="profile.featured.title{fullProfile.myFeaturedProjectTitle || 1}"
-                                dontlink={true}
                                 lang={currentLang}
                             />
                             {#if loggedIn && user === loggedInUser && profileFeaturedProject && !profileEditingData.isEditingProject}
@@ -1169,7 +1178,6 @@
                                 <LocalizedText
                                     text="Nothing yet!"
                                     key="generic.noneyet"
-                                    dontlink={true}
                                     lang={currentLang}
                                 />
                             </p>
@@ -1411,7 +1419,6 @@
                         <LocalizedText
                             text="View on Scratch"
                             key="profile.scratchprofile"
-                            dontlink={true}
                             lang={currentLang}
                         />
                     </Button>

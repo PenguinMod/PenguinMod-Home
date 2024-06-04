@@ -9,6 +9,7 @@
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import Language from "../../resources/language.js";
+    import TranslationHandler from "../../resources/translations.js";
     import Authentication from "../../resources/authentication.js";
     import { page } from '$app/stores';
 
@@ -30,10 +31,10 @@
     let passwordValid = false;
 
     const passwordRequirements = [
-        {name: "Is between 8 and 50 letters, numbers or symbols", value: false},
-        {name: "Has at least one uppercase and one lowercase letter", value: false},
-        {name: "Has at least one number", value: false},
-        {name: "Has at least one symbol", value: false},
+        {name: "password.requirement.length", value: false},
+        {name: "password.requirement.casing", value: false},
+        {name: "password.requirement.number", value: false},
+        {name: "password.requirement.symbol", value: false},
     ]
 
     function changePasswordRedirect() {
@@ -63,7 +64,11 @@
     }
     const changePasswordRedirectSafe = () => {
         if (!canChangePassword) {
-            alert("Your password does not meet the requirements needed to change your password.");
+            alert(TranslationHandler.textSafe(
+                "password.requirement.notmet",
+                currentLang,
+                "Your password does not meet the requirements needed to change your password."
+            ));
             return;
         }
 
@@ -125,9 +130,21 @@
             />
         </div>
         <h1 style="margin-block:4px">PenguinMod</h1>
-        <p>Change/Set Your Password Using OAuth</p>
+        <p>
+            <LocalizedText
+                text="Change/Set Your Password Using OAuth"
+                key="password.update.oauth.title"
+                lang={currentLang}
+            />
+        </p>
 
-        <span class="input-title">Password</span>
+        <span class="input-title">
+            <LocalizedText
+                text="Password"
+                key="account.fields.password"
+                lang={currentLang}
+            />
+        </span>
         <div class="password-wrapper">
             <input
                 type={showingPassword ? "text" : "password"}
@@ -152,7 +169,11 @@
             {#if changingPassword}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}
-                Change
+                <LocalizedText
+                    text="Change"
+                    key="password.update.confirm"
+                    lang={currentLang}
+                />
             {/if}
         </button>
     </main>

@@ -542,7 +542,7 @@
                         <p>
                             {String(
                                 TranslationHandler.text(
-                                    "messages.alert.staff.restoredproject.title",
+                                    "messages.alert.staff.restoredproject2.title",
                                     currentLang
                                 )
                             ).replace("$1", message.message.project.title)}

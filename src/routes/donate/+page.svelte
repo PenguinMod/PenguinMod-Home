@@ -201,7 +201,6 @@
                     <LocalizedText
                         text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
                         key="home.footer.notaffiliated"
-                        dontlink={true}
                         lang={currentLang}
                     />
                 </p>
@@ -209,6 +208,7 @@
                     <LocalizedText
                         text="You can always donate to our parent projects Scratch or TurboWarp as well, to help them stay online."
                         key="donate.parents"
+                        dolink={true}
                         lang={currentLang}
                     />
                 </p>

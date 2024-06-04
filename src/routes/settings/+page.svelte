@@ -150,7 +150,11 @@
 
         if (!login) {
             window.removeEventListener("message", handleMessageReciever);
-            alert("Please allow popups for this site.");
+            alert(TranslationHandler.textSafe(
+                "account.settings.nopopup",
+                currentLang,
+                "Please allow popups for this site."
+            ));
         };
     }
 
@@ -232,10 +236,26 @@
                 <div class="profile-section-display">
                     <h1 style="margin-block:0;font-size:40px">{loggedInUsername}</h1>
                     <button class="edit-link" on:click={changePassword}>
-                        {loginMethods.includes("password") ? "Change Password" : "Set Password"}
+                        {#if loginMethods.includes("password")}
+                            <LocalizedText
+                                text="Change Password"
+                                key="account.settings.login.changepassword"
+                                lang={currentLang}
+                            />
+                        {:else}
+                            <LocalizedText
+                                text="Set Password"
+                                key="account.settings.login.setpassword"
+                                lang={currentLang}
+                            />
+                        {/if}
                     </button>
                     <button class="edit-link">
-                        Update Login Methods
+                        <LocalizedText
+                            text="Update Login Methods"
+                            key="account.settings.login.updateoauth"
+                            lang={currentLang}
+                        />
                     </button>
                 </div>
             </div>
@@ -247,20 +267,43 @@
                         data-selected={currentTab === 'account'}
                         on:click={() => changeTab('account')}
                     >
-                        Account
+                        <LocalizedText
+                            text="Account"
+                            key="account.settings.account.title"
+                            lang={currentLang}
+                        />
                     </button>
                     <button
                         class="settings-section"
                         data-selected={currentTab === 'standing'}
                         on:click={() => changeTab('standing')}
                     >
-                        Standing
+                        <LocalizedText
+                            text="Standing"
+                            key="account.settings.standing.title"
+                            lang={currentLang}
+                        />
                     </button>
                 </div>
                 <div class="settings-area-content">
                     {#if currentTab === 'account'}
-                        <h1>Account</h1>
-                        <p>Email: {accountInformation.emailPeek}</p>
+                        <h1>
+                            <LocalizedText
+                                text="Account"
+                                key="account.settings.account.title"
+                                lang={currentLang}
+                            />
+                        </h1>
+                        <p>
+                            <LocalizedText
+                                text={"Email: {{EMAIL_PEEK}}"}
+                                key="account.settings.account.email"
+                                lang={currentLang}
+                                replace={{
+                                    "{{EMAIL_PEEK}}": `${accountInformation.emailPeek}`
+                                }}
+                            />
+                        </p>
                         <p>
                             <label>
                                 <input
@@ -268,7 +311,11 @@
                                     bind:checked={accountInformation.settings.private}
                                     on:change={updatePrivateProfile}
                                 >
-                                Make my profile private
+                                <LocalizedText
+                                    text="Make my profile private"
+                                    key="account.settings.account.toggles.private"
+                                    lang={currentLang}
+                                />
                             </label>
                         </p>
                         <p>
@@ -279,11 +326,21 @@
                                     bind:checked={accountInformation.settings.privateToNonFollowers}
                                     on:change={updatePrivateProfile}
                                 >
-                                Allow people I follow to view my profile
+                                <LocalizedText
+                                    text="Allow people I follow to view my profile"
+                                    key="account.settings.account.toggles.privatenonfollowers"
+                                    lang={currentLang}
+                                />
                             </label>
                         </p>
                         <p class="small">
-                            <i>(Moderators can always view your profile, ignoring these settings.)</i>
+                            <i>
+                                <LocalizedText
+                                    text="(Moderators can always view your profile, ignoring these settings.)"
+                                    key="account.settings.account.toggles.private.note"
+                                    lang={currentLang}
+                                />
+                            </i>
                         </p>
                         <!-- <br>
                         <p>
@@ -299,7 +356,13 @@
                             <i>(Moderators can always see your Ice Cube count, ignoring these settings.)</i>
                         </p> -->
                     {:else if currentTab === 'standing'}
-                        <h1>Standing</h1>
+                        <h1>
+                            <LocalizedText
+                                text="Standing"
+                                key="account.settings.standing.title"
+                                lang={currentLang}
+                            />
+                        </h1>
                         <AccountStatus
                             username={loggedInUsername}
                             image="http://localhost:8080/api/v1/users/getpfp?username={loggedInUsername}"

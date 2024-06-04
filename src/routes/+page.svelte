@@ -354,6 +354,7 @@
                     <LocalizedText
                         text="Built off of TurboWarp and Scratch"
                         key="home.introduction2"
+                        dolink={true}
                         lang={currentLang}
                     />
                 </h1>
@@ -472,7 +473,6 @@
             <LocalizedText
                 text="Scratch Note: Please don't mention PenguinMod on Scratch, we have different rules compared to Scratch! 😅"
                 key="home.scratchnote"
-                dontlink={true}
                 lang={currentLang}
             />
         </i>
@@ -946,7 +946,6 @@
                 <LocalizedText
                     text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
                     key="home.footer.notaffiliated"
-                    dontlink={true}
                     lang={currentLang}
                 />
             <!-- todo: find a better place to put this that isn't, the legal text -->
@@ -1036,6 +1035,13 @@
                     <LocalizedText
                         text="Uploading Guidelines"
                         key="home.footer.sections.info.guidelines"
+                        lang={currentLang}
+                    />
+                </a>
+                <a target="_blank" href={LINK.contact}>
+                    <LocalizedText
+                        text="Contact Us"
+                        key="home.footer.sections.info.contact"
                         lang={currentLang}
                     />
                 </a>

@@ -61,7 +61,7 @@
     });
 
     function unixToDisplayDate(unix) {
-       unix = Number(unix);
+        unix = Number(unix);
         return `${new Date(unix).toLocaleString([], {
             year: "numeric",
             month: "long",

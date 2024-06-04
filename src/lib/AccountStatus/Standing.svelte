@@ -1,4 +1,6 @@
 <script>
+    import { onMount } from "svelte";
+
     export let username = "";
     export let image = "/navicon.png";
     export let showname = false;
@@ -6,6 +8,33 @@
     
     export let detail = 1; // 1 is image & status, 2 adds status labels, 3 adds punishment info, and 4 adds mod messages section
     export let messagecount = 0;
+    
+	import LocalizedText from "$lib/LocalizedText/Node.svelte";
+	import Translations from "../../resources/translations.js";
+	import Language from "../../resources/language.js";
+    
+	let currentLang = "en";
+	onMount(() => {
+		Language.forceUpdate();
+	});
+	Language.onChange((lang) => {
+		currentLang = lang;
+	});
+
+    const localeText = {
+        icon: {
+            [1]: "full",
+            [2]: "limited",
+            [3]: "tempban",
+            [4]: "ban",
+        },
+        descriptive: {
+            [1]: "full",
+            [2]: "limited",
+            [3]: "ban",
+            [4]: "ban",
+        },
+    };
 </script>
 
 <div class="display">
@@ -22,28 +51,79 @@
     <div class="status-section" data-detail={detail}>
         <div class="status-line" />
         <div data-detail="1" data-selected={status === 1}>
-            <p>Full Access</p>
+            <p>
+                <LocalizedText
+                    text="Full Access"
+                    key="account.settings.standing.descriptive.{localeText.icon[1]}"
+                    lang={currentLang}
+                />
+            </p>
         </div>
         <div data-detail="2" data-selected={status === 2}>
-            <p>Limited</p>
+            <p>
+                <LocalizedText
+                    text="Limited"
+                    key="account.settings.standing.descriptive.{localeText.icon[2]}"
+                    lang={currentLang}
+                />
+            </p>
         </div>
         <div data-detail="3" data-selected={status === 3}>
-            <p>Temporarily Banned</p>
+            <p>
+                <LocalizedText
+                    text="Temporarily Banned"
+                    key="account.settings.standing.descriptive.{localeText.icon[3]}"
+                    lang={currentLang}
+                />
+            </p>
         </div>
         <div data-detail="4" data-selected={status === 4}>
-            <p>Suspended</p>
+            <p>
+                <LocalizedText
+                    text="Banned"
+                    key="account.settings.standing.descriptive.{localeText.icon[4]}"
+                    lang={currentLang}
+                />
+            </p>
         </div>
     </div>
 
     {#if detail >= 3}
         <div class="detail-section">
-            <!-- TODO: base this on the provided status using LocalizedText -->
-            <p>Your account does not currently have any punishments on it.</p>
+            <p>
+                <LocalizedText
+                    text="Your account does not currently have any punishments on it."
+                    key="account.settings.standing.descriptive.{localeText.descriptive[status]}"
+                    lang={currentLang}
+                />
+            </p>
 
             {#if detail >= 4}
-                <!-- TODO: use LocalizedText and add 9+ message limit -->
-                <h2>Moderator Messages ({messagecount})</h2>
-                <a href="/messages">Click here to view your messages.</a>
+                <h2>
+                    {#if messagecount > 9}
+                        <LocalizedText
+                            text="Moderator Messages (9+)"
+                            key="account.settings.standing.messages.toomany"
+                            lang={currentLang}
+                        />
+                    {:else}
+                        <LocalizedText
+                            text={"Moderator Messages ({{COUNT}})"}
+                            key="account.settings.standing.messages"
+                            lang={currentLang}
+                            replace={{
+                                "{{COUNT}}": messagecount,
+                            }}
+                        />
+                    {/if}
+                </h2>
+                <a href="/messages">
+                    <LocalizedText
+                        text="Click here to visit the Messages tab."
+                        key="account.settings.standing.messages.link"
+                        lang={currentLang}
+                    />
+                </a>
             {/if}
         </div>
     {/if}
