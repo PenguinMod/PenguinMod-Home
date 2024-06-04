@@ -24,6 +24,8 @@
     let loggedInUsername = null;
     let loginMethods = [];
 
+    let standing = 1;
+
     const accountInformation = {
         emailPeek: "...", // a peek of the email (censors most of it), probably made by the api
         standing: 0, // 0 for good, 1 for limited, 2 for tempban, 3 for banned (ideally returned by api because of temp ban)
@@ -63,13 +65,16 @@
             return;
         }
         Authentication.usernameFromCode(username, token)
-            .then(({ loginMethods: _loginMethods, privateProfile: _privateProfile, canFollowingSeeProfile: _cfsp }) => {
+            .then(({ loginMethods: _loginMethods, privateProfile: _privateProfile, canFollowingSeeProfile: _cfsp, standing: _standing }) => {
                 loggedIn = true;
                 loggedInChange(username, token);
                 loginMethods = _loginMethods;
                 
                 accountInformation.settings.private = _privateProfile;
                 accountInformation.settings.privateToNonFollowers = _cfsp;
+
+                standing = _standing + 1;
+                console.log(standing);
             })
             .catch(() => {
                 loggedIn = false;
@@ -299,7 +304,7 @@
                             username={loggedInUsername}
                             image="http://localhost:8080/api/v1/users/getpfp?username={loggedInUsername}"
                             showname={false}
-                            status={1}
+                            status={standing}
                             detail={4}
                         />
                     {/if}
