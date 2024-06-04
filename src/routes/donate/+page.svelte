@@ -90,24 +90,19 @@
                     />
                 </p>
                 <p>
-                    {@html generateMarkdown(`${String(TranslationHandler.text(
+                    {@html generateMarkdown(`${TranslationHandler.textSafe(
                         "donate.people1",
-                        currentLang
-                    ) || TranslationHandler.text(
-                        "donate.people1",
-                        'en'
-                    ))
+                        currentLang,
+                        "In the last month, ***$1 new people found PenguinMod*** and we sent our website to ***$2*** returning users."
+                    )
                     .replace('$1', (25000).toLocaleString())
-                    .replace('$2', (55000).toLocaleString())
-                    /* $1 is new people, $2 is returning */}
+                    .replace('$2', (55000).toLocaleString())}`)}
 
-${String(TranslationHandler.text(
+                    {@html generateMarkdown(`${TranslationHandler.textSafe(
                         "donate.people2",
-                        currentLang
-                    ) || TranslationHandler.text(
-                        "donate.people2",
-                        'en'
-                    ))}`)}
+                        currentLang,
+                        "Some people even use PenguinMod from the **United Kingdom**, **Japan**, **Brazil**, **Russia**, and more."
+                    )}`)}
                 </p>
                 <p>
                     <LocalizedText
@@ -131,46 +126,6 @@ ${String(TranslationHandler.text(
                         </p>
                         <a
                             target="_blank"
-                            href="https://donate.stripe.com/fZe4hV1jWbmr7sYbII"
-                            style="text-decoration: none !important;"
-                        >
-                            <button
-                                class="donation-container"
-                                title="Stripe - Financial infrastructure for the internet"
-                            >
-                                <img src="/stripe.png" alt="Stripe" />
-                                <span>
-                                    <LocalizedText
-                                        text="Stripe (Most payment types)"
-                                        key="payment.stripe.subtitle"
-                                        lang={currentLang}
-                                    />
-                                </span>
-                            </button>
-                        </a>
-                        <br />
-                        <a
-                            target="_blank"
-                            href="https://www.paypal.com/donate/?hosted_button_id=6UJFR8W3V7KYC"
-                            style="text-decoration: none !important;"
-                        >
-                            <button
-                                class="donation-container"
-                                title="PayPal - The safer, easier way to pay online!"
-                            >
-                                <img src="/paypal.png" alt="PayPal" />
-                                <span>
-                                    <LocalizedText
-                                        text="PayPal / Card"
-                                        key="payment.paypal.card"
-                                        lang={currentLang}
-                                    />
-                                </span>
-                            </button>
-                        </a>
-                        <br />
-                        <a
-                            target="_blank"
                             href="https://www.cash.app/$JeremyGamer13"
                             style="text-decoration: none !important;"
                         >
@@ -183,6 +138,48 @@ ${String(TranslationHandler.text(
                                     <LocalizedText
                                         text="Cash App"
                                         key="payment.cashapp"
+                                        lang={currentLang}
+                                    />
+                                </span>
+                            </button>
+                        </a>
+                        <br />
+                        <a
+                            target="_blank"
+                            href="/error?error=410"
+                            class="donation-unavailable"
+                            style="text-decoration: none !important;"
+                        >
+                            <button
+                                class="donation-container"
+                                title="Stripe - Financial infrastructure for the internet"
+                            >
+                                <img src="/stripe.png" alt="Stripe" />
+                                <span>
+                                    <LocalizedText
+                                        text="(unavailable)"
+                                        key="project.status.unavailable"
+                                        lang={currentLang}
+                                    />
+                                </span>
+                            </button>
+                        </a>
+                        <br />
+                        <a
+                            target="_blank"
+                            href="/error?error=410"
+                            class="donation-unavailable"
+                            style="text-decoration: none !important;"
+                        >
+                            <button
+                                class="donation-container"
+                                title="PayPal - The safer, easier way to pay online!"
+                            >
+                                <img src="/paypal.png" alt="PayPal" />
+                                <span>
+                                    <LocalizedText
+                                        text="(unavailable)"
+                                        key="project.status.unavailable"
                                         lang={currentLang}
                                     />
                                 </span>
@@ -364,6 +361,11 @@ ${String(TranslationHandler.text(
         width: 30%;
     }
 
+    .donation-unavailable {
+        filter: grayscale(1);
+        opacity: 0.5;
+        cursor: not-allowed !important;
+    }
     .donation-container {
         position: relative;
         border-radius: 6px;

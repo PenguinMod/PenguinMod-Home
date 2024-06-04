@@ -15,19 +15,15 @@ class TranslationHandler {
         if (language[key]) return language[key];
         return null;
     }
-    static tokened(key, lang) {
-        const text = TranslationHandler.text(key, lang);
-        if (!text) return null;
-        let newText = text;
-        let idx = 0;
-        for (const name of arguments) {
-            idx++;
-            if (idx === 1) continue; // skip key
-            if (idx === 2) continue; // skip lang
-            newText = String(newText).replace(`$${idx - 1}`, name);
-        }
-        return `${newText}`;
+    static textSafe(key, lang, defaultText) {
+        const langText = TranslationHandler.text(key, lang);
+        if (langText) return langText;
+        const englishText = TranslationHandler.text(key, "en");
+        if (englishText) return langText;
+
+        return defaultText;
     }
+    
     static isLanguageAvailable(lang) {
         return (lang in languages);
     }
