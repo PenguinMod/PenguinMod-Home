@@ -3,6 +3,8 @@
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import Language from "../../resources/language.js";
     import tips from './Tips.json'
+    tips.push("This tip has a 1/" + tips.length.toString() + " chance of appearing."
+
     let tipId = Math.floor(Math.random() * tips.length)
     export let enableTips = false
     const inter = setInterval(() => {
