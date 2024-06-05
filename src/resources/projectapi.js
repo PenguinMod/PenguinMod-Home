@@ -621,10 +621,10 @@ class ProjectApi {
         })
     }
     
-    getReports(type, userOrId) {
+    getReports(type, userOrId, page=0) {
         if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/${type}s/getReports?target=${userOrId}&username=${this.username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/reports/getReportsByTarget?target=${userOrId}&username=${this.username}&token=${this.token}&page=${page}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -632,7 +632,7 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((reports) => {
-                        resolve(reports);
+                        resolve(reports.reports);
                     });
                 })
                 .catch((err) => {
@@ -640,10 +640,10 @@ class ProjectApi {
                 });
         });
     }
-    getTypeWithReports(type) {
+    getTypeWithReports(type, page) {
         if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/${type}s/getContentWithReports?username=${this.username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/reports/getReports?username=${this.username}&token=${this.token}&type=${type}&page=${page}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -651,7 +651,7 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((reports) => {
-                        resolve(reports);
+                        resolve(reports.reports);
                     });
                 })
                 .catch((err) => {
@@ -659,16 +659,14 @@ class ProjectApi {
                 });
         });
     }
-    closeReports(type, idOrName, reporter) {
-        if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
+    closeReport(id) {
         return new Promise((resolve, reject) => {
             const data = {
                 username: this.username,
                 token: this.token,
-                id: idOrName,
-                target: reporter
+                reportID: id
             };
-            const url = `${OriginApiUrl}/api/${type}s/deleteReports`;
+            const url = `${OriginApiUrl}/api/v1/reports/deleteReport`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
@@ -843,9 +841,23 @@ class ProjectApi {
         });
     }
     reportContent(type, nameOrId, reason) {
+        const body = {
+            username: this.username,
+            token: this.token,
+            report: reason,
+            target: nameOrId,
+            type
+        }
+
         if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/${type}s/report?username=${this.username}&token=${this.token}&target=${nameOrId}&reason=${reason}`).then(res => {
+            fetch(`${OriginApiUrl}/api/v1/reports/sendReport`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            }).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);

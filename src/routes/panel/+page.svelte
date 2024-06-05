@@ -145,13 +145,12 @@
                 //return openProjectsMenu(dropdownSelectMenu.value);
         }
     };
-    const closeUserReports = (idOrName, user) => {
+    const closeUserReport = (reportID) => {
         const confirmed = prompt(
-            'Are you sure you have looked at all reports and possibly acted upon them?\nType "ok" to close all reports from this user.'
+            "Are you sure you've looked over this result completely? (Type 'ok' to confirm)"
         );
         if (confirmed !== "ok") return;
-        const type = dropdownSelectMenu.value;
-        ProjectClient.closeReports(type, idOrName, user)
+        ProjectClient.closeReport(reportID)
             .then(() => {
                 refreshProjectMenu();
             })
@@ -174,8 +173,8 @@
     function openReportsMenu(type) {
         unapprovedProjects = [];
         contentWithReports = [];
-        ProjectClient.getTypeWithReports(type).then((projectsWithReports) => {
-            contentWithReports = projectsWithReports.filter(content => content.exists ?? true);
+        ProjectClient.getTypeWithReports(type, 0).then((projectsWithReports) => {
+            contentWithReports = projectsWithReports;
         });
         // get approved projects anyways cuz we need to update list
         // todo: getProjects is paged breh what we do?
@@ -691,7 +690,6 @@
         for (const badgeName of realBadges) {
             currentUserBadges[badgeName] = true;
         }
-        console.log(currentUserBadges);
         areBadgesLoadedForVisibility = true;
     };
     const applyUserBadges = () => {
@@ -745,7 +743,6 @@
     let mods = []
     const loadUserPerms = () => ProjectClient.getAllPermitedUsers()
         .then(users => {
-            console.log(users);
             admins = users.admins
             mods = users.mods
         })
@@ -1476,7 +1473,7 @@
                             <button
                                 class="reports-user-button"
                                 on:click={() => {
-                                    loadReportDetails(content.username);
+                                    loadReportDetails(content.target);
                                     if (selectedReportDetailed === idx) {
                                         selectedReportDetailed = -1;
                                         return;
@@ -1485,54 +1482,63 @@
                                 }}
                             >
                                 <img
-                                    src={`http://localhost:8080/api/v1/users/getpfp?username=${content.username}`}
-                                    alt={content.username}
+                                    src={`http://localhost:8080/api/v1/users/getpfp?username=${content.target}`}
+                                    alt={content.target}
                                 />
                                 <div class="reports-user-content">
                                     <p style="font-weight: bold;">
-                                        {content.username}
+                                        {content.target}
                                     </p>
-                                    <p>{content.reports} reports</p>
+                                    <p>{content.target} reports</p>
                                 </div>
                             </button>
                             {#if selectedReportDetailed === idx}
                                 <div class="reports-generic-details">
-                                    {#if !reportDetails[content.username]}
+                                    {#if !reportDetails[content.target]}
                                         <LoadingSpinner />
                                     {:else}
-                                        <a href={`https://penguinmod.com/profile?user=${content.username}`} target=”_blank”>go to profile</a>
+                                        <h5>By: {content.reporter}</h5>
+                                        <p>
+                                            {content.report}
+                                        </p>
+                                        <Button
+                                            on:click={() =>
+                                                closeUserReport(
+                                                    content.id
+                                                )}
+                                            color="red"
+                                        >
+                                            Close Report
+                                        </Button>
+                                        <a href={`https://penguinmod.com/profile?user=${content.target}`} target=”_blank”>go to profile</a>
                                         <h3>View reports by</h3>
-                                        {#each reportDetails[content.username] as report}
+                                        {#each reportDetails[content.target] as report}
                                             <details>
                                                 <summary>
                                                     {report.reporter}
                                                 </summary>
-                                                <p>
-                                                    {report.ids.length} reports
-                                                </p>
                                                 <Button
                                                     on:click={() =>
-                                                        closeUserReports(
-                                                            content.username,
-                                                            report.reporter
+                                                        closeUserReport(
+                                                            report.id
                                                         )}
                                                     color="red"
                                                 >
-                                                    Close Reports
+                                                    Close Report
                                                 </Button>
                                                 <p style="white-space:pre-wrap">
-                                                    {report.reason}
+                                                    {report.report}
                                                 </p>
                                             </details>
                                         {/each}
                                     {/if}
                                 </div>
                             {/if}
-                        {:else if content.exists}
+                        {:else}
                             <button
                                 class="reports-user-button reports-project-button"
                                 on:click={() => {
-                                    loadReportDetails(content.id);
+                                    loadReportDetails(content.targetID);
                                     if (selectedReportDetailed === idx) {
                                         selectedReportDetailed = -1;
                                         return;
@@ -1541,64 +1547,65 @@
                                 }}
                             >
                                 <img
-                                    src={`http://localhost:8080/api/v1/projects/getproject?projectID=${content.id}&requestType=thumbnail`}
-                                    alt={content.name}
+                                    src={`http://localhost:8080/api/v1/projects/getproject?projectID=${content.targetID}&requestType=thumbnail`}
+                                    alt={content.target}
                                 />
                                 <div
                                     class="reports-user-content reports-project-content"
                                 >
                                     <p style="font-weight: bold;">
-                                        {content.name}
+                                        {content.target}
                                     </p>
                                     <p>
-                                        by {content.author} | {content.reports} reports
+                                        by {content.author}
                                     </p>
                                 </div>
                             </button>
                             {#if selectedReportDetailed === idx}
                                 <div class="reports-generic-details">
+                                    <h5>By: {content.reporter}</h5>
+                                    <p>
+                                        {content.report}
+                                    </p>
+
                                     <p>
                                         View project at
                                         <a
-                                            href={`https://studio.penguinmod.com/#${content.id}`}
+                                            href={`https://studio.penguinmod.com/#${content.targetID}`}
                                         >
-                                            {`https://studio.penguinmod.com/#${content.id}`}
+                                            {`https://studio.penguinmod.com/#${content.targetID}`}
                                         </a>
                                         or
                                         <button
                                             on:click={() =>
                                                 selectProject(
-                                                    content.id,
-                                                    content.name
+                                                    content.targetID,
+                                                    content.target
                                                 )}
                                         >
                                             Select Project
                                         </button>
                                     </p>
-                                    {#if !reportDetails[content.id]}
+                                    {#if !reportDetails[content.targetID]}
                                         <LoadingSpinner />
                                     {:else}
                                         <h3>View reports by</h3>
-                                        {#each reportDetails[content.id] as report}
+                                        {#each reportDetails[content.targetID] as report}
                                             <details>
                                                 <summary>
                                                     {report.reporter}
                                                 </summary>
-                                                <p>
-                                                    {report.ids.length} reports
-                                                </p>
                                                 <Button
                                                     on:click={() =>
-                                                        closeUserReports(
-                                                            content.id,
-                                                            report.reporter
+                                                        closeUserReport(
+                                                            report.id
                                                         )}
                                                     color="red"
                                                 >
-                                                    Close Reports
+                                                    Close Report
                                                 </Button>
                                                 <p style="white-space:pre-wrap">
-                                                    {report.reason}
+                                                    {report.report}
                                                 </p>
                                             </details>
                                         {/each}
