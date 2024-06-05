@@ -196,6 +196,7 @@
     //     ProjectClient.deleteProject(id);
     // }
     let rejectionPageOpen = false;
+    let deletionPageOpen = false;
     let rejectingId = 0;
     let rejectingName = "";
     let rejectingTextboxArea;
@@ -248,6 +249,22 @@
         }
         rejectionPageOpen = true;
     };
+
+    const openDeleteProjectMenu = async () => {
+        const id = String(projectIdSelection.value);
+        rejectingId = id;
+        if (selectedProjectName) {
+            rejectingName = selectedProjectName;
+        } else {
+            try {
+                const projectMeta = await ProjectApi.getProjectMeta(id);
+                rejectingName = projectMeta.title;
+            } catch {
+                rejectingName = '';
+            }
+        }
+        deletionPageOpen = true;
+    }
     // function featureProject(id, name) {
     //     const usure = confirm("Feature " + name + " ?");
     //     if (!usure) return;
@@ -591,14 +608,14 @@
                 alert(`Failed to restore project; ${err}`);
             });
     };
-    const deleteProject = () => {
+    const deleteProject = (id, reason) => {
         if (
             !confirm(
                 "Are you sure you want to PERMANENTLY delete this project?\nYou should only do this if the project contains some really bad stuff."
             )
         )
             return;
-        ProjectClient.deleteProject(rejectedProjectId)
+        ProjectClient.deleteProject(id, reason)
             .then(() => {
                 alert("Deleted.");
             })
@@ -810,6 +827,53 @@
             </div>
         </div>
     </div>
+
+    <div class="front-card-page" style="z-index: 20000;{deletionPageOpen ? '' : 'display:none;'}">
+        <div class="card-page big-card-page">
+            <div class="card-header">
+                <h1>Delete Project</h1>
+            </div>
+            <div class="card-reject" style="display:block">
+                <p>Deleting <b>{rejectingName}</b></p>
+                <img
+                    src={`${LINK.projects}api/v1/projects/getproject?projectID=${rejectingId}&requestType=thumbnail`}
+                    alt="Image of {rejectingName}"
+                    width="240"
+                    height="180"
+                >
+                <!-- svelte-ignore a11y-autofocus -->
+                <textarea
+                    bind:this={rejectingTextboxArea}
+                    placeholder="Reason for deletion..."
+                    style="width: 95%;"
+                    autofocus
+                />
+                <br />
+                <br />
+                <h2><b>Quick-Delete</b></h2>
+                <QuickRejectComponent on:select={(arg) => {
+                    rejectingTextboxArea.value = arg.detail;
+                }} />
+            </div>
+            <div style="display:flex;flex-direction:row;padding:1em">
+                <Button
+                    label="Hard Delete"
+                    color="red"
+                    on:click={() => {
+                        deleteProject(rejectingId, rejectingTextboxArea.value);
+                        deletionPageOpen = false;
+                    }}
+                />
+                <Button
+                    label="Cancel"
+                    on:click={() => {
+                        deletionPageOpen = false;
+                    }}
+                />
+            </div>
+        </div>
+    </div>
+
     {#if inspectMenuOpen}
         <div class="front-card-page">
             <div class="card-page big-card-page">
@@ -1064,11 +1128,18 @@
                     Send Approved Projects to Discord
                 </label> -->
                 <div style="height:24px" />
-                <Button
-                    label="Remove Project"
-                    color="red"
-                    on:click={openRemoveProjectMenu}
-                />
+                <div style="display: flex; flex-direction: row;">
+                    <Button
+                        label="Remove Project"
+                        color="red"
+                        on:click={openRemoveProjectMenu}
+                    />
+                    <Button
+                        label="Hard Delete Project"
+                        color="red"
+                        on:click={openDeleteProjectMenu}
+                    />
+                </div>
                 <div style="height:24px" />
                 <h3>Removed Projects</h3>
                 <p>
@@ -1081,10 +1152,6 @@
                     <Button on:click={downloadRejectedProject}>Download</Button>
                     <Button color="remix" on:click={restoreRejectedProject}>
                         Restore
-                    </Button>
-                    <div style="margin-right:24px" />
-                    <Button color="red" on:click={deleteProject}>
-                        Delete
                     </Button>
                 </div>
             </div>

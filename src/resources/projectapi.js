@@ -947,9 +947,22 @@ class ProjectApi {
         });
     }
     // BTODO: make this work
-    deleteProject(id) {
+    deleteProject(id, reason) {
+        const body = JSON.stringify({
+            projectID: id,
+            username: this.username,
+            token: this.token,
+            reason
+        })
+
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/projects/delete?token=${this.token}&approver=${this.username}&id=${id}`).then(res => {
+            fetch(`${OriginApiUrl}/api/v1/projects/hardDeleteProject`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);
