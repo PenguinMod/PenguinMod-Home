@@ -1233,7 +1233,7 @@
             </div>
             <br />
 
-            <!-- BTODO: add mod message (just send a message to the user, not a dispute response) -->
+            <!-- ATODO: add mod message (just send a message to the user, not a dispute response) -->
 
             <div class="card">
                 <h2 style="margin-block-start:0">Messages</h2>

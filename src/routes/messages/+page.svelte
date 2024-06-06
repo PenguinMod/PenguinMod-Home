@@ -678,15 +678,13 @@
                         </p>
                         <p>
                             <b>
-                                Original Dispute:
-                                <!-- BTODO: uncomment this :bleh:
                                 {String(
-                                    TranslationHandler.text(
+                                    TranslationHandler.textSafe(
                                         "messages.alert.staff.reply.original",
-                                        currentLang
+                                        currentLang,
+                                        "Original Dispute:"
                                     )
                                 )}
-                                -->
                             </b>
                         </p>
                         <p>

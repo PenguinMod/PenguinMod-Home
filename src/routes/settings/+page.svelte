@@ -204,7 +204,7 @@
     <meta property="twitter:url"         content="https://penguinmod.com/settings">
 </svelte:head>
 
-<NavigationBar />
+<NavigationBar bind:pfpkey={pfpReload} />
 
 <!-- TODO: make this work in RTL languages -->
 <div class="main">

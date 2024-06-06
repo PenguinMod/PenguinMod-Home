@@ -29,6 +29,8 @@
 	import Translations from "../../resources/translations.js";
 	import Language from "../../resources/language.js";
 
+	export let pfpkey=false;
+
 	let loggedIn = null;
 	let isAdmin = false;
 	let isApprover = false;
@@ -381,7 +383,7 @@
 			on:click={openAccountMenu}
 		>
 			<img
-				src={`http://localhost:8080/api/v1/users/getpfp?username=${accountUsername}`}
+				src={`http://localhost:8080/api/v1/users/getpfp?username=${accountUsername}&reload=${pfpkey}`}
 				alt="Profile Picture"
 				class="profile-picture"
 			/>

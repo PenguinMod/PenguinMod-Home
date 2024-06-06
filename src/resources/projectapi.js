@@ -958,7 +958,7 @@ class ProjectApi {
             });
         });
     }
-    // BTODO: make this work
+    
     deleteProject(id, reason) {
         const body = JSON.stringify({
             projectID: id,
