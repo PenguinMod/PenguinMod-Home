@@ -29,12 +29,14 @@
 
     let username = "";
     let password = "";
+    let email = "";
     let creatingAccount = false;
     let canCreateAccount = false;
     let showingPassword = false;
     let focused = "";
     let embed = false;
 
+    let emailValid = 0;
     let usernameValid = false;
     let passwordValid = false;
 
@@ -52,7 +54,7 @@
     ]
 
     async function createAccount() {
-        const token = await Authentication.createAccount(username, password);
+        const token = await Authentication.createAccount(username, password, email);
         
         localStorage.setItem("username", username);
         localStorage.setItem("token", token);
@@ -134,7 +136,7 @@
             return;
         }
 
-        canCreateAccount = !(userCheck || passwordCheck) && (isUsernameUnique && hasDoneUsernameCheck);
+        canCreateAccount = !(userCheck || passwordCheck) && (isUsernameUnique && hasDoneUsernameCheck) && emailValid !== 1;
         usernameValid = (isUsernameUnique && hasDoneUsernameCheck) && !userCheck;
 
         usernameRequirements[0].value = !usernameDoesNotMeetLength;
@@ -158,6 +160,23 @@
         username = event.target.value;
         checkIfValid();
     }
+
+    const validateEmail = (email) => {
+        return email.match(
+            /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        ) ? 2 : 1;
+    };
+
+    function emailInputChanged(event) {
+        if (event.target.value) {
+            emailValid = validateEmail(event.target.value);
+        } else {
+            emailValid = 0;
+        }
+        email = event.target.value;
+        checkIfValid();
+    }
+
     function passwordInputChanged(event) {
         password = event.target.value;
         checkIfValid();
@@ -430,7 +449,29 @@
                 lang={currentLang}
             />
         </p>
-    
+
+        <span class="input-title">
+            <LocalizedText
+                text="Email (Optional)"
+                key="account.fields.email"
+                lang={currentLang}
+            />
+        </span>
+        <input
+            type="text"
+            placeholder={TranslationHandler.textSafe(
+                "account.fields.email.placeholder",
+                currentLang,
+                "Your email address"
+            )}
+            data-valid={emailValid}
+            class="email-input"
+            maxlength="20"
+            on:input={emailInputChanged}
+            on:focusin={() => focused = "email"}
+            on:focusout={() => focused = ""}
+        />
+
         <span class="input-title">
             <LocalizedText
                 text="Username"
@@ -563,6 +604,7 @@
         font-size: large;
         outline: unset;
     }
+
     .password-wrapper {
         width: 60%;
         margin-left: -10px;
@@ -598,6 +640,22 @@
         border-color: rgb(0, 187, 0) !important;
     }
     main input[data-valid="false"] {
+        border-color: rgb(187, 0, 0) !important;
+    }
+
+    .email-input[data-valid="0"] {
+        border-color: rgba(0, 0, 0, 0.5) !important;
+    }
+
+    :global(body.dark-mode) .email-input[data-valid="0"] {
+        border-color: rgba(255, 255, 255, 0.3) !important;
+    }
+
+    .email-input[data-valid="2"] {
+        border-color: rgb(0, 187, 0) !important;
+    }
+
+    .email-input[data-valid="1"] {
         border-color: rgb(187, 0, 0) !important;
     }
 
