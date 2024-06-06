@@ -262,20 +262,9 @@
     Authentication.onLogout(() => {
         loggedIn = false;
     });
-    Authentication.onAuthentication((privateCode) => {
-        loggedIn = null;
-        Authentication.usernameFromCode(privateCode)
-            .then(({ username }) => {
-                if (username) {
-                    loggedIn = true;
-                    loggedInChange(username, privateCode);
-                    return;
-                }
-                loggedIn = false;
-            })
-            .catch(() => {
-                loggedIn = false;
-            });
+    Authentication.onAuthentication((username, privateCode) => {
+        loggedIn = true;
+        loggedInChange(username, privateCode);
     });
 
     function autoTranslate(id, text) {

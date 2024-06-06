@@ -67,25 +67,11 @@
         loggedIn = false;
         loggedInUser = "";
     });
-    Authentication.onAuthentication((privateCode) => {
-        loggedIn = null;
-        loggedInUser = "";
-        Authentication.usernameFromCode(privateCode)
-            .then(({ username }) => {
-                if (username) {
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setToken(privateCode);
-                    loggedIn = true;
-                    loggedInUser = username;
-                    return;
-                }
-                loggedIn = false;
-                loggedInUser = "";
-            })
-            .catch(() => {
-                loggedIn = false;
-                loggedInUser = "";
-            });
+    Authentication.onAuthentication((username, privateCode) => {
+        ProjectClient.setUsername(username);
+        ProjectClient.setToken(privateCode);
+        loggedIn = true;
+        loggedInUser = username;
     });
 
     // VR

@@ -135,14 +135,12 @@
     });
 
     // RTODO: change this
-    Authentication.onAuthentication((privateCode) => {
+    Authentication.onAuthentication((username, privateCode) => {
+        ProjectClient.setUsername(username);
         ProjectClient.setToken(privateCode);
-        Authentication.usernameFromCode(privateCode).then(({username, isAdmin, isApprover}) => {
-            if (username) {
-                ProjectClient.setUsername(username);
-                loggedIn = true;
-                loggedInAdmin = isAdmin || isApprover;
-            }
+        Authentication.usernameFromCode(username, privateCode).then(({ isAdmin, isApprover}) => {
+            loggedIn = true;
+            loggedInAdmin = isAdmin || isApprover;
         });
     });
 </script>

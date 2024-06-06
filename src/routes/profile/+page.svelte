@@ -386,24 +386,17 @@
         loggedInAdmin = false;
         loggedInChange();
     });
-    Authentication.onAuthentication((privateCode) => {
+    Authentication.onAuthentication((username, privateCode) => {
         loggedIn = null;
         loggedInUser = "";
         loggedInAdmin = false;
         Authentication.usernameFromCode(privateCode)
             .then(({ username, isAdmin, isApprover }) => {
-                if (username) {
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setToken(privateCode);
-                    loggedIn = true;
-                    loggedInUser = username;
-                    loggedInAdmin = isAdmin || isApprover;
-                    loggedInChange();
-                    return;
-                }
-                loggedIn = false;
-                loggedInUser = "";
-                loggedInAdmin = false;
+                ProjectClient.setUsername(username);
+                ProjectClient.setToken(privateCode);
+                loggedIn = true;
+                loggedInUser = username;
+                loggedInAdmin = isAdmin || isApprover;
                 loggedInChange();
             })
             .catch(() => {
@@ -864,7 +857,6 @@
                                     {/if}
                                 </div>
                             </div>
-                            <!-- TODO: add condition where the user is following the logged in user -->
                             {#if !isProfilePrivate || loggedInUser === user || (isProfilePublicToFollowers && isFollowedByUser)}
                                 <div class="follower-section">
                                     <p class="follower-count">
@@ -905,7 +897,6 @@
                     </div>
                 </div>
             {/if}
-            <!-- TODO: add condition where the user is following the logged in user -->
             {#if isProfilePrivate && loggedInUser !== user && !(isProfilePublicToFollowers && isFollowedByUser)}
                 <div class="section-private">
                     <img

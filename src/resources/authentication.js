@@ -13,6 +13,8 @@ class Authentication {
                 body: JSON.stringify({ username, password, email })
             }).then(r => r.json().then(j => {
                 if (j.error) return reject(j.error);
+
+                this.fireAuthenticated(username, j.token);
                 resolve(j.token);
             }).catch(reject)).catch(reject);
         });
@@ -24,6 +26,8 @@ class Authentication {
         return new Promise((resolve, reject) => {
             fetch(url).then(r => r.json().then(j => {
                 if (j.error) return resolve(false);
+
+                this.fireAuthenticated(username, j.token);
                 resolve(j.token);
             }).catch(reject)).catch(reject);
         });
@@ -39,6 +43,7 @@ class Authentication {
                     return;
                 }
 
+                this.fireAuthenticated(localStorage.getItem("username"), localStorage.getItem("token"));
                 resolve();
             };
 
@@ -72,10 +77,10 @@ class Authentication {
     static onLogout(cb) {
         Authentication.eventListeners.push({ callback: cb, type: "LOGOUT" });
     }
-    static fireAuthenticated(pv) {
+    static fireAuthenticated(username, token) {
         Authentication.eventListeners.forEach(thinkle => {
             if (thinkle.type === "LOGIN") {
-                thinkle.callback(pv);
+                thinkle.callback(username, token);
             }
         })
     }

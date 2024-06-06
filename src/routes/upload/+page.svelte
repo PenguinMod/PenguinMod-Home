@@ -251,21 +251,10 @@
     Authentication.onLogout(() => {
         loggedIn = false;
     });
-    Authentication.onAuthentication((privateCode) => {
-        loggedIn = null;
-        Authentication.usernameFromCode(privateCode)
-            .then(({ username }) => {
-                if (username) {
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setToken(privateCode);
-                    loggedIn = true;
-                    return;
-                }
-                loggedIn = false;
-            })
-            .catch(() => {
-                loggedIn = false;
-            });
+    Authentication.onAuthentication((username, privateCode) => {
+        loggedIn = true;
+        ProjectClient.setUsername(username);
+        ProjectClient.setToken(privateCode);
     });
 
     let canRemix = [];

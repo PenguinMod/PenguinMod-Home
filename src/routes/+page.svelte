@@ -269,22 +269,12 @@
         myFeed = [];
     });
     Authentication.onAuthentication((username, token) => {
-        loggedIn = null;
-        Authentication.usernameFromCode(username, token)
-            .then(({ username }) => {
-                if (username) {
-                    loggedInUsername = username;
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setToken(token);
-                    loggedIn = true;
-                    getAndUpdateMyFeed();
-                    return;
-                }
-                loggedIn = false;
-            })
-            .catch(() => {
-                loggedIn = false;
-            });
+        loggedInUsername = username;
+        ProjectClient.setUsername(username);
+        ProjectClient.setToken(token);
+        loggedIn = true;
+        getAndUpdateMyFeed();
+        return;
     });
 
     onMount(() => {
