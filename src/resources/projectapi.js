@@ -1852,5 +1852,93 @@ class ProjectApi {
             })
         });
     }
+
+    ipBanUser(username, toggle) {
+        const url = `${OriginApiUrl}/api/v1/users/banuserip`;
+
+        const body = JSON.stringify({
+            username: this.username,
+            token: this.token,
+            target: username,
+            toggle
+        });
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
+
+    getConnectedIPs(username) {
+        const url = `${OriginApiUrl}/api/v1/users/getAllIPs`
+
+        const query = `?username=${this.username}&token=${this.token}&target=${username}`;
+
+        return new Promise((resolve, reject) => {
+            fetch(url + query).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve(json.ips);
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
+
+    banIP(ip, toggle) {
+        const url = `${OriginApiUrl}/api/v1/users/banip`;
+
+        const body = JSON.stringify({
+            username: this.username,
+            token: this.token,
+            targetIP: ip,
+            toggle
+        });
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
 }
 export default ProjectApi;

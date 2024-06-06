@@ -738,6 +738,64 @@
             });
     };
 
+    function ipBanUser(toggle=true) {
+        if (toggle) {
+            const promptMessage = prompt(
+                `Are you sure you want to IP ban ${banOrUnbanData.username}? They will be unable to use ANY part of the site that requires the server. People who are on the same network may not be able to access that either. Type "ok" to confirm.`
+            );
+            if (promptMessage !== "ok") return;
+        }
+        
+        ProjectClient.ipBanUser(banOrUnbanData.username, toggle)
+            .then(() => {
+                alert(`${toggle ? "" : "Un "}IP Banned ${banOrUnbanData.username}.`);
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to ${toggle ? "" : "Un "}IP ban user; ${err}`);
+            });
+    }
+
+    let ipBanData = {
+        input: "",
+        connectedIPs: [],
+    }
+
+    function getConnectedIPs() {
+        ProjectClient.getConnectedIPs(ipBanData.input)
+            .then((ips) => {
+                ipBanData.connectedIPs = _parseIPs(ips);
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to get connected IPs; ${err}`);
+            });
+    }
+
+    function _parseIPs(ips) {
+        return ips.map((ip) => {
+            return `IP: ${ip.ip}, banned: ${ip.banned}, last login: ${unixToDisplayDate(ip.lastLogin)}`;
+        });
+    }
+
+    function banIP(toggle) {
+        if (toggle) {
+            const promptMessage = prompt(
+                `Are you sure you want to ban this ip? No one who has this ip, even who are just on the same network, will be able to use anything that needs the api. Type "ok" to confirm.`
+            );
+            if (promptMessage !== "ok") return;
+        }
+        
+        ProjectClient.banIP(ipBanData.input, toggle)
+            .then(() => {
+                alert(`${toggle ? "" : "Un "}Banned ${ipBanData.input}.`);
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to ${toggle ? "" : "Un "}ban IP; ${err}`);
+            });
+    }
+
     let showUserPerms = false
     let admins = []
     let mods = []
@@ -1299,15 +1357,44 @@
                     <input type="checkbox" bind:checked={approver} />
                     Grant User Moderator Perms
                 </label>
-                <div class="user-action-row">
-                    <Button on:click={unbanUser}>Unban User</Button>
-                    <Button color="red" on:click={banUser}>Ban User</Button>
-                    <Button color="red" on:click={tempBanUser}>Temp Ban User</Button>
-                    <Button on:click={setUsersPerms}>Assign User Perms</Button>
+                <div class="user-action-collumn">
+                    <div class="user-action-row">
+                        <Button on:click={unbanUser}>Unban User</Button>
+                        <Button color="red" on:click={banUser}>Ban User</Button>
+                        <Button color="red" on:click={tempBanUser}>Temp Ban User</Button>
+                    </div>
+                    <div class="user-action-row">
+                        <Button on:click={setUsersPerms}>Assign User Perms</Button>
+                        <Button color="red" on:click={() => ipBanUser(true)}>IP Ban User</Button>
+                        <Button on:click={() => ipBanUser(false)}>Un IP Ban User</Button>
+                    </div>
                 </div>
             </div>
 
-            <br />
+            <br>
+
+            <div class="card">
+                <h2 style="margin-block-start:0">IPs</h2>
+
+                <input
+                    type="text"
+                    size="50"
+                    placeholder="IP Address or Username"
+                    bind:value={ipBanData.input}
+                >
+
+                <textarea
+                    value={ipBanData.connectedIPs.join('\n')}
+                    style="width:80%;height:150px;font-family:monospace"
+                    readonly
+                />
+
+                <div class="user-action-row">
+                    <Button on:click={getConnectedIPs}>Get Connected IPs</Button>
+                    <Button color="red" on:click={() => banIP(true)}>Ban IP</Button>
+                    <Button on:click={() => banIP(false)}>Unban IP</Button>
+                </div>
+            </div>
 
             <div class="card">
                 <h2 style="margin-block-start:0">Badges</h2>
@@ -1771,6 +1858,11 @@
         align-items: center;
     }
 
+    .user-action-collumn {
+        display: flex;
+        flex-direction: column;
+    }
+
     .front-card-page {
         background: rgba(0, 0, 0, 0.5);
         position: fixed;
@@ -1849,4 +1941,6 @@
         cursor: pointer;
         margin-top: 16px;
     }
+
+    
 </style>
