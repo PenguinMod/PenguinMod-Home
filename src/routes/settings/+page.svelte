@@ -74,7 +74,6 @@
                 accountInformation.settings.privateToNonFollowers = _cfsp;
 
                 standing = _standing + 1;
-                console.log(standing);
             })
             .catch(() => {
                 loggedIn = false;
@@ -132,7 +131,6 @@
                 const token = event.data.token;
 
                 if (username && token) {
-                    console.log(token);
                     localStorage.setItem("username", username);
                     localStorage.setItem("token", token);
                     location.reload();
@@ -164,6 +162,35 @@
 
         ProjectClient.updatePrivateProfile(privateProfile, privateToNonFollowers);
     }
+
+    function setPFP() {
+        // open file menu
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/*";
+        fileInput.click();
+
+        // get the file
+        fileInput.addEventListener("change", async () => {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async () => {
+                const blob = reader.result;
+
+                // upload the file
+                ProjectClient.setPFP(blob).then((() => {
+                    pfpReload = !pfpReload;
+                }).bind(this))
+                    .catch((err) => alert(err));
+            };
+            // get it as a blob
+            reader.readAsArrayBuffer(file);
+        });
+    }
+
+    let pfpReload = false;
 </script>
 
 <svelte:head>
@@ -221,9 +248,9 @@
 
         <div class="center-area">
             <div class="profile-section">
-                <button class="profile-section-image">
+                <button class="profile-section-image" on:click={setPFP}>
                     <img
-                        src="http://localhost:8080/api/v1/users/getpfp?username={loggedInUsername}"
+                        src="http://localhost:8080/api/v1/users/getpfp?username={loggedInUsername}&reload={pfpReload}"
                         alt={loggedInUsername}
                     />
                     <div class="profile-section-image-edit">

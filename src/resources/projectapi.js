@@ -1940,5 +1940,29 @@ class ProjectApi {
             })
         });
     }
+
+    setPFP(file) {
+        return new Promise((resolve, reject) => {
+            const API_ENDPOINT = `${OriginApiUrl}/api/v1/users/setpfp?username=${this.username}&token=${this.token}`;
+            const request = new XMLHttpRequest();
+            const formData = new FormData();
+
+            request.open("POST", API_ENDPOINT, true);
+            request.onload = () => {
+                const response = JSON.parse(request.response);
+
+                if (response.error) {
+                    reject(response.error);
+                    return;
+                }
+
+                resolve();
+            };
+
+            formData.append("picture", new Blob([file]));
+
+            request.send(formData);
+        });
+    }
 }
 export default ProjectApi;
