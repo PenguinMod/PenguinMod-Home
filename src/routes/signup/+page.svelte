@@ -466,7 +466,7 @@
             )}
             data-valid={emailValid}
             class="email-input"
-            maxlength="20"
+            maxlength="254"
             on:input={emailInputChanged}
             on:focusin={() => focused = "email"}
             on:focusout={() => focused = ""}

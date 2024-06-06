@@ -327,7 +327,17 @@
             {/if}
         </button>
 
-        <a href="/signup?embed={embed}" style="margin-top: 8px">
+        <a href="/forgotpassword" style="margin: 8px">
+            <LocalizedText
+                text="Forgot your password? Reset it here."
+                key="login.linkto.forgot"
+                lang={currentLang}
+            />
+        </a>
+
+        or
+
+        <a href="/signup?embed={embed}" style="margin: 8px">
             <LocalizedText
                 text="Don't have an account? Sign up here!"
                 key="login.linkto.signup"
