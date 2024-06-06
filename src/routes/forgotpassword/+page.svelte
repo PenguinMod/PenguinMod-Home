@@ -37,9 +37,9 @@
     const sendEmailSafe = () => {
         if (!emailValid) {
             alert(TranslationHandler.textSafe(
-                "username.requirement.notmet",
+                "forgotpassword.invalidemail",
                 currentLang,
-                "Your username or password do not meet the requirements needed to create an account."
+                "Your email is not valid."
             ));
             return;
         }
