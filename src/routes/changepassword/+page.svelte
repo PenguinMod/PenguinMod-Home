@@ -100,7 +100,7 @@
     };
 
     function toOAuthPage(method) {
-        const url = `http://localhost:8080/api/v1/users/addpasswordtooauthlocal?method=${method}&username=${username}&token=${token}`
+        const url = `https://projects.penguinmod.com/api/v1/users/addpasswordtooauthlocal?method=${method}&username=${username}&token=${token}`
         location.href = url;
     }
 

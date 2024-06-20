@@ -1569,7 +1569,7 @@
                                 }}
                             >
                                 <img
-                                    src={`http://localhost:8080/api/v1/users/getpfp?username=${content.target}`}
+                                    src={`https://projects.penguinmod.com/api/v1/users/getpfp?username=${content.target}`}
                                     alt={content.target}
                                 />
                                 <div class="reports-user-content">
@@ -1634,7 +1634,7 @@
                                 }}
                             >
                                 <img
-                                    src={`http://localhost:8080/api/v1/projects/getproject?projectID=${content.targetID}&requestType=thumbnail`}
+                                    src={`https://projects.penguinmod.com/api/v1/projects/getproject?projectID=${content.targetID}&requestType=thumbnail`}
                                     alt={content.target}
                                 />
                                 <div

@@ -96,7 +96,7 @@
         class="project-author"
     >
         <img
-            src={`http://localhost:8080/api/v1/users/getpfp?username=${author.username}`}
+            src={`https://projects.penguinmod.com/api/v1/users/getpfp?username=${author.username}`}
             alt="Project Author"
             class="project-author"
         />
