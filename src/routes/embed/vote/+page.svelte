@@ -13,6 +13,14 @@
         return neww;
     }
 
+    function inFrame() {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
+    }
+
     let likes = 0;
     let votes = 0;
     let views = 0;
@@ -29,6 +37,10 @@
     let projectId = 0;
 
     function vote() {
+        if (inFrame()) {
+            window.open(document.location.href)
+            return
+        }
         if (loggedIn === false) {
             Authentication.authenticate().then(() => {
                 const username = localStorage.getItem("username");
@@ -51,6 +63,10 @@
         userVoted = !userVoted;
     }
     function love() {
+        if (inFrame()) {
+            window.open(document.location.href)
+            return
+        }
         if (loggedIn === false) {
             Authentication.authenticate().then(() => {
                 const username = localStorage.getItem("username");
@@ -148,7 +164,7 @@
     });
 </script>
 
-<div class="main" onclick="window.open(document.location.href)">
+<div class="main">
     {#if loaded}
         <div title="Like this project" class="parent button-text">
             <button class="like" on:click={love}>
