@@ -14,11 +14,7 @@
     }
 
     function inFrame() {
-        try {
-            return window.self !== window.top;
-        } catch (e) {
-            return true;
-        }
+        return window.frameElement !== null
     }
 
     let likes = 0;
