@@ -369,7 +369,7 @@
                 <img
                     src="/penguins/frontpage.svg"
                     alt="PenguinMod"
-                    style="margin-right: 48px;"
+                    style="margin-right: 8rem;"
                 />
             {:else}
                 <iframe
