@@ -115,10 +115,12 @@
             userLiked = false;
             userVoted = false;
             loaded = true;
+            console.log("what", username, token)
             return;
         }
         Authentication.usernameFromCode(username, token)
             .then(({ isAdmin, isApprover }) => {
+                console.log("suces")
                 ProjectClient.setToken(token);
                 ProjectClient.setUsername(username);
 
@@ -126,7 +128,8 @@
                 loggedIn = true;
                 loggedInAdmin = isAdmin || isApprover;
             })
-            .catch(() => {
+            .catch((e) => {
+                console.log("err", e)
                 loggedIn = false;
                 userLiked = false;
                 userVoted = false;
