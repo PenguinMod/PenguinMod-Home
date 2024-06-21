@@ -4,7 +4,7 @@ export default {
     /**
      * PenguinMod's normal page
      */
-    base: "http://localhost:3000/",
+    base: "https://studio.penguinmod.com/",
 
     /**
      * PenguinMod's editor page

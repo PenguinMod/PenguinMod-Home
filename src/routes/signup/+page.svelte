@@ -80,7 +80,7 @@
                 function post(data) {
                     opener.postMessage(
                         data,
-                        `http://localhost:5173`
+                        `/`
                     );
                 }
 
@@ -93,7 +93,7 @@
             // redirect
             const redir = $page.url.searchParams.get('redirect');
         
-            window.location.href = redir ? redir : "http://localhost:5173";
+            window.location.href = redir ? redir : "/";
         }, (err) => {
             canCreateAccount = false;
             console.log(`error: ${err}`)
@@ -183,7 +183,7 @@
     }
     
     function checkIsUsernameUnique(username) {
-        let url = `http://localhost:8080/api/v1/users/userexists?username=${username}`;
+        let url = `https://projects.penguinmod.com/api/v1/users/userexists?username=${username}`;
 
         return new Promise((resolve, reject) => {
             fetch(url)
@@ -241,7 +241,7 @@
 
     function addOAuthEventListener() {
         window.addEventListener("message", (event) => {
-            if (event.origin !== "http://localhost:8080") return;
+            if (event.origin !== "https://projects.penguinmod.com") return;
             
             if (!event.data) return;
 
@@ -256,7 +256,7 @@
                 function post(data) {
                     opener.postMessage(
                         data,
-                        `http://localhost:5173`
+                        `/`
                     );
                 }
 
@@ -268,12 +268,12 @@
 
             const redir = $page.url.searchParams.get('redirect');
 
-            location.href = redir ? redir : "http://localhost:5173";
+            location.href = redir ? redir : "/";
         });
     }
 
     function oauthFrame(method) {
-        let iframe = window.open(`http://localhost:8080/api/v1/users/createoauthaccount?method=${method}`, `Sign up with ${method}`, "width=500,height=500");
+        let iframe = window.open(`https://projects.penguinmod.com/api/v1/users/createoauthaccount?method=${method}`, `Sign up with ${method}`, "width=500,height=500");
 
         if (!iframe) {
             alert(TranslationHandler.textSafe(
