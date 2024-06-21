@@ -352,12 +352,17 @@
 			label="<img src='/messagesstatic/mystuff.svg' width='25' alt='My Stuff'>"
 			style="padding:0.5rem"
 		/>
+		<BarPage
+			link="/upload"
+			label="<img src='/messagesstatic/upload.svg' width='25' alt='Upload'>"
+			style="padding:0.5rem"
+		/>
 	{/if}
 	{#if (isAdmin || isApprover) && loggedIn}
 		<BarPage
 			link="/panel"
 			label="<img src='/messagesstatic/panel.svg' width='25' alt='Panel'>"
-			style="padding:0.5rem"
+			style="padding:0.5rem;margin-left:0.5rem"
 		/>
 	{/if}
 	{#if loggedIn === false}
