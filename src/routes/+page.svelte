@@ -189,7 +189,7 @@
         switch (type) {
             case "upload":
             case "remixed":
-                return `https://studio.penguinmod.com/#${content.id}`;
+                return `https://jwklong.github.io/penguinmod.github.io/#${content.id}`;
             case "posted":
                 return `/profile?user=${author}&post=${content.id}`;
             default:
@@ -201,7 +201,7 @@
     onMount(async () => {
         const projectId = Number(location.hash.replace("#", ""));
         if (!isNaN(projectId) && projectId != 0) {
-            location.href = `https://studio.penguinmod.com/#${projectId}`;
+            location.href = `https://jwklong.github.io/penguinmod.github.io/#${projectId}`;
             return;
         }
 
@@ -326,7 +326,7 @@
         hasImage={false}
         hasButton={true}
         buttonText={"View"}
-        buttonHref={"https://studio.penguinmod.com/privacy.html"}
+        buttonHref={"https://jwklong.github.io/penguinmod.github.io/privacy.html"}
     /> -->
     <StatusAlert />
 

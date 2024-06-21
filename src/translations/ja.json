@@ -191,7 +191,7 @@
     "uploading.guidelines.button": "プロジェクトのアップロード及びアップデートガイドライン",
     "uploading.guidelines.newtab": "新しいタブで開く",
     "uploading.guidelines.darkmode": "このページは外部サイトなので、ダークモードにはなりません。",
-    "uploading.guidelines.nottranslated": "このガイドラインは翻訳されていない可能性があります。翻訳されたものは、<a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">こちら</a>をご覧ください。",
+    "uploading.guidelines.nottranslated": "このガイドラインは翻訳されていない可能性があります。翻訳されたものは、<a href=\"https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS\">こちら</a>をご覧ください。",
     "uploading.error.toomanyrequests": "プロジェクトのアップロードは8分ごとにしかできません。",
     "uploading.error.missingprojectdata": "プロジェクトデータの送信に失敗しました。プロジェクトが大きすぎる可能性があります。",
     "uploading.error.reauthenticate": "ログアウトされました。再度ログインしてください。",

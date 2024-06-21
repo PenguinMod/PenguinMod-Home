@@ -641,7 +641,7 @@
             newText = newText.replace(regexRules.project, function(id) {
                 id = id.replace('#', '');
                 if (/^\d{6,}$/.test(id)) {
-                    return `<a href="https://studio.penguinmod.com/#${id}" target="_blank">#${id}</a>`;
+                    return `<a href="https://jwklong.github.io/penguinmod.github.io/#${id}" target="_blank">#${id}</a>`;
                 }
                 return `<a href="https://penguinmod.com/search?q=%23${id}">#${id}</a>`;
             });

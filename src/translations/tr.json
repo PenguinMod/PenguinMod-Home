@@ -191,7 +191,7 @@
     "uploading.guidelines.button": "Proje Yükleme ve Güncelleme Kuralları",
     "uploading.guidelines.newtab": "Yeni sekmede aç",
     "uploading.guidelines.darkmode": "Bu sayfa harici bir web sitesi olduğu için karanlık modda değil.",
-    "uploading.guidelines.nottranslated": "Bu yönergeler tercüme edilmemiş olabilir. Çevrilmiş bir alternatif için <a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">buraya bak</a>.",
+    "uploading.guidelines.nottranslated": "Bu yönergeler tercüme edilmemiş olabilir. Çevrilmiş bir alternatif için <a href=\"https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS\">buraya bak</a>.",
     "uploading.error.toomanyrequests": "Yalnızca 8 dakikada bir proje yükleyebilirsin.",
     "uploading.error.missingprojectdata": "Proje verileri gönderilemedi. Projen çok büyük olabilir.",
     "uploading.error.reauthenticate": "Oturumun kapandı, Lütfen tekrar giriş yap.",

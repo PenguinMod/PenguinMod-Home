@@ -508,7 +508,7 @@
                     {:else if message.message.type === "remix"}
                         <p>
                             <a
-                                href={`https://studio.penguinmod.com/#${message.message.newProject.id}`}
+                                href={`https://jwklong.github.io/penguinmod.github.io/#${message.message.newProject.id}`}
                                 target="_blank"
                             >
                                 {String(
@@ -538,7 +538,7 @@
                         </p>
                         <p>
                             <a
-                                href={`https://studio.penguinmod.com/#${message.message.project.id}`}
+                                href={`https://jwklong.github.io/penguinmod.github.io/#${message.message.project.id}`}
                                 target="_blank"
                             >
                                 <LocalizedText

@@ -191,7 +191,7 @@
     "uploading.guidelines.button": "Normas para subir y actualizar proyectos",
     "uploading.guidelines.newtab": "Abrir en una nueva pestaña",
     "uploading.guidelines.darkmode": "Esta página no está en modo oscuro porque es un sitio web externo.",
-    "uploading.guidelines.nottranslated": "Estas directrices pueden no estar traducidas. Para una alternativa traducida, <a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">vea aquí</a>.",
+    "uploading.guidelines.nottranslated": "Estas directrices pueden no estar traducidas. Para una alternativa traducida, <a href=\"https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS\">vea aquí</a>.",
     "uploading.error.toomanyrequests": "Sólo puedes subir proyectos cada 8 minutos.",
     "uploading.error.missingprojectdata": "Error al enviar los datos del proyecto. Puede que tu proyecto sea demasiado grande.",
     "uploading.error.reauthenticate": "Se ha cerrado la sesión. Vuelva a conectarse.",

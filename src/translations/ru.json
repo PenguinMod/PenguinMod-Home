@@ -191,7 +191,7 @@
     "uploading.guidelines.button": "Руководящие принципы по загрузке и обновлению проекта",
     "uploading.guidelines.newtab": "Открыть в новой вкладке",
     "uploading.guidelines.darkmode": "Эта страница не в тёмной теме, потому что это отдельный сайт.",
-    "uploading.guidelines.nottranslated": "Эти руководящие принципы могут быть не переведены. Для переведённой альтернативы, <a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">смотрите здесь</a>.",
+    "uploading.guidelines.nottranslated": "Эти руководящие принципы могут быть не переведены. Для переведённой альтернативы, <a href=\"https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS\">смотрите здесь</a>.",
     "uploading.error.toomanyrequests": "Вы можете загружать проекты только каждые 8 минут",
     "uploading.error.missingprojectdata": "Не удалось отправить данные проекта. Возможно, Ваш проект слишком большой.",
     "uploading.error.reauthenticate": "Вы не были в аккаунте. Пожалуйста, войдите в аккаунт вновь.",

@@ -9,11 +9,11 @@
 
     function begin() {
         window.open(
-            "https://studio.penguinmod.com?restore=true&handler=" +
+            "https://jwklong.github.io/penguinmod.github.io?restore=true&handler=" +
                 window.location.origin
         );
         window.onmessage = (e) => {
-            if (!e.origin.startsWith(`https://studio.penguinmod.com`)) {
+            if (!e.origin.startsWith(`https://jwklong.github.io/penguinmod.github.io`)) {
                 return;
             }
 

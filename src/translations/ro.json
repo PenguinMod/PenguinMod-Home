@@ -191,7 +191,7 @@
     "uploading.guidelines.button": "Instrucțiuni de încărcare și actualizare a proiectului",
     "uploading.guidelines.newtab": "Deschideți într-o filă nouă",
     "uploading.guidelines.darkmode": "Această pagină nu este în modul întunecat, deoarece este un site web extern.",
-    "uploading.guidelines.nottranslated": "Este posibil ca aceste orientări să nu fie traduse. Pentru o alternativă tradusă, <a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">vezi aici</a>.",
+    "uploading.guidelines.nottranslated": "Este posibil ca aceste orientări să nu fie traduse. Pentru o alternativă tradusă, <a href=\"https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS\">vezi aici</a>.",
     "uploading.error.toomanyrequests": "Puteți încărca proiecte doar la fiecare 8 minute.",
     "uploading.error.missingprojectdata": "Nu s-a reușit trimiterea datelor proiectului. Este posibil ca proiectul tău să fie prea mare.",
     "uploading.error.reauthenticate": "Ați fost deconectat. Vă rugăm să vă conectați din nou.",

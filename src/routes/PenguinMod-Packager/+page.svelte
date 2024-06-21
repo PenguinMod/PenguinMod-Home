@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     onMount(() => {
         window.location.href =
-            "https://studio.penguinmod.com/PenguinMod-Packager";
+            "https://jwklong.github.io/penguinmod.github.io/PenguinMod-Packager";
     });
 </script>
 
@@ -18,7 +18,7 @@
 </svelte:head>
 <div>
     If you are not redirected automatically,
-    <a href="https://studio.penguinmod.com/PenguinMod-Packager">click here</a>
+    <a href="https://jwklong.github.io/penguinmod.github.io/PenguinMod-Packager">click here</a>
 </div>
 
 <style>

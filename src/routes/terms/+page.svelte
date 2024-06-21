@@ -48,7 +48,7 @@
             <p>
                 This document applies to
                 <a href="https://penguinmod.com">https://penguinmod.com</a>,
-                <a href="https://studio.penguinmod.com">https://studio.penguinmod.com</a>,
+                <a href="https://jwklong.github.io/penguinmod.github.io">https://jwklong.github.io/penguinmod.github.io</a>,
                 <a href="https://extensions.penguinmod.com">https://extensions.penguinmod.com</a>,
                 <a href="https://projects.penguinmod.com">https://projects.penguinmod.com</a>,
                 and any other penguinmod.com subdomains.
@@ -111,7 +111,7 @@
             </p>
             <p>
                 If you are a company, individual, etc. and you believe your copyright has been violated,
-                please view contact methods here: <a href="https://studio.penguinmod.com/contact.html">Contact Us</a>
+                please view contact methods here: <a href="https://jwklong.github.io/penguinmod.github.io/contact.html">Contact Us</a>
             </p>
 
             <h2>Advertisements</h2>

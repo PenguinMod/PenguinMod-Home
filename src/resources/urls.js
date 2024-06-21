@@ -4,22 +4,22 @@ export default {
     /**
      * PenguinMod's normal page
      */
-    base: "https://studio.penguinmod.com/",
+    base: "https://jwklong.github.io/penguinmod.github.io/",
 
     /**
      * PenguinMod's editor page
      */
-    editor: "https://studio.penguinmod.com/editor.html",
+    editor: "https://jwklong.github.io/penguinmod.github.io/editor.html",
 
     /**
      * PenguinMod's credits page
      */
-    credits: "https://studio.penguinmod.com/credits.html",
+    credits: "https://jwklong.github.io/penguinmod.github.io/credits.html",
     
     /**
      * PenguinMod's contact page
      */
-    contact: "https://studio.penguinmod.com/contact.html",
+    contact: "https://jwklong.github.io/penguinmod.github.io/contact.html",
 
     /**
      * PenguinMod's terms of service page
@@ -38,7 +38,7 @@ export default {
         /**
          * PenguinMod's project uploading guidelines
          */
-        projects: "https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
+        projects: "https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS"
     },
 
     /**
@@ -67,7 +67,7 @@ export default {
     /**
      * PenguinMod's packager page
      */
-    packager: "https://studio.penguinmod.com/PenguinMod-Packager/",
+    packager: "https://jwklong.github.io/penguinmod.github.io/PenguinMod-Packager/",
 
     /**
      * PenguinMod's unofficial wiki

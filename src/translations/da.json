@@ -191,7 +191,7 @@
     "uploading.guidelines.button": "Uploader Projekt & Opdatere Retningslinier",
     "uploading.guidelines.newtab": "Åben i en ny fane",
     "uploading.guidelines.darkmode": "Denne side er ikke i Mørk Tilstand fordi det er en ekstern hjemmeside.",
-    "uploading.guidelines.nottranslated": "Desse retningslinier er muligvis ikke blevet oversat. For et oversat alternativ, <a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">se her</a>.",
+    "uploading.guidelines.nottranslated": "Desse retningslinier er muligvis ikke blevet oversat. For et oversat alternativ, <a href=\"https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS\">se her</a>.",
     "uploading.error.toomanyrequests": "Du kan kun offentliggøre projekter hver 8 minutter.",
     "uploading.error.missingprojectdata": "Fejlede med at sende projekt data. Dit projekt kan være for stort.",
     "uploading.error.reauthenticate": "Du blev logget up. Venligst log ind igen.",
