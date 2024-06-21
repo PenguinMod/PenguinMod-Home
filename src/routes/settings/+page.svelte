@@ -24,6 +24,7 @@
     let loggedInUsername = null;
     let token = null;
     let loginMethods = [];
+    let emailIsVerified = false;
 
     let standing = 1;
 
@@ -66,13 +67,16 @@
             return;
         }
         Authentication.usernameFromCode(username, token)
-            .then(({ loginMethods: _loginMethods, privateProfile: _privateProfile, canFollowingSeeProfile: _cfsp, standing: _standing }) => {
+            .then(({ loginMethods: _loginMethods, privateProfile: _privateProfile, canFollowingSeeProfile: _cfsp, standing: _standing, isEmailVerified, email }) => {
                 loggedIn = true;
                 loggedInChange(username, token);
                 loginMethods = _loginMethods;
                 
                 accountInformation.settings.private = _privateProfile;
                 accountInformation.settings.privateToNonFollowers = _cfsp;
+                accountInformation.emailPeek = email;
+                // TODO: make this have like a show email button so it doesnt just immediately show your email
+                emailIsVerified = isEmailVerified;
 
                 standing = _standing + 1;
             })
@@ -85,13 +89,17 @@
         Authentication.authenticate().then((privateCode) => {
             loggedIn = null;
             Authentication.usernameFromCode(privateCode)
-                .then(({ username }) => {
-                    if (username) {
-                        loggedIn = true;
-                        loggedInChange(username, privateCode);
-                        return;
-                    }
-                    loggedIn = false;
+                .then(({ loginMethods: _loginMethods, privateProfile: _privateProfile, canFollowingSeeProfile: _cfsp, standing: _standing, isEmailVerified, email }) => {
+                    loggedIn = true;
+                    loggedInChange(username, token);
+                    loginMethods = _loginMethods;
+                    
+                    accountInformation.settings.private = _privateProfile;
+                    accountInformation.settings.privateToNonFollowers = _cfsp;
+                    accountInformation.emailPeek = email;
+                    emailIsVerified = isEmailVerified;
+
+                    standing = _standing + 1;
                 })
                 .catch(() => {
                     loggedIn = false;
@@ -327,13 +335,15 @@
                                 }}
                             />
                         </p>
-                        <button class="edit-link" on:click={verifyEmail}>
-                            <LocalizedText
-                                text="Verify your email"
-                                key="account.settings.account.email.verify"
-                                lang={currentLang}
-                            />
-                        </button>
+                        {#if !emailIsVerified}
+                            <button class="edit-link" on:click={verifyEmail}>
+                                <LocalizedText
+                                    text="Verify your email"
+                                    key="account.settings.account.email.verify"
+                                    lang={currentLang}
+                                />
+                            </button>
+                        {/if}
                         <p>
                             <label>
                                 <input

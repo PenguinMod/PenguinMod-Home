@@ -29,10 +29,8 @@
     let embed = false;
 
     async function sendEmail() {
-        const token = await Authentication.createAccount(username, password, email);
-        
-        localStorage.setItem("username", username);
-        localStorage.setItem("token", token);
+        await Authentication.sendResetPasswordEmail(email);
+        alert("Check your email.");
     }
     const sendEmailSafe = () => {
         if (!emailValid) {
