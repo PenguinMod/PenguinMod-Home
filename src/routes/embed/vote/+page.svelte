@@ -14,7 +14,7 @@
     }
 
     function inFrame() {
-        return window.frameElement !== null
+        return window !== window.parent
     }
 
     let likes = 0;
