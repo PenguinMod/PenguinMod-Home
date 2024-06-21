@@ -148,7 +148,7 @@
     });
 </script>
 
-<div class="main">
+<div class="main" onclick="window.open(document.location.href)">
     {#if loaded}
         <div title="Like this project" class="parent button-text">
             <button class="like" on:click={love}>
