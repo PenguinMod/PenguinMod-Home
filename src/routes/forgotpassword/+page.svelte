@@ -96,8 +96,8 @@
     <meta property="twitter:title" content="PenguinMod - Sign Up">
     <meta name="description" content="Sign up for PenguinMod to start sharing your projects!">
     <meta property="twitter:description" content="Sign up for PenguinMod to start sharing your projects!">
-    <meta property="og:url" content="https://penguinmod.com/signup">
-    <meta property="twitter:url" content="https://penguinmod.com/signup">
+    <meta property="og:url" content="https://penguinmod.com/forgotpassword">
+    <meta property="twitter:url" content="https://penguinmod.com/forgotpassword">
 </svelte:head>
     
 <NavigationBar />

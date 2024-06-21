@@ -22,6 +22,7 @@
 
     let loggedIn = null;
     let loggedInUsername = null;
+    let token = null;
     let loginMethods = [];
 
     let standing = 1;
@@ -59,7 +60,7 @@
 
     onMount(async () => {
         const username = localStorage.getItem("username");
-        const token = localStorage.getItem("token");
+        token = localStorage.getItem("token");
         if (!token || !username) {
             loggedIn = false;
             return;
@@ -117,11 +118,12 @@
 
             if (event.data) {
                 const username = event.data.username;
-                const token = event.data.token;
+                const _token = event.data.token;
 
                 if (username && token) {
                     localStorage.setItem("username", username);
                     localStorage.setItem("token", token);
+                    token = _token;
                     location.reload();
                 }
             }
@@ -143,6 +145,11 @@
                 "Please allow popups for this site."
             ));
         };
+    }
+
+    async function verifyEmail() {
+        await Authentication.verifyEmail(loggedInUsername, token);
+        alert("check your email");
     }
 
     function updatePrivateProfile() {
@@ -320,6 +327,13 @@
                                 }}
                             />
                         </p>
+                        <button class="edit-link" on:click={verifyEmail}>
+                            <LocalizedText
+                                text="Verify your email"
+                                key="account.settings.account.email.verify"
+                                lang={currentLang}
+                            />
+                        </button>
                         <p>
                             <label>
                                 <input

@@ -121,5 +121,50 @@ class Authentication {
             }).catch(reject)).catch(reject);
         });
     }
+
+    static resetPassword(email, state, newPassword) {
+        return new Promise((resolve, reject) => {
+            fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/resetpassword/reset`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, state, password: newPassword })
+            }).then(r => r.json().then(j => {
+                if (j.error) return reject(j.error);
+                resolve(j.token);
+            }).catch(reject)).catch(reject);
+        });
+    }
+
+    static sendResetPasswordEmail(email) {
+        return new Promise((resolve, reject) => {
+            fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/resetpassword/sendEmail`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email })
+            }).then(r => r.json().then(j => {
+                if (j.error) return reject(j.error);
+                resolve(j.token);
+            }).catch(reject)).catch(reject);
+        })
+    }
+
+    static verifyEmail(username, token) {
+        return new Promise((resolve, reject) => {
+            fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/resetpassword/sendVerifyEmail`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, token })
+            }).then(r => r.json().then(j => {
+                if (j.error) return reject(j.error);
+                resolve();
+            }).catch(reject)).catch(reject);
+        })
+    }
 }
 export default Authentication;
