@@ -405,7 +405,7 @@
                         </h1>
                         <AccountStatus
                             username={loggedInUsername}
-                            image="http://localhost:8080/api/v1/users/getpfp?username={loggedInUsername}"
+                            image="http://localhost:8080/api/v1/users/getpfp?username={loggedInUsername}&reload={pfpReload}"
                             showname={false}
                             status={standing}
                             detail={4}
