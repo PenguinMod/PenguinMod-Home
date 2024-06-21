@@ -80,7 +80,7 @@
                 function post(data) {
                     opener.postMessage(
                         data,
-                        `https://penguinmod.com`
+                        `http://localhost:5173`
                     );
                 }
 
@@ -93,7 +93,7 @@
             // redirect
             const redir = $page.url.searchParams.get('redirect');
         
-            window.location.href = redir ? redir : "https://penguinmod.com";
+            window.location.href = redir ? redir : "http://localhost:5173";
         }, (err) => {
             canCreateAccount = false;
             console.log(`error: ${err}`)
@@ -256,7 +256,7 @@
                 function post(data) {
                     opener.postMessage(
                         data,
-                        `https://penguinmod.com`
+                        `http://localhost:5173`
                     );
                 }
 
@@ -268,7 +268,7 @@
 
             const redir = $page.url.searchParams.get('redirect');
 
-            location.href = redir ? redir : "https://penguinmod.com";
+            location.href = redir ? redir : "http://localhost:5173";
         });
     }
 
