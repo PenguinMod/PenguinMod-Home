@@ -39,12 +39,14 @@ class Authentication {
             let login;
 
             const handleMessageReciever = (event) => {
-                if (event.origin !== location.origin) {
+                /*if (event.origin !== location.origin) {
                     return;
-                }
+                } i dont really know if this is useful so im doing anyway lolsers */
+
+                console.log(event.data)
 
                 this.fireAuthenticated(localStorage.getItem("username"), localStorage.getItem("token"));
-                resolve();
+                // test resolve();
             };
 
             window.addEventListener("message", handleMessageReciever);
