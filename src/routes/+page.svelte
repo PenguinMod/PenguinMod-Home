@@ -375,17 +375,11 @@
             </div>
 
             {#if !thingyActive}
-                <video
-                    width="426.666667"
-                    height="240"
-                    autoplay="true"
-                    muted="true"
-                    loop="true"
-                    class="example-video"
-                >
-                    <source src="/example.mp4" type="video/mp4" />
-                    <track kind="captions" />
-                </video>
+                <img
+                    src="/penguins/frontpage.svg"
+                    alt="PenguinMod"
+                    style="margin-right: 8rem;"
+                />
             {:else}
                 <iframe
                     src="/eao.html"
