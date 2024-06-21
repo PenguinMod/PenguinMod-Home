@@ -1298,8 +1298,8 @@ class ProjectApi {
             // loop over the lists
             for (const list in json.targets[target].lists) {
                 newtarget.lists[list] = {
-                    name: list,
-                    value: json.targets[target].lists[list].map(x => castToString(x))
+                    name: json.targets[target].lists[list][0],
+                    value: json.targets[target].lists[list][1]
                 }
             }
 
