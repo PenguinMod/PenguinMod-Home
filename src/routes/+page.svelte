@@ -506,7 +506,7 @@
         {:else}
             <div class="welcome-back-card">
                 <img
-                    src={`https://projects.penguinmod.com/api/v1/users/getpfp?username=${loggedInUsername}`}
+                    src={`http://localhost:8080/api/v1/users/getpfp?username=${loggedInUsername}`}
                     alt="Profile"
                     class="profile-picture"
                 />
@@ -594,7 +594,7 @@
                                         message.data
                                     )}
                                     author={message.user.username}
-                                    image={`https://projects.penguinmod.com/api/v1/users/getpfp?username=${message.user.username}`}
+                                    image={`http://localhost:8080/api/v1/users/getpfp?username=${message.user.username}`}
                                 />
                             {/if}
                         {/each}

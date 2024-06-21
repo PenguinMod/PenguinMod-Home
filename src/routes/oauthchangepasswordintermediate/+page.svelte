@@ -43,7 +43,7 @@
         const method = urlParams.get('method');
         const accessToken = urlParams.get('at');
 
-        let url = "https://projects.penguinmod.com/api/v1/users/";
+        let url = "http://localhost:8080/api/v1/users/";
         switch (method) {
             case "google":
                 url += "googlecallback/addpasswordfinal"

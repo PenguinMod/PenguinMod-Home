@@ -1,5 +1,5 @@
 let OriginApiUrl = "https://projects.penguinmod.com";
-OriginApiUrl = "https://projects.penguinmod.com";
+OriginApiUrl = "http://localhost:8080";
 
 import JSZip from "jszip";
 import { Project } from "./project.protobuf.js";

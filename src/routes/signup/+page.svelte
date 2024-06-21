@@ -183,7 +183,7 @@
     }
     
     function checkIsUsernameUnique(username) {
-        let url = `https://projects.penguinmod.com/api/v1/users/userexists?username=${username}`;
+        let url = `http://localhost:8080/api/v1/users/userexists?username=${username}`;
 
         return new Promise((resolve, reject) => {
             fetch(url)
@@ -241,7 +241,7 @@
 
     function addOAuthEventListener() {
         window.addEventListener("message", (event) => {
-            if (event.origin !== "https://projects.penguinmod.com") return;
+            if (event.origin !== "http://localhost:8080") return;
             
             if (!event.data) return;
 
@@ -273,7 +273,7 @@
     }
 
     function oauthFrame(method) {
-        let iframe = window.open(`https://projects.penguinmod.com/api/v1/users/createoauthaccount?method=${method}`, `Sign up with ${method}`, "width=500,height=500");
+        let iframe = window.open(`http://localhost:8080/api/v1/users/createoauthaccount?method=${method}`, `Sign up with ${method}`, "width=500,height=500");
 
         if (!iframe) {
             alert(TranslationHandler.textSafe(

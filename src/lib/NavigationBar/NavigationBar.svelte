@@ -383,7 +383,7 @@
 			on:click={openAccountMenu}
 		>
 			<img
-				src={`https://projects.penguinmod.com/api/v1/users/getpfp?username=${accountUsername}&reload=${pfpkey}`}
+				src={`http://localhost:8080/api/v1/users/getpfp?username=${accountUsername}&reload=${pfpkey}`}
 				alt="Profile Picture"
 				class="profile-picture"
 			/>

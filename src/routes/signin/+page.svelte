@@ -89,7 +89,7 @@
 
     function addOAuthEventListener() {
         window.addEventListener("message", (event) => {
-            if (event.origin !== "https://projects.penguinmod.com") return;
+            if (event.origin !== "http://localhost:8080") return;
             
             if (!event.data) return;
 
@@ -121,7 +121,7 @@
     }
 
     function oauthFrame(method) {
-        let iframe = window.open(`https://projects.penguinmod.com/api/v1/users/loginoauthaccount?method=${method}`, `Login with ${method}`, "width=500,height=500");
+        let iframe = window.open(`http://localhost:8080/api/v1/users/loginoauthaccount?method=${method}`, `Login with ${method}`, "width=500,height=500");
 
         if (!iframe) {
             alert(TranslationHandler.textSafe(
