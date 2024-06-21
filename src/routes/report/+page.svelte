@@ -282,13 +282,13 @@
             {#if pageDetails.type === "user"}
                 <img
                     class="profile-picture"
-                    src={`http://localhost:8080/api/v1/users/getpfp?username=${pageDetails.id}`}
+                    src={`https://projects.penguinmod.com/api/v1/users/getpfp?username=${pageDetails.id}`}
                     alt={pageDetails.id}
                 />
             {:else}
                 <img
                     class="project-picture"
-                    src={`http://localhost:8080/api/v1/projects/getproject?projectID=${pageDetails.id}&requestType=thumbnail`}
+                    src={`https://projects.penguinmod.com/api/v1/projects/getproject?projectID=${pageDetails.id}&requestType=thumbnail`}
                     alt={pageDetails.id}
                 />
             {/if}
