@@ -106,7 +106,7 @@
                 function post(data) {
                     opener.postMessage(
                         data,
-                        `https://penguinmod.com`
+                        `https://penguinmod-home-git-new-backend-live-penguinmod.vercel.app/` // TODO: turn this into an env variable
                     );
                 }
 
