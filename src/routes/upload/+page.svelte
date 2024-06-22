@@ -132,12 +132,11 @@
             // wrapper to handle errors & be easier
             function post(data) {
                 try {
-                    console.log(importLocation, PUBLIC_STUDIO_URL);
                     opener.postMessage(
                         {
                             p4: data,
                         },
-                        PUBLIC_STUDIO_URL
+                        importLocation
                     );
                 } catch (e) {
                     console.warn("Cannot post message", e);
