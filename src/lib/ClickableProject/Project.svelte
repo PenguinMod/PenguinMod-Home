@@ -1,14 +1,16 @@
 <script>
     import { createEventDispatcher } from "svelte";
 
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
     // Static values
     import LINK from "../../resources/urls.js";
 
     export let id;
-    export let name;
-    export let showdate = false;
+    export let title;
+    export let lastUpdate = false;
     export let featured = false;
-    export let owner;
+    export let author;
     export let date = 0;
     export let style = "";
 
@@ -41,22 +43,22 @@
     </div>
     <div class="project-author">
         <img
-            src={`https://projects.penguinmod.com/api/v1/users/getpfp?username=${owner}`}
+            src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${author}`}
             alt="Project Author"
             class="project-author"
         />
     </div>
     <div class="project-meta">
-        <div class="text" title={name}>
-            {name}
+        <div class="text" title={title}>
+            {title}
         </div>
-        {#if showdate}
+        {#if lastUpdate}
             <div class="text author date">
                 {unixToDisplayDate(date)}
             </div>
         {:else}
             <div class="text author">
-                {owner}
+                {author}
             </div>
         {/if}
     </div>

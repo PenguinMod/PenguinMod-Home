@@ -2,6 +2,8 @@
     import { onMount } from "svelte";
     import MarkdownIt from "markdown-it";
 
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
     import scratchblocks from "$lib/scratchblocks.js";
     import LINK from "../../resources/urls.js";
     import Authentication from "../../resources/authentication.js";
@@ -250,6 +252,7 @@
                 const profileFeatured = fullProfile.myFeaturedProject;
                 if (profileFeatured) {
                     ProjectApi.getProjectMeta(profileFeatured).then(metadata => {
+                        console.log(metadata);
                         profileFeaturedProject = metadata;
                     }).catch((err) => {
                         console.warn('Failed to load profile featured project;', err);
@@ -641,7 +644,7 @@
             newText = newText.replace(regexRules.project, function(id) {
                 id = id.replace('#', '');
                 if (/^\d{6,}$/.test(id)) {
-                    return `<a href="https://jwklong.github.io/penguinmod.github.io/#${id}" target="_blank">#${id}</a>`;
+                    return `<a href="${PUBLIC_STUDIO_URL}/#${id}" target="_blank">#${id}</a>`;
                 }
                 return `<a href="https://penguinmod.com/search?q=%23${id}">#${id}</a>`;
             });
@@ -782,7 +785,7 @@
                 <div class="featured-project-list">
                     {#if projects.all.length > 0}
                         {#if projects.all[0] !== "none"}
-                            {#each projects.all as project}
+                            {#each (projects.all.map(x => {x.author = loggedInUser;return x})) as project}
                                 <ClickableProject {...project} on:click={() => saveEditedProject(project.id)} />
                             {/each}
                         {:else}
@@ -833,7 +836,7 @@
                             <div class="user-username">
                                 <img
                                     style="border-color:{isDonator ? "#a237db" : "#efefef"}"
-                                    src={`https://projects.penguinmod.com/api/v1/users/getpfp?username=${user}`}
+                                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${user}`}
                                     alt="Profile"
                                     class="profile-picture"
                                 />
@@ -1175,19 +1178,19 @@
                         {:else if profileFeaturedProject.author.username === user}
                             <a href={`${LINK.base}#${profileFeaturedProject.id}`} style="text-decoration: none">
                                 <img
-                                    src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectIdd=${profileFeaturedProject.id}&requestType=thumbnail`}
+                                    src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectID=${profileFeaturedProject.id}&requestType=thumbnail`}
                                     alt="Project Thumbnail"
                                     class="profile-project-image"
                                 />
                                 <div class="profile-project-authordiv">
                                     <img
-                                        src="https://projects.penguinmod.com/api/v1/users/getpfp?username={user}"
+                                        src="{PUBLIC_API_URL}/api/v1/users/getpfp?username={user}"
                                         alt="Project Author"
                                         title={user}
                                         class="profile-project-author"
                                     >
                                     <div class="profile-project-authorinfo">
-                                        <p class="profile-project-link">{@html formatProjectTitle(profileFeaturedProject.name)}</p>
+                                        <p class="profile-project-link">{@html formatProjectTitle(profileFeaturedProject.title)}</p>
                                         <p class="profile-project-date">{unixToDisplayDate(profileFeaturedProject.date)}</p>
                                     </div>
                                 </div>

@@ -2,6 +2,8 @@
     import { onMount } from "svelte";
     import { page } from "$app/stores";
 
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
     import Authentication from "../resources/authentication.js";
     import ProjectApi from "../resources/projectapi.js";
     import censor from "../resources/basiccensorship.js";
@@ -189,7 +191,7 @@
         switch (type) {
             case "upload":
             case "remixed":
-                return `https://jwklong.github.io/penguinmod.github.io/#${content.id}`;
+                return `${PUBLIC_STUDIO_URL}/#${content.id}`;
             case "posted":
                 return `/profile?user=${author}&post=${content.id}`;
             default:
@@ -201,7 +203,7 @@
     onMount(async () => {
         const projectId = Number(location.hash.replace("#", ""));
         if (!isNaN(projectId) && projectId != 0) {
-            location.href = `https://jwklong.github.io/penguinmod.github.io/#${projectId}`;
+            location.href = `${PUBLIC_STUDIO_URL}/#${projectId}`;
             return;
         }
 
@@ -366,17 +368,11 @@
             </div>
 
             {#if !thingyActive}
-                <video
-                    width="426.666667"
-                    height="240"
-                    autoplay="true"
-                    muted="true"
-                    loop="true"
-                    class="example-video"
-                >
-                    <source src="/example.mp4" type="video/mp4" />
-                    <track kind="captions" />
-                </video>
+                <img
+                    src="/penguins/frontpage.svg"
+                    alt="PenguinMod"
+                    style="margin-right: 8rem;"
+                />
             {:else}
                 <iframe
                     src="/eao.html"
@@ -506,7 +502,7 @@
         {:else}
             <div class="welcome-back-card">
                 <img
-                    src={`https://projects.penguinmod.com/api/v1/users/getpfp?username=${loggedInUsername}`}
+                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${loggedInUsername}`}
                     alt="Profile"
                     class="profile-picture"
                 />
@@ -594,7 +590,7 @@
                                         message.data
                                     )}
                                     author={message.user.username}
-                                    image={`https://projects.penguinmod.com/api/v1/users/getpfp?username=${message.user.username}`}
+                                    image={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${message.user.username}`}
                                 />
                             {/if}
                         {/each}

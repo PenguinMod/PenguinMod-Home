@@ -1,5 +1,6 @@
-let OriginApiUrl = "https://projects.penguinmod.com";
-OriginApiUrl = "https://projects.penguinmod.com";
+import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
+let OriginApiUrl = PUBLIC_API_URL;
 
 import JSZip from "jszip";
 import { Project } from "./project.protobuf.js";
@@ -1102,11 +1103,11 @@ class ProjectApi {
         const data = {
             username: this.username,
             token: this.token,
-            id,
+            project: id,
             title
         };
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/users/setMyFeaturedProject`, {
+            fetch(`${OriginApiUrl}/api/v1/users/setmyfeaturedproject`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
                 method: "POST"

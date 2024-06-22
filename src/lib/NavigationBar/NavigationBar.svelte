@@ -2,6 +2,8 @@
 	import { onMount } from "svelte";
     import { page } from "$app/stores";
 
+	import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
 	const isAprilFools = () => {
         const date = new Date(Date.now());
         const urlParams = $page.url.searchParams;
@@ -107,6 +109,7 @@
 			}
 		).then((res) => {
 			if (!res.ok) return;
+			localStorage.removeItem("username");
 			localStorage.removeItem("token");
 			Authentication.fireLogout();
 			loggedIn = false;
@@ -388,7 +391,7 @@
 			on:click={openAccountMenu}
 		>
 			<img
-				src={`https://projects.penguinmod.com/api/v1/users/getpfp?username=${accountUsername}&reload=${pfpkey}`}
+				src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${accountUsername}&reload=${pfpkey}`}
 				alt="Profile Picture"
 				class="profile-picture"
 			/>

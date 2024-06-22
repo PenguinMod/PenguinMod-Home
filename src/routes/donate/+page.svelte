@@ -360,7 +360,7 @@
     .section-details {
         width: 30%;
     }
-
+    
     .donation-unavailable {
         filter: grayscale(1);
         opacity: 0.5;

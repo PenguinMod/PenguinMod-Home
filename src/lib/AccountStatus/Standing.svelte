@@ -54,7 +54,7 @@
             <p>
                 <LocalizedText
                     text="Full Access"
-                    key="account.settings.standing.descriptive.{localeText.icon[1]}"
+                    key="account.settings.standing.visual.{localeText.icon[1]}"
                     lang={currentLang}
                 />
             </p>
@@ -63,7 +63,7 @@
             <p>
                 <LocalizedText
                     text="Limited"
-                    key="account.settings.standing.descriptive.{localeText.icon[2]}"
+                    key="account.settings.standing.visual.{localeText.icon[2]}"
                     lang={currentLang}
                 />
             </p>
@@ -72,7 +72,7 @@
             <p>
                 <LocalizedText
                     text="Temporarily Banned"
-                    key="account.settings.standing.descriptive.{localeText.icon[3]}"
+                    key="account.settings.standing.visual.{localeText.icon[3]}"
                     lang={currentLang}
                 />
             </p>
@@ -81,7 +81,7 @@
             <p>
                 <LocalizedText
                     text="Banned"
-                    key="account.settings.standing.descriptive.{localeText.icon[4]}"
+                    key="account.settings.standing.visual.{localeText.icon[4]}"
                     lang={currentLang}
                 />
             </p>

@@ -1,25 +1,27 @@
 import ProjectApi from "./projectapi"
 
+import { PUBLIC_STUDIO_URL } from "$env/static/public";
+
 export default {
     /**
      * PenguinMod's normal page
      */
-    base: "https://jwklong.github.io/penguinmod.github.io/",
+    base: `${PUBLIC_STUDIO_URL}/`,
 
     /**
      * PenguinMod's editor page
      */
-    editor: "https://jwklong.github.io/penguinmod.github.io/editor.html",
+    editor: `${PUBLIC_STUDIO_URL}/editor.html`,
 
     /**
      * PenguinMod's credits page
      */
-    credits: "https://jwklong.github.io/penguinmod.github.io/credits.html",
+    credits: `${PUBLIC_STUDIO_URL}/credits.html`,
     
     /**
      * PenguinMod's contact page
      */
-    contact: "https://jwklong.github.io/penguinmod.github.io/contact.html",
+    contact: `${PUBLIC_STUDIO_URL}/contact.html`,
 
     /**
      * PenguinMod's terms of service page
@@ -38,7 +40,7 @@ export default {
         /**
          * PenguinMod's project uploading guidelines
          */
-        projects: "https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS"
+        projects: `${PUBLIC_STUDIO_URL}/PenguinMod-Guidelines/PROJECTS`
     },
 
     /**
@@ -62,17 +64,17 @@ export default {
     /**
      * PenguinMod's home page
      */
-    home: "https://home.penguinmod.com/",
+    home: "https://penguinmod.com/",
 
     /**
      * PenguinMod's packager page
      */
-    packager: "https://jwklong.github.io/penguinmod.github.io/PenguinMod-Packager/",
+    packager: `${PUBLIC_STUDIO_URL}/PenguinMod-Packager/`,
 
     /**
      * PenguinMod's unofficial wiki
      */
-    wiki: "https://penguinmod.fandom.com/wiki/Penguinmod",
+    wiki: "https://wiki.penguinmod.com/wiki/Main_Page",
 
     /**
      * PenguinMod's Discord invite

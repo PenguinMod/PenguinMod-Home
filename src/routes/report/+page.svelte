@@ -6,6 +6,8 @@
     import ProjectApi from "../../resources/projectapi.js";
     const ProjectClient = new ProjectApi();
 
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
@@ -282,13 +284,13 @@
             {#if pageDetails.type === "user"}
                 <img
                     class="profile-picture"
-                    src={`https://projects.penguinmod.com/api/v1/users/getpfp?username=${pageDetails.id}`}
+                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${pageDetails.id}`}
                     alt={pageDetails.id}
                 />
             {:else}
                 <img
                     class="project-picture"
-                    src={`https://projects.penguinmod.com/api/v1/projects/getproject?projectID=${pageDetails.id}&requestType=thumbnail`}
+                    src={`${PUBLIC_API_URL}/api/v1/projects/getproject?projectID=${pageDetails.id}&requestType=thumbnail`}
                     alt={pageDetails.id}
                 />
             {/if}

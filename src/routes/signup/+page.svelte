@@ -3,6 +3,8 @@
     import { page } from '$app/stores';
     import { browser } from "$app/environment";
     import MarkdownIt from "markdown-it";
+
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
     
     // Static values
     import LINK from "../../resources/urls.js";
@@ -183,7 +185,7 @@
     }
     
     function checkIsUsernameUnique(username) {
-        let url = `https://projects.penguinmod.com/api/v1/users/userexists?username=${username}`;
+        let url = `${PUBLIC_API_URL}/api/v1/users/userexists?username=${username}`;
 
         return new Promise((resolve, reject) => {
             fetch(url)
@@ -241,7 +243,7 @@
 
     function addOAuthEventListener() {
         window.addEventListener("message", (event) => {
-            if (event.origin !== "https://projects.penguinmod.com") return;
+            if (event.origin !== PUBLIC_API_URL) return;
             
             if (!event.data) return;
 
@@ -273,7 +275,7 @@
     }
 
     function oauthFrame(method) {
-        let iframe = window.open(`https://projects.penguinmod.com/api/v1/users/createoauthaccount?method=${method}`, `Sign up with ${method}`, "width=500,height=500");
+        let iframe = window.open(`${PUBLIC_API_URL}/api/v1/users/createoauthaccount?method=${method}`, `Sign up with ${method}`, "width=500,height=500");
 
         if (!iframe) {
             alert(TranslationHandler.textSafe(

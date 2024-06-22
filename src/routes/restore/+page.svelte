@@ -5,15 +5,17 @@
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import Button from "$lib/Button/Button.svelte";
 
+    import { PUBLIC_STUDIO_URL } from "$env/static/public";
+
     let opened = false;
 
     function begin() {
         window.open(
-            "https://jwklong.github.io/penguinmod.github.io?restore=true&handler=" +
+            `${PUBLIC_STUDIO_URL}?restore=true&handler=` +
                 window.location.origin
         );
         window.onmessage = (e) => {
-            if (!e.origin.startsWith(`https://jwklong.github.io/penguinmod.github.io`)) {
+            if (!e.origin.startsWith(`${PUBLIC_STUDIO_URL}`)) {
                 return;
             }
 
