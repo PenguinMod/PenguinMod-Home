@@ -283,8 +283,8 @@ costume._readField = function (tag, obj, pbf) {
     else if (tag === 3) obj.dataFormat = pbf.readString();
     else if (tag === 4) obj.assetId = pbf.readString();
     else if (tag === 5) obj.md5ext = pbf.readString();
-    else if (tag === 6) obj.rotationCenterX = pbf.readVarint(true);
-    else if (tag === 7) obj.rotationCenterY = pbf.readVarint(true);
+    else if (tag === 6) obj.rotationCenterX = pbf.readDouble();
+    else if (tag === 7) obj.rotationCenterY = pbf.readDouble();
 };
 costume.write = function (obj, pbf) {
     if (obj.name) pbf.writeStringField(1, obj.name);
@@ -292,8 +292,8 @@ costume.write = function (obj, pbf) {
     if (obj.dataFormat) pbf.writeStringField(3, obj.dataFormat);
     if (obj.assetId) pbf.writeStringField(4, obj.assetId);
     if (obj.md5ext) pbf.writeStringField(5, obj.md5ext);
-    if (obj.rotationCenterX) pbf.writeVarintField(6, obj.rotationCenterX);
-    if (obj.rotationCenterY) pbf.writeVarintField(7, obj.rotationCenterY);
+    if (obj.rotationCenterX) pbf.writeDoubleField(6, obj.rotationCenterX);
+    if (obj.rotationCenterY) pbf.writeDoubleField(7, obj.rotationCenterY);
 };
 
 // sound ========================================
