@@ -39,9 +39,7 @@ class Authentication {
             let login;
 
             const handleMessageReciever = (event) => {
-                console.log('did i make it?')
                 if (event.origin !== location.origin) {
-                    console.log("WHAT THE FUCK");
                     return;
                 }
 
