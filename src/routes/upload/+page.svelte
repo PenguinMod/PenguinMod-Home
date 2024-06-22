@@ -136,7 +136,7 @@
                         {
                             p4: data,
                         },
-                        importLocation
+                        "*" // now really you should never do this but im lazy and this shit is refusing to work
                     );
                 } catch (e) {
                     console.warn("Cannot post message", e);
