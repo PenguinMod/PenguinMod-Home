@@ -157,6 +157,19 @@
         };
     }
 
+    let changingUsername = false;
+    let input;
+    function changeUsername() {
+        changingUsername = true;
+        setTimeout(() => {
+            input.focus();
+        }, 100);
+    }
+
+    function saveUsername() {
+        return Authentication.changeUsername(loggedInUsername, token, input.value);
+    }
+
     async function verifyEmail() {
         await Authentication.verifyEmail(loggedInUsername, token);
         alert("check your email");
@@ -267,7 +280,48 @@
                     </div>
                 </button>
                 <div class="profile-section-display">
-                    <h1 style="margin-block:0;font-size:40px">{loggedInUsername}</h1>
+                    <div class="profile-section-username">
+                        {#if !changingUsername}
+                            <h1 class="profile-section-username-username">{loggedInUsername}</h1>
+                        {:else}
+                            <input
+                                type="text"
+                                class="profile-section-username-username"
+                                value={loggedInUsername}
+                                bind:this={input}
+                            />
+                        {/if}
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
+                        {#if !changingUsername}
+                            <img
+                                src="/pencil.png"
+                                alt="Edit"
+                                on:click={changeUsername}
+                            />
+                        {:else}
+                            <img
+                                src="/checkmark.png"
+                                alt="Save"
+                                class="edit-username-link"
+                                on:click={() => {
+                                    saveUsername().then(() => {
+                                        alert("success");
+                                        localStorage.setItem("username", input.value);
+                                        location.reload();
+                                    })
+                                    .catch((err) => alert(err));
+                                }}
+                            />
+                            <img
+                                src="/notallowed.png"
+                                alt="Cancel"
+                                class="edit-username-link"
+                                on:click={() => {
+                                    changingUsername = false;
+                                }}
+                            />
+                        {/if}
+                    </div>
                     <button class="edit-link" on:click={changePassword}>
                         {#if loginMethods.includes("password")}
                             <LocalizedText
@@ -547,6 +601,48 @@
         display: flex;
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .profile-section-username {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+    }
+
+    .profile-section-username-username {
+        font-size: 2.5rem;
+        margin: 0;
+        margin-right: 8px;
+        padding: 0;
+        border: 0;
+        background: none;
+        color: black;
+    }
+
+    .profile-section-username-username:focus {
+        outline: 2px solid rgba(255, 255, 255, 0.35);
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    :global(body.dark-mode) .profile-section-username-username {
+        color: white;
+    }
+
+    :global(body.dark-mode) .profile-section-username-username:focus {
+        outline: 2px solid rgba(0, 0, 0, 0.35);
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .edit-username-link {
+        color: dodgerblue;
+        text-decoration: underline;
+        background: transparent;
+        border: 0;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+        font-size: 0.85rem;
+        width: 30px;
     }
 
     .settings-area {

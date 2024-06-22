@@ -168,5 +168,20 @@ class Authentication {
             }).catch(reject)).catch(reject);
         })
     }
+
+    static changeUsername(username, token, newUsername) {
+        return new Promise((resolve, reject) => {
+            fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/changeUsername`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, token, newUsername })
+            }).then(r => r.json().then(j => {
+                if (j.error) return reject(j.error);
+                resolve(j.token);
+            }).catch(reject)).catch(reject);
+        });
+    }
 }
 export default Authentication;
