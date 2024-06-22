@@ -107,6 +107,7 @@
 			}
 		).then((res) => {
 			if (!res.ok) return;
+			localStorage.removeItem("username");
 			localStorage.removeItem("token");
 			Authentication.fireLogout();
 			loggedIn = false;
