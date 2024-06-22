@@ -40,8 +40,6 @@
 
                 userQuery.shift();
 
-                console.log(userQuery.join());
-
                 api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}`;
                 break;
         }
