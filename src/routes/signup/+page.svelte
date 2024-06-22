@@ -520,10 +520,22 @@
                 on:focusout={() => focused = ""}
             />
             <button
-                class="password-show invert-on-dark"
-                data-visible={showingPassword}
-                on:click={togglePasswordView}
-            />
+                class="password-show"
+                on:click={togglePasswordView}>
+                {#if showingPassword}
+                    <img
+                        src="/account/hidepassword.svg"
+                        alt="Hide Password"
+                        class="invert-on-dark"
+                    />
+                {:else}
+                    <img
+                        src="/account/showpassword.svg"
+                        alt="Show Password"
+                        class="invert-on-dark"
+                    />
+                {/if}
+            </button>
         </div>
         {#if focused === "password"}
             <ChecksBox items={passwordRequirements} />
@@ -663,21 +675,21 @@
 
     .password-show {
         position: absolute;
-        right: -4px;
+        right: 0px;
         top: 4px;
         width: 24px;
         height: calc(100% - 8px);
         border: 0;
         background: transparent;
-        background-image: url('account/showpassword.svg');
-        background-size: 100% 100%;
         opacity: 0.7;
         cursor: pointer;
     }
-    .password-show[data-visible="true"] {
-        background-image: url('account/hidepassword.svg');
-        background-size: 100% 100%;
+
+    .password-show img {
+        width: 24px;
+        height: 24px;
     }
+
     :global(body.dark-mode) .invert-on-dark {
         filter: invert(1);
     }
