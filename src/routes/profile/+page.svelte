@@ -2,6 +2,8 @@
     import { onMount } from "svelte";
     import MarkdownIt from "markdown-it";
 
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
     import scratchblocks from "$lib/scratchblocks.js";
     import LINK from "../../resources/urls.js";
     import Authentication from "../../resources/authentication.js";
@@ -642,7 +644,7 @@
             newText = newText.replace(regexRules.project, function(id) {
                 id = id.replace('#', '');
                 if (/^\d{6,}$/.test(id)) {
-                    return `<a href="https://studio.penguinmod.com/#${id}" target="_blank">#${id}</a>`;
+                    return `<a href="${PUBLIC_STUDIO_URL}/#${id}" target="_blank">#${id}</a>`;
                 }
                 return `<a href="https://penguinmod.com/search?q=%23${id}">#${id}</a>`;
             });
@@ -834,7 +836,7 @@
                             <div class="user-username">
                                 <img
                                     style="border-color:{isDonator ? "#a237db" : "#efefef"}"
-                                    src={`http://localhost:8080/api/v1/users/getpfp?username=${user}`}
+                                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${user}`}
                                     alt="Profile"
                                     class="profile-picture"
                                 />
@@ -1182,7 +1184,7 @@
                                 />
                                 <div class="profile-project-authordiv">
                                     <img
-                                        src="http://localhost:8080/api/v1/users/getpfp?username={user}"
+                                        src="{PUBLIC_API_URL}/api/v1/users/getpfp?username={user}"
                                         alt="Project Author"
                                         title={user}
                                         class="profile-project-author"

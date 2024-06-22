@@ -1,5 +1,6 @@
-let OriginApiUrl = "https://projects.penguinmod.com";
-OriginApiUrl = "http://localhost:8080";
+import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
+let OriginApiUrl = PUBLIC_API_URL;
 
 import JSZip from "jszip";
 import { Project } from "./project.protobuf.js";

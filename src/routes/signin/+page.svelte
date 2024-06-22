@@ -2,6 +2,8 @@
     import { onMount } from "svelte";
     import { page } from '$app/stores';
     
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+    
     // Static values
     import LINK from "../../resources/urls.js";
     
@@ -89,7 +91,7 @@
 
     function addOAuthEventListener() {
         window.addEventListener("message", (event) => {
-            if (event.origin !== "http://localhost:8080") return;
+            if (event.origin !== PUBLIC_API_URL) return;
             
             if (!event.data) return;
 
@@ -121,7 +123,7 @@
     }
 
     function oauthFrame(method) {
-        let iframe = window.open(`http://localhost:8080/api/v1/users/loginoauthaccount?method=${method}`, `Login with ${method}`, "width=500,height=500");
+        let iframe = window.open(`${PUBLIC_API_URL}/api/v1/users/loginoauthaccount?method=${method}`, `Login with ${method}`, "width=500,height=500");
 
         if (!iframe) {
             alert(TranslationHandler.textSafe(

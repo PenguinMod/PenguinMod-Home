@@ -3,6 +3,8 @@
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
 
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
     const ProjectClient = new ProjectApi();
 
     // Components
@@ -120,7 +122,7 @@
         let login;
 
         const handleMessageReciever = (event) => {
-            if (event.origin !== "http://localhost:8080") {
+            if (event.origin !== PUBLIC_API_URL) {
                 return;
             }
 
@@ -254,7 +256,7 @@
             <div class="profile-section">
                 <button class="profile-section-image" on:click={setPFP}>
                     <img
-                        src="http://localhost:8080/api/v1/users/getpfp?username={loggedInUsername}&reload={pfpReload}"
+                        src="{PUBLIC_API_URL}/api/v1/users/getpfp?username={loggedInUsername}&reload={pfpReload}"
                         alt={loggedInUsername}
                     />
                     <div class="profile-section-image-edit">
@@ -405,7 +407,7 @@
                         </h1>
                         <AccountStatus
                             username={loggedInUsername}
-                            image="http://localhost:8080/api/v1/users/getpfp?username={loggedInUsername}&reload={pfpReload}"
+                            image="{PUBLIC_API_URL}/api/v1/users/getpfp?username={loggedInUsername}&reload={pfpReload}"
                             showname={false}
                             status={standing}
                             detail={4}

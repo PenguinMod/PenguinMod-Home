@@ -1,5 +1,7 @@
 <script>
     import { onMount } from "svelte";
+
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
     
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
@@ -43,7 +45,7 @@
         const method = urlParams.get('method');
         const accessToken = urlParams.get('at');
 
-        let url = "http://localhost:8080/api/v1/users/";
+        let url = `${PUBLIC_API_URL}/api/v1/users/`;
         switch (method) {
             case "google":
                 url += "googlecallback/addpasswordfinal"

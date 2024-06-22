@@ -1,25 +1,27 @@
 import ProjectApi from "./projectapi"
 
+import { PUBLIC_STUDIO_URL } from "$env/static/public";
+
 export default {
     /**
      * PenguinMod's normal page
      */
-    base: "http://localhost:3000/",
+    base: `${PUBLIC_STUDIO_URL}/`,
 
     /**
      * PenguinMod's editor page
      */
-    editor: "https://studio.penguinmod.com/editor.html",
+    editor: `${PUBLIC_STUDIO_URL}/editor.html`,
 
     /**
      * PenguinMod's credits page
      */
-    credits: "https://studio.penguinmod.com/credits.html",
+    credits: `${PUBLIC_STUDIO_URL}/credits.html`,
     
     /**
      * PenguinMod's contact page
      */
-    contact: "https://studio.penguinmod.com/contact.html",
+    contact: `${PUBLIC_STUDIO_URL}/contact.html`,
 
     /**
      * PenguinMod's terms of service page
@@ -38,7 +40,7 @@ export default {
         /**
          * PenguinMod's project uploading guidelines
          */
-        projects: "https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
+        projects: `${PUBLIC_STUDIO_URL}/PenguinMod-Guidelines/PROJECTS`
     },
 
     /**
@@ -67,7 +69,7 @@ export default {
     /**
      * PenguinMod's packager page
      */
-    packager: "https://studio.penguinmod.com/PenguinMod-Packager/",
+    packager: `${PUBLIC_STUDIO_URL}/PenguinMod-Packager/`,
 
     /**
      * PenguinMod's unofficial wiki

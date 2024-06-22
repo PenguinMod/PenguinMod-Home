@@ -1,6 +1,8 @@
 <script>
     import { createEventDispatcher } from "svelte";
 
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
     // Static values
     import LINK from "../../resources/urls.js";
 
@@ -41,7 +43,7 @@
     </div>
     <div class="project-author">
         <img
-            src={`http://localhost:8080/api/v1/users/getpfp?username=${author}`}
+            src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${author}`}
             alt="Project Author"
             class="project-author"
         />

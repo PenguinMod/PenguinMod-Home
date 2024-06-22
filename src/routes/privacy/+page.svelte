@@ -4,6 +4,8 @@ import { onMount } from "svelte";
 // Components
 import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
 import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
+
+import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 // translations
 import LocalizedText from "$lib/LocalizedText/Node.svelte";
 import Language from "../../resources/language.js";
@@ -48,7 +50,7 @@ Language.onChange((lang) => {
         <p>
             This document applies to
             <a href="https://penguinmod.com">https://penguinmod.com</a>,
-            <a href="https://studio.penguinmod.com">https://studio.penguinmod.com</a>,
+            <a href="{PUBLIC_STUDIO_URL}">{PUBLIC_STUDIO_URL}</a>,
             <a href="https://extensions.penguinmod.com">https://extensions.penguinmod.com</a>,
             <a href="https://projects.penguinmod.com">https://projects.penguinmod.com</a>,
             and any other penguinmod.com subdomains.
@@ -283,7 +285,7 @@ Language.onChange((lang) => {
             <br>
             <br>
             PenguinMod will not ask the user to confirm this action if the project is compiled using
-            <a href="https://studio.penguinmod.com/PenguinMod-Packager/">the PenguinMod packager.</a>
+            <a href="{PUB}/PenguinMod-Packager/">the PenguinMod packager.</a>
             <br>
             In this case it is up to the user's browser to prompt the user if they would like to allow the website
             to access their location.

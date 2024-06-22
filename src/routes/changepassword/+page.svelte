@@ -1,5 +1,7 @@
 <script>
     import { onMount } from "svelte";
+
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
     
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
@@ -100,7 +102,7 @@
     };
 
     function toOAuthPage(method) {
-        const url = `http://localhost:8080/api/v1/users/addpasswordtooauthlocal?method=${method}&username=${username}&token=${token}`
+        const url = `${PUBLIC_API_URL}/api/v1/users/addpasswordtooauthlocal?method=${method}&username=${username}&token=${token}`
         location.href = url;
     }
 

@@ -2,6 +2,8 @@
     import { onMount } from "svelte";
     import { page } from "$app/stores";
 
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
     import Authentication from "../resources/authentication.js";
     import ProjectApi from "../resources/projectapi.js";
     import censor from "../resources/basiccensorship.js";
@@ -189,7 +191,7 @@
         switch (type) {
             case "upload":
             case "remixed":
-                return `https://studio.penguinmod.com/#${content.id}`;
+                return `${PUBLIC_STUDIO_URL}/#${content.id}`;
             case "posted":
                 return `/profile?user=${author}&post=${content.id}`;
             default:
@@ -201,7 +203,7 @@
     onMount(async () => {
         const projectId = Number(location.hash.replace("#", ""));
         if (!isNaN(projectId) && projectId != 0) {
-            location.href = `https://studio.penguinmod.com/#${projectId}`;
+            location.href = `${PUBLIC_STUDIO_URL}/#${projectId}`;
             return;
         }
 
@@ -500,7 +502,7 @@
         {:else}
             <div class="welcome-back-card">
                 <img
-                    src={`http://localhost:8080/api/v1/users/getpfp?username=${loggedInUsername}`}
+                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${loggedInUsername}`}
                     alt="Profile"
                     class="profile-picture"
                 />
@@ -588,7 +590,7 @@
                                         message.data
                                     )}
                                     author={message.user.username}
-                                    image={`http://localhost:8080/api/v1/users/getpfp?username=${message.user.username}`}
+                                    image={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${message.user.username}`}
                                 />
                             {/if}
                         {/each}

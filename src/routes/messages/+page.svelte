@@ -5,6 +5,8 @@
     import ProjectApi from "../../resources/projectapi.js";
     import * as FileSaver from "file-saver";
 
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
     const ProjectClient = new ProjectApi();
 
     // Components
@@ -508,7 +510,7 @@
                     {:else if message.message.type === "remix"}
                         <p>
                             <a
-                                href={`https://studio.penguinmod.com/#${message.message.newProject.id}`}
+                                href={`${PUBLIC_STUDIO_URL}/#${message.message.newProject.id}`}
                                 target="_blank"
                             >
                                 {String(
@@ -538,7 +540,7 @@
                         </p>
                         <p>
                             <a
-                                href={`https://studio.penguinmod.com/#${message.message.project.id}`}
+                                href={`${PUBLIC_STUDIO_URL}/#${message.message.project.id}`}
                                 target="_blank"
                             >
                                 <LocalizedText

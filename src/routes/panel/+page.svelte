@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { page } from '$app/stores';
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
     import Authentication from "../../resources/authentication.js";
     import LINK from "../../resources/urls.js";
     import ProfileBadges from "../../resources/badges.js";
@@ -1154,7 +1155,7 @@
                 {#if selectedProjectName}
                     <a
                         target="_blank"
-                        href={`https://studio.penguinmod.com/#${lastSelectedProjectId}`}
+                        href={`${PUBLIC_STUDIO_URL}/#${lastSelectedProjectId}`}
                         style="color: dodgerblue"
                     >
                         <p>
@@ -1569,7 +1570,7 @@
                                 }}
                             >
                                 <img
-                                    src={`http://localhost:8080/api/v1/users/getpfp?username=${content.target}`}
+                                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${content.target}`}
                                     alt={content.target}
                                 />
                                 <div class="reports-user-content">
@@ -1634,7 +1635,7 @@
                                 }}
                             >
                                 <img
-                                    src={`http://localhost:8080/api/v1/projects/getproject?projectID=${content.targetID}&requestType=thumbnail`}
+                                    src={`${PUBLIC_API_URL}/api/v1/projects/getproject?projectID=${content.targetID}&requestType=thumbnail`}
                                     alt={content.target}
                                 />
                                 <div
@@ -1658,9 +1659,9 @@
                                     <p>
                                         View project at
                                         <a
-                                            href={`https://studio.penguinmod.com/#${content.targetID}`}
+                                            href={`${PUBLIC_STUDIO_URL}/#${content.targetID}`}
                                         >
-                                            {`https://studio.penguinmod.com/#${content.targetID}`}
+                                            {`${PUBLIC_STUDIO_URL}/#${content.targetID}`}
                                         </a>
                                         or
                                         <button
