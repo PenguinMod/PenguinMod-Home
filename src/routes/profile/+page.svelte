@@ -229,6 +229,7 @@
         const username = localStorage.getItem("username");
 
         const then = (projs) => {
+            console.log(projs);
             projects.all = projs;
             projects.featured = projs.filter((p) => p.featured);
             if (projects.all.length <= 0) {
@@ -250,6 +251,7 @@
                 const profileFeatured = fullProfile.myFeaturedProject;
                 if (profileFeatured) {
                     ProjectApi.getProjectMeta(profileFeatured).then(metadata => {
+                        console.log(metadata);
                         profileFeaturedProject = metadata;
                     }).catch((err) => {
                         console.warn('Failed to load profile featured project;', err);
@@ -782,7 +784,7 @@
                 <div class="featured-project-list">
                     {#if projects.all.length > 0}
                         {#if projects.all[0] !== "none"}
-                            {#each projects.all as project}
+                            {#each (projects.all.map(x => {x.author = loggedInUser;return x})) as project}
                                 <ClickableProject {...project} on:click={() => saveEditedProject(project.id)} />
                             {/each}
                         {:else}
@@ -1175,7 +1177,7 @@
                         {:else if profileFeaturedProject.author.username === user}
                             <a href={`${LINK.base}#${profileFeaturedProject.id}`} style="text-decoration: none">
                                 <img
-                                    src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectIdd=${profileFeaturedProject.id}&requestType=thumbnail`}
+                                    src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectID=${profileFeaturedProject.id}&requestType=thumbnail`}
                                     alt="Project Thumbnail"
                                     class="profile-project-image"
                                 />
@@ -1187,7 +1189,7 @@
                                         class="profile-project-author"
                                     >
                                     <div class="profile-project-authorinfo">
-                                        <p class="profile-project-link">{@html formatProjectTitle(profileFeaturedProject.name)}</p>
+                                        <p class="profile-project-link">{@html formatProjectTitle(profileFeaturedProject.title)}</p>
                                         <p class="profile-project-date">{unixToDisplayDate(profileFeaturedProject.date)}</p>
                                     </div>
                                 </div>

@@ -1102,11 +1102,11 @@ class ProjectApi {
         const data = {
             username: this.username,
             token: this.token,
-            id,
+            project: id,
             title
         };
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/users/setMyFeaturedProject`, {
+            fetch(`${OriginApiUrl}/api/v1/users/setmyfeaturedproject`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
                 method: "POST"
