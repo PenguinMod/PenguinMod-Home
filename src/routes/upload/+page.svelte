@@ -4,6 +4,8 @@
     import ProjectApi from "../../resources/projectapi.js";
     import EmojiList from "../../resources/emojis.js";
 
+    import { PUBLIC_STUDIO_URL } from "$env/static/public";
+
     const ProjectClient = new ProjectApi();
 
     // Static values
@@ -134,7 +136,7 @@
                         {
                             p4: data,
                         },
-                        importLocation
+                        PUBLIC_STUDIO_URL
                     );
                 } catch (e) {
                     console.warn("Cannot post message", e);
@@ -143,12 +145,10 @@
             // when WE get a post from PM
             window.addEventListener("message", (e) => {
                 if (e.origin !== importLocation) { // disable if running locally
-                    console.log(e.origin, importLocation);
                     return;
                 }
                 const data = e.data && e.data.p4;
                 if (!data) {
-                    console.log("no data");
                     return;
                 }
 
