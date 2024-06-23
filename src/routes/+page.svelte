@@ -441,7 +441,6 @@
             <img
                 src="/warning.png"
                 draggable="false"
-                style="height: 24px; margin-right: 6px"
                 alt="Warning"
             />
             <p>
@@ -1302,13 +1301,20 @@
         text-align: center;
     }
     .section-language-warning > img {
+        height: 24px;
+        margin-right: 6px;
         filter: brightness(0);
     }
+
     :global(body.dark-mode) .section-language-warning {
         color: white;
     }
     :global(body.dark-mode) .section-language-warning > img {
         filter: brightness(1);
+    }
+    :global(html[dir="rtl"]) .section-language-warning img {
+        margin-right: initial;
+        margin-left: 6px;
     }
 
     .example-video {

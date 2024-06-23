@@ -1,6 +1,4 @@
 <script>
-    // TODO: add proper translation support for this entire page
-
     import { onMount } from "svelte";
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
@@ -30,42 +28,41 @@
         id: 0,
         pickedReason: "",
         otherReason: "",
-        userOffsiteReason: "",
+        userSexualContentReason: "",
+        userAttackReason: "",
+        userIllegalReason: "",
+        
+        projectMalwareReason: "",
+        projectStoreInfoReason: "",
+        projectSexualContentReason: "",
+        projectIllegalReason: "",
+
         isCurrentlyReporting: false,
     };
 
     const reportReasons = {
         user: [
             {
-                text: "The user has inappropriate off-site behavior",
-                key: "report.reason.user.offsite",
-                pageDetail: "userOffsiteReason",
-            },
-            {
                 text: "The user posts sexual content or references it",
                 key: "report.reason.user.sexual",
+                pageDetail: "userSexualContentReason",
             },
             {
                 text: "The user attacks other users",
                 key: "report.reason.user.attacker",
+                pageDetail: "userAttackReason",
             },
             {
                 text: "The user posts illegal content",
                 key: "report.reason.user.illegal",
+                pageDetail: "userIllegalReason",
             },
         ],
         project: [
             {
-                text: "The project contains malware",
-                key: "report.reason.project.malware",
-            },
-            {
-                text: "The project removes my ability to stop or pause it",
-                key: "report.reason.project.nocontrols",
-            },
-            {
-                text: "The project shares or stores my personal information",
-                key: "report.reason.project.personal",
+                text: "The project contains sexual content or references",
+                key: "report.reason.project.sexual",
+                pageDetail: "projectSexualContentReason",
             },
             {
                 text: "The project plays really loud or inappropriate sounds",
@@ -74,10 +71,21 @@
             {
                 text: "The project contains illegal material or pirated content",
                 key: "report.reason.project.illegal",
+                pageDetail: "projectIllegalReason",
             },
             {
-                text: "The project contains sexual content or references",
-                key: "report.reason.project.sexual",
+                text: "The project has viruses or dangerous files",
+                key: "report.reason.project.virus",
+                pageDetail: "projectMalwareReason",
+            },
+            {
+                text: "The project shares or stores my personal information",
+                key: "report.reason.project.personal",
+                pageDetail: "projectStoreInfoReason",
+            },
+            {
+                text: "The project removes my ability to stop or pause it",
+                key: "report.reason.project.nocontrols",
             },
         ],
     };

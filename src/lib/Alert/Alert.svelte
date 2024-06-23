@@ -67,9 +67,7 @@
             {/if}
             {#if hasButton}
                 <a href={buttonHref}>
-                    <button
-                        style={`color: ${buttonTooLight ? "black" : backColor}`}
-                    >
+                    <button data-toolight={buttonTooLight}>
                         <AutoLocalizedText text={buttonText} />
                     </button>
                 </a>
@@ -108,26 +106,45 @@
         align-items: center;
         justify-content: center;
     }
+
     .alert-banner img {
         height: 32px;
         margin-right: 12px;
     }
+
+    :global(html[dir="rtl"]) .alert-banner img {
+        margin-right: initial;
+        margin-left: 16px;
+    }
+
     .alert-banner button {
         border: 0;
+        outline: 2px solid white;
         cursor: pointer;
         font-weight: bold;
-        border-radius: 1000px;
-        background: white;
-        color: rgb(118, 80, 168);
+        border-radius: 4px;
+        color: white;
+        background: transparent;
         font-size: 16px;
         padding: 6px 16px;
         margin: 0 6px;
-        margin-left: 12px;
+        margin-left: 16px;
+    }
+    .alert-banner button[data-toolight=true] {
+        color: black;
+        outline-color: black;
     }
     .alert-banner button:active {
-        background: rgb(216, 216, 216);
+        background: rgba(0, 0, 0, 0.25);
     }
+
+    :global(html[dir="rtl"]) .alert-banner button {
+        margin-left: initial;
+        margin-right: 16px;
+    }
+
     .alert-dismiss {
+        outline: 0 !important;
         position: absolute;
         right: 16px;
         width: 32px;
