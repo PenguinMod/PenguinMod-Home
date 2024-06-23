@@ -1186,10 +1186,9 @@ class ProjectApi {
     updateProject(id, data) {
         const username = this.username;
         const token = this.token;
-        const title = data.title;
-        const instructions = data.instructions;
-        const notes = data.notes;
-
+        const title = data.newMeta.title;
+        const instructions = data.newMeta.instructions;
+        const notes = data.newMeta.notes;
 
         return new Promise(async (resolve, reject) => {
             JSZip.loadAsync(data.project).then(async zip => {

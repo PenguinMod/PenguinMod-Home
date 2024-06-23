@@ -42,7 +42,7 @@
     let guidelinePageOpen = false;
 
     let projectId;
-    let projectMetadata;
+    let projectMetadata = {};
 
     let newProjectImage;
     let newProjectData;
@@ -92,7 +92,7 @@
                 if (username) {
                     ProjectApi.getProjectMeta(projectId)
                         .then((metadata) => {
-                            projectName = metadata.name;
+                            projectName = metadata.title;
                             projectMetadata = metadata;
                             ProjectClient.setUsername(username);
                             ProjectClient.setToken(token);
@@ -185,7 +185,7 @@
     });
     
     let isBusyUploading = false;
-    function updateProject() {
+    async function updateProject() {
         if (isBusyUploading) return;
         // if (projectMetadata.featured) {
         //     const code = projectId;
@@ -207,25 +207,19 @@
         const newMetadata = {};
         const data = {
             newMeta: newMetadata,
-        };
-        if (components.projectName.value !== projectName) {
-            newMetadata.name = components.projectName.value;
         }
-        if (
-            components.projectInstructions.value !==
-            projectMetadata.instructions
-        ) {
-            newMetadata.instructions = components.projectInstructions.value;
-        }
-        if (components.projectNotes.value !== projectMetadata.notes) {
-            newMetadata.notes = components.projectNotes.value;
-        }
+        newMetadata.title = projectName;
+        newMetadata.instructions = components.projectInstructions.value;
+        newMetadata.notes = components.projectNotes.value;
         if (newProjectImage) {
-            data.image = newProjectImage;
+            data.image = new File([newProjectImage], "thumbnail")
+        } else {
+            data.image = new File([await fetch("/empty-project.png").then((r) => r.blob())], "thumbnail");
         }
         if (newProjectData) {
             data.project = newProjectData;
         }
+
         ProjectClient.updateProject(projectId, data)
             .then(kickOut)
             .catch((err) => {
@@ -589,7 +583,7 @@
                         bind:this={components.projectName}
                         on:dragover={allowEmojiDrop}
                         on:drop={handleEmojiDrop}
-                        value={projectName}
+                        bind:value={projectName}
                     />
                     <p class="important notmargin" style="margin-top:24px">
                         <LocalizedText

@@ -11,8 +11,9 @@
     export let lastUpdate = false;
     export let featured = false;
     export let author;
-    export let date = 0;
+    //export let date = 0; // when the project was originally uploaded
     export let style = "";
+    export let showdate = true;
 
     function unixToDisplayDate(unix) {
         unix = Number(unix);
@@ -52,9 +53,9 @@
         <div class="text" title={title}>
             {title}
         </div>
-        {#if lastUpdate}
+        {#if showdate}
             <div class="text author date">
-                {unixToDisplayDate(date)}
+                {unixToDisplayDate(lastUpdate)}
             </div>
         {:else}
             <div class="text author">

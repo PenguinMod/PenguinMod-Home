@@ -4,8 +4,6 @@
     import ProjectApi from "../../resources/projectapi.js";
     import EmojiList from "../../resources/emojis.js";
 
-    import { PUBLIC_STUDIO_URL } from "$env/static/public";
-
     const ProjectClient = new ProjectApi();
 
     // Static values
@@ -50,6 +48,8 @@
     let projectInputName;
     let remixingProjectName;
     let remixProjectId;
+
+    let username;
 
     let remixedInURL = false;
 
@@ -100,7 +100,7 @@
             });
         }
 
-        const username = localStorage.getItem("username");
+        username = localStorage.getItem("username");
         const token = localStorage.getItem("token");
         if (!token || !username) {
             loggedIn = false;
@@ -253,9 +253,10 @@
     Authentication.onLogout(() => {
         loggedIn = false;
     });
-    Authentication.onAuthentication((username, privateCode) => {
+    Authentication.onAuthentication((_username, privateCode) => {
         loggedIn = true;
-        ProjectClient.setUsername(username);
+        username = _username;
+        ProjectClient.setUsername(_username);
         ProjectClient.setToken(privateCode);
     });
 
@@ -521,9 +522,9 @@
                     {#each otherProjects as project}
                         <ClickableProject
                             id={project.id}
-                            name={project.name}
-                            owner={project.owner}
-                            date={project.date}
+                            title={project.title}
+                            author={username}
+                            lastUpdate={project.lastUpdate}
                             featured={project.featured}
                             showdate={true}
                             on:click={window.open(
@@ -574,8 +575,8 @@
                     {#each canRemix as project}
                         <ClickableProject
                             id={project.id}
-                            name={project.name}
-                            owner={project.owner}
+                            title={project.title}
+                            author={project.author}
                             date={project.date}
                             featured={project.featured}
                             showdate={true}
