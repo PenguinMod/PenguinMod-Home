@@ -644,7 +644,7 @@
         overflow: hidden;
     }
     :global(html[dir="rtl"]) .profile-section-image {
-        margin-right: none;
+        margin-right: initial;
         margin-left: 8px;
     }
 
