@@ -454,28 +454,6 @@
 
         <span class="input-title">
             <LocalizedText
-                text="Email (Optional)"
-                key="account.fields.email"
-                lang={currentLang}
-            />
-        </span>
-        <input
-            type="text"
-            placeholder={TranslationHandler.textSafe(
-                "account.fields.email.placeholder",
-                currentLang,
-                "Your email address"
-            )}
-            data-valid={emailValid}
-            class="email-input"
-            maxlength="254"
-            on:input={emailInputChanged}
-            on:focusin={() => focused = "email"}
-            on:focusout={() => focused = ""}
-        />
-
-        <span class="input-title">
-            <LocalizedText
                 text="Username"
                 key="account.fields.username"
                 lang={currentLang}
@@ -497,6 +475,28 @@
         {#if focused === "username"}
             <ChecksBox items={usernameRequirements} />
         {/if}
+        
+        <span class="input-title">
+            <LocalizedText
+                text="Email"
+                key="account.fields.email"
+                lang={currentLang}
+            />
+        </span>
+        <input
+            type="text"
+            placeholder={TranslationHandler.textSafe(
+                "account.fields.email.placeholder",
+                currentLang,
+                "Your email address"
+            )}
+            data-valid={emailValid}
+            class="email-input"
+            maxlength="254"
+            on:input={emailInputChanged}
+            on:focusin={() => focused = "email"}
+            on:focusout={() => focused = ""}
+        />
 
         <span class="input-title">
             <LocalizedText
