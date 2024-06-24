@@ -191,7 +191,7 @@
         switch (type) {
             case "upload":
             case "remixed":
-                return `${PUBLIC_STUDIO_URL}/#${content.id}`;
+                return `${PUBLIC_STUDIO_URL}/project/${content.id}`;
             case "posted":
                 return `/profile?user=${author}&post=${content.id}`;
             default:
@@ -203,7 +203,7 @@
     onMount(async () => {
         const projectId = Number(location.hash.replace("#", ""));
         if (!isNaN(projectId) && projectId != 0) {
-            location.href = `${PUBLIC_STUDIO_URL}/#${projectId}`;
+            location.href = `/project/${projectId}`;
             return;
         }
 

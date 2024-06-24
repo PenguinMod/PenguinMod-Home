@@ -510,7 +510,7 @@
                     {:else if message.message.type === "remix"}
                         <p>
                             <a
-                                href={`${PUBLIC_STUDIO_URL}/#${message.message.newProject.id}`}
+                                href={`/project/${message.message.newProject.id}`}
                                 target="_blank"
                             >
                                 {String(
@@ -540,7 +540,7 @@
                         </p>
                         <p>
                             <a
-                                href={`${PUBLIC_STUDIO_URL}/#${message.message.project.id}`}
+                                href={`/project/${message.message.project.id}`}
                                 target="_blank"
                             >
                                 <LocalizedText

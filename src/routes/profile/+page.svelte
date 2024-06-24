@@ -644,7 +644,7 @@
             newText = newText.replace(regexRules.project, function(id) {
                 id = id.replace('#', '');
                 if (/^\d{6,}$/.test(id)) {
-                    return `<a href="${PUBLIC_STUDIO_URL}/#${id}" target="_blank">#${id}</a>`;
+                    return `<a href="/project/${id}" target="_blank">#${id}</a>`;
                 }
                 return `<a href="https://penguinmod.com/search?q=%23${id}">#${id}</a>`;
             });
@@ -1176,7 +1176,7 @@
                                 />
                             </p>
                         {:else if profileFeaturedProject.author.username === user}
-                            <a href={`${LINK.base}#${profileFeaturedProject.id}`} style="text-decoration: none">
+                            <a href={`/project/${profileFeaturedProject.id}`} style="text-decoration: none">
                                 <img
                                     src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectID=${profileFeaturedProject.id}&requestType=thumbnail`}
                                     alt="Project Thumbnail"
