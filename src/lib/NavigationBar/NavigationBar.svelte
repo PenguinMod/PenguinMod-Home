@@ -142,17 +142,11 @@
 	onMount(loggedInCheck);
 
 	let currentLang = "en";
-	let searchBar = "Search for projects...";
-	let defaultLanguageText = "Same as browser";
-	let defaultLanguageCount = "$1 languages translated";
 	onMount(() => {
 		Language.forceUpdate();
 	});
 	Language.onChange((lang) => {
 		currentLang = lang;
-		searchBar = Translations.text("navigation.search", currentLang);
-		defaultLanguageText = Translations.text("lang.default", currentLang);
-		defaultLanguageCount = Translations.text("lang.count", currentLang);
 	});
 
 	// language picker
@@ -190,9 +184,6 @@
 		accountMenu.style.top = `3rem`;
 		accountMenuIsOpen = true;
 	}
-	function langName(lang) {
-		return Translations.text("lang.name", lang);
-	}
 	function chooseLang(lang) {
 		languageMenu.style.display = "none";
 		if (lang === "default") {
@@ -226,18 +217,32 @@
 		style="margin-bottom: 8px;"
 		on:click={() => chooseLang("default")}
 	>
-		{defaultLanguageText}
+		<LocalizedText
+			text="Same as browser"
+			key="lang.default"
+			lang={currentLang}
+		/>
 	</button>
 	<p class="languageCount">
-		{defaultLanguageCount.replace("$1", languageKeys.length)}
+		<LocalizedText
+			text="$1 languages translated"
+			key="lang.count"
+			lang={currentLang}
+			replace={{
+				"$1": languageKeys.length
+			}}
+		/>
 	</p>
 	{#each languageKeys as languageCode}
 		<button
 			class="languageOption"
-			title={langName(languageCode) + ` (${languageCode})`}
 			on:click={() => chooseLang(languageCode)}
 		>
-			{langName(languageCode)}
+			<LocalizedText
+				text={languageCode}
+				key="lang.name"
+				lang={languageCode}
+			/>
 		</button>
 	{/each}
 </div>
@@ -311,7 +316,7 @@
 			<img src="/create.png" alt="Create" />
 		</BarPage>
 	</div>
-	<BarSearch placeholder={searchBar} />
+	<BarSearch placeholder={Translations.textSafe("navigation.search", currentLang, "Search for projects...")} />
 	<BarButton
 		highlighted="true"
 		link={LINK.discord}
