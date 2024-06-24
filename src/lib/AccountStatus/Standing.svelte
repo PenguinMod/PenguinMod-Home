@@ -157,8 +157,7 @@
         width: 32px;
         height: 32px;
 
-        background-image: url("/account/standing_sheet.png");
-        background-size: 64px;
+        background-size: 100%;
         background-repeat: no-repeat;
         z-index: 4;
     }
@@ -180,16 +179,16 @@
     }
 
     .status-section div[data-detail="1"] {
-        background-position: 0 0;
+        background-image: url("/account/status_good.svg");
     }
     .status-section div[data-detail="2"] {
-        background-position: -32px 0;
+        background-image: url("/account/status_limited.svg");
     }
     .status-section div[data-detail="3"] {
-        background-position: 0 -32px;
+        background-image: url("/account/status_warn.svg");
     }
     .status-section div[data-detail="4"] {
-        background-position: -32px -32px;
+        background-image: url("/account/status_banned.svg");
     }
     
     .status-section div[data-detail] p {

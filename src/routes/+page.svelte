@@ -318,18 +318,6 @@
         buttonText={"Donate"}
         buttonHref={"/donate"}
     />
-    <!-- TODO: should we remove this? -->
-    <!-- <Alert
-        onlyShowID={"privacee:_1"}
-        text={"Our privacy policy has been updated."}
-        textBreakup={true}
-        textColor={"white"}
-        backColor={"#009900"}
-        hasImage={false}
-        hasButton={true}
-        buttonText={"View"}
-        buttonHref={"https://jwklong.github.io/penguinmod.github.io/privacy.html"}
-    /> -->
     <StatusAlert />
 
     {#if !loggedIn}
@@ -441,7 +429,6 @@
             <img
                 src="/warning.png"
                 draggable="false"
-                style="height: 24px; margin-right: 6px"
                 alt="Warning"
             />
             <p>
@@ -928,17 +915,11 @@
 
     <div class="footer">
         <p>
-            <!-- {#if !thingyActive} -->
-                <LocalizedText
-                    text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
-                    key="home.footer.notaffiliated"
-                    lang={currentLang}
-                />
-            <!-- todo: find a better place to put this that isn't, the legal text -->
-            <!-- {:else}
-                EEAAOO EEAAOOEEAAOOEEAAOOEEAAOOEEAAOOEEAAOO EEAAOO
-                EEAAOOEEAAOOEEAAOO EEAAOO
-            {/if} -->
+            <LocalizedText
+                text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
+                key="home.footer.notaffiliated"
+                lang={currentLang}
+            />
         </p>
         <div class="footer-list">
             <div class="footer-section">
@@ -1302,13 +1283,20 @@
         text-align: center;
     }
     .section-language-warning > img {
+        height: 24px;
+        margin-right: 6px;
         filter: brightness(0);
     }
+
     :global(body.dark-mode) .section-language-warning {
         color: white;
     }
     :global(body.dark-mode) .section-language-warning > img {
         filter: brightness(1);
+    }
+    :global(html[dir="rtl"]) .section-language-warning img {
+        margin-right: initial;
+        margin-left: 6px;
     }
 
     .example-video {

@@ -157,19 +157,6 @@
         };
     }
 
-    let changingUsername = false;
-    let input;
-    function changeUsername() {
-        changingUsername = true;
-        setTimeout(() => {
-            input.focus();
-        }, 100);
-    }
-
-    function saveUsername() {
-        return Authentication.changeUsername(loggedInUsername, token, input.value);
-    }
-
     async function verifyEmail() {
         await Authentication.verifyEmail(loggedInUsername, token);
         alert("check your email");
@@ -210,6 +197,52 @@
     }
 
     let pfpReload = false;
+    let changingUsername = false;
+    let changingUsernameProcessing = false;
+    let newChangedUsernameError = "";
+    let newChangedUsername = "";
+    const setNewUsername = async () => {
+        await ProjectClient.setNewUsername(newChangedUsername);
+        localStorage.setItem("username", newChangedUsername);
+        location.reload();
+    };
+    const toggleUsernameMenu = async () => {
+        if (changingUsernameProcessing) return;
+        if (changingUsername && newChangedUsername !== loggedInUsername) {
+            // we were changing the name but now we are confirming it
+            if (newChangedUsername.length <= 0) return;
+
+            newChangedUsernameError = "";
+            changingUsernameProcessing = true;
+            try {
+                await setNewUsername();
+                changingUsernameProcessing = false;
+            } catch (err) {
+                changingUsernameProcessing = false;
+                newChangedUsernameError = "";
+
+                switch (err) {
+                    case "InvalidLengthUsername":
+                        newChangedUsernameError = "username.requirement.length";
+                        return;
+                    case "InvalidUsername":
+                        newChangedUsernameError = "username.requirement.letters";
+                        return;
+                    case "UsernameTaken":
+                        newChangedUsernameError = "username.requirement.unique";
+                        return;
+                }
+
+                alert(err);
+                return;
+            }
+        } else {
+            // we are now switching to changing the name
+            newChangedUsernameError = "";
+            newChangedUsername = loggedInUsername;
+        }
+        changingUsername = !changingUsername;
+    };
 </script>
 
 <svelte:head>
@@ -225,7 +258,6 @@
 
 <NavigationBar bind:pfpkey={pfpReload} />
 
-<!-- TODO: make this work in RTL languages -->
 <div class="main">
     <NavigationMargin />
 
@@ -280,48 +312,57 @@
                     </div>
                 </button>
                 <div class="profile-section-display">
-                    <div class="profile-section-username">
-                        {#if !changingUsername}
-                            <h1 class="profile-section-username-username">{loggedInUsername}</h1>
-                        {:else}
+                    {#if !changingUsername}
+                        <h1 style="margin-block:0;font-size:40px">
+                            {loggedInUsername}
+                            <button class="change-username" on:click={toggleUsernameMenu}>
+                                <img
+                                    src="/pencil.png"
+                                    alt="Edit"
+                                    title="Edit"
+                                />
+                            </button>
+                        </h1>
+                    {:else}
+                        <h1 style="margin-block:0;font-size:40px">
                             <input
                                 type="text"
-                                class="profile-section-username-username"
-                                value={loggedInUsername}
-                                bind:this={input}
+                                placeholder={TranslationHandler.textSafe(
+                                    "generic.typehere",
+                                    currentLang,
+                                    "Type here...",
+                                )}
+                                bind:value={newChangedUsername}
+                                class="change-username-field"
+                                maxlength="20"
                             />
+                            <button class="change-username" on:click={toggleUsernameMenu}>
+                                {#if changingUsernameProcessing}
+                                    <LoadingSpinner style="width:32px;height:32px;" single={true} />
+                                {:else}
+                                    <img
+                                        src="/badges/approver.png"
+                                        alt="Save"
+                                        title="Save"
+                                    />
+                                {/if}
+                            </button>
+                        </h1>
+                        {#if newChangedUsernameError}
+                            <p class="change-username-error">
+                                <img
+                                    src="/notallowed.png"
+                                    alt="Error"
+                                    title="Error"
+                                />
+                                <LocalizedText
+                                    text={newChangedUsernameError}
+                                    key={newChangedUsernameError}
+                                    lang={currentLang}
+                                />
+                            </p>
                         {/if}
-                        <!-- svelte-ignore a11y-click-events-have-key-events -->
-                        {#if !changingUsername}
-                            <img
-                                src="/pencil.png"
-                                alt="Edit"
-                                on:click={changeUsername}
-                            />
-                        {:else}
-                            <img
-                                src="/checkmark.png"
-                                alt="Save"
-                                class="edit-username-link"
-                                on:click={() => {
-                                    saveUsername().then(() => {
-                                        alert("success");
-                                        localStorage.setItem("username", input.value);
-                                        location.reload();
-                                    })
-                                    .catch((err) => alert(err));
-                                }}
-                            />
-                            <img
-                                src="/notallowed.png"
-                                alt="Cancel"
-                                class="edit-username-link"
-                                on:click={() => {
-                                    changingUsername = false;
-                                }}
-                            />
-                        {/if}
-                    </div>
+                    {/if}
                     <button class="edit-link" on:click={changePassword}>
                         {#if loginMethods.includes("password")}
                             <LocalizedText
@@ -535,6 +576,44 @@
         margin-left: 4px;
     }
 
+    :global(html[dir="rtl"]) .edit-link::after {
+        margin-left: none;
+        margin-right: 4px;
+    }
+
+    .change-username {
+        overflow: hidden;
+        background: none;
+        border: 0;
+        cursor: pointer;
+    }
+    .change-username img {
+        height: 32px;
+    }
+    
+    .change-username-field {
+        font-size: 40px;
+        width: 70%;
+    }
+    :global(body.dark-mode) .change-username-field {
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: transparent;
+        color: white;
+    }
+
+    .change-username-error {
+        color: red;
+        margin-block: 2px;
+        font-size: 14px;
+    }
+    .change-username-error img {
+        margin-bottom: -3px;
+        height: 16px;
+    }
+    :global(body.dark-mode) .change-username-error {
+        color: rgb(255, 130, 130);
+    }
+
     .center-area {
         display: flex;
         align-items: center;
@@ -564,6 +643,11 @@
         border-radius: 8px;
         overflow: hidden;
     }
+    :global(html[dir="rtl"]) .profile-section-image {
+        margin-right: none;
+        margin-left: 8px;
+    }
+
     .profile-section-image > img {
         width: 128px;
         height: 128px;
@@ -672,6 +756,14 @@
     :global(body.dark-mode) .settings-area-content {
         border-color: rgba(255, 255, 255, 0.35);
     }
+    
+    :global(html[dir="rtl"]) .settings-area-sections {
+        border-right: 1px solid rgba(0, 0, 0, 0.35);
+        border-left: none;
+    }
+    :global(html[dir="rtl"]) :global(body.dark-mode) .settings-area-sections {
+        border-right-color: rgba(255, 255, 255, 0.35);
+    }
 
     /* settings-section */
     .settings-section {
@@ -693,6 +785,10 @@
     .settings-section[data-selected="true"] {
         background: #008cff;
         color: white;
+    }
+    
+    :global(html[dir="rtl"]) .settings-section {
+        text-align: right;
     }
 
     :global(body.dark-mode) .settings-section {
