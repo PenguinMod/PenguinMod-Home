@@ -212,7 +212,6 @@
 
 <NavigationBar bind:pfpkey={pfpReload} />
 
-<!-- TODO: make this work in RTL languages -->
 <div class="main">
     <NavigationMargin />
 
@@ -481,6 +480,11 @@
         margin-left: 4px;
     }
 
+    :global(html[dir="rtl"]) .edit-link::after {
+        margin-left: none;
+        margin-right: 4px;
+    }
+
     .center-area {
         display: flex;
         align-items: center;
@@ -510,6 +514,11 @@
         border-radius: 8px;
         overflow: hidden;
     }
+    :global(html[dir="rtl"]) .profile-section-image {
+        margin-right: none;
+        margin-left: 8px;
+    }
+
     .profile-section-image > img {
         width: 128px;
         height: 128px;
@@ -576,6 +585,14 @@
     :global(body.dark-mode) .settings-area-content {
         border-color: rgba(255, 255, 255, 0.35);
     }
+    
+    :global(html[dir="rtl"]) .settings-area-sections {
+        border-right: 1px solid rgba(0, 0, 0, 0.35);
+        border-left: none;
+    }
+    :global(html[dir="rtl"]) :global(body.dark-mode) .settings-area-sections {
+        border-right-color: rgba(255, 255, 255, 0.35);
+    }
 
     /* settings-section */
     .settings-section {
@@ -597,6 +614,10 @@
     .settings-section[data-selected="true"] {
         background: #008cff;
         color: white;
+    }
+    
+    :global(html[dir="rtl"]) .settings-section {
+        text-align: right;
     }
 
     :global(body.dark-mode) .settings-section {
