@@ -1942,6 +1942,37 @@ class ProjectApi {
         });
     }
 
+    setNewUsername(newName) {
+        const url = `${OriginApiUrl}/api/v1/users/changeUsername`;
+
+        const body = JSON.stringify({
+            username: this.username,
+            token: this.token,
+            newUsername: newName,
+        });
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
     setPFP(file) {
         return new Promise((resolve, reject) => {
             const API_ENDPOINT = `${OriginApiUrl}/api/v1/users/setpfp?username=${this.username}&token=${this.token}`;

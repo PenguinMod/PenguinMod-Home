@@ -119,7 +119,7 @@
 
     .alert-banner button {
         border: 0;
-        outline: 2px solid white;
+        outline: 1px solid white;
         cursor: pointer;
         font-weight: bold;
         border-radius: 4px;

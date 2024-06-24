@@ -197,6 +197,52 @@
     }
 
     let pfpReload = false;
+    let changingUsername = false;
+    let changingUsernameProcessing = false;
+    let newChangedUsernameError = "";
+    let newChangedUsername = "";
+    const setNewUsername = async () => {
+        await ProjectClient.setNewUsername(newChangedUsername);
+        localStorage.setItem("username", newChangedUsername);
+        location.reload();
+    };
+    const toggleUsernameMenu = async () => {
+        if (changingUsernameProcessing) return;
+        if (changingUsername && newChangedUsername !== loggedInUsername) {
+            // we were changing the name but now we are confirming it
+            if (newChangedUsername.length <= 0) return;
+
+            newChangedUsernameError = "";
+            changingUsernameProcessing = true;
+            try {
+                await setNewUsername();
+                changingUsernameProcessing = false;
+            } catch (err) {
+                changingUsernameProcessing = false;
+                newChangedUsernameError = "";
+
+                switch (err) {
+                    case "InvalidLengthUsername":
+                        newChangedUsernameError = "username.requirement.length";
+                        return;
+                    case "InvalidUsername":
+                        newChangedUsernameError = "username.requirement.letters";
+                        return;
+                    case "UsernameTaken":
+                        newChangedUsernameError = "username.requirement.unique";
+                        return;
+                }
+
+                alert(err);
+                return;
+            }
+        } else {
+            // we are now switching to changing the name
+            newChangedUsernameError = "";
+            newChangedUsername = loggedInUsername;
+        }
+        changingUsername = !changingUsername;
+    };
 </script>
 
 <svelte:head>
@@ -266,7 +312,57 @@
                     </div>
                 </button>
                 <div class="profile-section-display">
-                    <h1 style="margin-block:0;font-size:40px">{loggedInUsername}</h1>
+                    {#if !changingUsername}
+                        <h1 style="margin-block:0;font-size:40px">
+                            {loggedInUsername}
+                            <button class="change-username" on:click={toggleUsernameMenu}>
+                                <img
+                                    src="/pencil.png"
+                                    alt="Edit"
+                                    title="Edit"
+                                />
+                            </button>
+                        </h1>
+                    {:else}
+                        <h1 style="margin-block:0;font-size:40px">
+                            <input
+                                type="text"
+                                placeholder={TranslationHandler.textSafe(
+                                    "generic.typehere",
+                                    currentLang,
+                                    "Type here...",
+                                )}
+                                bind:value={newChangedUsername}
+                                class="change-username-field"
+                                maxlength="20"
+                            />
+                            <button class="change-username" on:click={toggleUsernameMenu}>
+                                {#if changingUsernameProcessing}
+                                    <LoadingSpinner style="width:32px;height:32px;" single={true} />
+                                {:else}
+                                    <img
+                                        src="/badges/approver.png"
+                                        alt="Save"
+                                        title="Save"
+                                    />
+                                {/if}
+                            </button>
+                        </h1>
+                        {#if newChangedUsernameError}
+                            <p class="change-username-error">
+                                <img
+                                    src="/notallowed.png"
+                                    alt="Error"
+                                    title="Error"
+                                />
+                                <LocalizedText
+                                    text={newChangedUsernameError}
+                                    key={newChangedUsernameError}
+                                    lang={currentLang}
+                                />
+                            </p>
+                        {/if}
+                    {/if}
                     <button class="edit-link" on:click={changePassword}>
                         {#if loginMethods.includes("password")}
                             <LocalizedText
@@ -483,6 +579,39 @@
     :global(html[dir="rtl"]) .edit-link::after {
         margin-left: none;
         margin-right: 4px;
+    }
+
+    .change-username {
+        overflow: hidden;
+        background: none;
+        border: 0;
+        cursor: pointer;
+    }
+    .change-username img {
+        height: 32px;
+    }
+    
+    .change-username-field {
+        font-size: 40px;
+        width: 70%;
+    }
+    :global(body.dark-mode) .change-username-field {
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: transparent;
+        color: white;
+    }
+
+    .change-username-error {
+        color: red;
+        margin-block: 2px;
+        font-size: 14px;
+    }
+    .change-username-error img {
+        margin-bottom: -3px;
+        height: 16px;
+    }
+    :global(body.dark-mode) .change-username-error {
+        color: rgb(255, 130, 130);
     }
 
     .center-area {
