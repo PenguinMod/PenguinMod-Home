@@ -19,7 +19,7 @@ class TranslationHandler {
         const langText = TranslationHandler.text(key, lang);
         if (langText) return langText;
         const englishText = TranslationHandler.text(key, "en");
-        if (englishText) return langText;
+        if (englishText) return englishText;
 
         return defaultText;
     }
