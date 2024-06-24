@@ -169,6 +169,7 @@
         & > img {
             height: 64px;
             border-radius: 8px;
+            aspect-ratio: 1;
             cursor: pointer;
         }
 
