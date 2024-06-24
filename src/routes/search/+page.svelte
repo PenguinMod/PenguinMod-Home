@@ -257,10 +257,20 @@
         margin: 16px;
         text-align: center;
         text-decoration: none;
-        color: #d6d6d6;
-        background-color: #464646;
+        background: white;
+        color: #000000;
+        border: 1px solid rgba(0, 0, 0, 0.15);
         padding: 16px;
         border-radius: 8px;
+    }
+    .user-block:active {
+        filter: brightness(0.75);
+    }
+    
+    :global(body.dark-mode) .user-block {
+        color: white;
+        background: #111;
+        border-color: rgba(255, 255, 255, 0.15);
     }
 
     .profile-picture {
