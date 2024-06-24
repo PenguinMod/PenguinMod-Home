@@ -1155,7 +1155,7 @@
                 {#if selectedProjectName}
                     <a
                         target="_blank"
-                        href={`${PUBLIC_STUDIO_URL}/#${lastSelectedProjectId}`}
+                        href={`/project/${lastSelectedProjectId}`}
                         style="color: dodgerblue"
                     >
                         <p>
@@ -1659,9 +1659,9 @@
                                     <p>
                                         View project at
                                         <a
-                                            href={`${PUBLIC_STUDIO_URL}/#${content.targetID}`}
+                                            href={`/project/${content.targetID}`}
                                         >
-                                            {`${PUBLIC_STUDIO_URL}/#${content.targetID}`}
+                                            {`/project/${content.targetID}`}
                                         </a>
                                         or
                                         <button
