@@ -370,7 +370,7 @@
 		<BarPage
 			link="/panel"
 			label="<img src='/messagesstatic/panel.svg' width='25' alt='Panel'>"
-			style="padding:0.5rem;margin-left:0.5rem"
+			style="padding:0.5rem"
 		/>
 	{/if}
 	{#if loggedIn === false}
