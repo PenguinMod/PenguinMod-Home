@@ -73,13 +73,17 @@
         </div>
         <div class="horizflex">
             <div class="desc">
-                {#if meta.instructions}
-                    <b>Instructions</b><br>
-                    <p>{@html formatEmojis(meta.instructions)}</p>
-                {/if}
-                {#if meta.credits}
-                    <b>Credits</b><br>
-                    <p>{@html formatEmojis(meta.credits)}</p>
+                {#if meta.instructions || meta.credits}
+                    {#if meta.instructions}
+                        <b>Instructions</b><br>
+                        <p>{@html formatEmojis(meta.instructions)}</p>
+                    {/if}
+                    {#if meta.credits}
+                        <b>Credits</b><br>
+                        <p>{@html formatEmojis(meta.credits)}</p>
+                    {/if}
+                {:else}
+                    No description provided.
                 {/if}
             </div>
             <div class="ratings">
