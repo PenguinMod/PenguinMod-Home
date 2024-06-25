@@ -181,6 +181,18 @@
         const bodyHTML = md.renderer.render(tokens, md.options, env);
         return bodyHTML;
     };
+
+    onMount(() => {
+        window.copyText = (text) => {
+            var dummy = document.createElement('input')
+
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+        }
+    })
 </script>
 
 <svelte:head>
@@ -222,15 +234,17 @@
                 {#if meta.instructions || meta.credits}
                     {#if meta.instructions}
                         <b>Instructions</b><br>
-                        <p>{@html generateMarkdown(meta.instructions)}</p>
+                        {@html generateMarkdown(meta.instructions)}
                     {/if}
                     {#if meta.credits}
                         <b>Credits</b><br>
-                        <p>{@html generateMarkdown(meta.credits)}</p>
+                        {@html generateMarkdown(meta.credits)}
                     {/if}
                 {:else}
-                    No description provided.
+                    <p>No description provided.</p>
                 {/if}
+                <br>
+                <span class="copylink" onclick="copyText(document.location.href)">Copy Link</span>
             </div>
             <div class="ratings">
                 <div class="rating love">
@@ -386,6 +400,14 @@
 
         & p {
             white-space: pre-wrap;
+        }
+
+        & > .copylink {
+            color: var(--penguinmod-color);
+            font-weight: bold;
+            text-decoration: underline;
+            cursor: pointer;
+            user-select: none;
         }
     }
 
