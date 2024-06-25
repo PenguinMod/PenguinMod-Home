@@ -1,5 +1,6 @@
 <script>
     import { onMount } from "svelte";
+    import MarkdownIt from "markdown-it";
 
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
@@ -35,6 +36,163 @@
             >`;
         });
     };
+
+    //markdown
+    const md = new MarkdownIt({
+        html: false,
+        linkify: true,
+        breaks: true,
+    });
+
+    md.renderer.rules.fence = function (tokens, idx, options, env, self) {
+        const token = tokens[idx];
+
+        // By default markdown-it will use a strange combination of <code> and <pre>; we'd rather it
+        // just use <pre>
+        return `<pre class="language-${md.utils.escapeHtml(
+            token.info
+        )}">${md.utils.escapeHtml(token.content)}</pre>`;
+    };
+    md.renderer.rules.image = () => {
+        return `<img src="/notallowed.png" height="16"></img>`;
+    };
+    // Remember the old renderer if overridden, or proxy to the default renderer.
+    const defaultLinkOpenRender = md.renderer.rules.link_open || function (tokens, idx, options, env, self) {
+        return self.renderToken(tokens, idx, options);
+    };
+
+    const doesntShowRedirectURLs = [
+        /https:\/\/([a-z]+\.|)penguinmod\.com/i,
+        /https:\/\/([a-z]+\.|)scratch\.org/i,
+        /https:\/\/([a-z]+\.|)scratch\.mit\.edu/i,
+        /https:\/\/(?!share\.)([a-z]+\.)?turbowarp\.org/i,
+    ];
+    const safeURLs = [
+        /https:\/\/([a-z]+\.|)penguinmod\.com/i,
+        /https:\/\/([a-z]+\.|)scratch\.org/i,
+        /https:\/\/([a-z]+\.|)scratch\.mit\.edu/i,
+        /https:\/\/([a-z]+\.|)turbowarp\.org/i,
+        /https:\/\/([a-z]+\.|)cocrea\.world/i,
+        /https:\/\/([a-z]+\.|)getgandi\.com/i,
+        /https:\/\/([a-z]+\.|)snail-ide\.com/i,
+        /https:\/\/snail-ide\.js\.org/i,
+        /https:\/\/snail-ide\.github\.io/i,
+        /https:\/\/snail-ide\.vercel\.app/i,
+
+        /https:\/\/(www\.|)(roblox|youtube|discord|twitter|x|patreon|reddit)\.com/i,
+        /https:\/\/old\.reddit\.com/i,
+        /https:\/\/create\.roblox\.com/i,
+        /https:\/\/(www\.|)discord\.gg/i,
+        /https:\/\/(www\.|support\.|)guilded\.gg/i,
+        /https:\/\/(www\.|gist\.|)github\.com/i,
+        /https:\/\/(www\.|store\.|support\.|help\.|)(steampowered|steamcommunity)\.com/i,
+    ];
+    md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
+        const href = String(tokens[idx].attrGet('href'));
+        // only force open in new tab if we are not penguinmod.com
+        if (!href.match(safeURLs[1])) {
+            tokens[idx].attrSet('target', '_blank');
+        }
+        // if we match a URL that should show a redirect, change the href attribute
+        if (!doesntShowRedirectURLs.some(regex => href.match(regex))) {
+            const base64 = encodeURIComponent(btoa(href));
+            tokens[idx].attrSet('href', `https://penguinmod.com/redirect?t=${base64}`);
+        }
+
+        // disables clicking on non-verified links
+        if (!safeURLs.some(regex => href.match(regex))) {
+            return '';
+        }
+
+        // Pass the token to the default renderer.
+        return defaultLinkOpenRender(tokens, idx, options, env, self);
+    };
+    
+    const defaultTextRender = md.renderer.rules.text || function (tokens, idx, options, env, self) {
+        return self.renderToken(tokens, idx, options);
+    };
+    
+    const regexRules = {
+        // we have to use far more sophisticated regex here due to weird url behavior
+        // due to browser compat, we do this in the next comment
+        project: /#([\w-]+)/g,
+        user: /@([\w-]+)/g,
+        emoji: /:(\w+):/g
+    }
+    // certain iOS devices do not support lookbehind-assertion, and will throw an error
+    // this was present in Scratch for Discord for a bit, before i just replaced the regex entirely
+    // we can handle this horrible behavior properly though:
+    try {
+        regexRules.project = new RegExp('(?<!\\b(?:https?:\\/\\/|www\\.)\\S*)#(\\w+|\\d+)(?!\\S)', 'g');
+        regexRules.user = new RegExp('(?<!\\b(?:https?:\\/\\/|www\\.)\\S*)@(\\w+|\\d+)(?!\\S)', 'g');
+    } catch {
+        // iOS users will experience weird gaps and or urls with hashtags leading to 2 different places
+        regexRules.project = /#([\w-]+)/g;
+        regexRules.user = /@([\w-]+)/g,
+        console.warn('Browser does not support lookbehind assertion in regex');
+    }
+
+    md.renderer.rules.text = function (tokens, idx, options, env, self) {
+        const token = tokens[idx];
+        
+        let textChanged = false;
+        let newText = `${md.utils.escapeHtml(token.content)}`;
+        if (newText.match(regexRules.project)) {
+            newText = newText.replace(regexRules.project, function(id) {
+                id = id.replace('#', '');
+                if (/^\d{6,}$/.test(id)) {
+                    return `<a href="/project/${id}" target="_blank">#${id}</a>`;
+                }
+                return `<a href="https://penguinmod.com/search?q=%23${id}">#${id}</a>`;
+            });
+            textChanged = true;
+        }
+        if (newText.match(regexRules.user)) {
+            newText = newText.replace(regexRules.user, function(name) {
+                name = name.replace('@', '');
+                return `<a href="https://penguinmod.com/profile?user=${name}">@${name}</a>`;
+            });
+            textChanged = true;
+        }
+        if (newText.match(regexRules.emoji)) {
+            newText = newText.replace(regexRules.emoji, function(text) {
+                const emojiName = text.replace(/:/gmi, '');
+                return `<img
+                    src="https://library.penguinmod.com/files/emojis/${emojiName}.png"
+                    alt="${emojiName}"
+                    title=":${emojiName}:"
+                    class="profile-bio-emoji"
+                />`;
+            });
+            textChanged = true;
+        }
+
+        if (textChanged) {
+            return newText;
+        }
+
+        // Pass the token to the default renderer.
+        return defaultTextRender(tokens, idx, options, env, self);
+    };
+
+    const env = {};
+    const generateMarkdown = (mdtext) => {
+        const tokens = md.parse(mdtext, env);
+        const bodyHTML = md.renderer.render(tokens, md.options, env);
+        return bodyHTML;
+    };
+
+    onMount(() => {
+        window.copyText = (text) => {
+            var dummy = document.createElement('input')
+
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+        }
+    })
 </script>
 
 <svelte:head>
@@ -76,15 +234,17 @@
                 {#if meta.instructions || meta.credits}
                     {#if meta.instructions}
                         <b>Instructions</b><br>
-                        <p>{@html formatEmojis(meta.instructions)}</p>
+                        {@html generateMarkdown(meta.instructions)}
                     {/if}
                     {#if meta.credits}
                         <b>Credits</b><br>
-                        <p>{@html formatEmojis(meta.credits)}</p>
+                        {@html generateMarkdown(meta.credits)}
                     {/if}
                 {:else}
-                    No description provided.
+                    <p>No description provided.</p>
                 {/if}
+                <br>
+                <span class="copylink" onclick="copyText(document.location.href)">Copy Link</span>
             </div>
             <div class="ratings">
                 <div class="rating love">
@@ -236,7 +396,19 @@
         background-color: #dbebff;
         padding: 8px;
         border-radius: 8px;
-        width: calc(100% - 384px)
+        width: calc(100% - 384px);
+
+        & p {
+            white-space: pre-wrap;
+        }
+
+        & > .copylink {
+            color: var(--penguinmod-color);
+            font-weight: bold;
+            text-decoration: underline;
+            cursor: pointer;
+            user-select: none;
+        }
     }
 
     :global(body.dark-mode) {
