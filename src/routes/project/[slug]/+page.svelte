@@ -248,13 +248,16 @@
             </div>
             <div class="ratings">
                 <div class="rating love">
-                    {meta.loves}
+                    <img src="/projectimages/love.svg" alt="Loves" />
+                    <span>{meta.loves}</span>
                 </div>
                 <div class="rating vote">
-                    {meta.votes}
+                    <img src="/projectimages/vote.svg" alt="Features" />
+                    <span>{meta.votes}</span>
                 </div>
                 <div class="rating views">
-                    {meta.views}
+                    <img src="/projectimages/view.svg" alt="Views" />
+                    <span>{meta.views}</span>
                 </div>
             </div>
         </div>
@@ -368,16 +371,26 @@
 
         & > .rating {
             display: flex;
+            position: relative;
             align-items: center;
             justify-content: center;
-            width: 96px;
-            height: 64px;
+            width: 72px;
+            height: 72px;
             border-radius: 24px;
             background-color: #888;
             border: 1px solid #0004;
             box-sizing: border-box;
             font-size: 20px;
             font-weight: bold;
+
+            & img {
+                position: absolute;
+                width: 64px;
+            }
+
+            & span {
+                z-index: 2;
+            }
 
             &.love {
                 background-color: #ff639c;
@@ -395,8 +408,9 @@
         border: 1px solid #b9d6ff;
         background-color: #dbebff;
         padding: 8px;
+        box-sizing: border-box;
         border-radius: 8px;
-        width: calc(100% - 384px);
+        width: calc(100% - 312px);
 
         & p {
             white-space: pre-wrap;
