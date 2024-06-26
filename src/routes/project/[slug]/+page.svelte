@@ -244,7 +244,7 @@
                     <p>No description provided.</p>
                 {/if}
                 <br>
-                <span class="copylink" onclick="copyText(document.location.href)">Copy Link</span>
+                <span class="copylink" onclick="copyText(document.location.href)">Copy Link</span> <span class="copylink report" onclick="document.location.href = '/project/{meta.id}/report'">Report</span>
             </div>
             <div class="ratings">
                 <div class="rating love">
@@ -265,6 +265,10 @@
 </div>
 
 <style lang="scss">
+    :root {
+        --red: #ff3c00;
+    }
+
     * {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
@@ -422,10 +426,16 @@
             text-decoration: underline;
             cursor: pointer;
             user-select: none;
+
+            &.report {
+                color: var(--red);
+            }
         }
     }
 
     :global(body.dark-mode) {
+        --red: #cc3300;
+        
         & .ratings {
             & > .rating {
                 border-color: #fff4;
