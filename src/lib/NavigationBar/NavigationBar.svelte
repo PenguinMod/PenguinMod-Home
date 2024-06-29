@@ -26,6 +26,7 @@
 	import BarButton from "$lib/BarButton/Button.svelte";
 	import BarPage from "$lib/BarPage/Button.svelte";
 	import BarSearch from "$lib/BarSearch/Search.svelte";
+	import CircularProgress from "$lib/CircularProgress.svelte";
 	// translations
 	import LocalizedText from "$lib/LocalizedText/Node.svelte";
 	import Translations from "../../resources/translations.js";
@@ -238,6 +239,27 @@
 			class="languageOption"
 			on:click={() => chooseLang(languageCode)}
 		>
+			<div class="languageProgress">
+				<div class="only-in-dark-mode">
+					<CircularProgress
+						progress={Translations.getLanguageFinishedPercentage(languageCode)}
+						holeColor="#222"
+						emptyColor="#555"
+						fillColor="dodgerblue 0deg, dodgerblue"
+						style="width: 28px;height:28px;"
+					/>
+				</div>
+				<div class="only-non-dark-mode">
+					<CircularProgress
+						progress={Translations.getLanguageFinishedPercentage(languageCode)}
+						fillColor="dodgerblue 0deg, dodgerblue"
+						style="width: 28px;height:28px;"
+					/>
+				</div>
+				<span>
+					{Math.round(Translations.getLanguageFinishedPercentage(languageCode) * 100)}
+				</span>
+			</div>
 			<LocalizedText
 				text={languageCode}
 				key="lang.name"
@@ -508,7 +530,7 @@
 	.languageSelect {
 		position: fixed;
 		width: 256px;
-		max-height: 300px;
+		max-height: 60%;
 		overflow: auto;
 		background: white;
 		box-shadow: 0px 0px 8px black;
@@ -524,10 +546,39 @@
 		font-size: 1rem;
 		text-align: left;
 		cursor: pointer;
+
+		display: flex;
+		align-items: center;
 	}
 	:global(html[dir="rtl"]) .languageOption {
 		text-align: right;
 	}
+
+	.languageProgress {
+		position: relative;
+		margin-right: 4px;
+	}
+	.languageProgress span {
+		position: absolute;
+		left: 0;
+		top: calc(50% - (1.15em / 2));
+		width: 28px;
+		height: 28px;
+
+		text-align: center;
+		vertical-align: middle;
+
+		color: black;
+		font-size: 0.75em;
+	}
+	:global(html[dir="rtl"]) .languageProgress {
+		margin-right: initial;
+		margin-left: 4px;
+	}
+	:global(body.dark-mode) .languageProgress span {
+		color: white;
+	}
+
 	.languageCount {
 		/* width: 100%; */
 		/* text-align: center; */
@@ -662,4 +713,17 @@
 	:global(body.launcher-mode) .only-launcher {
 		display: initial;
 	}
+	
+    .only-in-dark-mode {
+        display: none;
+    }
+    :global(body.dark-mode) .only-in-dark-mode {
+        display: initial;
+    }
+    .only-non-dark-mode {
+        display: initial;
+    }
+    :global(body.dark-mode) .only-non-dark-mode {
+        display: none;
+    }
 </style>

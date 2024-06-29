@@ -3,6 +3,7 @@
 // TRANSLATION DEFINITIONS HAVE MOVED TO src/translations/!locales.js
 // TRANSLATION DEFINITIONS HAVE MOVED TO src/translations/!locales.js
 import Locales from "../translations/!locales";
+import { getLocaleFinishedPercentage } from "../translations/!all-locale-text";
 
 const languages = Locales.languages;
 const rtlLanguages = Locales.rtlLanguages;
@@ -24,8 +25,14 @@ class TranslationHandler {
         return defaultText;
     }
     
+    static getLanguageFinishedPercentage(lang) {
+        return getLocaleFinishedPercentage(lang, languages[lang]);
+    }
     static isLanguageAvailable(lang) {
         return (lang in languages);
+    }
+    static isLanguageDone(lang) {
+        return TranslationHandler.getLanguageFinishedPercentage(lang) >= 1;
     }
     static tryConvertingLocale(languageCode) {
         if (languageCode in Locales.autoLocale) {
