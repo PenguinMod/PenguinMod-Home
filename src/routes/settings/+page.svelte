@@ -229,7 +229,7 @@
                         newChangedUsernameError = "username.requirement.letters";
                         return;
                     case "UsernameTaken":
-                        newChangedUsernameError = "username.requirement.unique";
+                        newChangedUsernameError = "account.fields.username.taken";
                         return;
                 }
 
