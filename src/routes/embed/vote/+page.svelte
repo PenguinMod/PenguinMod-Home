@@ -165,7 +165,7 @@
         <div title="Like this project" class="parent button-text">
             <button class="like" on:click={love}>
                 <img
-                    src="/heart.svg"
+                    src="/vote/heart{userLiked ? "" : "_white"}.svg"
                     alt="Like"
                     class="button-image"
                     draggable="false"
@@ -177,7 +177,7 @@
         <div title="Vote to Feature this project" class="parent button-text">
             <button class="feature" on:click={vote}>
                 <img
-                    src="/feature.svg"
+                    src="/vote/feature{userVoted ? "" : "_white"}.svg"
                     alt="Vote to Feature"
                     class="button-image"
                     draggable="false"
@@ -189,9 +189,9 @@
             </p>
         </div>
         <div title="Project views" class="parent button-text">
-            <button class="view">
+            <button class="view" disabled>
                 <img
-                    src="/view.svg"
+                    src="/vote/view_white.svg"
                     alt="View Count"
                     class="button-image"
                     draggable="false"
@@ -247,9 +247,8 @@
     }
 
     button {
-        border-radius: 12px;
-        border: 1px solid rgba(0, 0, 0, 0.7);
         cursor: pointer;
+        border: 0;
         width: 64px;
         height: 64px;
         display: flex;
@@ -258,31 +257,31 @@
         justify-content: center;
         background: transparent;
     }
-    :global(body.dark-mode) button {
-        border: 1px solid rgba(255, 255, 255, 0.7);
-    }
-    button:active {
+    button:active:enabled {
         opacity: 0.5;
+    }
+    button:disabled {
+        cursor: not-allowed !important;
     }
 
     .button-text {
-        color: rgba(0, 0, 0, 0.7);
+        color: rgba(0, 0, 0, 0.9);
     }
     :global(body.dark-mode) .button-text {
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.9);
     }
     .button-image {
-        width: 90%;
+        width: 100%;
         user-select: none;
         filter: brightness(0);
         opacity: 0.7;
     }
     :global(body.dark-mode) .button-image {
         filter: saturate(0) brightness(255);
-        opacity: 0.7;
     }
     .button-image[data-activated="true"] {
-        filter: saturate(1) brightness(1) !important;
+        filter: initial !important;
+        opacity: 1 !important;
     }
 
     img {
@@ -310,7 +309,7 @@
         color: rgb(255, 229, 107);
     } */
 
-    .like {
+    /* .like {
         background: rgba(255, 106, 200, 0.25);
     }
     .view {
@@ -318,5 +317,5 @@
     }
     .feature {
         background: rgba(255, 229, 107, 0.25);
-    }
+    } */
 </style>
