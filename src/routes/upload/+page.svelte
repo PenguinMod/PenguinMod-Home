@@ -227,7 +227,7 @@
             project: projectData,
         })
         .then((projectId) => {
-            window.open(`/project/${projectId}`);
+            window.open(`${PUBLIC_STUDIO_URL}/#${projectId}`);
         })
             .catch((err) => {
                 const message = TranslationHandler.text(
