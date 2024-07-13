@@ -76,7 +76,10 @@
                 
                 accountInformation.settings.private = _privateProfile;
                 accountInformation.settings.privateToNonFollowers = _cfsp;
-                accountInformation.emailPeek = email;
+
+                let emailPeek = `${email.substring(0, 3)}...${email.substring(email.indexOf("@"))}`
+
+                accountInformation.emailPeek = email ? emailPeek : "(No email)";
                 // TODO: make this have like a show email button so it doesnt just immediately show your email
                 emailIsVerified = isEmailVerified;
 
@@ -243,6 +246,27 @@
         }
         changingUsername = !changingUsername;
     };
+
+    let editingEmail = false;
+    let editingEmailProcessing = false;
+    let newEmail = "";
+
+    function saveEmail() {
+        if (editingEmailProcessing) return;
+        if (newEmail.length <= 0) return;
+
+        editingEmailProcessing = true;
+        ProjectClient.updateEmail(newEmail)
+            .then(() => {
+                editingEmailProcessing = false;
+                editingEmail = false;
+                accountInformation.emailPeek = `${newEmail.substring(0, 3)}...${newEmail.substring(newEmail.indexOf("@"))}`;
+            })
+            .catch((err) => {
+                editingEmailProcessing = false;
+                alert(err);
+            });
+    }
 </script>
 
 <svelte:head>
@@ -423,17 +447,51 @@
                             />
                         </h1>
                         <p>
-                            <LocalizedText
-                                text={"Email: {{EMAIL_PEEK}}"}
-                                key="account.settings.account.email"
-                                lang={currentLang}
-                                replace={{
-                                    "{{EMAIL_PEEK}}": `${accountInformation.emailPeek}`
-                                }}
-                            />
+                            {#if !editingEmail}
+                                <LocalizedText
+                                    text={"Email: {{EMAIL_PEEK}}"}
+                                    key="account.settings.account.email"
+                                    lang={currentLang}
+                                    replace={{
+                                        "{{EMAIL_PEEK}}": `${accountInformation.emailPeek}`
+                                    }}
+                                />
+                                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                <img
+                                    src="/pencil.png"
+                                    alt="Edit"
+                                    title="Edit"
+                                    class="edit-email-link"
+                                    on:click={() => editingEmail = true}
+                                />
+                            {:else}
+                                <input
+                                    type="email"
+                                    bind:value={newEmail}
+                                    placeholder={TranslationHandler.textSafe(
+                                        "generic.typehere",
+                                        currentLang,
+                                        "Type here...",
+                                    )}
+                                >
+                                <button on:click={() => editingEmail = false}>
+                                    <LocalizedText
+                                        text="Cancel"
+                                        key="generic.cancel"
+                                        lang={currentLang}
+                                    />
+                                </button>
+                                <button on:click={saveEmail}>
+                                    <LocalizedText
+                                        text="Save"
+                                        key="generic.save"
+                                        lang={currentLang}
+                                    />
+                                </button>
+                            {/if}
                         </p>
                         {#if !emailIsVerified}
-                            <button class="edit-link" on:click={verifyEmail}>
+                            <button class="verify-link" on:click={verifyEmail}>
                                 <LocalizedText
                                     text="Verify your email"
                                     key="account.settings.account.email.verify"
@@ -576,9 +634,41 @@
         margin-left: 4px;
     }
 
+    .verify-link {
+        color: dodgerblue;
+        text-decoration: underline;
+        background: transparent;
+        border: 0;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+    .verify-link::after {
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        content: "";
+        margin-left: 4px;
+    }
+
     :global(html[dir="rtl"]) .edit-link::after {
         margin-left: none;
         margin-right: 4px;
+    }
+
+    :global(html[dir="rtl"]) .verify-link::after {
+        margin-left: none;
+        margin-right: 4px;
+    }
+
+    .edit-email-link {
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        content: "";
+        margin-left: 4px;
+        cursor: pointer;
     }
 
     .change-username {
