@@ -74,7 +74,7 @@
         })}`;
     }
 
-    const projectLink = linkOverride ? linkOverride : `/project/${id}`;
+    const projectLink = linkOverride ? linkOverride : `${LINK.base}#${id}`;
     const projectAuthorLink = linkOverride
         ? linkOverride
         : `/profile?user=${author.username}`;
