@@ -8,6 +8,7 @@
     const ProjectClient = new ProjectApi();
 
     // Components
+    import Alert from "$lib/Alert/Alert.svelte";
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import Button from "$lib/Button/Button.svelte";
@@ -27,11 +28,14 @@
     let token = null;
     let loginMethods = [];
     let emailIsVerified = false;
+    let emailIsVisible = false;
 
     let standing = 1;
 
     const accountInformation = {
         emailPeek: "...", // a peek of the email (censors most of it), probably made by the api
+        emailFull: "...", // the full email (remove show button if this becomes deprecated)
+        emailSet: false,
         standing: 0, // 0 for good, 1 for limited, 2 for tempban, 3 for banned (ideally returned by api because of temp ban)
         tempBanExpire: 0, // a timestamp when the ban expires
 
@@ -60,6 +64,21 @@
         if (privateCode) ProjectClient.setToken(privateCode);
         loggedInUsername = username;
     }
+    function setupLoginInfo(_loginMethods, _privateProfile, _cfsp, _standing, isEmailVerified, email) {
+        loginMethods = _loginMethods;
+                
+        accountInformation.settings.private = _privateProfile;
+        accountInformation.settings.privateToNonFollowers = _cfsp;
+
+        let emailPeek = `${email.substring(0, 3)}...${email.substring(email.indexOf("@"))}`
+
+        accountInformation.emailSet = !!email;
+        accountInformation.emailFull = email || "";
+        accountInformation.emailPeek = email ? emailPeek : "";
+        emailIsVerified = isEmailVerified;
+
+        standing = _standing + 1;
+    }
 
     onMount(async () => {
         const username = localStorage.getItem("username");
@@ -72,18 +91,7 @@
             .then(({ loginMethods: _loginMethods, privateProfile: _privateProfile, canFollowingSeeProfile: _cfsp, standing: _standing, isEmailVerified, email }) => {
                 loggedIn = true;
                 loggedInChange(username, token);
-                loginMethods = _loginMethods;
-                
-                accountInformation.settings.private = _privateProfile;
-                accountInformation.settings.privateToNonFollowers = _cfsp;
-
-                let emailPeek = `${email.substring(0, 3)}...${email.substring(email.indexOf("@"))}`
-
-                accountInformation.emailPeek = email ? emailPeek : "(No email)";
-                // TODO: make this have like a show email button so it doesnt just immediately show your email
-                emailIsVerified = isEmailVerified;
-
-                standing = _standing + 1;
+                setupLoginInfo(_loginMethods, _privateProfile, _cfsp, _standing, isEmailVerified, email);
             })
             .catch(() => {
                 loggedIn = false;
@@ -94,17 +102,10 @@
         Authentication.authenticate().then((privateCode) => {
             loggedIn = null;
             Authentication.usernameFromCode(privateCode)
-                .then(({ loginMethods: _loginMethods, privateProfile: _privateProfile, canFollowingSeeProfile: _cfsp, standing: _standing, isEmailVerified, email }) => {
+                .then(({ username, loginMethods: _loginMethods, privateProfile: _privateProfile, canFollowingSeeProfile: _cfsp, standing: _standing, isEmailVerified, email }) => {
                     loggedIn = true;
                     loggedInChange(username, token);
-                    loginMethods = _loginMethods;
-                    
-                    accountInformation.settings.private = _privateProfile;
-                    accountInformation.settings.privateToNonFollowers = _cfsp;
-                    accountInformation.emailPeek = email;
-                    emailIsVerified = isEmailVerified;
-
-                    standing = _standing + 1;
+                    setupLoginInfo(_loginMethods, _privateProfile, _cfsp, _standing, isEmailVerified, email);
                 })
                 .catch(() => {
                     loggedIn = false;
@@ -260,6 +261,8 @@
             .then(() => {
                 editingEmailProcessing = false;
                 editingEmail = false;
+                accountInformation.emailSet = true;
+                accountInformation.emailFull = newEmail;
                 accountInformation.emailPeek = `${newEmail.substring(0, 3)}...${newEmail.substring(newEmail.indexOf("@"))}`;
             })
             .catch((err) => {
@@ -286,6 +289,19 @@
     <NavigationMargin />
 
     <StatusAlert />
+    {#if accountInformation.emailSet && !emailIsVerified}
+        <Alert
+            text={TranslationHandler.textSafe(
+                "verifyemail.banner.generic.hasemail",
+                currentLang,
+                "Check your email to verify your email address, or check settings to resend the email.",
+            )}
+            backColor="#ffd900"
+            textColor="black"
+            hasButton={false}
+            textLocalize={false}
+        />
+    {/if}
 
     <div class="section-info">
         <h1>
@@ -453,44 +469,91 @@
                                     key="account.settings.account.email"
                                     lang={currentLang}
                                     replace={{
-                                        "{{EMAIL_PEEK}}": `${accountInformation.emailPeek}`
+                                        "{{EMAIL_PEEK}}": `${accountInformation.emailSet ? 
+                                            (emailIsVisible ? accountInformation.emailFull : accountInformation.emailPeek) :
+                                            ""}`
                                     }}
                                 />
-                                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                <img
-                                    src="/pencil.png"
-                                    alt="Edit"
-                                    title="Edit"
-                                    class="edit-email-link"
-                                    on:click={() => editingEmail = true}
-                                />
+                                {#if !accountInformation.emailSet}
+                                    <span style="opacity:0.65">
+                                        <LocalizedText
+                                            text="Not set"
+                                            key="account.settings.account.email.notset"
+                                            lang={currentLang}
+                                        />
+                                    </span>
+                                {:else}
+                                    <button class="show-email-link" on:click={() => {emailIsVisible = !emailIsVisible}}>
+                                        {#if !emailIsVisible}
+                                            <img
+                                                src="/account/showpassword.svg"
+                                                alt="Show"
+                                                title="Show"
+                                            />
+                                        {:else}
+                                            <img
+                                                src="/account/hidepassword.svg"
+                                                alt="Hide"
+                                                title="Hide"
+                                            />
+                                        {/if}
+                                    </button>
+                                {/if}
+                                <button class="edit-email-link" on:click={() => editingEmail = true}>
+                                    <img
+                                        src="/pencil.png"
+                                        alt="Edit"
+                                        title="Edit"
+                                    />
+                                </button>
                             {:else}
-                                <input
-                                    type="email"
-                                    bind:value={newEmail}
-                                    placeholder={TranslationHandler.textSafe(
-                                        "generic.typehere",
-                                        currentLang,
-                                        "Type here...",
-                                    )}
-                                >
-                                <button on:click={() => editingEmail = false}>
+                                <span>
                                     <LocalizedText
-                                        text="Cancel"
-                                        key="generic.cancel"
+                                        text={"Email: {{EMAIL_PEEK}}"}
+                                        key="account.settings.account.email"
                                         lang={currentLang}
+                                        replace={{ "{{EMAIL_PEEK}}": "" }}
                                     />
-                                </button>
-                                <button on:click={saveEmail}>
-                                    <LocalizedText
-                                        text="Save"
-                                        key="generic.save"
-                                        lang={currentLang}
-                                    />
-                                </button>
+                                    <input
+                                        type="email"
+                                        class="email-edit-field"
+                                        bind:value={newEmail}
+                                        placeholder={TranslationHandler.textSafe(
+                                            "generic.typehere",
+                                            currentLang,
+                                            "Type here...",
+                                        )}
+                                    >
+                                    <button on:click={() => editingEmail = false} class="email-edit-cancel">
+                                        <LocalizedText
+                                            text="Cancel"
+                                            key="generic.cancel"
+                                            lang={currentLang}
+                                        />
+                                    </button>
+                                    <button on:click={saveEmail} class="email-edit-save">
+                                        <LocalizedText
+                                            text="Save"
+                                            key="generic.save"
+                                            lang={currentLang}
+                                        />
+                                    </button>
+                                </span>
                             {/if}
                         </p>
-                        {#if !emailIsVerified}
+                        {#if !emailIsVerified && accountInformation.emailSet && !editingEmail}
+                            <p class="email-verify-message">
+                                <img
+                                    src="/account/status_warn.svg"
+                                    alt="Verify your email"
+                                    title="Verify your email"
+                                />
+                                <LocalizedText
+                                    text="You have not verified your email address yet."
+                                    key="email.failed.notverified"
+                                    lang={currentLang}
+                                />
+                            </p>
                             <button class="verify-link" on:click={verifyEmail}>
                                 <LocalizedText
                                     text="Verify your email"
@@ -652,23 +715,53 @@
         margin-left: 4px;
     }
 
+    .email-verify-message {
+        color: #c96100;
+    }
+    .email-verify-message img {
+        height: 16px;
+        margin-bottom: -2px;
+    }
+    :global(body.dark-mode) .email-verify-message {
+        color: #ffd8ac;
+    }
+
     :global(html[dir="rtl"]) .edit-link::after {
-        margin-left: none;
+        margin-left: initial;
         margin-right: 4px;
     }
 
     :global(html[dir="rtl"]) .verify-link::after {
-        margin-left: none;
+        margin-left: initial;
         margin-right: 4px;
     }
 
+    .show-email-link,
     .edit-email-link {
         width: 16px;
         height: 16px;
-        display: inline-block;
-        content: "";
-        margin-left: 4px;
+        background: transparent;
+        border: 0;
         cursor: pointer;
+        position: relative;
+    }
+    .show-email-link img,
+    .edit-email-link img {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        left: 0;
+        top: 0;
+    }
+    .show-email-link {
+        margin-right: 20px;
+    }
+    :global(body.dark-mode) .show-email-link img {
+        filter: invert(1);
+    }
+    :global(html[dir="rtl"]) .show-email-link {
+        margin-left: 20px;
+        margin-right: initial;
     }
 
     .change-username {
@@ -850,5 +943,32 @@
     }
     :global(body.dark-mode) .settings-section[data-selected="true"] {
         background: #0059ff;
+    }
+
+    .email-edit-save,
+    .email-edit-cancel {
+        height: 22px;
+        border-radius: 4px;
+        cursor: pointer;
+        border: 1px solid rgba(0, 0, 0, 0.4);
+    }
+    .email-edit-save {
+        background: dodgerblue;
+        color: white;
+        font-weight: bold;
+    }
+    .email-edit-cancel {
+        background: transparent;
+        color: black;
+        font-weight: normal;
+    }
+    :global(body.dark-mode) .email-edit-cancel {
+        color: white;
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+    :global(body.dark-mode) .email-edit-field {
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: transparent;
+        color: white;
     }
 </style>

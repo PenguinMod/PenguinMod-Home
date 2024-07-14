@@ -5,6 +5,7 @@
     let isDismissed = false;
 
     export let text = "";
+    export let textLocalize = true;
     export let textBreakup = false;
     export let backColor = "rgb(118, 80, 168)";
     export let textColor = "black";
@@ -56,14 +57,18 @@
             {#if hasImage}
                 <img src={imgSrc} alt={imgAlt} />
             {/if}
-            {#if !textBreakup}
-                <AutoLocalizedText {text} />
+            {#if !textLocalize}
+                {text}
             {:else}
-                {#each splitText as text, idx}
-                    <AutoLocalizedText
-                        text={text + (idx !== splitText.length - 1 ? "." : "")}
-                    />
-                {/each}
+                {#if !textBreakup}
+                    <AutoLocalizedText {text} />
+                {:else}
+                    {#each splitText as text, idx}
+                        <AutoLocalizedText
+                            text={text + (idx !== splitText.length - 1 ? "." : "")}
+                        />
+                    {/each}
+                {/if}
             {/if}
             {#if hasButton}
                 <a href={buttonHref}>
