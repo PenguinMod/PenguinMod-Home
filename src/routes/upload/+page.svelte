@@ -3,6 +3,7 @@
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
     import EmojiList from "../../resources/emojis.js";
+    import { PUBLIC_STUDIO_URL } from "$env/static/public";
 
     const ProjectClient = new ProjectApi();
 
