@@ -2,7 +2,9 @@
 
 // monitor ========================================
 
-var monitor = {};
+let self = {}; // unused, but im lazy bc the generated code for some reason includes a x = self.x = yz
+
+var monitor = self.monitor = {};
 
 monitor.read = function (pbf, end) {
     return pbf.readFields(monitor._readField, {id: "", mode: "", opcode: "", params: {}, spriteName: "", value: "", width: 0, height: 0, x: 0, y: 0, visible: false, sliderMin: 0, sliderMax: 0, isDiscrete: false}, end);
@@ -56,12 +58,32 @@ monitor._FieldEntry4.write = function (obj, pbf) {
     if (obj.value) pbf.writeStringField(2, obj.value);
 };
 
+// font ========================================
+
+var font = self.font = {};
+
+font.read = function (pbf, end) {
+    return pbf.readFields(font._readField, {system: false, family: "", fallback: "", md5ext: ""}, end);
+};
+font._readField = function (tag, obj, pbf) {
+    if (tag === 1) obj.system = pbf.readBoolean();
+    else if (tag === 2) obj.family = pbf.readString();
+    else if (tag === 3) obj.fallback = pbf.readString();
+    else if (tag === 4) obj.md5ext = pbf.readString();
+};
+font.write = function (obj, pbf) {
+    if (obj.system) pbf.writeBooleanField(1, obj.system);
+    if (obj.family) pbf.writeStringField(2, obj.family);
+    if (obj.fallback) pbf.writeStringField(3, obj.fallback);
+    if (obj.md5ext) pbf.writeStringField(4, obj.md5ext);
+};
+
 // Project ========================================
 
 export var Project = {};
 
 Project.read = function (pbf, end) {
-    return pbf.readFields(Project._readField, {metaSemver: "", metaVm: "", agent: "", targets: [], monitors: [], extensionData: {}, extensions: [], extensionURLs: {}}, end);
+    return pbf.readFields(Project._readField, {metaSemver: "", metaVm: "", agent: "", targets: [], monitors: [], extensionData: {}, extensions: [], extensionURLs: {}, fonts: []}, end);
 };
 Project._readField = function (tag, obj, pbf) {
     if (tag === 1) obj.metaSemver = pbf.readString();
@@ -72,6 +94,7 @@ Project._readField = function (tag, obj, pbf) {
     else if (tag === 6)  { var entry = Project._FieldEntry6.read(pbf, pbf.readVarint() + pbf.pos); obj.extensionData[entry.key] = entry.value; }
     else if (tag === 7) obj.extensions.push(pbf.readString());
     else if (tag === 8)  { entry = Project._FieldEntry8.read(pbf, pbf.readVarint() + pbf.pos); obj.extensionURLs[entry.key] = entry.value; }
+    else if (tag === 9) obj.fonts.push(font.read(pbf, pbf.readVarint() + pbf.pos));
 };
 Project.write = function (obj, pbf) {
     if (obj.metaSemver) pbf.writeStringField(1, obj.metaSemver);
@@ -82,6 +105,7 @@ Project.write = function (obj, pbf) {
     if (obj.extensionData) for (i in obj.extensionData) if (Object.prototype.hasOwnProperty.call(obj.extensionData, i)) pbf.writeMessage(6, Project._FieldEntry6.write, { key: i, value: obj.extensionData[i] });
     if (obj.extensions) for (i = 0; i < obj.extensions.length; i++) pbf.writeStringField(7, obj.extensions[i]);
     if (obj.extensionURLs) for (i in obj.extensionURLs) if (Object.prototype.hasOwnProperty.call(obj.extensionURLs, i)) pbf.writeMessage(8, Project._FieldEntry8.write, { key: i, value: obj.extensionURLs[i] });
+    if (obj.fonts) for (i = 0; i < obj.fonts.length; i++) pbf.writeMessage(9, font.write, obj.fonts[i]);
 };
 
 // Project._FieldEntry6 ========================================
@@ -118,7 +142,7 @@ Project._FieldEntry8.write = function (obj, pbf) {
 
 // _varValue ========================================
 
-var _varValue = {};
+var _varValue = self._varValue = {};
 
 _varValue.read = function (pbf, end) {
     return pbf.readFields(_varValue._readField, {name: "", value: ""}, end);
@@ -134,7 +158,7 @@ _varValue.write = function (obj, pbf) {
 
 // _listValue ========================================
 
-var _listValue = {};
+var _listValue = self._listValue = {};
 
 _listValue.read = function (pbf, end) {
     return pbf.readFields(_listValue._readField, {name: "", value: []}, end);
@@ -150,7 +174,7 @@ _listValue.write = function (obj, pbf) {
 
 // _mutation ========================================
 
-var _mutation = {};
+var _mutation = self._mutation = {};
 
 _mutation.read = function (pbf, end) {
     return pbf.readFields(_mutation._readField, {tagName: "", proccode: "", argumentids: "", argumentnames: "", argumentdefaults: "", warp: false, _returns: "", edited: false, optype: "", color: ""}, end);
@@ -182,7 +206,7 @@ _mutation.write = function (obj, pbf) {
 
 // block ========================================
 
-var block = {};
+var block = self.block = {};
 
 block.read = function (pbf, end) {
     return pbf.readFields(block._readField, {opcode: "", next: "", parent: "", inputs: {}, fields: {}, shadow: false, topLevel: false, x: 0, y: 0, mutation: null}, end);
@@ -246,7 +270,7 @@ block._FieldEntry5.write = function (obj, pbf) {
 
 // comment ========================================
 
-var comment = {};
+var comment = self.comment = {};
 
 comment.read = function (pbf, end) {
     return pbf.readFields(comment._readField, {blockId: "", x: 0, y: 0, width: 0, height: 0, minimized: false, text: ""}, end);
@@ -342,7 +366,7 @@ customVar.write = function (obj, pbf) {
 
 // Sprite ========================================
 
-var Sprite = {};
+var Sprite = self.Sprite = {};
 
 Sprite.read = function (pbf, end) {
     return pbf.readFields(Sprite._readField, {id: "", isStage: false, name: "", variables: {}, lists: {}, broadcasts: {}, customVars: [], blocks: {}, comments: {}, currentCostume: 0, costumes: [], sounds: [], volume: 0, layerOrder: 0, x: 0, y: 0, size: 0, direction: 0, draggable: false, rotationStyle: "", tempo: 0, videoTransparency: 0, videoState: "", textToSpeechLanguage: "", visible: false}, end);
