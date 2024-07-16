@@ -3,8 +3,10 @@ import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 let OriginApiUrl = PUBLIC_API_URL;
 
 import JSZip from "jszip";
-import { Project } from "./project.protobuf.js";
-import Pbf from "./pbf.js";
+import protobuf from "protobufjs";
+import jsonDescriptor from "./protobuf-bundle.json";
+let protobufRoot = protobuf.Root.fromJSON(jsonDescriptor);
+let project = protobufRoot.lookupType("project.Project");
 
 class ProjectApi {
     constructor(token, username) {
@@ -278,9 +280,7 @@ class ProjectApi {
                 })
                 .then((res) => {
                     const blob = new Uint8Array(res.project.data);
-
-                    const pbf = new Pbf(blob);
-                    const json = this.prototype.protobufToJson(pbf);
+                    const json = this.prototype.protobufToJson(blob);
 
                     let zip = new JSZip();
                     zip.file("project.json", JSON.stringify(json));
@@ -316,9 +316,7 @@ class ProjectApi {
                 })
                 .then(((res) => {
                     const blob = new Uint8Array(res.project.data);
-
-                    const pbf = new Pbf(blob);
-                    const json = this.protobufToJson(pbf);
+                    const json = this.protobufToJson(blob);
 
                     let zip = new JSZip();
                     zip.file("project.json", JSON.stringify(json));
@@ -1426,13 +1424,12 @@ class ProjectApi {
             newjson.extensionURLs[extensionURL] = json.extensionURLs[extensionURL];
         }
 
-        const pbf = new Pbf();
-        Project.write(newjson, pbf);
-        return pbf.finish();
+        return project.encode(project.create(newjson)).finish();
     }
 
-    protobufToJson(pbf) {
-        const json = Project.read(pbf);
+    protobufToJson(buffer) {
+        const message = project.decode(buffer);
+        const json = project.toObject(message);
 
         const newJson = {
             targets: [],
