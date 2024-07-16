@@ -1250,7 +1250,8 @@ class ProjectApi {
             extensionURLs: {},
             metaSemver: "",
             metaVm: "",
-            metaAgent: ""
+            metaAgent: "",
+            fonts: json.customFonts,
         }
 
         newjson.metaSemver = json.meta.semver;
@@ -1443,7 +1444,8 @@ class ProjectApi {
                 semver: json.metaSemver,
                 vm: json.metaVm,
                 agent: json.metaAgent || ""
-            }
+            },
+            customFonts: json.fonts
         };
 
         for (const target of json.targets) {
