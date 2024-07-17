@@ -1596,9 +1596,8 @@ class ProjectApi {
                     if (relativePath === "project.json") return;
                     assets.push(file);
                 });
-
                 
-                const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/uploadProject?username=${username}&token=${token}&title=${title}&instructions=${instructions}&notes=${notes}&remix=${remix}`;
+                const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/uploadProject?username=${username}&token=${token}&title=${btoa(title)}&instructions=${btoa(instructions)}&notes=${btoa(notes)}&remix=${remix}`;
                 const request = new XMLHttpRequest();
                 const formData = new FormData();
 
