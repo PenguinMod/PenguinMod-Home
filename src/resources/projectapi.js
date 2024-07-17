@@ -1202,7 +1202,7 @@ class ProjectApi {
                 });
 
                 
-                const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/updateProject?username=${username}&token=${token}&title=${title}&instructions=${instructions}&notes=${notes}&projectID=${id}`;
+                const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/updateProject?username=${username}&token=${token}&title=${btoa(title)}&instructions=${btoa(instructions)}&notes=${btoa(notes)}&projectID=${id}`;
                 const request = new XMLHttpRequest();
                 const formData = new FormData();
 
