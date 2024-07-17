@@ -208,7 +208,7 @@
     const setNewUsername = async () => {
         await ProjectClient.setNewUsername(newChangedUsername);
         localStorage.setItem("username", newChangedUsername.toLowerCase());
-        location.reload();
+        location.href = "?verified=true";
     };
     const toggleUsernameMenu = async () => {
         if (changingUsernameProcessing) return;
