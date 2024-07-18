@@ -23,6 +23,7 @@
     let currentLang = "en";
     onMount(() => {
         Language.forceUpdate();
+        embed = $page.url.searchParams.get('embed') === "true";
         checkIfValid();
     });
     Language.onChange((lang) => {
@@ -337,11 +338,15 @@
     <meta property="og:url" content="https://penguinmod.com/signup">
     <meta property="twitter:url" content="https://penguinmod.com/signup">
 </svelte:head>
-    
-<NavigationBar />
+
+{#if !embed}
+    <NavigationBar />
+{/if}
 
 <div class="main">
-    <NavigationMargin />
+    {#if embed}
+        <NavigationMargin />
+    {/if}
 
     <main>
         <div class="profile-section">

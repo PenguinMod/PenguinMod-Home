@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import { page } from '$app/stores';
     
-    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+    import { PUBLIC_API_URL } from "$env/static/public";
     
     // Static values
     import LINK from "../../resources/urls.js";
@@ -106,7 +106,7 @@
                 function post(data) {
                     opener.postMessage(
                         data,
-                        `https://penguinmod-home-git-new-backend-live-penguinmod.vercel.app/` // TODO: turn this into an env variable
+                        `/`
                     );
                 }
 
@@ -165,11 +165,14 @@
     <meta property="og:url" content="https://penguinmod.com/signin">
     <meta property="twitter:url" content="https://penguinmod.com/signin">
 </svelte:head>
-    
-<NavigationBar />
 
+{#if !embed}
+    <NavigationBar />
+{/if}
 <div class="main">
-    <NavigationMargin />
+    {#if !embed}
+        <NavigationMargin />
+    {/if}
 
     <main>
         <div class="profile-section">
