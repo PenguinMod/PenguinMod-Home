@@ -379,14 +379,11 @@
         });
     });
 
-    function selectToRemixProject(id) {
+    function selectToRemixProject(id, title) {
         remixProjectId = String(id);
-        if (isNaN(remixProjectId)) {
-            remixProjectId = 1;
-        }
-        ProjectApi.getProjectMeta(remixProjectId).then((meta) => {
-            remixingProjectName = meta.name;
-        });
+        if (isNaN(remixProjectId) || remixProjectId < 0)
+            remixProjectId = 0;
+        remixingProjectName = title;
         remixPageOpen = false;
     }
 
@@ -581,7 +578,7 @@
                             date={project.date}
                             featured={project.featured}
                             showdate={true}
-                            on:click={() => {selectToRemixProject(project.id)}}
+                            on:click={() => {selectToRemixProject(project.id, project.title)}}
                         />
                     {/each}
                     {#if !lastProjectPage}
@@ -870,7 +867,7 @@
                 </div>
             </div>
             <div style="display:flex;flex-direction:row;margin-top:48px">
-                {#if loggedIn === true && projectData}
+                {#if loggedIn && projectData !== undefined}
                     <div>
                         {#if remixingProjectName}
                             <p>
