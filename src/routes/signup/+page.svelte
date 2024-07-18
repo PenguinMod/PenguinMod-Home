@@ -344,7 +344,7 @@
 {/if}
 
 <div class="main">
-    {#if embed}
+    {#if !embed}
         <NavigationMargin />
     {/if}
 
