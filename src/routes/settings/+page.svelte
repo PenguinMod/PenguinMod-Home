@@ -19,6 +19,7 @@
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
+    import { page } from '$app/stores';
 
     let loggedIn = null;
     let loggedInUsername = null;
@@ -47,6 +48,15 @@
     const changeTab = (to) => {
         currentTab = to;
     };
+    
+    switch ($page.url.searchParams.get("page")) {
+        case "login":
+            currentTab = "login";
+            break;
+        case "standing":
+            currentTab = "standing";
+            break;
+    }
 
     let currentLang = "en";
     onMount(() => {
@@ -135,7 +145,8 @@
                     localStorage.setItem("username", username);
                     localStorage.setItem("token", token);
                     token = _token;
-                    location.reload();
+                    // reload but add page query param set to the current tab
+                    location.href = `?page=${currentTab}`;
                 }
             }
         };
@@ -267,6 +278,23 @@
                 alert(err);
             });
     }
+
+    function addOAuthEventListener() {
+        return new Promise((resolve) => {
+            window.addEventListener("message", (event) => {
+                if (event.origin !== PUBLIC_API_URL) return;
+                
+                if (!event.data) return;
+
+                const { username, token } = event.data;
+
+                localStorage.setItem("username", username);
+                localStorage.setItem("token", token);
+
+                resolve();
+            });
+        });
+    }
     
     function oauthFrame(method) {
         let iframe = window.open(
@@ -284,14 +312,18 @@
             return;
         }
 
-        // If this gets added, i would recommend just refreshing the page after the method is added
-        // addOAuthEventListener();
+        addOAuthEventListener().then(() => {
+            location.href = `?page=${currentTab}`;
+        })
     }
     function loginMethodToggled(method, name) {
         if (loginMethods.includes(method)) {
             const remove = confirm(`Remove ${name} as a login method?`);
             if (!remove) return;
             ProjectClient.removeOAuthMethod(method)
+                .then(() => {
+                    loginMethods = loginMethods.filter((m) => m !== method);
+                })
                 .catch(alert);
             return;
         }
