@@ -1202,7 +1202,7 @@ class ProjectApi {
                 });
 
                 
-                const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/updateProject?username=${username}&token=${token}&title=${btoa(title)}&instructions=${btoa(instructions)}&notes=${btoa(notes)}&projectID=${id}`;
+                const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/updateProject`;
                 const request = new XMLHttpRequest();
                 const formData = new FormData();
 
@@ -1217,6 +1217,13 @@ class ProjectApi {
 
                     resolve(response.id);
                 };
+
+                formData.append("username", username);
+                formData.append("token", token);
+                formData.append("title", title);
+                formData.append("instructions", instructions);
+                formData.append("notes", notes);
+                formData.append("projectID", id);
 
                 for (let i = 0; i < assets.length; i++) {
                     // convert to blob
@@ -1597,7 +1604,7 @@ class ProjectApi {
                     assets.push(file);
                 });
                 
-                const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/uploadProject?username=${username}&token=${token}&title=${btoa(title)}&instructions=${btoa(instructions)}&notes=${btoa(notes)}&remix=${remix}`;
+                const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/uploadProject`;
                 const request = new XMLHttpRequest();
                 const formData = new FormData();
 
@@ -1612,6 +1619,13 @@ class ProjectApi {
 
                     resolve(response.id);
                 };
+
+                formData.append("username", username);
+                formData.append("token", token);
+                formData.append("title", title);
+                formData.append("instructions", instructions);
+                formData.append("notes", notes);
+                formData.append("remix", remix);
 
                 for (let i = 0; i < assets.length; i++) {
                     // convert to blob
