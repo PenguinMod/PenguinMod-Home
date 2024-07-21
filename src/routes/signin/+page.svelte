@@ -490,10 +490,6 @@
         right: initial;
         left: -4px;
     }
-
-    :global(body.dark-mode) .invert-on-dark {
-        filter: invert(1);
-    }
     
     .or-line {
         margin-block: 2px;

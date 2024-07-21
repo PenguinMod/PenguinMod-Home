@@ -20,9 +20,6 @@
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
 
-    // Icons
-    import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
-
     let loggedIn = null;
     let loggedInUsername = null;
     let token = null;
@@ -270,6 +267,37 @@
                 alert(err);
             });
     }
+    
+    function oauthFrame(method) {
+        let iframe = window.open(
+            `${PUBLIC_API_URL}/api/v1/users/addoauthmethod?method=${method}&username=${ProjectClient.username}&token=${ProjectClient.token}`,
+            `Sign in with ${method}`,
+            "width=500,height=500"
+        );
+
+        if (!iframe) {
+            alert(TranslationHandler.textSafe(
+                "login.oauth.nopopup",
+                currentLang,
+                "Please enable popups to login with {{WEBSITE}}."
+            ).replace('{{WEBSITE}}', method));
+            return;
+        }
+
+        // If this gets added, i would recommend just refreshing the page after the method is added
+        // addOAuthEventListener();
+    }
+    function loginMethodToggled(method, name) {
+        if (loginMethods.includes(method)) {
+            const remove = confirm(`Remove ${name} as a login method?`);
+            if (!remove) return;
+            ProjectClient.removeOAuthMethod(method)
+                .catch(alert);
+            return;
+        }
+
+        oauthFrame(method);
+    }
 </script>
 
 <svelte:head>
@@ -418,13 +446,6 @@
                             />
                         {/if}
                     </button>
-                    <button class="edit-link">
-                        <LocalizedText
-                            text="Update Login Methods"
-                            key="account.settings.login.updateoauth"
-                            lang={currentLang}
-                        />
-                    </button>
                 </div>
             </div>
     
@@ -438,6 +459,17 @@
                         <LocalizedText
                             text="Account"
                             key="account.settings.account.title"
+                            lang={currentLang}
+                        />
+                    </button>
+                    <button
+                        class="settings-section"
+                        data-selected={currentTab === 'login'}
+                        on:click={() => changeTab('login')}
+                    >
+                        <LocalizedText
+                            text="Login"
+                            key="login.confirm"
                             lang={currentLang}
                         />
                     </button>
@@ -628,6 +660,82 @@
                             status={standing}
                             detail={4}
                         />
+                    {:else if currentTab === 'login'}
+                        <h1>
+                            <LocalizedText
+                                text="Login"
+                                key="login.confirm"
+                                lang={currentLang}
+                            />
+                        </h1>
+                        <p>
+                            <LocalizedText
+                                text="Update Login Methods"
+                                key="account.settings.login.updateoauth"
+                                lang={currentLang}
+                            />
+                        </p>
+                        <button class="login-method-selector" on:click={() => loginMethodToggled("google", "Google")}>
+                            <img
+                                src="/google.svg"
+                                alt="Google"
+                            />
+                            <span>
+                                Google
+                            </span>
+                            {#if loginMethods.includes("google")}
+                                <img
+                                    src="/account/remove.svg"
+                                    alt="Remove"
+                                />
+                            {:else}
+                                <img
+                                    src="/account/add.svg"
+                                    alt="Add"
+                                />
+                            {/if}
+                        </button>
+                        <button class="login-method-selector" on:click={() => loginMethodToggled("github", "GitHub")}>
+                            <img
+                                src="/github-mark/github-mark.svg"
+                                class="invert-on-dark"
+                                alt="GitHub"
+                            />
+                            <span>
+                                GitHub
+                            </span>
+                            {#if loginMethods.includes("github")}
+                                <img
+                                    src="/account/remove.svg"
+                                    alt="Remove"
+                                />
+                            {:else}
+                                <img
+                                    src="/account/add.svg"
+                                    alt="Add"
+                                />
+                            {/if}
+                        </button>
+                        <button class="login-method-selector" on:click={() => loginMethodToggled("scratch", "Scratch")}>
+                            <img
+                                src="/Scratch_S.svg"
+                                alt="Scratch"
+                            />
+                            <span>
+                                Scratch
+                            </span>
+                            {#if loginMethods.includes("scratch")}
+                                <img
+                                    src="/account/remove.svg"
+                                    alt="Remove"
+                                />
+                            {:else}
+                                <img
+                                    src="/account/add.svg"
+                                    alt="Add"
+                                />
+                            {/if}
+                        </button>
                     {/if}
                 </div>
             </div>
@@ -970,5 +1078,31 @@
         border: 1px solid rgba(255, 255, 255, 0.35);
         background: transparent;
         color: white;
+    }
+
+    :global(body.dark-mode) .invert-on-dark {
+        filter: invert(1);
+    }
+    .login-method-selector {
+        background: transparent;
+        border: 1px solid rgba(0, 0, 0, 0.35);
+        border-radius: 4px;
+        margin: 4px;
+        padding: 8px 16px;
+        font-size: 20px;
+        width: 50%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+    }
+    .login-method-selector img {
+        width: 24px;
+        height: 24px;
+    }
+    :global(body.dark-mode) .login-method-selector {
+        color: white;
+        border-color: rgba(255, 255, 255, 0.35);
     }
 </style>
