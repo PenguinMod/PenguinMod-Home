@@ -4,7 +4,7 @@
     export let text = "";
     export let key = "";
     export let lang = "";
-    export let dontlink = false;
+    export let dolink = false;
     export let html = false;
     export let replace = {};
 
@@ -12,7 +12,11 @@
     let shouldHTML = html;
 
     $: {
-        const translated = String(Translations.text(key, lang) || Translations.text(key, 'en') || text);
+        const translated = Translations.textSafe(
+            key,
+            lang,
+            text
+        );
         displayText = translated;
 
         for (const key in replace) {
@@ -20,9 +24,9 @@
             displayText = displayText.replace(key, value);
         }
 
-        if (!dontlink) {
+        if (dolink) {
             shouldHTML = true;
-            displayText = displayText.replace(/TurboWarp|Scratch/gm, (value) => {
+            displayText = displayText.replace(/TurboWarp|Turbowarp|Scratch/gm, (value) => {
                 let url = "";
                 switch (value) {
                     case "TurboWarp":

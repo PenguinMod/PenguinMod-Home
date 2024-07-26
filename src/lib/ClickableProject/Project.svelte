@@ -1,21 +1,30 @@
 <script>
     import { createEventDispatcher } from "svelte";
 
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
     // Static values
     import LINK from "../../resources/urls.js";
 
     export let id;
-    export let name;
-    export let showdate = false;
+    export let title;
+    export let lastUpdate = false;
     export let featured = false;
-    export let owner;
-    export let date = 0;
+    export let author;
+    //export let date = 0; // when the project was originally uploaded
     export let style = "";
+    export let showdate = true;
 
     function unixToDisplayDate(unix) {
-        return `${new Date(Number(unix)).toDateString()} at ${new Date(
-            Number(unix)
-        ).toLocaleTimeString()}`;
+        unix = Number(unix);
+        return `${new Date(unix).toLocaleString([], {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true
+        })}`;
     }
 
     const dispatch = createEventDispatcher();
@@ -28,29 +37,29 @@
 <button class="project" data-featured={featured} {style} on:click={event}>
     <div class="project-image">
         <img
-            src={`${LINK.projects}api/pmWrapper/iconUrl?id=${id}`}
+            src={`${LINK.projects}api/v1/projects/getproject?projectID=${id}&requestType=thumbnail`}
             alt="Project Thumbnail"
             class="project-image"
         />
     </div>
     <div class="project-author">
         <img
-            src={`https://trampoline.turbowarp.org/avatars/by-username/${owner}`}
+            src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${author}`}
             alt="Project Author"
             class="project-author"
         />
     </div>
     <div class="project-meta">
-        <div class="text" title={name}>
-            {name}
+        <div class="text" title={title}>
+            {title}
         </div>
         {#if showdate}
             <div class="text author date">
-                {unixToDisplayDate(date)}
+                {unixToDisplayDate(lastUpdate)}
             </div>
         {:else}
             <div class="text author">
-                {owner}
+                {author}
             </div>
         {/if}
     </div>

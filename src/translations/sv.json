@@ -191,7 +191,7 @@
     "uploading.guidelines.button": "Projektuppladdning och regler",
     "uploading.guidelines.newtab": "Öppna i ny flik",
     "uploading.guidelines.darkmode": "Denna sida är inte i mörkläge, för att den är extern.",
-    "uploading.guidelines.nottranslated": "Dessa regler kanske inte är översatta. För en översatt version, <a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">kolla här</a>.",
+    "uploading.guidelines.nottranslated": "Dessa regler kanske inte är översatta. För en översatt version, <a href=\"https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS\">kolla här</a>.",
     "uploading.error.toomanyrequests": "Du kan bara uppladda projekt varje 8 minuter.",
     "uploading.error.missingprojectdata": "Ett fel uppstod. Ditt projekt kanske är för stort.",
     "uploading.error.reauthenticate": "Du har blivit utloggad. Snälla logga in igen.",

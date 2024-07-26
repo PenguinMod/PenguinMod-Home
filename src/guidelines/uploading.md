@@ -1,8 +1,8 @@
 # Project Uploading & Updating guidelines
 These guidelines **only apply to PenguinMod's project sharing**.
-If you are [packaging your project](https://studio.penguinmod.com/PenguinMod-Packager/) to post on other websites, you should follow their rules instead.
+If you are [packaging your project](https://jwklong.github.io/penguinmod.github.io/PenguinMod-Packager/) to post on other websites, you should follow their rules instead.
 
-Also, let us know of any necessary changes we should make by talking to us [using any of these contact methods here.](https://studio.penguinmod.com/contact.html)
+Also, let us know of any necessary changes we should make by talking to us [using any of these contact methods here.](https://jwklong.github.io/penguinmod.github.io/contact.html)
 
 ## How to report projects/users
 Clicking on a "Report" link on a user's profile will open a new tab to report the person.
@@ -12,7 +12,7 @@ Please use these menus to report content as it is easy for our moderators to vie
 Using the report feature multiple times on the same content will result in moderation action on your account.
 Please only report projects or users once. You may specify multiple reasons to report content on the report page by choosing "Other" as a report reason.
 
-If for any reason you cannot access the report page, please contact us [using any of these contact methods here.](https://studio.penguinmod.com/contact.html)
+If for any reason you cannot access the report page, please contact us [using any of these contact methods here.](https://jwklong.github.io/penguinmod.github.io/contact.html)
 
 ---
 
@@ -230,7 +230,7 @@ When linking to external platforms, please ensure that the content and activitie
 Please note that any monetization efforts should be transparent and respectful.
 Avoid using deceptive practices or misleading users around your products.
 
-If you need any extra details for your specific use of these platforms, please talk to us [using any of these contact methods here.](https://studio.penguinmod.com/contact.html)
+If you need any extra details for your specific use of these platforms, please talk to us [using any of these contact methods here.](https://jwklong.github.io/penguinmod.github.io/contact.html)
 If you would like to use other platforms not mentioned here, please reach out to us for approval.
 
 # Copyright
@@ -244,4 +244,4 @@ Reasons your project might be removed include, but are not limited to:
 - Using other people's artwork or music without explicit permission from the owner(s)
 - Using/Repurposing content from another PenguinMod user without their permission
 
-If you are a company or individual and believe your copyright has been violated, [please check contact methods here.](https://studio.penguinmod.com/contact.html)
+If you are a company or individual and believe your copyright has been violated, [please check contact methods here.](https://jwklong.github.io/penguinmod.github.io/contact.html)

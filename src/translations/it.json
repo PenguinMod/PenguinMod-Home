@@ -191,7 +191,7 @@
     "uploading.guidelines.button": "Linee guida per il caricamento e l'aggiornamento del progetto",
     "uploading.guidelines.newtab": "Apri in una nuova scheda",
     "uploading.guidelines.darkmode": "Questa pagina non è in modalità oscura perché è un sito Web esterno.",
-    "uploading.guidelines.nottranslated": "Queste linee guida potrebbero non essere tradotte. Per un'alternativa tradotta, <a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">guarda qui</a>.",
+    "uploading.guidelines.nottranslated": "Queste linee guida potrebbero non essere tradotte. Per un'alternativa tradotta, <a href=\"https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS\">guarda qui</a>.",
     "uploading.error.toomanyrequests": "Puoi caricare progetti solo ogni 8 minuti.",
     "uploading.error.missingprojectdata": "Impossibile inviare i dati del progetto. Il tuo progetto potrebbe essere troppo grande.",
     "uploading.error.reauthenticate": "Sei stato disconnesso. Per favore esegui l'accesso di nuovo.",

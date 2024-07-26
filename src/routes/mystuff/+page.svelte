@@ -26,6 +26,7 @@
     let loggedIn = null;
     let page = 0;
     let pageIsLast = false;
+    let username = "";
 
     let currentLang = "en";
     onMount(() => {
@@ -56,6 +57,10 @@
     // things
     function fetchNewProjects() {
         ProjectClient.getMyProjects(page).then((projectss) => {
+            if (!projectss) {
+                pageIsLast = true;
+                return;
+            }
             if (projectss.length <= 0) {
                 pageIsLast = true;
                 return;
@@ -70,10 +75,16 @@
 
     function loggedInChange(username, privateCode) {
         if (username) ProjectClient.setUsername(username);
-        if (privateCode) ProjectClient.setPrivateCode(privateCode);
+        if (privateCode) ProjectClient.setToken(privateCode);
         projects = [];
         ProjectClient.getMyProjects()
             .then((projectss) => {
+                console.log(projectss);
+                if (!projectss) {
+                    projects = ["notfound"];
+                    pageIsLast = true;
+                    return;
+                }
                 if (projectss.length <= 0) {
                     projects = ["notfound"];
                     pageIsLast = true;
@@ -107,19 +118,16 @@
     }
 
     onMount(async () => {
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
+        username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+        if (!token || !username) {
             loggedIn = false;
             return;
         }
-        Authentication.usernameFromCode(privateCode)
-            .then(({username}) => {
-                if (username) {
-                    loggedIn = true;
-                    loggedInChange(username, privateCode);
-                    return;
-                }
-                loggedIn = false;
+        Authentication.usernameFromCode(username, token)
+            .then(() => {
+                loggedIn = true;
+                loggedInChange(username, token);
             })
             .catch(() => {
                 loggedIn = false;
@@ -147,20 +155,9 @@
     Authentication.onLogout(() => {
         loggedIn = false;
     });
-    Authentication.onAuthentication((privateCode) => {
-        loggedIn = null;
-        Authentication.usernameFromCode(privateCode)
-            .then(({username}) => {
-                if (username) {
-                    loggedIn = true;
-                    loggedInChange(username, privateCode);
-                    return;
-                }
-                loggedIn = false;
-            })
-            .catch(() => {
-                loggedIn = false;
-            });
+    Authentication.onAuthentication((username, privateCode) => {
+        loggedIn = true;
+        loggedInChange(username, privateCode);
     });
 </script>
 
@@ -280,13 +277,13 @@
                     </button>
                     <Project
                         id={project.id}
-                        name={project.name}
-                        owner={project.owner}
+                        title={project.title}
+                        author={{username: username, id:project.author}}
                         date={project.date}
                         featured={project.featured}
                         rejected={project.removedsoft}
                         style="padding:8px;height:auto"
-                        showdate="true"
+                        lastUpdate={project.lastUpdate}
                     >
                         <div class="inside-project">
                             {#if project.hidden}
@@ -295,16 +292,6 @@
                                         <LocalizedText
                                             text="(hidden)"
                                             key="project.status.hidden"
-                                            lang={currentLang}
-                                        />
-                                    </i>
-                                </p>
-                            {:else if !project.accepted}
-                                <p>
-                                    <i>
-                                        <LocalizedText
-                                            text="(unapproved)"
-                                            key="project.status.unapproved"
                                             lang={currentLang}
                                         />
                                     </i>

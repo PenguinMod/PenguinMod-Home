@@ -2,6 +2,8 @@
     import { onMount } from "svelte";
     import MarkdownIt from "markdown-it";
 
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
     import scratchblocks from "$lib/scratchblocks.js";
     import LINK from "../../resources/urls.js";
     import Authentication from "../../resources/authentication.js";
@@ -45,6 +47,7 @@
     let focusedBadge = -1;
     let isDonator = false;
     let isFollowingUser = false;
+    let followOnLoad = false;
     let wasNotFound = false;
     let isForceView = false;
     let followerCount = null;
@@ -52,6 +55,10 @@
     let isRankingUpMenu = false;
     let isAttemptingRankUp = false;
     let profileFeaturedProject = null;
+    
+    let isProfilePrivate = false;
+    let isProfilePublicToFollowers = false;
+    let isFollowedByUser = false;
 
     const profileEditingData = {
         bio: '',
@@ -89,7 +96,6 @@
     };
     const updateProjectFeaturedTitle = (element) => {
         const projectTitle = Number(element.target.value);
-        console.log(projectTitle);
         profileEditingData.projectTitle = projectTitle;
     };
     const saveEditedProject = (id) => {
@@ -200,12 +206,31 @@
     };
     
     let fetchedFullProfile = false;
-    onMount(() => {
+    onMount(async () => {
         const params = new URLSearchParams(location.search);
         const query = params.get("user");
+        const idQuery = params.get("id");
         user = query;
 
-        ProjectApi.getUserProjects(user).then((projs) => {
+        if (idQuery) {
+            // set user to the result of fetching the username by id
+            const username = await new Promise((resolve) => {
+                ProjectApi.getUsernameById(idQuery)
+                    .then((username) => {
+                        resolve(username)
+                    })
+                    .catch(() => {
+                        resolve();
+                    });
+            });
+            if (username) {
+                user = username;
+            }
+        }
+
+        const username = localStorage.getItem("username");
+
+        const then = (projs) => {
             projects.all = projs;
             projects.featured = projs.filter((p) => p.featured);
             if (projects.all.length <= 0) {
@@ -221,9 +246,13 @@
                 isDonator = fullProfile.donator;
                 followerCount = fullProfile.followers;
 
+                isProfilePrivate = fullProfile.privateProfile;
+                isProfilePublicToFollowers = fullProfile.canFollowingSeeProfile;
+
                 const profileFeatured = fullProfile.myFeaturedProject;
                 if (profileFeatured) {
                     ProjectApi.getProjectMeta(profileFeatured).then(metadata => {
+                        console.log(metadata);
                         profileFeaturedProject = metadata;
                     }).catch((err) => {
                         console.warn('Failed to load profile featured project;', err);
@@ -234,19 +263,33 @@
                 } else if (!profileFeatured && projects.all[0]) {
                     profileFeaturedProject = projects.all[0];
                 }
-            }).catch(err => {
-                err = JSON.parse(err);
-                err = err.error;
-                if (err === 'NotFound') {
-                    wasNotFound = true;
-                }
-            }).finally(() => {
-                fetchedFullProfile = true;
-                setTimeout(() => {
-                    renderScratchBlocks();
-                }, 0);
             });
-        });
+        };
+
+        const catch_func = (err) => {
+            console.log(err);
+            err = JSON.parse(err);
+            err = err.error;
+            if (err === 'NotFound') {
+                wasNotFound = true;
+            }
+        };
+
+        if (username && username === user) {
+            ProjectApi.getMyProjects(0).then(then).catch(catch_func).finally(() => {
+                    fetchedFullProfile = true;
+                    setTimeout(() => {
+                        renderScratchBlocks();
+                    }, 0);
+                });
+        } else {
+            ProjectApi.getUserProjects(user, 0).then(then).catch(catch_func).finally(() => {
+                    fetchedFullProfile = true;
+                    setTimeout(() => {
+                        renderScratchBlocks();
+                    }, 0);
+                });
+        }
 
         page.subscribe(v => {
             if (!v.url.searchParams.get("user") || !user) return;
@@ -254,6 +297,8 @@
             
             window.location.reload();
         });
+
+        isFollowedByUser = await ProjectClient.isFollowing(user, username);
     });
 
     let currentLang = "en";
@@ -273,19 +318,12 @@
                 loggedInAdmin = false;
                 Authentication.usernameFromCode(privateCode)
                     .then(({ username, isAdmin, isApprover }) => {
-                        if (username) {
-                            loggedIn = true;
-                            loggedInUser = username;
-                            loggedInAdmin = isAdmin || isApprover;
-                            loggedInChange();
-                            resolve();
-                            return;
-                        }
-                        loggedIn = false;
-                        loggedInUser = "";
-                        loggedInAdmin = false;
+                        loggedIn = true;
+                        loggedInUser = username;
+                        loggedInAdmin = isAdmin || isApprover;
+
                         loggedInChange();
-                        reject();
+                        resolve();
                     })
                     .catch(() => {
                         loggedIn = false;
@@ -300,8 +338,8 @@
     let canClickFollow = true;
     const followUser = async () => {
         await waitForLogin();
-        const info = await ProjectClient.toggleFollowingUser(user);
-        isFollowingUser = info.following;
+        await ProjectClient.toggleFollowingUser(user, !isFollowingUser);
+        isFollowingUser = !isFollowingUser;
     };
     const safeFollowUser = async () => {
         if (!canClickFollow) return;
@@ -316,28 +354,25 @@
 
     // login code below
     onMount(async () => {
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+
+        if (!token || !username) {
             loggedIn = false;
             loggedInUser = "";
             loggedInAdmin = false;
             loggedInChange();
             return;
         }
-        Authentication.usernameFromCode(privateCode)
-            .then(({ username, isAdmin, isApprover }) => {
-                if (username) {
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
-                    loggedIn = true;
-                    loggedInUser = username;
-                    loggedInAdmin = isAdmin || isApprover;
-                    loggedInChange();
-                    return;
-                }
-                loggedIn = false;
-                loggedInUser = "";
-                loggedInAdmin = false;
+        Authentication.usernameFromCode(username, token)
+            .then(async ({ isAdmin, isApprover }) => {
+                ProjectClient.setUsername(username);
+                ProjectClient.setToken(token);
+                loggedIn = true;
+                loggedInUser = username;
+                loggedInAdmin = isAdmin || isApprover;
+                const isFollowing = await ProjectClient.isFollowingUser(user);
+                followOnLoad = isFollowing;
                 loggedInChange();
             })
             .catch(() => {
@@ -354,24 +389,17 @@
         loggedInAdmin = false;
         loggedInChange();
     });
-    Authentication.onAuthentication((privateCode) => {
+    Authentication.onAuthentication((username, privateCode) => {
         loggedIn = null;
         loggedInUser = "";
         loggedInAdmin = false;
         Authentication.usernameFromCode(privateCode)
             .then(({ username, isAdmin, isApprover }) => {
-                if (username) {
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
-                    loggedIn = true;
-                    loggedInUser = username;
-                    loggedInAdmin = isAdmin || isApprover;
-                    loggedInChange();
-                    return;
-                }
-                loggedIn = false;
-                loggedInUser = "";
-                loggedInAdmin = false;
+                ProjectClient.setUsername(username);
+                ProjectClient.setToken(privateCode);
+                loggedIn = true;
+                loggedInUser = username;
+                loggedInAdmin = isAdmin || isApprover;
                 loggedInChange();
             })
             .catch(() => {
@@ -616,7 +644,7 @@
             newText = newText.replace(regexRules.project, function(id) {
                 id = id.replace('#', '');
                 if (/^\d{6,}$/.test(id)) {
-                    return `<a href="https://studio.penguinmod.com/#${id}" target="_blank">#${id}</a>`;
+                    return `<a href="${PUBLIC_STUDIO_URL}/#${id}" target="_blank">#${id}</a>`;
                 }
                 return `<a href="https://penguinmod.com/search?q=%23${id}">#${id}</a>`;
             });
@@ -757,7 +785,7 @@
                 <div class="featured-project-list">
                     {#if projects.all.length > 0}
                         {#if projects.all[0] !== "none"}
-                            {#each projects.all as project}
+                            {#each (projects.all.map(x => {x.author = loggedInUser;return x})) as project}
                                 <ClickableProject {...project} on:click={() => saveEditedProject(project.id)} />
                             {/each}
                         {:else}
@@ -797,9 +825,7 @@
 
     {#if (projects.all.length > 0 && fetchedFullProfile) || isForceView}
         {#if
-            ((!(projects.all[0] !== "none" && wasNotFound))
-            && ((projects.all[0] !== "none" || isDonator || fullProfile.bio || isFollowingUser || fullProfile.rank > 0)
-            || (loggedIn && user === loggedInUser)))
+            !wasNotFound
             || isForceView
         }
         <div class="background">
@@ -810,7 +836,7 @@
                             <div class="user-username">
                                 <img
                                     style="border-color:{isDonator ? "#a237db" : "#efefef"}"
-                                    src={`https://trampoline.turbowarp.org/avatars/by-username/${user}`}
+                                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${user}`}
                                     alt="Profile"
                                     class="profile-picture"
                                 />
@@ -820,48 +846,90 @@
                                     {:else}
                                         <h1>{user}</h1>
                                     {/if}
+                                    
+                                    {#if isProfilePrivate}
+                                        <img
+                                            src="/account/lock.svg"
+                                            alt="Private"
+                                            title={TranslationHandler.textSafe(
+                                                "profile.private.note",
+                                                currentLang,
+                                                "This profile is private."
+                                            )}
+                                        />
+                                    {/if}
                                 </div>
                             </div>
-                        <div class="follower-section">
-                            <p class="follower-count">
-                                {TranslationHandler.text(
-                                    "profile.followers",
-                                    currentLang
-                                ).replace("$1", followerCount)}
-                            </p>
-                            <div>
-                                {#if !(loggedIn && user === loggedInUser)}
-                                    {#key isFollowingUser}
-                                        <button
-                                            class={`follower-button
-                                                ${isDonator ? ' follower-button-donator' : ''}
-                                                ${isFollowingUser ? ' follower-button-following' : ''}`}
-                                            on:click={safeFollowUser}
-                                        >
-                                            {#if isFollowingUser}
-                                                <LocalizedText
-                                                    text="Unfollow"
-                                                    key="profile.unfollow"
-                                                    dontlink={true}
-                                                    lang={currentLang}
-                                                />
-                                            {:else}
-                                                <LocalizedText
-                                                    text="Follow"
-                                                    key="profile.follow"
-                                                    dontlink={true}
-                                                    lang={currentLang}
-                                                />
-                                            {/if}
-                                        </button>
-                                    {/key}
-                                {/if}
-                            </div>
-                        </div>
+                            {#if !isProfilePrivate || loggedInUser === user || (isProfilePublicToFollowers && isFollowedByUser)}
+                                <div class="follower-section">
+                                    <p class="follower-count">
+                                        {TranslationHandler.text(
+                                            "profile.followers",
+                                            currentLang
+                                        ).replace("$1", followerCount - Number(followOnLoad) + Number(isFollowingUser))}
+                                    </p>
+                                    <div>
+                                        {#if !(loggedIn && user === loggedInUser)}
+                                            {#key isFollowingUser}
+                                                <button
+                                                    class={`follower-button
+                                                        ${isDonator ? ' follower-button-donator' : ''}
+                                                        ${isFollowingUser ? ' follower-button-following' : ''}`}
+                                                    on:click={safeFollowUser}
+                                                >
+                                                    {#if isFollowingUser}
+                                                        <LocalizedText
+                                                            text="Unfollow"
+                                                            key="profile.unfollow"
+                                                            lang={currentLang}
+                                                        />
+                                                    {:else}
+                                                        <LocalizedText
+                                                            text="Follow"
+                                                            key="profile.follow"
+                                                            lang={currentLang}
+                                                        />
+                                                    {/if}
+                                                </button>
+                                            {/key}
+                                        {/if}
+                                    </div>
+                                </div>
+                            {/if}
                         </div>
                     </div>
                 </div>
             {/if}
+            {#if isProfilePrivate && loggedInUser !== user && !(isProfilePublicToFollowers && isFollowedByUser)}
+                <div class="section-private">
+                    <img
+                        src="/account/lock.svg"
+                        alt="Private"
+                        title="Private"
+                    />
+                    
+                    {#if isProfilePublicToFollowers}
+                        <p>
+                            <LocalizedText
+                                text={"This profile is private. Only people {{NAME}} follows can see their profile."}
+                                key="profile.private.followers"
+                                lang={currentLang}
+                                replace={{
+                                    "{{NAME}}": user,
+                                }}
+                            />
+                        </p>
+                    {:else}
+                        <p>
+                            <LocalizedText
+                                text="This profile is private. You cannot view it."
+                                key="profile.private"
+                                lang={currentLang}
+                            />
+                        </p>
+                    {/if}
+                </div>
+            {:else}
             <div class="section-projects">
                 <div class="user-ordering-stats" style="width:90%">
                     <div class="section-user-stats">
@@ -954,7 +1022,6 @@
                                     <LocalizedText
                                         text="Don't say your real name"
                                         key="profile.bio.warning1"
-                                        dontlink={true}
                                         lang={currentLang}
                                     />
                                 </div>
@@ -967,7 +1034,6 @@
                                     <LocalizedText
                                         text="Don't say how old you are or when you were born"
                                         key="profile.bio.warning2"
-                                        dontlink={true}
                                         lang={currentLang}
                                     />
                                 </div>
@@ -980,7 +1046,6 @@
                                     <LocalizedText
                                         text="Don't say where you live"
                                         key="profile.bio.warning3"
-                                        dontlink={true}
                                         lang={currentLang}
                                     />
                                 </div>
@@ -993,7 +1058,6 @@
                                     <LocalizedText
                                         text="Don't say your password or your email"
                                         key="profile.bio.warning4"
-                                        dontlink={true}
                                         lang={currentLang}
                                     />
                                 </div>
@@ -1003,7 +1067,6 @@
                             <LocalizedText
                                 text="About Me"
                                 key="profile.bio.title"
-                                dontlink={true}
                                 lang={currentLang}
                             />
                             {#if profileEditingData.isEditingBio}
@@ -1053,7 +1116,6 @@
                                         <LocalizedText
                                             text="Your bio contains inappropriate words or websites we don't allow. Please remove them to change your bio."
                                             key="profile.bio.inappropriate"
-                                            dontlink={true}
                                             lang={currentLang}
                                         />
                                     </div>
@@ -1067,14 +1129,12 @@
                                             <LocalizedText
                                                 text="There's nothing here.. yet! Write some things you want to share here!"
                                                 key="profile.bio.none"
-                                                dontlink={true}
                                                 lang={currentLang}
                                             />
                                         {:else}
                                             <LocalizedText
                                                 text="Nothing yet!"
                                                 key="generic.noneyet"
-                                                dontlink={true}
                                                 lang={currentLang}
                                             />
                                         {/if}
@@ -1088,7 +1148,6 @@
                             <LocalizedText
                                 text={projectTitleStrings[(fullProfile.myFeaturedProjectTitle || 1) - 1]}
                                 key="profile.featured.title{fullProfile.myFeaturedProjectTitle || 1}"
-                                dontlink={true}
                                 lang={currentLang}
                             />
                             {#if loggedIn && user === loggedInUser && profileFeaturedProject && !profileEditingData.isEditingProject}
@@ -1113,26 +1172,25 @@
                                 <LocalizedText
                                     text="Nothing yet!"
                                     key="generic.noneyet"
-                                    dontlink={true}
                                     lang={currentLang}
                                 />
                             </p>
-                        {:else if profileFeaturedProject.owner === user}
+                        {:else if profileFeaturedProject.author.username === user}
                             <a href={`${LINK.base}#${profileFeaturedProject.id}`} style="text-decoration: none">
                                 <img
-                                    src={`${ProjectApi.OriginApiUrl}/api/pmWrapper/iconUrl?id=${profileFeaturedProject.id}&widescreen=true`}
+                                    src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectID=${profileFeaturedProject.id}&requestType=thumbnail`}
                                     alt="Project Thumbnail"
                                     class="profile-project-image"
                                 />
                                 <div class="profile-project-authordiv">
                                     <img
-                                        src="https://trampoline.turbowarp.org/avatars/by-username/{user}"
+                                        src="{PUBLIC_API_URL}/api/v1/users/getpfp?username={user}"
                                         alt="Project Author"
                                         title={user}
                                         class="profile-project-author"
                                     >
                                     <div class="profile-project-authorinfo">
-                                        <p class="profile-project-link">{@html formatProjectTitle(profileFeaturedProject.name)}</p>
+                                        <p class="profile-project-link">{@html formatProjectTitle(profileFeaturedProject.title)}</p>
                                         <p class="profile-project-date">{unixToDisplayDate(profileFeaturedProject.date)}</p>
                                     </div>
                                 </div>
@@ -1335,6 +1393,7 @@
                     </div>
                 {/if}
             </div>
+            {/if}
         </div>
         {:else}
             <div style="height:32px;" />
@@ -1354,7 +1413,6 @@
                         <LocalizedText
                             text="View on Scratch"
                             key="profile.scratchprofile"
-                            dontlink={true}
                             lang={currentLang}
                         />
                     </Button>
@@ -1546,6 +1604,19 @@
     }
     :global(body.dark-mode) .emoji-picker-emoji:hover {
         background: rgba(255, 255, 255, 0.15);
+    }
+
+    .section-private {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin: 0px;
+        margin-top: 32px;
+    }
+    .section-private > img {
+        height: 96px;
     }
 
     .section-projects {
@@ -1947,7 +2018,12 @@
     }
     .user-after-image {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        align-items: center;
+    }
+    .user-after-image img {
+        margin: 0 8px;
+        transform: scale(0.75);
     }
     .user-after-image > h1 {
         font-size: 3em;

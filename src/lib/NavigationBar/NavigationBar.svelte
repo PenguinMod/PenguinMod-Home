@@ -2,6 +2,8 @@
 	import { onMount } from "svelte";
     import { page } from "$app/stores";
 
+	import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
 	const isAprilFools = () => {
         const date = new Date(Date.now());
         const urlParams = $page.url.searchParams;
@@ -24,10 +26,13 @@
 	import BarButton from "$lib/BarButton/Button.svelte";
 	import BarPage from "$lib/BarPage/Button.svelte";
 	import BarSearch from "$lib/BarSearch/Search.svelte";
+	import CircularProgress from "$lib/CircularProgress.svelte";
 	// translations
 	import LocalizedText from "$lib/LocalizedText/Node.svelte";
 	import Translations from "../../resources/translations.js";
 	import Language from "../../resources/language.js";
+
+	export let pfpkey=false;
 
 	let loggedIn = null;
 	let isAdmin = false;
@@ -49,41 +54,33 @@
 	})();
 
 	function loggedInCheck() {
-		const privateCode = localStorage.getItem("PV");
-		if (!privateCode) {
+		const username = localStorage.getItem("username");
+		const token = localStorage.getItem("token")
+		if (!token || !username) {
 			loggedIn = false;
 			canRankUp = false;
 			messageCount = 0;
 			return;
 		}
-		Authentication.usernameFromCode(privateCode)
+		Authentication.usernameFromCode(username, token)
 			.then(
-				({ username, isAdmin: isAdminn, isApprover: isApproverr }) => {
-					if (username) {
-						loggedIn = true;
-						accountUsername = username;
-						isAdmin = isAdminn;
-						isApprover = isApproverr;
-						if (username) ProjectClient.setUsername(username);
-						if (privateCode)
-							ProjectClient.setPrivateCode(privateCode);
-						ProjectClient.setAdmin(isAdminn);
-						ProjectClient.getMessageCount().then((amount) => {
-							messageCount = amount;
-						});
-						if (username) {
-							ProjectApi.getProfile(username).then((profile) => {
-								canRankUp = profile.canrankup === true;
-							});
-						}
-						return;
-					}
-					loggedIn = false;
-					canRankUp = false;
-					messageCount = 0;
+				({ isAdmin: isAdminn, isApprover: isApproverr }) => {
+					loggedIn = true;
+					accountUsername = username;
+					isAdmin = isAdminn;
+					isApprover = isApproverr;
+					ProjectClient.setUsername(username);
+					ProjectClient.setToken(token);
+					ProjectClient.setAdmin(isAdminn);
+					ProjectClient.getUnreadMessageCount().then((amount) => {
+						messageCount = amount;
+					});
+					ProjectApi.getProfile(username, false, token).then((profile) => {
+						canRankUp = profile.canrankup === true;
+					});
 				}
 			)
-			.catch(() => {
+			.catch((err) => {
 				loggedIn = false;
 				canRankUp = false;
 				messageCount = 0;
@@ -97,22 +94,34 @@
 
 	function logout() {
 		accountMenu.style.display = "none";
-		const pv = localStorage.getItem("PV");
-		Authentication.usernameFromCode(pv).then(({ username }) => {
-			fetch(
-				`${LINK.projects}api/users/logout?user=${username}&code=${pv}`
-			).then((res) => {
-				if (!res.ok) return;
-				localStorage.removeItem("PV");
-				Authentication.fireLogout();
-				loggedIn = false;
-				canRankUp = false;
-				messageCount = 0;
-			});
+		const username = localStorage.getItem("username")
+		const token = localStorage.getItem("token");
+		fetch(
+			`${LINK.projects}api/v1/users/logout`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					username: username,
+					token: token,
+				})
+			}
+		).then((res) => {
+			if (!res.ok) return;
+			localStorage.removeItem("username");
+			localStorage.removeItem("token");
+			Authentication.fireLogout();
+			loggedIn = false;
+			canRankUp = false;
+			messageCount = 0;
 		});
 	}
 	function login() {
-		Authentication.authenticate();
+		Authentication.authenticate().then(() => {
+			location.reload();
+		})
 	}
 
 	function switchTheme() {
@@ -134,17 +143,11 @@
 	onMount(loggedInCheck);
 
 	let currentLang = "en";
-	let searchBar = "Search for projects...";
-	let defaultLanguageText = "Same as browser";
-	let defaultLanguageCount = "$1 languages translated";
 	onMount(() => {
 		Language.forceUpdate();
 	});
 	Language.onChange((lang) => {
 		currentLang = lang;
-		searchBar = Translations.text("navigation.search", currentLang);
-		defaultLanguageText = Translations.text("lang.default", currentLang);
-		defaultLanguageCount = Translations.text("lang.count", currentLang);
 	});
 
 	// language picker
@@ -182,9 +185,6 @@
 		accountMenu.style.top = `3rem`;
 		accountMenuIsOpen = true;
 	}
-	function langName(lang) {
-		return Translations.text("lang.name", lang);
-	}
 	function chooseLang(lang) {
 		languageMenu.style.display = "none";
 		if (lang === "default") {
@@ -218,18 +218,53 @@
 		style="margin-bottom: 8px;"
 		on:click={() => chooseLang("default")}
 	>
-		{defaultLanguageText}
+		<LocalizedText
+			text="Same as browser"
+			key="lang.default"
+			lang={currentLang}
+		/>
 	</button>
 	<p class="languageCount">
-		{defaultLanguageCount.replace("$1", languageKeys.length)}
+		<LocalizedText
+			text="$1 languages translated"
+			key="lang.count"
+			lang={currentLang}
+			replace={{
+				"$1": languageKeys.length
+			}}
+		/>
 	</p>
 	{#each languageKeys as languageCode}
 		<button
 			class="languageOption"
-			title={langName(languageCode) + ` (${languageCode})`}
 			on:click={() => chooseLang(languageCode)}
 		>
-			{langName(languageCode)}
+			<div class="languageProgress">
+				<div class="only-in-dark-mode">
+					<CircularProgress
+						progress={Translations.getLanguageFinishedPercentage(languageCode)}
+						holeColor="#222"
+						emptyColor="#555"
+						fillColor="dodgerblue 0deg, dodgerblue"
+						style="width: 28px;height:28px;"
+					/>
+				</div>
+				<div class="only-non-dark-mode">
+					<CircularProgress
+						progress={Translations.getLanguageFinishedPercentage(languageCode)}
+						fillColor="dodgerblue 0deg, dodgerblue"
+						style="width: 28px;height:28px;"
+					/>
+				</div>
+				<span>
+					{Math.round(Translations.getLanguageFinishedPercentage(languageCode) * 100)}
+				</span>
+			</div>
+			<LocalizedText
+				text={languageCode}
+				key="lang.name"
+				lang={languageCode}
+			/>
 		</button>
 	{/each}
 </div>
@@ -259,6 +294,16 @@
 			/>
 		</button>
 	</a>
+	<a href="/settings">
+		<button>
+			<LocalizedText
+				text="Settings"
+				key="account.settings.title"
+				lang={currentLang}
+			/>
+		</button>
+	</a>
+	<div class="seperated-navopt" />
 	<button on:click={logout}>
 		<LocalizedText
 			text="Logout"
@@ -293,7 +338,7 @@
 			<img src="/create.png" alt="Create" />
 		</BarPage>
 	</div>
-	<BarSearch placeholder={searchBar} />
+	<BarSearch placeholder={Translations.textSafe("navigation.search", currentLang, "Search for projects...")} />
 	<BarButton
 		highlighted="true"
 		link={LINK.discord}
@@ -319,7 +364,7 @@
 	{#if loggedIn === true}
 		<BarPage
 			link="/messages"
-			label={"<img src='/messages/messages.svg' width='25' alt='Messages'>"}
+			label={"<img src='/messagesstatic/messages.svg' width='25' alt='Messages'>"}
 			style="padding:0.5rem"
 		>
 			{#if messageCount > 0}
@@ -334,14 +379,19 @@
 		</BarPage>
 		<BarPage
 			link="/mystuff"
-			label="<img src='/messages/mystuff.svg' width='25' alt='My Stuff'>"
+			label="<img src='/messagesstatic/mystuff.svg' width='25' alt='My Stuff'>"
+			style="padding:0.5rem"
+		/>
+		<BarPage
+			link="/upload"
+			label="<img src='/messagesstatic/upload.svg' width='25' alt='Upload'>"
 			style="padding:0.5rem"
 		/>
 	{/if}
 	{#if (isAdmin || isApprover) && loggedIn}
 		<BarPage
 			link="/panel"
-			label="<img src='/messages/panel.svg' width='25' alt='Panel'>"
+			label="<img src='/messagesstatic/panel.svg' width='25' alt='Panel'>"
 			style="padding:0.5rem"
 		/>
 	{/if}
@@ -353,6 +403,13 @@
 				lang={currentLang}
 			/>
 		</BarPage>
+		<BarPage on:click={() => location.href="/signup"}>
+			<LocalizedText
+				text="Sign up"
+				key="navigation.signup"
+				lang={currentLang}
+			/>
+		</BarPage>
 	{:else if loggedIn === true}
 		<!-- svelte-ignore a11y-img-redundant-alt -->
 		<button
@@ -361,7 +418,7 @@
 			on:click={openAccountMenu}
 		>
 			<img
-				src={`https://trampoline.turbowarp.org/avatars/by-username/${accountUsername}`}
+				src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${accountUsername}&reload=${pfpkey}`}
 				alt="Profile Picture"
 				class="profile-picture"
 			/>
@@ -473,7 +530,7 @@
 	.languageSelect {
 		position: fixed;
 		width: 256px;
-		max-height: 300px;
+		max-height: 60%;
 		overflow: auto;
 		background: white;
 		box-shadow: 0px 0px 8px black;
@@ -489,10 +546,39 @@
 		font-size: 1rem;
 		text-align: left;
 		cursor: pointer;
+
+		display: flex;
+		align-items: center;
 	}
 	:global(html[dir="rtl"]) .languageOption {
 		text-align: right;
 	}
+
+	.languageProgress {
+		position: relative;
+		margin-right: 4px;
+	}
+	.languageProgress span {
+		position: absolute;
+		left: 0;
+		top: calc(50% - (1.15em / 2));
+		width: 28px;
+		height: 28px;
+
+		text-align: center;
+		vertical-align: middle;
+
+		color: black;
+		font-size: 0.75em;
+	}
+	:global(html[dir="rtl"]) .languageProgress {
+		margin-right: initial;
+		margin-left: 4px;
+	}
+	:global(body.dark-mode) .languageProgress span {
+		color: white;
+	}
+
 	.languageCount {
 		/* width: 100%; */
 		/* text-align: center; */
@@ -609,6 +695,12 @@
 		background: rgba(0, 0, 0, 0.15);
 	}
 
+	.profile-dropdown-menu .seperated-navopt {
+		border-top: 1px solid rgba(0, 0, 0, 0.15);
+		width: calc(100% - 8px);
+		margin-left: 4px;
+	}
+
 	.only-non-launcher {
 		display: initial;
 	}
@@ -621,4 +713,17 @@
 	:global(body.launcher-mode) .only-launcher {
 		display: initial;
 	}
+	
+    .only-in-dark-mode {
+        display: none;
+    }
+    :global(body.dark-mode) .only-in-dark-mode {
+        display: initial;
+    }
+    .only-non-dark-mode {
+        display: initial;
+    }
+    :global(body.dark-mode) .only-non-dark-mode {
+        display: none;
+    }
 </style>

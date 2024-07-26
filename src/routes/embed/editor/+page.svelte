@@ -2,15 +2,18 @@
     import { onMount } from "svelte";
     import Authentication from "../../../resources/authentication.js";
 
+    import { PUBLIC_STUDIO_URL } from "$env/static/public";
+
     const getLoginDetails = async () => {
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
+        const username = localStorage.getItem("username")
+        const token = localStorage.getItem("token");
+        if (!token || !username) {
             return { loggedIn: false };
         }
 
         try {
-            const { username } = await Authentication.usernameFromCode(privateCode);
-            if (!username) return { loggedIn: false };
+            const { _username } = await Authentication.usernameFromCode(username, token);
+            if (!_username) return { loggedIn: false };
             return {
                 loggedIn: true,
                 username
@@ -29,11 +32,13 @@
         const importLocation = params.get("external");
         if (!importLocation) return console.warn("No external provided");
 
+        const stripped = PUBLIC_STUDIO_URL.replace("https://", "").replace("http://", "");
+
         const urlObject = new URL(importLocation);
         if (
             !(
                 urlObject.host.startsWith("dev.penguinmod.com") ||
-                urlObject.host.startsWith("studio.penguinmod.com") ||
+                urlObject.host.startsWith(stripped) ||
                 urlObject.host.startsWith("penguinmod.com") ||
                 urlObject.host.startsWith("localhost:3000")
             )

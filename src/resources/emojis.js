@@ -1,4 +1,4 @@
-const emojiHtmlUrl = 'https://pm-bapi.vercel.app/api/emojis';
+const emojiHtmlUrl = 'https://gextapi.penguinmod.com/emojis';
 
 class EmojiHandler {
     static emojis = [];
