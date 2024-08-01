@@ -4,17 +4,19 @@ class Authentication {
     static eventListeners = [];
 
     static authenticate() {
-        const isLocal = location.hostname === 'localhost';
-        const redirectUrl = `${ProjectApi.OriginApiUrl}/api/users/login` + (isLocal ? 'Local' : '');
-        const base64 = btoa(redirectUrl);
+        // const isLocal = location.hostname === 'localhost';
+        // const redirectUrl = `${ProjectApi.OriginApiUrl}/api/users/login` + (isLocal ? 'Local' : '');
+        // const base64 = btoa(redirectUrl);
         return new Promise((resolve, reject) => {
             let login;
 
             const handleMessageReciever = (event) => {
+                console.log("Event Triggered", event.origin)
                 if (event.origin !== ProjectApi.OriginApiUrl) {
                     return;
                 }
                 const data = event.data && event.data.a2;
+                console.info(data, event.data)
                 if (!data) {
                     return;
                 }
@@ -31,10 +33,12 @@ class Authentication {
 
             window.addEventListener("message", handleMessageReciever);
 
+            // const LoginPage = `https://auth.itinerary.eu.org/auth/?redirect=${base64}&name=PenguinMod`;
+            const LoginPage = `/auth`;
             login = window.open(
-                `https://auth.itinerary.eu.org/auth/?redirect=${base64}&name=PenguinMod`,
+                LoginPage,
                 "Scratch Authentication",
-                `scrollbars=yes,resizable=yes,status=no,location=yes,toolbar=no,menubar=no,width=1024,height=512,left=200,top=200`
+                `scrollbars=yes,resizable=yes,status=no,location=yes,toolbar=no,menubar=no,width=945,height=575,left=200,top=200`
             );
             if (!login) {
                 window.removeEventListener("message", handleMessageReciever);
