@@ -1322,15 +1322,15 @@ class ProjectApi {
             const blocks = json.targets[target].blocks;
             // loop over the blocks
             for (const block in blocks) {
-                if (Array.isArray(target.blocks[block])) {
+                if (Array.isArray(blocks[block])) {
                     newtarget.blocks[block] = {
                         is_variable_reporter: true,
                         varReporterBlock: {
-                            first_num: target.blocks[block][0],
-                            name: target.blocks[block][1],
-                            id: target.blocks[block][2],
-                            second_num: target.blocks[block][3],
-                            third_num: target.blocks[block][4],
+                            first_num: blocks[block][0],
+                            name: blocks[block][1],
+                            id: blocks[block][2],
+                            second_num: blocks[block][3],
+                            third_num: blocks[block][4],
                         }
                     };
                     continue;
