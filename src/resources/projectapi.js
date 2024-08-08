@@ -1341,7 +1341,7 @@ class ProjectApi {
                         argumentids: blocks[block].mutation.argumentids,
                         argumentnames: blocks[block].mutation.argumentnames,
                         argumentdefaults: blocks[block].mutation.argumentdefaults,
-                        warp: blocks[block].mutation.warp == true ? true : false, // convert to boolean (if its a string itll still be caught by the ==)
+                        warp: blocks[block].mutation.warp ? true : false, // convert to boolean (if its a string itll still be caught by the ==)
                         _returns: blocks[block].mutation.returns,
                         edited: blocks[block].mutation.edited,
                         optype: blocks[block].mutation.optype,
