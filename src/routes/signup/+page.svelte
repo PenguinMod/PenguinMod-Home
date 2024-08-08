@@ -64,6 +64,15 @@
     }
     const createAccountSafe = () => {
         if (!canCreateAccount) {
+            if (emailValid === 1) {
+                alert(TranslationHandler.textSafe(
+                    "forgotpassword.invalidemail",
+                    currentLang,
+                    "Your email is not valid."
+                ));
+                return;
+            }
+
             alert(TranslationHandler.textSafe(
                 "username.requirement.notmet",
                 currentLang,

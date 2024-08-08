@@ -36,6 +36,7 @@
 
     let loggedIn = null;
     let loggedInUser = "";
+    let loggedInUserId = "";
     let loggedInAdmin = false;
 
     let user;
@@ -249,7 +250,10 @@
                 isProfilePrivate = fullProfile.privateProfile;
                 isProfilePublicToFollowers = fullProfile.canFollowingSeeProfile;
 
-                const profileFeatured = fullProfile.myFeaturedProject;
+                let profileFeatured = fullProfile.myFeaturedProject;
+                if (profileFeatured === -1) {
+                    profileFeatured = 0
+                }
                 if (profileFeatured) {
                     ProjectApi.getProjectMeta(profileFeatured).then(metadata => {
                         console.log(metadata);
@@ -315,11 +319,13 @@
             Authentication.authenticate().then((privateCode) => {
                 loggedIn = null;
                 loggedInUser = "";
+                loggedInUserId = "";
                 loggedInAdmin = false;
                 Authentication.usernameFromCode(privateCode)
-                    .then(({ username, isAdmin, isApprover }) => {
+                    .then(({ username, isAdmin, isApprover, id }) => {
                         loggedIn = true;
                         loggedInUser = username;
+                        loggedInUserId = id;
                         loggedInAdmin = isAdmin || isApprover;
 
                         loggedInChange();
@@ -328,6 +334,7 @@
                     .catch(() => {
                         loggedIn = false;
                         loggedInUser = "";
+                        loggedInUserId = "";
                         loggedInAdmin = false;
                         loggedInChange();
                         reject();
@@ -360,16 +367,18 @@
         if (!token || !username) {
             loggedIn = false;
             loggedInUser = "";
+            loggedInUserId = "";
             loggedInAdmin = false;
             loggedInChange();
             return;
         }
         Authentication.usernameFromCode(username, token)
-            .then(async ({ isAdmin, isApprover }) => {
+            .then(async ({ id, isAdmin, isApprover }) => {
                 ProjectClient.setUsername(username);
                 ProjectClient.setToken(token);
                 loggedIn = true;
                 loggedInUser = username;
+                loggedInUserId = id;
                 loggedInAdmin = isAdmin || isApprover;
                 const isFollowing = await ProjectClient.isFollowingUser(user);
                 followOnLoad = isFollowing;
@@ -378,6 +387,7 @@
             .catch(() => {
                 loggedIn = false;
                 loggedInUser = "";
+                loggedInUserId = "";
                 loggedInAdmin = false;
                 loggedInChange();
             });
@@ -386,25 +396,29 @@
     Authentication.onLogout(() => {
         loggedIn = false;
         loggedInUser = "";
+        loggedInUserId = "";
         loggedInAdmin = false;
         loggedInChange();
     });
     Authentication.onAuthentication((username, privateCode) => {
         loggedIn = null;
         loggedInUser = "";
+        loggedInUserId = "";
         loggedInAdmin = false;
         Authentication.usernameFromCode(privateCode)
-            .then(({ username, isAdmin, isApprover }) => {
+            .then(({ username, id, isAdmin, isApprover }) => {
                 ProjectClient.setUsername(username);
                 ProjectClient.setToken(privateCode);
                 loggedIn = true;
                 loggedInUser = username;
+                loggedInUserId = id;
                 loggedInAdmin = isAdmin || isApprover;
                 loggedInChange();
             })
             .catch(() => {
                 loggedIn = false;
                 loggedInUser = "";
+                loggedInUserId = "";
                 loggedInAdmin = false;
                 loggedInChange();
             });
@@ -1146,7 +1160,7 @@
                     <div class="section-user-stats">
                         <h2 style="margin-block:4px">
                             <LocalizedText
-                                text={projectTitleStrings[(fullProfile.myFeaturedProjectTitle || 1) - 1]}
+                                text={projectTitleStrings[(fullProfile.myFeaturedProjectTitle || 1) - 1] || projectTitleStrings[0]}
                                 key="profile.featured.title{fullProfile.myFeaturedProjectTitle || 1}"
                                 lang={currentLang}
                             />
@@ -1154,6 +1168,12 @@
                                 <button class="edit-link" on:click={() => {
                                     profileEditingData.project = profileFeaturedProject.id || 0;
                                     profileEditingData.projectTitle = fullProfile.myFeaturedProjectTitle || 1;
+                                    if (profileFeaturedProject.id === -1) {
+                                        profileEditingData.project = 0;
+                                    }
+                                    if (fullProfile.myFeaturedProjectTitle === -1) {
+                                        profileEditingData.projectTitle = 1;
+                                    }
                                     profileEditingData.isEditingProject = true;
                                 }}>
                                     <img
@@ -1175,7 +1195,7 @@
                                     lang={currentLang}
                                 />
                             </p>
-                        {:else if profileFeaturedProject.author.username === user}
+                        {:else if profileFeaturedProject.author.id === fullProfile.id}
                             <a href={`${LINK.base}#${profileFeaturedProject.id}`} style="text-decoration: none">
                                 <img
                                     src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectID=${profileFeaturedProject.id}&requestType=thumbnail`}
@@ -1617,6 +1637,9 @@
     }
     .section-private > img {
         height: 96px;
+    }
+    :global(body.dark-mode) img[src="/account/lock.svg"] {
+        filter: invert(1);
     }
 
     .section-projects {
