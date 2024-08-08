@@ -1638,6 +1638,9 @@
     .section-private > img {
         height: 96px;
     }
+    :global(body.dark-mode) img[src="/account/lock.svg"] {
+        filter: invert(1);
+    }
 
     .section-projects {
         display: flex;
