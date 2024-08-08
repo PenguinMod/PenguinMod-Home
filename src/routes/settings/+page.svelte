@@ -20,6 +20,7 @@
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
     import { page } from '$app/stores';
+    import { debug } from "svelte/internal";
 
     let loggedIn = null;
     let loggedInUsername = null;
@@ -77,6 +78,7 @@
         accountInformation.settings.private = _privateProfile;
         accountInformation.settings.privateToNonFollowers = _cfsp;
 
+        email = email || "";
         let emailPeek = `${email.substring(0, 3)}...${email.substring(email.indexOf("@"))}`
 
         accountInformation.emailSet = !!email;
@@ -100,7 +102,8 @@
                 loggedInChange(username, token);
                 setupLoginInfo(_loginMethods, _privateProfile, _cfsp, _standing, isEmailVerified, email);
             })
-            .catch(() => {
+            .catch((e) => {
+                console.log("AAAAAAAAAAAAa", e);
                 loggedIn = false;
             });
     });
