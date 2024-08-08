@@ -21,10 +21,21 @@ class Authentication {
     }
 
     static verifyPassword(username, password) {
-        const url = `${ProjectApi.OriginApiUrl}/api/v1/users/passwordlogin?username=${username}&password=${password}`;
+        const url = `${ProjectApi.OriginApiUrl}/api/v1/users/passwordlogin`;
 
+        const body = {
+            username,
+            password
+        }
+        
         return new Promise((resolve, reject) => {
-            fetch(url).then(r => r.json().then(j => {
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            }).then(r => r.json().then(j => {
                 if (j.error) return resolve(false);
 
                 this.fireAuthenticated(username, j.token);
