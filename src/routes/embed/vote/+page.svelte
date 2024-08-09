@@ -61,10 +61,12 @@
         userVoted = !userVoted;
     }
     function love() {
+        /*
         if (inFrame()) {
             window.open(document.location.href)
             return
         }
+        */
         if (loggedIn === false) {
             Authentication.authenticate().then(() => {
                 const username = localStorage.getItem("username");
