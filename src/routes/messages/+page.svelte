@@ -484,14 +484,14 @@
                             </b> 🌟
                         </p>
                     {:else if message.message.type === "followerAdded"}
-                        <p>
+                        <a href={`/profile?user=${message.message.user.username}`}>
                             {String(
                                 TranslationHandler.text(
                                     "messages.alert.followeradded",
                                     currentLang
                                 )
                             ).replace("$1", message.message.user.username)}
-                        </p>
+                        </a>
                     {:else if message.message.type === "newBadge"}
                         <p>
                             {String(

@@ -861,7 +861,7 @@
                                         <h1>{user}</h1>
                                     {/if}
                                     
-                                    {#if isProfilePrivate}
+                                    {#if isProfilePrivate && !loggedInAdmin}
                                         <img
                                             src="/account/lock.svg"
                                             alt="Private"
@@ -874,7 +874,7 @@
                                     {/if}
                                 </div>
                             </div>
-                            {#if !isProfilePrivate || loggedInUser === user || (isProfilePublicToFollowers && isFollowedByUser)}
+                            {#if !isProfilePrivate || loggedInUser === user || (isProfilePublicToFollowers && isFollowedByUser) || loggedInAdmin}
                                 <div class="follower-section">
                                     <p class="follower-count">
                                         {TranslationHandler.text(
@@ -914,7 +914,7 @@
                     </div>
                 </div>
             {/if}
-            {#if isProfilePrivate && loggedInUser !== user && !(isProfilePublicToFollowers && isFollowedByUser)}
+            {#if isProfilePrivate && loggedInUser !== user && !(isProfilePublicToFollowers && isFollowedByUser) && !loggedInAdmin}
                 <div class="section-private">
                     <img
                         src="/account/lock.svg"
