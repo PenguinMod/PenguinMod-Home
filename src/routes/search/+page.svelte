@@ -26,8 +26,6 @@
     let pageIsLast = false;
     let searchType = "project";
 
-    const validTagPrefixes = ["studio", "user", "featured", "sort"];
-
     const fetchNewProjects = () => {
         let api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(searchQuery)}`;
 
@@ -41,6 +39,27 @@
                 userQuery.shift();
 
                 api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}`;
+                break;
+            case "featured":
+                const featuedQuery = searchQuery.split(":");
+
+                featuedQuery.shift();
+
+                api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(featuedQuery.join())}&type=featured`;
+                break;
+            case "newest":
+                const newestQuery = searchQuery.split(":");
+
+                newestQuery.shift();
+
+                api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(newestQuery.join())}&type=newest`;
+                break;
+            case "views":
+                const viewsQuery = searchQuery.split(":");
+
+                viewsQuery.shift();
+
+                api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(viewsQuery.join())}&type=views`;
                 break;
         }
 

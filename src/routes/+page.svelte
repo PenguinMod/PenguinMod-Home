@@ -735,7 +735,7 @@
                 "home.sections.weeklyfeatured",
                 currentLang
             )}
-            seemore={`/search?q=featured%3Aprojects`}
+            seemore={`/search?q=featured%3A`}
             style="width:65%;"
             stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
         >
@@ -873,7 +873,7 @@
                 "home.sections.todaysprojects",
                 currentLang
             )}
-            seemore={`/search?q=featured%3Aexclude`}
+            seemore={`/search?q=newest%3A`}
             style="width:65%;"
             stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
         >
