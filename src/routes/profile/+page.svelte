@@ -274,7 +274,7 @@
             console.log(err);
             err = JSON.parse(err);
             err = err.error;
-            if (err === 'NotFound') {
+            if (err === 'NotFound' || err === 'UserNotFound') {
                 wasNotFound = true;
             }
         };
@@ -837,7 +837,7 @@
 
     <StatusAlert />
 
-    {#if (projects.all.length > 0 && fetchedFullProfile) || isForceView}
+    {#if (projects.all.length > 0 && fetchedFullProfile) || wasNotFound || isForceView}
         {#if
             !wasNotFound
             || isForceView
@@ -1429,13 +1429,13 @@
                 <br>
                 <!-- only show if we fetched the full profile -->
                 {#if fetchedFullProfile}
-                    <Button link="https://scratch.mit.edu/users/{user}/" noredirect={true}>
+                    <!-- <Button link="https://scratch.mit.edu/users/{user}/" noredirect={true}>
                         <LocalizedText
                             text="View on Scratch"
                             key="profile.scratchprofile"
                             lang={currentLang}
                         />
-                    </Button>
+                    </Button> -->
                     {#if loggedInAdmin}
                         <Button on:click={() => {
                             isForceView = true;
