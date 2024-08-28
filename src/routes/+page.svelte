@@ -1327,6 +1327,9 @@
         margin: 0;
         border: 0;
     }
+    :global(body.dark-mode) .update-image {
+        color: white;
+    }
 
     .project-list {
         display: flex;
