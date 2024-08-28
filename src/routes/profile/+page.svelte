@@ -1463,11 +1463,11 @@
         left: 0px;
         width: 100%;
         min-width: 1000px;
-        max-width: 1920px;
     }
     .background {
         margin: auto;
         width: 80%;
+        max-width: 1920px;
     }
 
     .user-stat-box {
