@@ -26,22 +26,15 @@
     let pageIsLast = false;
     let searchType = "project";
 
-    const validTagPrefixes = ["studio", "user", "featured", "sort"];
-
     const fetchNewProjects = () => {
-        let api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(searchQuery)}`;
-
-        const query = searchQuery.split(":", 1)[0]
-
-        switch (query) {
-            case "user":
-                const userQuery = searchQuery.split(":");
-                searchType = "user";
-
-                userQuery.shift();
-
-                api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}`;
-                break;
+        const [type, query] = searchQuery.split(":", 1)[0];
+        let api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&type=${type}&query=${encodeURIComponent(query)}`;
+        if (type === 'user') {
+            api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(query)}`;
+            searchType = 'user';
+        }
+        if (type === 'all') {
+            api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}`;
         }
 
         fetch(api)
