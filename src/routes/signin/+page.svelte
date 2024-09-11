@@ -83,6 +83,7 @@
             }
         }, (err) => {
             wrongInfo = true;
+            alert('error:', err);
         })
         .finally(() => {
             loggingIn = false;
