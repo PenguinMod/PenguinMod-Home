@@ -66,7 +66,7 @@
     const createAccountSafe = () => {
         if (!canCreateAccount) {
             if (apiCreateRejectReason) {
-                alert(apiCreateRejectReason);
+                alert('can not create account atm because:', apiCreateRejectReason);
                 return;
             }
             if (emailValid === 1) {
