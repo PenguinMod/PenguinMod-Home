@@ -35,6 +35,7 @@
     let email = "";
     let creatingAccount = false;
     let canCreateAccount = false;
+    let apiCreateRejectReason = '';
     let showingPassword = false;
     let focused = "";
     let embed = false;
@@ -64,6 +65,10 @@
     }
     const createAccountSafe = () => {
         if (!canCreateAccount) {
+            if (apiCreateRejectReason) {
+                alert(apiCreateRejectReason);
+                return;
+            }
             if (emailValid === 1) {
                 alert(TranslationHandler.textSafe(
                     "forgotpassword.invalidemail",
@@ -108,6 +113,7 @@
             window.location.href = redir ? redir : "/";
         }, (err) => {
             canCreateAccount = false;
+            apiCreateRejectReason = err;
             console.log(`error: ${err}`)
         })
         .finally(() => {
