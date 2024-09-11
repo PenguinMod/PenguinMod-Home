@@ -27,40 +27,13 @@
     let searchType = "project";
 
     const fetchNewProjects = () => {
-        let api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(searchQuery)}`;
-
-        const query = searchQuery.split(":", 1)[0]
-
-        switch (query) {
-            case "user":
-                const userQuery = searchQuery.split(":");
-                searchType = "user";
-
-                userQuery.shift();
-
-                api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}`;
-                break;
-            case "featured":
-                const featuedQuery = searchQuery.split(":");
-
-                featuedQuery.shift();
-
-                api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(featuedQuery.join())}&type=featured`;
-                break;
-            case "newest":
-                const newestQuery = searchQuery.split(":");
-
-                newestQuery.shift();
-
-                api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(newestQuery.join())}&type=newest`;
-                break;
-            case "views":
-                const viewsQuery = searchQuery.split(":");
-
-                viewsQuery.shift();
-
-                api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(viewsQuery.join())}&type=views`;
-                break;
+        const [type, query] = searchQuery.split(":", 1);
+        let api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(query)}&type=${type}`;
+        // to explain myself: i didnt do switch case cause its only two options to check, making a switch case utterly massive for this purpose
+        if (type === 'all') api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}`;
+        if (type === 'user') {
+            api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}`;
+            searchType = 'user';
         }
 
         fetch(api)
