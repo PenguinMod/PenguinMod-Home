@@ -307,6 +307,7 @@
     <meta property="twitter:description" content="The area where featured projects and community stuff & info is shown.">
     <meta property="og:url" content="https://penguinmod.com/">
     <meta property="twitter:url" content="https://penguinmod.com/">
+    <meta name="google-site-verification" content="07oAYybKa_CH2le7AvPJkNNtwhZSq_G0V4d9P7AIZYE" />
 </svelte:head>
 
 <NavigationBar />
