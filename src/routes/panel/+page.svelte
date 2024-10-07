@@ -758,7 +758,7 @@
     }
 
     function deleteAccount() {
-        if (!confirm("Are you sure you want to delete this account? THIS IS PERMANENT AND DELETES **ALL** DATA")) return;
+        if (prompt("Are you sure you want to delete this account? THIS IS PERMANENT AND DELETES **ALL** DATA. enter \"ok\" to confirm.") !== "ok") return;
         ProjectClient.deleteUserAccount(banOrUnbanData.username, banOrUnbanData.reason)
             .then(() => {
                 alert("Account deleted.");
