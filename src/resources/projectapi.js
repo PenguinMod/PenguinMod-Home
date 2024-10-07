@@ -1925,6 +1925,39 @@ class ProjectApi {
         });
     }
 
+    deleteUserAccount(username, reason) {
+        const url = `${OriginApiUrl}/api/v1/users/deleteaccount`;
+
+        const body = JSON.stringify({
+            username: this.username,
+            token: this.token,
+            target: username,
+            reason,
+        });
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
+
     getConnectedIPs(username) {
         const url = `${OriginApiUrl}/api/v1/users/getAllIPs`
 

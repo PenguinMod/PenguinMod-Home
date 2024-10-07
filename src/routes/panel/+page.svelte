@@ -757,6 +757,18 @@
             });
     }
 
+    function deleteAccount() {
+        if (!confirm("Are you sure you want to delete this account? THIS IS PERMANENT AND DELETES **ALL** DATA")) return;
+        ProjectClient.deleteUserAccount(banOrUnbanData.username, banOrUnbanData.reason)
+            .then(() => {
+                alert("Account deleted.");
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to delete account; ${err}`);
+            });
+    }
+
     let ipBanData = {
         input: "",
         connectedIPs: [],
@@ -1368,6 +1380,9 @@
                         <Button on:click={setUsersPerms}>Assign User Perms</Button>
                         <Button color="red" on:click={() => ipBanUser(true)}>IP Ban User</Button>
                         <Button on:click={() => ipBanUser(false)}>Un IP Ban User</Button>
+                    </div>
+                    <div class="user-action-row">
+                        <Button color="red" on:click={deleteAccount}>Delete User Account</Button>
                     </div>
                 </div>
             </div>
