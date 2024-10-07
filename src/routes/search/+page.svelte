@@ -27,13 +27,22 @@
     let searchType = "project";
 
     const fetchNewProjects = () => {
-        const [type, query] = searchQuery.split(":", 1);
-        let api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(query)}&type=${type}`;
-        // to explain myself: i didnt do switch case cause its only two options to check, making a switch case utterly massive for this purpose
-        if (type === 'all') api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}`;
-        if (type === 'user') {
-            api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}`;
-            searchType = 'user';
+        let api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(searchQuery)}`;
+        const query = searchQuery.split(":", 1)[0];
+        switch (query) {
+            case "user":
+                const userQuery = searchQuery.split(":");
+                searchType = "user";
+                userQuery.shift();
+                api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}`;
+                break;
+            case "featured":
+            case "newest":
+            case "views":
+                const actual_query = searchQuery.split(":");
+                actual_query.shift();
+                api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}`;
+                break;
         }
 
         fetch(api)
