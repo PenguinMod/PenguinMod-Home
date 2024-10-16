@@ -1,5 +1,5 @@
 {
-    "---notes1": "Certains éléments de cette listes peuvent ne pas être uitilisés ou prévus.",
+    "---notes1": "Certains éléments de cette listes peuvent ne pas être utilisés ou prévus.",
     "---notes2": "Les noms propres tels que PenguinMod, Scratch ou TurboWarp ne doivent pas être traduits.",
     "---notes3": "Certains textes comme $1 ou $2 seront remplacés dans le site avec des nom d'utilisateurs, des nombres, etc. Du code HTML comme <br> peut être utilisé pour des nouvelles lignes dans certains texte.",
     "---notes4": "Certains textes peuvent ne pas être en accord avec d'autres, du fait que Google Sheets rend l'insertion de texte difficile.",
