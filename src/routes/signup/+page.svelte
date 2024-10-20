@@ -498,7 +498,7 @@
         
         <span class="input-title">
             <LocalizedText
-                text="Email"
+                text="Email (Optional)"
                 key="account.fields.email"
                 lang={currentLang}
             />
