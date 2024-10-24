@@ -52,6 +52,8 @@
     let birthday = "";
     let countryValid = false;
     let birthdayValid = false;
+
+    let birthdayFaked = false;
     let consentedToDataUsage = false;
     let canFinishSignup = false;
 
@@ -82,6 +84,8 @@
         return `${todaysDate.getFullYear()}-${todaysDate.getMonth() + 1}-${todaysDate.getDate()}`;
     };
     const checkIfValid = () => {
+        birthdayFaked = false;
+
         const parsedBirthday = parseBirthday(birthday);
         if (!parsedBirthday) {
             birthdayValid = false;
@@ -89,10 +93,12 @@
             birthdayValid = true;
 
             const currentDate = new Date();
-            if (parsedBirthday.getFullYear() <= 1901) {
+            const birthYear = parsedBirthday.getFullYear();
+            if (birthYear <= 1901) {
+                birthdayFaked = birthYear >= 1899 && birthYear <= 1901;
                 birthdayValid = false;
             }
-            if (parsedBirthday.getFullYear() > currentDate.getFullYear()) {
+            if (birthYear > currentDate.getFullYear()) {
                 birthdayValid = false;
             }
             if (parsedBirthday.getDate() > currentDate.getDate()) {
@@ -167,6 +173,13 @@
                 data-valid={birthdayValid}
                 on:input={birthdayInputChanged}
             />
+            {#if birthdayFaked}
+                <p class="birthday-warning">
+                    Did your parent/guardian give you permission to use PenguinMod?
+                    <br>
+                    That seems like your trying to secretly make an account without them knowing.
+                </p>
+            {/if}
         {/if}
     
         <!-- TODO: Translations. Specifically, the agreement. -->
@@ -261,6 +274,13 @@
         width: initial;
         border: 0;
         transform: scale(1.25);
+    }
+
+    .birthday-warning {
+        color: #bb0000;
+    }
+    :global(body.dark-mode) .birthday-warning {
+        color: #ff6363;
     }
     
     .create-acc {

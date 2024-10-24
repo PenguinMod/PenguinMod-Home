@@ -50,6 +50,8 @@
     let passwordValid = false;
     let birthdayValid = false;
     let countryValid = false;
+
+    let birthdayFaked = false;
     let consentedToDataUsage = false;
 
     const usernameRequirements = [
@@ -173,6 +175,8 @@
         
         // NOTE: The API technically doesnt require a birthday or country, but that's only for OAuth2 accounts when they are first created.
         // We can skip that on the frontend for password-based accounts to make sign up smoother.
+        birthdayFaked = false;
+
         const parsedBirthday = parseBirthday(birthday);
         if (!parsedBirthday) {
             birthdayValid = false;
@@ -180,10 +184,12 @@
             birthdayValid = true;
 
             const currentDate = new Date();
-            if (parsedBirthday.getFullYear() <= 1901) {
+            const birthYear = parsedBirthday.getFullYear();
+            if (birthYear <= 1901) {
+                birthdayFaked = birthYear >= 1899 && birthYear <= 1901;
                 birthdayValid = false;
             }
-            if (parsedBirthday.getFullYear() > currentDate.getFullYear()) {
+            if (birthYear > currentDate.getFullYear()) {
                 birthdayValid = false;
             }
             if (parsedBirthday.getDate() > currentDate.getDate()) {
@@ -651,6 +657,13 @@
             data-valid={birthdayValid}
             on:input={birthdayInputChanged}
         />
+        {#if birthdayFaked}
+            <p class="birthday-warning">
+                Did your parent/guardian give you permission to use PenguinMod?
+                <br>
+                That seems like your trying to secretly make an account without them knowing.
+            </p>
+        {/if}
 
         <!-- TODO: Translations. Specifically, the agreement. -->
         <label style="width:60%">
@@ -840,6 +853,13 @@
     :global(html[dir="rtl"]) .password-show {
         right: initial;
         left: -4px;
+    }
+
+    .birthday-warning {
+        color: #bb0000;
+    }
+    :global(body.dark-mode) .birthday-warning {
+        color: #ff6363;
     }
 
     .or-line {
