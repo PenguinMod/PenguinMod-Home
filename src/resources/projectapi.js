@@ -1124,6 +1124,33 @@ class ProjectApi {
             })
         })
     }
+    filloutSafetyDetails(birthday, country) {
+        const data = {
+            username: this.username,
+            token: this.token,
+            birthday,
+            country
+        };
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/v1/users/filloutSafetyDetails`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
     respondToDispute(messageId, text) {
         const data = {
             token: this.token,

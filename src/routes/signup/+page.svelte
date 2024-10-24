@@ -53,6 +53,7 @@
 
     let birthdayFaked = false;
     let consentedToDataUsage = false;
+    let accurateDataAgreement = false;
 
     const usernameRequirements = [
         {name: "username.requirement.length", value: false},
@@ -76,7 +77,7 @@
     const createAccountSafe = () => {
         if (!canCreateAccount) {
             if (apiCreateRejectReason) {
-                alert('can not create account atm because:', apiCreateRejectReason);
+                alert('Failed to create account:', apiCreateRejectReason);
                 return;
             }
             if (emailValid === 1) {
@@ -88,7 +89,7 @@
                 return;
             }
 
-            if (!consentedToDataUsage) {
+            if (!consentedToDataUsage || !accurateDataAgreement) {
                 return alert("Not all agreements have been checked.");
             }
 
@@ -210,7 +211,7 @@
 
         canCreateAccount = !(userCheck || passwordCheck) && (isUsernameUnique && hasDoneUsernameCheck) && emailValid !== 1;
         usernameValid = (isUsernameUnique && hasDoneUsernameCheck) && !userCheck;
-        if (!consentedToDataUsage) {
+        if (!consentedToDataUsage || !accurateDataAgreement) {
             canCreateAccount = false;
         }
 
@@ -673,7 +674,17 @@
                 on:change={checkIfValid}
             />
             <span class="disable-markdown-margin">
-                {@html generateMarkdown(`I agree to allow PenguinMod to use my child's birthday and country (or mine if I am an adult) according to the [Privacy Policy](/privacy).`)}
+                {@html generateMarkdown(`I agree to allow PenguinMod to collect and use my country and date of birth (or my child's if I am registering on their behalf) in accordance with the [Privacy Policy](/privacy).`)}
+            </span>
+        </label>
+        <label style="width:60%">
+            <input
+                type="checkbox"
+                bind:checked={accurateDataAgreement}
+                on:change={checkIfValid}
+            />
+            <span class="disable-markdown-margin">
+                {@html generateMarkdown(`I confirm that the information I have provided is accurate, and I understand that my date of birth and country cannot be changed after account creation without contacting support.`)}
             </span>
         </label>
 
