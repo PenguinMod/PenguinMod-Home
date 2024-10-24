@@ -64,7 +64,7 @@
 		}
 		Authentication.usernameFromCode(username, token)
 			.then(
-				({ isAdmin: isAdminn, isApprover: isApproverr }) => {
+				({ isAdmin: isAdminn, isApprover: isApproverr, countryEntered, birthdayEntered }) => {
 					loggedIn = true;
 					accountUsername = username;
 					isAdmin = isAdminn;
@@ -78,6 +78,25 @@
 					ProjectApi.getProfile(username, false, token).then((profile) => {
 						canRankUp = profile.canrankup === true;
 					});
+
+					const permittedPages = [
+						"/unfinishedsignup",
+						"/terms",
+						"/privacy",
+						"/contact",
+						"/guidelines/uploading"
+					];
+					if ((!countryEntered || !birthdayEntered) && !permittedPages.includes(location.pathname)) {
+						const newUrl = new URL(location.href);
+						newUrl.pathname = "/unfinishedsignup";
+						if (!countryEntered && birthdayEntered) {
+							newUrl.search = "?fillout=country"
+						}
+						if (!birthdayEntered && countryEntered) {
+							newUrl.search = "?fillout=birthday"
+						}
+						location.href = newUrl;
+					}
 				}
 			)
 			.catch((err) => {

@@ -1,10 +1,10 @@
 <script>
+    import { page } from '$app/stores';
     import { onMount } from "svelte";
-    import Authentication from "../../resources/authentication.js";
-    import ProjectApi from "../../resources/projectapi.js";
-
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
+    import Authentication from "../../resources/authentication.js";
+    import ProjectApi from "../../resources/projectapi.js";
     const ProjectClient = new ProjectApi();
 
     // Components
@@ -19,8 +19,6 @@
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
-    import { page } from '$app/stores';
-    import { debug } from "svelte/internal";
 
     let loggedIn = null;
     let loggedInUsername = null;

@@ -3,14 +3,14 @@ import ProjectApi from "./projectapi";
 class Authentication {
     static eventListeners = [];
 
-    static createAccount(username, password, email="") {
+    static createAccount(username, password, email = "", birthday, country) {
         return new Promise((resolve, reject) => {
             fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/createAccount`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ username, password, email })
+                body: JSON.stringify({ username, password, email, birthday, country })
             }).then(r => r.json().then(j => {
                 if (j.error) return reject(j.error);
 
