@@ -168,7 +168,7 @@
         return `${todaysDate.getFullYear()}-${todaysDate.getMonth() + 1}-${todaysDate.getDate()}`;
     };
     const checkIfValid = () => {
-        if (specificFilloutForm && specificFilloutForm !== "country") {
+        if (!specificFilloutForm || specificFilloutForm !== "country") {
             birthdayFaked = false;
 
             const parsedBirthday = parseBirthday(birthday);
@@ -191,7 +191,7 @@
                 }
             }
         }
-        if (specificFilloutForm && specificFilloutForm !== "birthday") {
+        if (!specificFilloutForm || specificFilloutForm !== "birthday") {
             countryValid = CountryLookup.countryCodes.includes(country);
         }
 
@@ -290,7 +290,7 @@
                     </p>
                 {/if}
             {/if}
-                
+
             <!-- TODO: Translations. Specifically, the agreement. -->
             <label style="width:60%">
                 <input
