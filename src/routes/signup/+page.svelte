@@ -211,6 +211,9 @@
 
         canCreateAccount = !(userCheck || passwordCheck) && (isUsernameUnique && hasDoneUsernameCheck) && emailValid !== 1;
         usernameValid = (isUsernameUnique && hasDoneUsernameCheck) && !userCheck;
+        if (!birthdayValid || !countryValid) {
+            canCreateAccount = false;
+        }
         if (!consentedToDataUsage || !accurateDataAgreement) {
             canCreateAccount = false;
         }
