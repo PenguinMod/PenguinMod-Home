@@ -44,7 +44,7 @@ Language.onChange((lang) => {
 
     <main>
         <!-- UPDATE THIS WHEN MAKING CONTENT CHANGES -->
-        <p><i>Updated May 27th, 2024 (Mountain Time)</i></p>
+        <p><i>Updated October 23rd, 2024 (Mountain Time)</i></p>
 
         <!-- some things are intentionally not formatted as they are in the HTML file on the website -->
         <p>
@@ -94,10 +94,21 @@ Language.onChange((lang) => {
             This temporary amount of time will be around 1 week, and this applies to all "temporarily stored" content listed here.
         </p>
 
-        <h2>Advertisments</h2>
+        <h2>How We Use Your Date of Birth and Country Information</h2>
+        <p>When you provide us with your date of birth and country during registration, we use this information to ensure that:</p>
+        <ul>
+            <li>You (or your child) only have access to content that is appropriate for your age, in compliance with laws and regulations that protect minors.</li>
+            <li>Your account only accesses content that is permitted in your country or region, in accordance with local laws and content rating systems.</li>
+        </ul>
+        <p>This helps us create a safe and age-appropriate environment for all users. We will not use your date of birth or country information for any other purposes without your explicit consent.</p>
+        <p>Your date of birth and country/region is not shared with project moderators directly.</p>
+
+        <h2>Advertisements</h2>
         <p>
             When advertisements are served on any PenguinMod page, third parties may be placing and reading cookies on your browser,
-            or using web beacons to collect information. PenguinMod itself does not do this, and you may be able to find more information here:
+            or using web beacons to collect information. Your provided birthday and country is not shared by PenguinMod to these third-parties,
+            though they may obtain this information from methods or websites outside of PenguinMod's control. You may be able to
+            find more information here:
         </p>
         <ul>
             <li><a href="https://support.google.com/publisherpolicies/answer/10437794">What we must disclose in our privacy policy</a></li>

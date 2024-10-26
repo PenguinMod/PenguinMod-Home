@@ -19,11 +19,11 @@
     import Language from "../../resources/language.js";
     import TranslationHandler from "../../resources/translations.js";
     import Authentication from "../../resources/authentication.js";
+    import CountryLookup from "../../resources/country-lookup.json";
 
     let currentLang = "en";
     onMount(() => {
         Language.forceUpdate();
-        embed = $page.url.searchParams.get('embed') === "true";
         checkIfValid();
     });
     Language.onChange((lang) => {
@@ -33,16 +33,27 @@
     let username = "";
     let password = "";
     let email = "";
+    let birthday = "";
+    let country = "";
     let creatingAccount = false;
     let canCreateAccount = false;
     let apiCreateRejectReason = '';
     let showingPassword = false;
     let focused = "";
     let embed = false;
+    if (browser) {
+        embed = $page.url.searchParams.get('embed') === "true";
+    }
 
     let emailValid = 0;
     let usernameValid = false;
     let passwordValid = false;
+    let birthdayValid = false;
+    let countryValid = false;
+
+    let birthdayFaked = false;
+    let consentedToDataUsage = false;
+    let accurateDataAgreement = false;
 
     const usernameRequirements = [
         {name: "username.requirement.length", value: false},
@@ -58,7 +69,7 @@
     ]
 
     async function createAccount() {
-        const token = await Authentication.createAccount(username, password, email);
+        const token = await Authentication.createAccount(username, password, email, birthday, country);
         
         localStorage.setItem("username", username);
         localStorage.setItem("token", token);
@@ -66,7 +77,7 @@
     const createAccountSafe = () => {
         if (!canCreateAccount) {
             if (apiCreateRejectReason) {
-                alert('can not create account atm because:', apiCreateRejectReason);
+                alert('Failed to create account:', apiCreateRejectReason);
                 return;
             }
             if (emailValid === 1) {
@@ -76,6 +87,10 @@
                     "Your email is not valid."
                 ));
                 return;
+            }
+
+            if (!consentedToDataUsage || !accurateDataAgreement) {
+                return alert("Not all agreements have been checked.");
             }
 
             alert(TranslationHandler.textSafe(
@@ -114,12 +129,27 @@
         }, (err) => {
             canCreateAccount = false;
             apiCreateRejectReason = err;
-            console.log(`error: ${err}`)
+            alert(`Failed to create account: ${err}`);
+            console.error(err);
         })
         .finally(() => {
             creatingAccount = false;
         });
     }
+    const parseBirthday = (birthday) => {
+        if (!birthday) return;
+        if (typeof birthday !== "string") return;
+        try {
+            const date = new Date(birthday);
+            if (isNaN(date.getTime())) {
+                return; // invalid format
+            }
+
+            return date;
+        } catch {
+            return;
+        }
+    };
 
     let isUsernameUnique = false;
     let hasDoneUsernameCheck = false;
@@ -143,6 +173,31 @@
         passwordRequirements[2].value = passwordHasNumber;
         passwordRequirements[3].value = passwordMeetsSpecialInclude;
         passwordValid = !passwordCheck;
+        
+        // NOTE: The API technically doesnt require a birthday or country, but that's only for OAuth2 accounts when they are first created.
+        // We can skip that on the frontend for password-based accounts to make sign up smoother.
+        birthdayFaked = false;
+
+        const parsedBirthday = parseBirthday(birthday);
+        if (!parsedBirthday) {
+            birthdayValid = false;
+        } else {
+            birthdayValid = true;
+
+            const currentDate = new Date();
+            const birthYear = parsedBirthday.getFullYear();
+            if (birthYear <= 1901) {
+                birthdayFaked = birthYear >= 1899 && birthYear <= 1901;
+                birthdayValid = false;
+            }
+            if (birthYear > currentDate.getFullYear()) {
+                birthdayValid = false;
+            }
+            if (parsedBirthday.getDate() > currentDate.getDate()) {
+                birthdayValid = false;
+            }
+        }
+        countryValid = CountryLookup.countryCodes.includes(country);
 
         if (!username) {
             usernameRequirements[0].value = false;
@@ -156,6 +211,9 @@
 
         canCreateAccount = !(userCheck || passwordCheck) && (isUsernameUnique && hasDoneUsernameCheck) && emailValid !== 1;
         usernameValid = (isUsernameUnique && hasDoneUsernameCheck) && !userCheck;
+        if (!consentedToDataUsage || !accurateDataAgreement) {
+            canCreateAccount = false;
+        }
 
         usernameRequirements[0].value = !usernameDoesNotMeetLength;
         usernameRequirements[1].value = !usernameHasIllegalChars;
@@ -184,6 +242,10 @@
             /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         ) ? 2 : 1;
     };
+    const getMaxBirthdate = () => {
+        const todaysDate = new Date();
+        return `${todaysDate.getFullYear()}-${todaysDate.getMonth() + 1}-${todaysDate.getDate()}`;
+    };
 
     function emailInputChanged(event) {
         if (event.target.value) {
@@ -192,6 +254,14 @@
             emailValid = 0;
         }
         email = event.target.value;
+        checkIfValid();
+    }
+    const birthdayInputChanged = (event) => {
+        birthday = event.target.value;
+        checkIfValid();
+    }
+    const countryInputChanged = (event) => {
+        country = event.target.value;
         checkIfValid();
     }
 
@@ -561,6 +631,64 @@
             <ChecksBox items={passwordRequirements} />
         {/if}
 
+        <!-- TODO: Translations. Specifically, the default disabled option and the input title. -->
+        <span class="input-title">
+            Country:
+        </span>
+        <select
+            class="input-forced-class"
+            data-valid={countryValid}
+            on:input={countryInputChanged}
+        >
+            <option value="" selected disabled>Select the country your child lives in</option>
+            {#each CountryLookup.countryCodes as countryCode}
+                <option value={countryCode}>{CountryLookup.countryNames[countryCode]}</option>
+            {/each}
+        </select>
+        
+        <!-- TODO: Translations. Specifically, the input title and warning message. -->
+        <!-- TODO: Add a specific message when the user chooses years 1900 or 1901. -->
+        <span class="input-title">
+            Your Child's Birthdate:
+        </span>
+        <input
+            type="date"
+            min="1900-01-01"
+            max={getMaxBirthdate()}
+            data-valid={birthdayValid}
+            on:input={birthdayInputChanged}
+        />
+        {#if birthdayFaked}
+            <p class="birthday-warning">
+                Did your parent/guardian give you permission to use PenguinMod?
+                <br>
+                That seems like your trying to secretly make an account without them knowing.
+            </p>
+        {/if}
+
+        <!-- TODO: Translations. Specifically, the agreement. -->
+        <label style="width:60%">
+            <input
+                type="checkbox"
+                bind:checked={consentedToDataUsage}
+                on:change={checkIfValid}
+            />
+            <span class="disable-markdown-margin">
+                {@html generateMarkdown(`I agree to allow PenguinMod to collect and use my country and date of birth (or my child's if I am registering on their behalf) in accordance with the [Privacy Policy](/privacy).`)}
+            </span>
+        </label>
+        <label style="width:60%">
+            <input
+                type="checkbox"
+                bind:checked={accurateDataAgreement}
+                on:change={checkIfValid}
+            />
+            <span class="disable-markdown-margin">
+                {@html generateMarkdown(`I confirm that the information I have provided is accurate, and I understand that my date of birth and country cannot be changed after account creation without contacting support.`)}
+            </span>
+        </label>
+
+        <!-- TODO: This should refer to the parent/guardian. -->
         <p>
             {@html generateMarkdown(`${TranslationHandler.textSafe(
                 "signup.confirm.legal",
@@ -599,6 +727,9 @@
             />
         </a>
     </div>
+
+    <!-- the magical div of scroll -->
+    <div style="height:32px" />
 </div>
     
 <style>
@@ -629,6 +760,7 @@
         background: white;
         font-size: 14px;
     }
+    main .input-forced-class,
     main input {
         width: 60%;
         margin-bottom: 8px;
@@ -637,6 +769,14 @@
         padding: 4px;
         font-size: large;
         outline: unset;
+    }
+    main select {
+        width: calc(60% + 10px) !important;
+    }
+    main input[type="checkbox"] {
+        width: initial;
+        border: 0;
+        transform: scale(1.25);
     }
 
     .password-wrapper {
@@ -664,17 +804,25 @@
         border-radius: 8px;
         background: #111;
     }
+    :global(body.dark-mode) main .input-forced-class,
     :global(body.dark-mode) main input {
         border-color: rgba(255, 255, 255, 0.3);
         background: #111;
         color: white;
     }
-    
+    main .input-forced-class[data-valid="true"],
     main input[data-valid="true"] {
         border-color: rgb(0, 187, 0) !important;
     }
+    main .input-forced-class[data-valid="false"],
     main input[data-valid="false"] {
         border-color: rgb(187, 0, 0) !important;
+    }
+
+    .disable-markdown-margin :global(p) {
+        margin: 0;
+        margin-block: 0;
+        display: inline;
     }
 
     .email-input[data-valid="0"] {
@@ -716,6 +864,13 @@
     :global(html[dir="rtl"]) .password-show {
         right: initial;
         left: -4px;
+    }
+
+    .birthday-warning {
+        color: #bb0000;
+    }
+    :global(body.dark-mode) .birthday-warning {
+        color: #ff6363;
     }
 
     .or-line {
