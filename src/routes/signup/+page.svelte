@@ -193,7 +193,7 @@
             if (birthYear > currentDate.getFullYear()) {
                 birthdayValid = false;
             }
-            if (parsedBirthday.getDate() > currentDate.getDate()) {
+            if (birthYear === currentDate.getFullYear() && parsedBirthday.getDate() > currentDate.getDate()) {
                 birthdayValid = false;
             }
         }
