@@ -245,7 +245,7 @@
                 <div style="position: relative;">
                     <button class="dots-menu" on:click={(pointer) => showEditProjectDropdown(pointer, [
                         {
-                            name: project.remix
+                            name: String(project.remix) !== "0"
                                 ? TranslationHandler.text(
                                       "project.menu.remix.edit",
                                       currentLang
