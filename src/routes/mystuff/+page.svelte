@@ -255,10 +255,10 @@
                                       currentLang
                                   ),
                             href: `/edit?id=${project.id}`,
-                            color: project.remix ? "remix" : null,
+                            color: String(project.remix) !== "0" ? "remix" : null,
                         },
                         {
-                            name: project.remix
+                            name: String(project.remix) !== "0"
                                 ? TranslationHandler.text(
                                       "project.menu.remix.delete",
                                       currentLang
