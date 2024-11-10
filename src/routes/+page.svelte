@@ -129,6 +129,17 @@
             ? num.toFixed(2)
             : num
     }
+    function unixToDisplayDate(unix) {
+        unix = Number(unix);
+        return `${new Date(unix).toLocaleString([], {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true
+        })}`;
+    }
     function rateChance(max, thresh) {
         const randomNumber = Math.random()
         const underThresh = randomNumber * max <= thresh
@@ -320,6 +331,19 @@
         buttonHref={"/donate"}
     />
     <StatusAlert />
+    <Alert
+        onlyShowID={"youtube_secretrev:_0"}
+        text={`Join us ${unixToDisplayDate(1731283200000)} for something special! We will link a live-stream here soon.`}
+        imgSrc={"/alert_icon.svg"}
+        textBreakup={true}
+        textColor={"black"}
+        hasImage={true}
+        hasButton={true}
+        backColor="#30e360"
+        buttonText={"Visit YouTube"}
+        buttonHref={"https://www.youtube.com/@PenguinMod"}
+        buttonTooLight={true}
+    />
 
     {#if !loggedIn}
         <div class="section-info">
