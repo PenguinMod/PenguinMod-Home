@@ -5,11 +5,15 @@
 
 import en from '../translations/en.json';
 
+const logWhenLangMissingTranslation = false;
+
 const sameInAll = [
-    "payment.paypal.card",
-    "payment.paypal",
-    "payment.cashapp",
-    "payment.stripe",
+    "payment.paypal.card", // brand name
+    "payment.paypal", // brand name
+    "payment.cashapp", // brand name
+    "payment.stripe", // brand name
+    "vr.title", // nearly every language is the same, since VR as an acronym seems to be more like a brand name
+    "account.settings.parental.pin", // pin is an acronym, seems like most langs dont change that
 ];
 const sameInLocale = {
     "es": [
@@ -19,6 +23,10 @@ const sameInLocale = {
         "generic.ok",
         "generic.no",
         "generic.legal",
+        "account.settings.account.email",
+        "account.fields.email",
+        "region.sub.micronesia",
+        "project.rating.questions.chat.no",
     ],
     "es-419": [
         "generic.errortitle",
@@ -27,6 +35,15 @@ const sameInLocale = {
         "generic.ok",
         "generic.no",
         "generic.legal",
+        "account.settings.account.email",
+        "account.fields.email",
+        "region.main.asia",
+        "region.sub.melanesia",
+        "region.sub.micronesia",
+        "project.rating.questions.chat.no",
+    ],
+    "ru": [
+        "region.sub.micronesia",
     ],
 };
 
@@ -55,6 +72,8 @@ export function getLocaleFinishedPercentage(locale, json) {
             // if this key is the same in all langs or this locale is specified to have this key the same as english, this is still marked as translated
             if ((sameInAll.includes(key)) || (sameInLocale[locale] && sameInLocale[locale].includes(key))) {
                 completedCount += 1;
+            } else if (logWhenLangMissingTranslation) {
+                console.log(locale, "missing", key);
             }
         } else {
             completedCount += 1;

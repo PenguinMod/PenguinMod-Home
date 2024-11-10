@@ -1,4 +1,7 @@
+import { mockRequest } from "./emojis-compat";
+
 const emojiHtmlUrl = 'https://gextapi.penguinmod.com/emojis';
+const useLocalCopy = true;
 
 class EmojiHandler {
     static emojis = [];
@@ -20,13 +23,18 @@ class EmojiHandler {
             EmojiHandler.loading = true;
             EmojiHandler.error = '';
             (async () => {
-                const response = await fetch(emojiHtmlUrl);
-                const emojis = await response.json();
-                if (!response.ok) {
-                    throw {
-                        error: new Error('API responded NOT OK'),
-                        detail: emojis
-                    };
+                let emojis;
+                if (useLocalCopy) {
+                    emojis = mockRequest();
+                } else {
+                    const response = await fetch(emojiHtmlUrl);
+                    emojis = await response.json();
+                    if (!response.ok) {
+                        throw {
+                            error: new Error('API responded NOT OK'),
+                            detail: emojis
+                        };
+                    }
                 }
 
                 EmojiHandler.emojis = emojis;

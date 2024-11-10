@@ -12,7 +12,6 @@
     export let icon = "/loading.png";
     export let style = "width: 64px; height: 64px;";
     
-    let tipId = Math.round(Math.random() * (tips.length - 1))
     const inter = setInterval(() => {
         tipId = Math.round(Math.random() * (tips.length - 1))
     }, 7000)
