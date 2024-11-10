@@ -191,7 +191,7 @@
     "uploading.guidelines.button": "Règles de conduite pour téléverser et mettre des projets à jour",
     "uploading.guidelines.newtab": "Ouvrir dans un nouveau onglet",
     "uploading.guidelines.darkmode": "Cette page n'est pas en Dark Mode parce qu'il est un site externe.",
-    "uploading.guidelines.nottranslated": "Ces règles de conduite à seulement une possibilité d'avoir une traduction. Pour une traduction officielle, <a href=\"https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS\">cliquer ici</a>.",
+    "uploading.guidelines.nottranslated": "Ces règles de conduite à seulement une possibilité d'avoir une traduction. Pour une traduction officielle, <a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">cliquer ici</a>.",
     "uploading.error.toomanyrequests": "Tu peux seulement téléverser une projet chaque 8 minutes.",
     "uploading.error.missingprojectdata": "On ne peut pas donner le data du projet. Ton projet peux-être trop grand.",
     "uploading.error.reauthenticate": "Tu étais débranché. Se connecter encore s'il vous plait.",

@@ -191,7 +191,7 @@
     "uploading.guidelines.button": "Завантаження Проєктів & Принципи Оновлення Проєктів",
     "uploading.guidelines.newtab": "Відкрити у новій вкладці",
     "uploading.guidelines.darkmode": "Ця сторінка не у темній темі, бо це зовнішній веб-сайт.",
-    "uploading.guidelines.nottranslated": "Ці керівні принципи можуть не бути перекладеними. Для перекладеної альтернативи, <a href=\"https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS\">дивіться тут</a>.",
+    "uploading.guidelines.nottranslated": "Ці керівні принципи можуть не бути перекладеними. Для перекладеної альтернативи, <a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">дивіться тут</a>.",
     "uploading.error.toomanyrequests": "Ви можете завантажувати проєкти кожні 8 хвилин.",
     "uploading.error.missingprojectdata": "Не вдалося відправити дані проєкту. Можливо, Ваш проєкт надто великий.",
     "uploading.error.reauthenticate": "Ви були викинуті з аккаунту. Будь ласка, війдіть у аккаунт знову.",

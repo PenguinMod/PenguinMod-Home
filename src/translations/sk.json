@@ -191,7 +191,7 @@
     "uploading.guidelines.button": "Pokyny nahrávania & aktualizovania projektu",
     "uploading.guidelines.newtab": "Otvoriť na novej karte",
     "uploading.guidelines.darkmode": "Táto stránka nie je v Tmavom móde pretože je to externá webstránka.",
-    "uploading.guidelines.nottranslated": "Tieto pokyny nemusia byť preložené. Pre preloženú alternatívu, <a href=\"https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS\">kliknite sem</a>.",
+    "uploading.guidelines.nottranslated": "Tieto pokyny nemusia byť preložené. Pre preloženú alternatívu, <a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">kliknite sem</a>.",
     "uploading.error.toomanyrequests": "Môžete nahrávať projekty každých 8 minút.",
     "uploading.error.missingprojectdata": "Nepodarilo sa poslať dáta projektu. Váš projekt je pravdepodobne príliž veľký.",
     "uploading.error.reauthenticate": "Boli ste odhlásení. Prosím prihláste sa znova.",
