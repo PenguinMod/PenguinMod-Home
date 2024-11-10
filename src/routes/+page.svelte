@@ -333,7 +333,7 @@
     <StatusAlert />
     <Alert
         onlyShowID={"youtube_secretrev:_0"}
-        text={`Join us ${unixToDisplayDate(1731283200000)} for something special! We will link a live-stream here soon.`}
+        text={`Join us on ${unixToDisplayDate(1731283200000)} for something special! We will link a live-stream here soon.`}
         imgSrc={"/alert_icon.svg"}
         textBreakup={true}
         textColor={"black"}
