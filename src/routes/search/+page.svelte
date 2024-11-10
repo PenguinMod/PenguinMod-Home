@@ -24,60 +24,32 @@
     let requestFailed = false;
     let page = 0;
     let pageIsLast = false;
-
-    const validTagPrefixes = ["studio", "user", "featured", "sort"];
-    const tagFilterFunction = (word) => {
-        const startsWithTag = validTagPrefixes.some((value) => {
-            return String(word).startsWith(`${value}:`);
-        });
-        if (startsWithTag) {
-            // ex: "studio: abc" should count as searching for abc ONLY
-            return !String(word).endsWith(":");
-        }
-    };
+    let searchType = "project";
 
     const fetchNewProjects = () => {
-        let api = "";
-        if (searchQuery.trim() === "all:projects") {
-            api = `${LINK.projects}api/projects/search?page=${page}`;
-        } else {
-            // todo: parse tags & apply properly
-            const split = searchQuery.split(" ");
-            const textContent = split.filter((...args) => {
-                return !tagFilterFunction(...args);
-            });
-            const tags = split.filter(tagFilterFunction);
-            const realQuery = textContent.join(" ");
-
-            // add to query params
-            let queryExtra = "";
-            for (const tag of tags) {
-                if (tag.startsWith("user")) {
-                    queryExtra += `&user=${tag.replace("user:", "")}`;
-                }
-                if (tag.startsWith("sort")) {
-                    queryExtra += `&sortby=${tag.replace("sort:", "")}`;
-                }
-                if (tag.startsWith("featured")) {
-                    const value = tag.replace("featured:", "");
-                    const exclude = value === "false" || value === "exclude";
-                    queryExtra += `&featured=${exclude ? "exclude" : "true"}`;
-                }
-            }
-
-            api = `${
-                LINK.projects
-            }api/projects/search?page=${page}${queryExtra}&includes=${encodeURIComponent(
-                realQuery
-            )}`;
+        let api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(searchQuery)}`;
+        const query = searchQuery.split(":", 1)[0];
+        switch (query) {
+            case "user":
+                const userQuery = searchQuery.split(":");
+                searchType = "user";
+                userQuery.shift();
+                api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}`;
+                break;
+            case "featured":
+            case "newest":
+            case "views":
+                const actual_query = searchQuery.split(":");
+                actual_query.shift();
+                api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}`;
+                break;
         }
 
         fetch(api)
             .then((response) => {
                 response
                     .json()
-                    .then((projectListResult) => {
-                        const result = projectListResult.projects;
+                    .then((result) => {
                         projects.push(...result);
                         projects = projects;
                         if (projects.length <= 0) {
@@ -100,7 +72,7 @@
     onMount(() => {
         const params = new URLSearchParams(location.search);
         const query = params.get("q");
-        searchQuery = query;
+        searchQuery = query ? query : "";
 
         fetchNewProjects();
     });
@@ -165,9 +137,27 @@
     </div>
 
     <div class="section-projects">
-        {#if projects[0] !== "notfound"}
+        {#if projects[0] !== "notfound" && searchType === "project"}
             {#each projects as project}
                 <Project {...project} />
+            {:else}
+                <!-- projects.length === 0 -->
+                <div style="margin-top: 16px;">
+                    <LoadingSpinner enableTips={true} />
+                </div>
+            {/each}
+        {:else if projects[0] !== "notfound" && searchType === "user"}
+            {#each projects as project}
+                <a href={`/profile?user=${project.username}`} class="user-block">
+                    <img
+                        src={`${LINK.projects}api/v1/users/getpfp?username=${project.username}`}
+                        alt="User Avatar"
+                        class="profile-picture"
+                    />
+                    <p>
+                        {project.username}
+                    </p>
+                </a>
             {:else}
                 <!-- projects.length === 0 -->
                 <div style="margin-top: 16px;">
@@ -259,4 +249,34 @@
         align-items: center;
         justify-content: center;
     }
+
+    .user-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 16px;
+        text-align: center;
+        text-decoration: none;
+        background: white;
+        color: #000000;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        padding: 16px;
+        border-radius: 8px;
+    }
+    .user-block:active {
+        filter: brightness(0.75);
+    }
+    
+    :global(body.dark-mode) .user-block {
+        color: white;
+        background: #111;
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .profile-picture {
+		border-radius: 4px;
+		width: 100px;
+        height: 100px;
+	}
 </style>

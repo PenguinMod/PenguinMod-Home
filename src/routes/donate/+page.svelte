@@ -90,24 +90,19 @@
                     />
                 </p>
                 <p>
-                    {@html generateMarkdown(`${String(TranslationHandler.text(
+                    {@html generateMarkdown(`${TranslationHandler.textSafe(
                         "donate.people1",
-                        currentLang
-                    ) || TranslationHandler.text(
-                        "donate.people1",
-                        'en'
-                    ))
+                        currentLang,
+                        "In the last month, ***$1 new people found PenguinMod*** and we sent our website to ***$2*** returning users."
+                    )
                     .replace('$1', (25000).toLocaleString())
-                    .replace('$2', (55000).toLocaleString())
-                    /* $1 is new people, $2 is returning */}
+                    .replace('$2', (55000).toLocaleString())}`)}
 
-${String(TranslationHandler.text(
+                    {@html generateMarkdown(`${TranslationHandler.textSafe(
                         "donate.people2",
-                        currentLang
-                    ) || TranslationHandler.text(
-                        "donate.people2",
-                        'en'
-                    ))}`)}
+                        currentLang,
+                        "Some people even use PenguinMod from the **United Kingdom**, **Japan**, **Brazil**, **Russia**, and more."
+                    )}`)}
                 </p>
                 <p>
                     <LocalizedText
@@ -206,7 +201,6 @@ ${String(TranslationHandler.text(
                     <LocalizedText
                         text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
                         key="home.footer.notaffiliated"
-                        dontlink={true}
                         lang={currentLang}
                     />
                 </p>
@@ -214,6 +208,7 @@ ${String(TranslationHandler.text(
                     <LocalizedText
                         text="You can always donate to our parent projects Scratch or TurboWarp as well, to help them stay online."
                         key="donate.parents"
+                        dolink={true}
                         lang={currentLang}
                     />
                 </p>

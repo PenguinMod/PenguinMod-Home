@@ -43,23 +43,19 @@
     // LOGIN
     // TODO: Login should able to be transferred from other device (even other vr's too), possibly using 8 digit code
     onMount(async () => {
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
+        const username = localStorage.getItem("UN");
+        const token = localStorage.getItem("token");
+        if (!token || !username) {
             loggedIn = false;
             loggedInUser = "";
             return;
         }
-        Authentication.usernameFromCode(privateCode)
-            .then(({ username }) => {
-                if (username) {
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
-                    loggedIn = true;
-                    loggedInUser = username;
-                    return;
-                }
-                loggedIn = false;
-                loggedInUser = "";
+        Authentication.usernameFromCode(username, token)
+            .then(() => {
+                ProjectClient.setUsername(username);
+                ProjectClient.setToken(token);
+                loggedIn = true;
+                loggedInUser = username;
             })
             .catch(() => {
                 loggedIn = false;
@@ -71,25 +67,11 @@
         loggedIn = false;
         loggedInUser = "";
     });
-    Authentication.onAuthentication((privateCode) => {
-        loggedIn = null;
-        loggedInUser = "";
-        Authentication.usernameFromCode(privateCode)
-            .then(({ username }) => {
-                if (username) {
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
-                    loggedIn = true;
-                    loggedInUser = username;
-                    return;
-                }
-                loggedIn = false;
-                loggedInUser = "";
-            })
-            .catch(() => {
-                loggedIn = false;
-                loggedInUser = "";
-            });
+    Authentication.onAuthentication((username, privateCode) => {
+        ProjectClient.setUsername(username);
+        ProjectClient.setToken(privateCode);
+        loggedIn = true;
+        loggedInUser = username;
     });
 
     // VR

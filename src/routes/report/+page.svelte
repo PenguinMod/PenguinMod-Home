@@ -1,10 +1,10 @@
 <script>
-    // TODO: add proper translation support for this entire page
-
     import { onMount } from "svelte";
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
     const ProjectClient = new ProjectApi();
+
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
@@ -28,42 +28,41 @@
         id: 0,
         pickedReason: "",
         otherReason: "",
-        userOffsiteReason: "",
+        userSexualContentReason: "",
+        userAttackReason: "",
+        userIllegalReason: "",
+        
+        projectMalwareReason: "",
+        projectStoreInfoReason: "",
+        projectSexualContentReason: "",
+        projectIllegalReason: "",
+
         isCurrentlyReporting: false,
     };
 
     const reportReasons = {
         user: [
             {
-                text: "The user has inappropriate off-site behavior",
-                key: "report.reason.user.offsite",
-                pageDetail: "userOffsiteReason",
-            },
-            {
                 text: "The user posts sexual content or references it",
                 key: "report.reason.user.sexual",
+                pageDetail: "userSexualContentReason",
             },
             {
                 text: "The user attacks other users",
                 key: "report.reason.user.attacker",
+                pageDetail: "userAttackReason",
             },
             {
                 text: "The user posts illegal content",
                 key: "report.reason.user.illegal",
+                pageDetail: "userIllegalReason",
             },
         ],
         project: [
             {
-                text: "The project contains malware",
-                key: "report.reason.project.malware",
-            },
-            {
-                text: "The project removes my ability to stop or pause it",
-                key: "report.reason.project.nocontrols",
-            },
-            {
-                text: "The project shares or stores my personal information",
-                key: "report.reason.project.personal",
+                text: "The project contains sexual content or references",
+                key: "report.reason.project.sexual",
+                pageDetail: "projectSexualContentReason",
             },
             {
                 text: "The project plays really loud or inappropriate sounds",
@@ -72,10 +71,21 @@
             {
                 text: "The project contains illegal material or pirated content",
                 key: "report.reason.project.illegal",
+                pageDetail: "projectIllegalReason",
             },
             {
-                text: "The project contains sexual content or references",
-                key: "report.reason.project.sexual",
+                text: "The project has viruses or dangerous files",
+                key: "report.reason.project.virus",
+                pageDetail: "projectMalwareReason",
+            },
+            {
+                text: "The project shares or stores my personal information",
+                key: "report.reason.project.personal",
+                pageDetail: "projectStoreInfoReason",
+            },
+            {
+                text: "The project removes my ability to stop or pause it",
+                key: "report.reason.project.nocontrols",
             },
         ],
     };
@@ -184,25 +194,37 @@
 
         pageDetails.loaded = true;
 
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
+        /*
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+        if (!token || !username) {
+            loggedIn = false;
+            return;
+        }
+        Authentication.usernameFromCode(username, token)
+            .then(() => {
+                loggedIn = true;
+                loggedInChange(username, token);
+            })
+            .catch(() => {
+                loggedIn = false;
+            });
+        */
+
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+        if (!token || !username) {
             loggedIn = false;
             loggedInUser = "";
             loggedInChange();
             return;
         }
-        Authentication.usernameFromCode(privateCode)
-            .then(({ username }) => {
-                if (username) {
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
-                    loggedIn = true;
-                    loggedInUser = username;
-                    loggedInChange();
-                    return;
-                }
-                loggedIn = false;
-                loggedInUser = "";
+        Authentication.usernameFromCode(username, token)
+            .then(() => {
+                ProjectClient.setUsername(username);
+                ProjectClient.setToken(token);
+                loggedIn = true;
+                loggedInUser = username;
                 loggedInChange();
             })
             .catch(() => {
@@ -217,28 +239,12 @@
         loggedInUser = "";
         loggedInChange();
     });
-    Authentication.onAuthentication((privateCode) => {
-        loggedIn = null;
-        loggedInUser = "";
-        Authentication.usernameFromCode(privateCode)
-            .then(({ username }) => {
-                if (username) {
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
-                    loggedIn = true;
-                    loggedInUser = username;
-                    loggedInChange();
-                    return;
-                }
-                loggedIn = false;
-                loggedInUser = "";
-                loggedInChange();
-            })
-            .catch(() => {
-                loggedIn = false;
-                loggedInUser = "";
-                loggedInChange();
-            });
+    Authentication.onAuthentication((username, privateCode) => {
+        ProjectClient.setUsername(username);
+        ProjectClient.setToken(privateCode);
+        loggedIn = true;
+        loggedInUser = username;
+        loggedInChange();
     });
 </script>
 
@@ -286,13 +292,13 @@
             {#if pageDetails.type === "user"}
                 <img
                     class="profile-picture"
-                    src={`https://trampoline.turbowarp.org/avatars/by-username/${pageDetails.id}`}
+                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${pageDetails.id}`}
                     alt={pageDetails.id}
                 />
             {:else}
                 <img
                     class="project-picture"
-                    src={`https://projects.penguinmod.com/api/pmWrapper/iconUrl?id=${pageDetails.id}`}
+                    src={`${PUBLIC_API_URL}/api/v1/projects/getproject?projectID=${pageDetails.id}&requestType=thumbnail`}
                     alt={pageDetails.id}
                 />
             {/if}

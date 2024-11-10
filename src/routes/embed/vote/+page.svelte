@@ -13,32 +13,40 @@
         return neww;
     }
 
+    function inFrame() {
+        return window !== window.parent
+    }
+
     let likes = 0;
     let votes = 0;
     let views = 0;
 
     let userLiked = false;
     let userVoted = false;
+    let userLikedOnLoad = false;
     let userVotedOnLoad = false;
 
     let loaded = false;
-    let loggedIn = null;
+    let loggedIn = true;
     let loggedInAdmin = false;
 
     let projectId = 0;
 
     function vote() {
+        if (inFrame()) {
+            window.open(document.location.href)
+            return
+        }
         if (loggedIn === false) {
-            Authentication.authenticate().then((privateCode) => {
-                Authentication.usernameFromCode(privateCode)
-                    .then(({username, isAdmin, isApprover}) => {
-                        if (username) {
-                            loggedIn = true;
-                            loggedInAdmin = isAdmin || isApprover;
-                            vote();
-                            return;
-                        }
-                        loggedIn = false;
+            Authentication.authenticate().then(() => {
+                const username = localStorage.getItem("username");
+                const token = localStorage.getItem("token");
+                Authentication.usernameFromCode(username, token)
+                    .then(({isAdmin, isApprover}) => {
+                        loggedIn = true;
+                        loggedInAdmin = isAdmin || isApprover;
+                        vote();
+                        return;
                     })
                     .catch(() => {
                         loggedIn = false;
@@ -46,24 +54,27 @@
             });
             return;
         }
-        ProjectClient.toggleVoteProject(projectId, "feature")
-            .then((featured) => {
-                userVoted = featured;
-            })
+        ProjectClient.toggleVoteProject(projectId, "vote", !userVoted)
             .catch((err) => alert(String(err)));
+        userVoted = !userVoted;
     }
     function love() {
+        if (inFrame()) {
+            window.open(document.location.href)
+            return
+        }
         if (loggedIn === false) {
-            Authentication.authenticate().then((privateCode) => {
-                Authentication.usernameFromCode(privateCode)
-                    .then(({username, isAdmin, isApprover}) => {
-                        if (username) {
-                            loggedIn = true;
-                            loggedInAdmin = isAdmin || isApprover;
-                            love();
-                            return;
-                        }
-                        loggedIn = false;
+            Authentication.authenticate().then(() => {
+                const username = localStorage.getItem("username");
+                const token = localStorage.getItem("token");
+                Authentication.usernameFromCode(username, token)
+                    .then(({isAdmin, isApprover}) => {
+                        loggedIn = true;
+                        loggedInAdmin = isAdmin || isApprover;
+                        ProjectClient.setUsername(username);
+                        ProjectClient.setToken(token);
+                        love();
+                        return;
                     })
                     .catch(() => {
                         loggedIn = false;
@@ -71,11 +82,9 @@
             });
             return;
         }
-        ProjectClient.toggleVoteProject(projectId, "love")
-            .then((loved) => {
-                userLiked = loved;
-            })
+        ProjectClient.toggleVoteProject(projectId, "love", !userLiked)
             .catch((err) => alert(String(err)));
+        userLiked = !userLiked;
     }
 
     function updateVoteStates() {
@@ -83,6 +92,7 @@
             .then((states) => {
                 userLiked = states.loved;
                 userVoted = states.voted;
+                userLikedOnLoad = userLiked;
                 userVotedOnLoad = userVoted;
                 loaded = true;
             })
@@ -94,50 +104,58 @@
     }
     onMount(() => {
         const params = new URLSearchParams(location.search);
-        const projId = numberCast(params.get("id"));
+        const projId = String(params.get("id"));
         projectId = projId;
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
-            loggedIn = false;
-            updateVoteStates();
-            return;
-        }
-        Authentication.usernameFromCode(privateCode)
-            .then(({username, isAdmin, isApprover}) => {
-                if (username) {
-                    ProjectClient.setPrivateCode(privateCode);
-                    ProjectClient.setUsername(username);
-                    updateVoteStates();
-                    loggedIn = true;
-                    loggedInAdmin = isAdmin || isApprover;
-                    return;
-                }
-                loggedIn = false;
-                updateVoteStates();
+        
+        ProjectApi.getProjectMeta(projId)
+            .then((meta) => {
+                likes = numberCast(meta.loves);
+                votes = numberCast(meta.votes);
+                views = numberCast(meta.views);
             })
             .catch(() => {
-                loggedIn = false;
-                updateVoteStates();
+                likes = 0;
+                votes = 0;
+                views = 0;
             });
-    });
-    onMount(() => {
-        const params = new URLSearchParams(location.search);
-        const projId = numberCast(params.get("id"));
-        projectId = projId;
-        ProjectApi.getProjectMeta(projId).then((data) => {
-            likes = numberCast(data.loves);
-            votes = numberCast(data.votes);
-            views = numberCast(data.views);
-        });
-    });
-    Authentication.onAuthentication((privateCode) => {
-        ProjectClient.setPrivateCode(privateCode);
-        Authentication.usernameFromCode(privateCode).then(({username, isAdmin, isApprover}) => {
-            if (username) {
+
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+        
+        if (!token || !username) {
+            loggedIn = false;
+            userLiked = false;
+            userVoted = false;
+            loaded = true;
+            console.log("what", username, token)
+            return;
+        }
+        Authentication.usernameFromCode(username, token)
+            .then(({ isAdmin, isApprover }) => {
+                console.log("suces")
+                ProjectClient.setToken(token);
                 ProjectClient.setUsername(username);
+
+                updateVoteStates();
                 loggedIn = true;
                 loggedInAdmin = isAdmin || isApprover;
-            }
+            })
+            .catch((e) => {
+                console.log("err", e)
+                loggedIn = false;
+                userLiked = false;
+                userVoted = false;
+                loaded = true;
+            });
+    });
+
+    // RTODO: change this
+    Authentication.onAuthentication((username, privateCode) => {
+        ProjectClient.setUsername(username);
+        ProjectClient.setToken(privateCode);
+        Authentication.usernameFromCode(username, privateCode).then(({ isAdmin, isApprover}) => {
+            loggedIn = true;
+            loggedInAdmin = isAdmin || isApprover;
         });
     });
 </script>
@@ -147,19 +165,19 @@
         <div title="Like this project" class="parent button-text">
             <button class="like" on:click={love}>
                 <img
-                    src="/heart.svg"
+                    src="/vote/heart{userLiked ? "" : "_white"}.svg"
                     alt="Like"
                     class="button-image"
                     draggable="false"
                     data-activated={userLiked}
                 />
             </button>
-            <p>{likes + Number(userLiked)}</p>
+            <p>{likes - Number(userLikedOnLoad) + Number(userLiked)}</p>
         </div>
         <div title="Vote to Feature this project" class="parent button-text">
             <button class="feature" on:click={vote}>
                 <img
-                    src="/feature.svg"
+                    src="/vote/feature{userVoted ? "" : "_white"}.svg"
                     alt="Vote to Feature"
                     class="button-image"
                     draggable="false"
@@ -171,9 +189,9 @@
             </p>
         </div>
         <div title="Project views" class="parent button-text">
-            <button class="view">
+            <button class="view" disabled>
                 <img
-                    src="/view.svg"
+                    src="/vote/view_white.svg"
                     alt="View Count"
                     class="button-image"
                     draggable="false"
@@ -229,9 +247,8 @@
     }
 
     button {
-        border-radius: 12px;
-        border: 1px solid rgba(0, 0, 0, 0.7);
         cursor: pointer;
+        border: 0;
         width: 64px;
         height: 64px;
         display: flex;
@@ -240,31 +257,31 @@
         justify-content: center;
         background: transparent;
     }
-    :global(body.dark-mode) button {
-        border: 1px solid rgba(255, 255, 255, 0.7);
-    }
-    button:active {
+    button:active:enabled {
         opacity: 0.5;
+    }
+    button:disabled {
+        cursor: not-allowed !important;
     }
 
     .button-text {
-        color: rgba(0, 0, 0, 0.7);
+        color: rgba(0, 0, 0, 0.9);
     }
     :global(body.dark-mode) .button-text {
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.9);
     }
     .button-image {
-        width: 90%;
+        width: 100%;
         user-select: none;
         filter: brightness(0);
         opacity: 0.7;
     }
     :global(body.dark-mode) .button-image {
         filter: saturate(0) brightness(255);
-        opacity: 0.7;
     }
     .button-image[data-activated="true"] {
-        filter: saturate(1) brightness(1) !important;
+        filter: initial !important;
+        opacity: 1 !important;
     }
 
     img {
@@ -292,7 +309,7 @@
         color: rgb(255, 229, 107);
     } */
 
-    .like {
+    /* .like {
         background: rgba(255, 106, 200, 0.25);
     }
     .view {
@@ -300,5 +317,5 @@
     }
     .feature {
         background: rgba(255, 229, 107, 0.25);
-    }
+    } */
 </style>

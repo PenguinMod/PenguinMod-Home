@@ -4,10 +4,17 @@
     import Language from "../../resources/language.js";
     import tips from './Tips.json';
 
-    let tipId = Math.floor(Math.random() * tips.length)
+    let tipId = Math.floor(Math.random() * tips.length);
+    
     export let enableTips = false
+    export let single = false
+    
+    export let icon = "/loading.png";
+    export let style = "width: 64px; height: 64px;";
+    
+    let tipId = Math.round(Math.random() * (tips.length - 1))
     const inter = setInterval(() => {
-        tipId = Math.floor(Math.random() * tips.length)
+        tipId = Math.round(Math.random() * (tips.length - 1))
     }, 7000)
 
     let currentLang = "en";
@@ -16,21 +23,36 @@
     Language.onChange((lang) => {
         currentLang = lang;
     });
+
 </script>
 
-<div class="centerer">
-    <img alt="Loading" src="/loading.png" class="spinner-load" />
-    <br />
-    {#if enableTips}
-        <p>
-            <LocalizedText
-                text={tips[tipId]}
-                key={`spinner.tips.${tipId}`}
-                lang={currentLang}
-            />
-        </p>
-    {/if}
-</div>
+{#if single}
+    <img
+        src={icon}
+        alt="Loading"
+        class="spinner-load"
+        {style}
+    />
+{:else}
+    <div class="centerer">
+        <img
+            src={icon}
+            alt="Loading"
+            class="spinner-load"
+            {style}
+        />
+        {#if enableTips}
+            <br />
+            <p>
+                <LocalizedText
+                    text={tips[tipId]}
+                    key={`spinner.tips.${tipId}`}
+                    lang={currentLang}
+                />
+            </p>
+        {/if}
+    </div>
+{/if}
 
 <style>
     * {
@@ -58,9 +80,6 @@
         animation-duration: 1s;
         animation-iteration-count: infinite;
         animation-timing-function: linear;
-
-        width: 64px;
-        height: 64px;
 
         /* stop highlighting */
         -webkit-touch-callout: none; /* iOS Safari              */

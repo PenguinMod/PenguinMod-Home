@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { page } from '$app/stores';
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
     import Authentication from "../../resources/authentication.js";
     import LINK from "../../resources/urls.js";
     import ProfileBadges from "../../resources/badges.js";
@@ -37,19 +38,15 @@
     }
 
     onMount(() => {
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+        if (!token || !username) {
             loggedIn = false;
-            kickOut(true);
             return;
         }
+
         ProjectApi.getServerInfo()
             .then((stats) => {
-                serverStats.push(`is new: ${stats.new ? 'yes' : 'no'}`)
-                delete stats.new
-                serverStats.push(`next read: ${new Date(stats.nextRead).getMinutes() - new Date().getMinutes()}mins`)
-                delete stats.nextRead
-                serverStats.push(`memory usage: ${(stats.totalMem - stats.freeMem) / stats.totalMem}`)
                 for (const name in stats) {
                     serverStats.push(`${name}: ${stats[name]}`)
                 }
@@ -58,20 +55,15 @@
             .catch((err) => {
                 console.error(err);
             });
-        Authentication.usernameFromCode(privateCode)
-            .then(({ username, isAdmin, isApprover }) => {
-                if (username) {
-                    if (!isAdmin && !isApprover) {
-                        kickOut(false);
-                        return;
-                    }
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
-                    loggedIn = true;
+        Authentication.usernameFromCode(username, token)
+            .then(({ isAdmin, isApprover }) => {
+                if (!isAdmin && !isApprover) {
+                    kickOut(false);
                     return;
                 }
-                loggedIn = false;
-                kickOut(true);
+                ProjectClient.setUsername(username);
+                ProjectClient.setToken(token);
+                loggedIn = true;
             })
             .catch(() => {
                 loggedIn = false;
@@ -151,16 +143,15 @@
                 return openReportsMenu(dropdownSelectMenu.value);
             case "removed":
                 projectListStyle = 'flex-direction: row;flex-wrap: wrap;';
-                return openProjectsMenu(dropdownSelectMenu.value);
+                //return openProjectsMenu(dropdownSelectMenu.value);
         }
     };
-    const closeUserReports = (idOrName, user) => {
+    const closeUserReport = (reportID) => {
         const confirmed = prompt(
-            'Are you sure you have looked at all reports and possibly acted upon them?\nType "ok" to close all reports from this user.'
+            "Are you sure you've looked over this result completely? (Type 'ok' to confirm)"
         );
         if (confirmed !== "ok") return;
-        const type = dropdownSelectMenu.value;
-        ProjectClient.closeReports(type, idOrName, user)
+        ProjectClient.closeReport(reportID)
             .then(() => {
                 refreshProjectMenu();
             })
@@ -170,6 +161,7 @@
     };
 
     let unapprovedPage = 1;
+    /*
     function openProjectsMenu(type) {
         // type is assumed to be unapproved because we have nothing else right now
         unapprovedProjects = [];
@@ -178,11 +170,12 @@
             unapprovedProjects = unapprovedProjs;
         });
     }
+    */
     function openReportsMenu(type) {
         unapprovedProjects = [];
         contentWithReports = [];
-        ProjectClient.getTypeWithReports(type).then((projectsWithReports) => {
-            contentWithReports = projectsWithReports.filter(content => content.exists ?? true);
+        ProjectClient.getTypeWithReports(type, 0).then((projectsWithReports) => {
+            contentWithReports = projectsWithReports;
         });
         // get approved projects anyways cuz we need to update list
         // todo: getProjects is paged breh what we do?
@@ -203,6 +196,7 @@
     //     ProjectClient.deleteProject(id);
     // }
     let rejectionPageOpen = false;
+    let deletionPageOpen = false;
     let rejectingId = 0;
     let rejectingName = "";
     let rejectingTextboxArea;
@@ -218,15 +212,17 @@
         if (rejectingTextboxArea.value.length <= 3) {
             return alert("The action was cancelled.");
         }
-        ProjectClient.rejectProject(id, rejectingTextboxArea.value, isRejectHard).then(() => {
-            rejectionPageOpen = false;
-            // uhhhhhhh apparently we need to do this ig?
-            // const newProjects = projects.filter((proj) => proj.id !== id);
-            // projects = [];
-            // projects = newProjects;
-            // dont need to do this i think
-            refreshProjectMenu();
-        });
+        if (!isRejectHard) {
+            ProjectClient.rejectProject(id, rejectingTextboxArea.value).then(() => {
+                rejectionPageOpen = false;
+                refreshProjectMenu();
+            });
+        } else {
+            ProjectClient.hardRejectProject(id, rejectingTextboxArea.value).then(() => {
+                rejectionPageOpen = false;
+                refreshProjectMenu();
+            });
+        }
     }
     let selectedProjectName = "";
     let lastSelectedProjectId = 0;
@@ -239,21 +235,36 @@
     }
 
     const openRemoveProjectMenu = async () => {
-        const id = Number(projectIdSelection.value);
-        if (isNaN(id)) return;
+        const id = String(projectIdSelection.value);
         rejectingId = id;
         if (selectedProjectName) {
             rejectingName = selectedProjectName;
         } else {
             try {
                 const projectMeta = await ProjectApi.getProjectMeta(id);
-                rejectingName = projectMeta.name;
+                rejectingName = projectMeta.title;
             } catch {
                 rejectingName = '';
             }
         }
         rejectionPageOpen = true;
     };
+
+    const openDeleteProjectMenu = async () => {
+        const id = String(projectIdSelection.value);
+        rejectingId = id;
+        if (selectedProjectName) {
+            rejectingName = selectedProjectName;
+        } else {
+            try {
+                const projectMeta = await ProjectApi.getProjectMeta(id);
+                rejectingName = projectMeta.title;
+            } catch {
+                rejectingName = '';
+            }
+        }
+        deletionPageOpen = true;
+    }
     // function featureProject(id, name) {
     //     const usure = confirm("Feature " + name + " ?");
     //     if (!usure) return;
@@ -335,9 +346,9 @@
         inspectMenuOpen = true;
         inspectMenuDetails.downloading = true;
         inspectMenuDetails.error = false;
-        setTimeout(() => {
+        setTimeout(async () => {
             if (!inspectMenuOpen) return; // dont download if we closed
-            const id = Number(projectIdSelection.value);
+            const id = String(projectIdSelection.value);
             ProjectApi.getProjectFile(id)
                 .then((blob) => {
                     JSZip.loadAsync(blob)
@@ -346,11 +357,13 @@
                                 .file("project.json")
                                 .async("string");
                             const json = JSON.parse(project);
+
                             const extensionList = json.extensions;
                             inspectMenuDetails.extensions = extensionList;
                             const extensionData = json.extensionURLs
                                 ? json.extensionURLs
                                 : {};
+                            
                             inspectMenuDetails.extensionData = extensionData;
                             inspectMenuDetails.extensionUrls = JSON.parse(
                                 JSON.stringify(extensionData)
@@ -469,8 +482,16 @@
         }
         const penguinModProject = await project.zip.generateAsync({ type: "blob" });
         const projectId = censorMenuDetails.id;
+
+        const meta = await ProjectApi.getProjectMeta(projectId);
+        const thumbnail = await ProjectApi.getProjectThumbnail(projectId);
+
         await ProjectClient.updateProject(projectId, {
-            project: await BlobAndDataUrl.blobToDataURL(penguinModProject)
+            project: penguinModProject,
+            title: meta.title,
+            instructions: meta.instructions,
+            notes: meta.notes,
+            image: thumbnail
         });
     };
     const applyCensorChanges = async () => {
@@ -491,7 +512,7 @@
         censorMenuDetails.error = false;
         setTimeout(() => {
             if (!censorMenuOpen) return; // dont download if we closed
-            const id = Number(projectIdSelection.value);
+            const id = String(projectIdSelection.value);
             censorMenuDetails.id = id;
             ProjectApi.getProjectFile(id)
                 .then((blob) => {
@@ -522,28 +543,24 @@
     }
 
     const messageReplyInfo = {
-        username: "",
         id: "",
         text: "",
     };
     const replyToMessage = () => {
-        if (!messageReplyInfo.username) return alert("No user specified.");
         if (!messageReplyInfo.id) return alert("Message ID is not specified.");
         if (!messageReplyInfo.text)
             return alert("No message text was specified.");
         if (
             !confirm(
-                `Reply to ${messageReplyInfo.username}'s message with "${messageReplyInfo.text}"?`
+                `Reply to message with "${messageReplyInfo.text}"?`
             )
         )
             return;
         ProjectClient.respondToDispute(
-            messageReplyInfo.username,
             messageReplyInfo.id,
             messageReplyInfo.text
         ).then(() => {
             alert("Sent!");
-            messageReplyInfo.username = "";
             messageReplyInfo.id = "";
             messageReplyInfo.text = "";
         }).catch(err => alert('Failed to send message:' + err));
@@ -551,28 +568,24 @@
     const sendGuidelinesNotifs = () => {
         const notifs = [];
         if (guidelinesNotifs.tos) {
-            notifs.push('terms');
+            notifs.push('tos');
         }
         if (guidelinesNotifs.pp) {
-            notifs.push('privacy');
+            notifs.push('privacyPolicy');
         }
         if (guidelinesNotifs.ug) {
-            notifs.push('uploadingguidelines');
+            notifs.push('guidelines');
         }
         if (notifs.length <= 0) return alert("No notifs were selected!");
         const confirmed = prompt('Are you sure you want to notify ALL users of the site?\nType "ok" to confirm.');
         if (confirmed !== 'ok') return;
-        for (const notif of notifs) {
-            ProjectClient.addMessage('guidelines', null, {
-                section: notif
-            });
-        }
+        ProjectClient.setLastPolicyUpdate(notifs)
     };
 
-    let rejectedProjectId = 0;
+    let rejectedProjectId = "0";
     const downloadRejectedProject = async () => {
         try {
-            const projectFile = await ProjectClient.getRejectedProjectFile(
+            const projectFile = await ProjectClient.downloadHardRejectedProject(
                 rejectedProjectId
             );
             FileSaver.saveAs(
@@ -595,14 +608,14 @@
                 alert(`Failed to restore project; ${err}`);
             });
     };
-    const deleteRejectedProject = () => {
+    const deleteProject = (id, reason) => {
         if (
             !confirm(
                 "Are you sure you want to PERMANENTLY delete this project?\nYou should only do this if the project contains some really bad stuff."
             )
         )
             return;
-        ProjectClient.deleteRejectedProject(rejectedProjectId)
+        ProjectClient.deleteProject(id, reason)
             .then(() => {
                 alert("Deleted.");
             })
@@ -615,6 +628,7 @@
     const banOrUnbanData = {
         username: "",
         reason: "",
+        time: 0,
     };
     let admin = false;
     let approver = false;
@@ -623,7 +637,7 @@
             `Are you sure you want to ban ${banOrUnbanData.username} for "${banOrUnbanData.reason}"? Type "ok" to confirm.`
         );
         if (promptMessage !== "ok") return;
-        ProjectClient.banUser(banOrUnbanData.username, banOrUnbanData.reason)
+        ProjectClient.banUser(banOrUnbanData.username, banOrUnbanData.reason, 0, true)
             .then(() => {
                 alert(`Banned ${banOrUnbanData.username}.`);
             })
@@ -632,12 +646,28 @@
                 alert(`Failed to ban user; ${err}`);
             });
     };
+
+    const tempBanUser = () => {
+        const promptMessage = prompt(
+            `Are you sure you want to temp ban ${banOrUnbanData.username} for "${banOrUnbanData.reason}" for ${banOrUnbanData.time} seconds (${banOrUnbanData.time / (60 * 60)} hours)? Type "ok" to confirm.`
+        );
+        if (promptMessage !== "ok") return;
+        ProjectClient.banUser(banOrUnbanData.username, banOrUnbanData.reason, Math.ceil(banOrUnbanData.time*1000), true)
+            .then(() => {
+                alert(`Banned ${banOrUnbanData.username}.`);
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to ban user; ${err}`);
+            });
+    };
+
     const unbanUser = () => {
         const promptMessage = prompt(
             `Are you sure you want to unban ${banOrUnbanData.username}? Type "ok" to confirm.`
         );
         if (promptMessage !== "ok") return;
-        ProjectClient.unbanUser(banOrUnbanData.username, banOrUnbanData.reason)
+        ProjectClient.banUser(banOrUnbanData.username, banOrUnbanData.reason, 0, false)
             .then(() => {
                 alert(`Unbanned ${banOrUnbanData.username}.`);
             })
@@ -661,17 +691,18 @@
         for (const badgeName of realBadges) {
             currentUserBadges[badgeName] = true;
         }
-        console.log(currentUserBadges);
         areBadgesLoadedForVisibility = true;
     };
     const applyUserBadges = () => {
         if (!confirm("Apply badges to this user?")) return;
-        const newBadges = [];
+        
+        const newBadges = []
         for (const badgeName in currentUserBadges) {
             if (currentUserBadges[badgeName] === true) {
                 newBadges.push(badgeName);
             }
         }
+
         ProjectClient.setUserBadges(userBadgesUsername, newBadges)
             .then(() => {
                 alert("Badges are set!");
@@ -707,6 +738,76 @@
                 alert(`Failed to moddify users permissions; ${err}`);
             });
     };
+
+    function ipBanUser(toggle=true) {
+        if (toggle) {
+            const promptMessage = prompt(
+                `Are you sure you want to IP ban ${banOrUnbanData.username}? They will be unable to use ANY part of the site that requires the server. People who are on the same network may not be able to access that either. Type "ok" to confirm.`
+            );
+            if (promptMessage !== "ok") return;
+        }
+        
+        ProjectClient.ipBanUser(banOrUnbanData.username, toggle)
+            .then(() => {
+                alert(`${toggle ? "" : "Un "}IP Banned ${banOrUnbanData.username}.`);
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to ${toggle ? "" : "Un "}IP ban user; ${err}`);
+            });
+    }
+
+    function deleteAccount() {
+        if (prompt("Are you sure you want to delete this account? THIS IS PERMANENT AND DELETES **ALL** DATA. enter \"ok\" to confirm.") !== "ok") return;
+        ProjectClient.deleteUserAccount(banOrUnbanData.username, banOrUnbanData.reason)
+            .then(() => {
+                alert("Account deleted.");
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to delete account; ${err}`);
+            });
+    }
+
+    let ipBanData = {
+        input: "",
+        connectedIPs: [],
+    }
+
+    function getConnectedIPs() {
+        ProjectClient.getConnectedIPs(ipBanData.input)
+            .then((ips) => {
+                ipBanData.connectedIPs = _parseIPs(ips);
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to get connected IPs; ${err}`);
+            });
+    }
+
+    function _parseIPs(ips) {
+        return ips.map((ip) => {
+            return `IP: ${ip.ip}, banned: ${ip.banned}, last login: ${unixToDisplayDate(ip.lastLogin)}`;
+        });
+    }
+
+    function banIP(toggle) {
+        if (toggle) {
+            const promptMessage = prompt(
+                `Are you sure you want to ban this ip? No one who has this ip, even who are just on the same network, will be able to use anything that needs the api. Type "ok" to confirm.`
+            );
+            if (promptMessage !== "ok") return;
+        }
+        
+        ProjectClient.banIP(ipBanData.input, toggle)
+            .then(() => {
+                alert(`${toggle ? "" : "Un "}Banned ${ipBanData.input}.`);
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to ${toggle ? "" : "Un "}ban IP; ${err}`);
+            });
+    }
 
     let showUserPerms = false
     let admins = []
@@ -751,7 +852,7 @@
             <div class="card-reject" style="display:block">
                 <p>Rejecting <b>{rejectingName}</b></p>
                 <img
-                    src={`${LINK.projects}api/pmWrapper/iconUrl?id=${rejectingId}`}
+                    src={`${LINK.projects}api/v1/projects/getproject?projectID=${rejectingId}&requestType=thumbnail`}
                     alt="Image of {rejectingName}"
                     width="240"
                     height="180"
@@ -794,6 +895,53 @@
             </div>
         </div>
     </div>
+
+    <div class="front-card-page" style="z-index: 20000;{deletionPageOpen ? '' : 'display:none;'}">
+        <div class="card-page big-card-page">
+            <div class="card-header">
+                <h1>Delete Project</h1>
+            </div>
+            <div class="card-reject" style="display:block">
+                <p>Deleting <b>{rejectingName}</b></p>
+                <img
+                    src={`${LINK.projects}api/v1/projects/getproject?projectID=${rejectingId}&requestType=thumbnail`}
+                    alt="Image of {rejectingName}"
+                    width="240"
+                    height="180"
+                >
+                <!-- svelte-ignore a11y-autofocus -->
+                <textarea
+                    bind:this={rejectingTextboxArea}
+                    placeholder="Reason for deletion..."
+                    style="width: 95%;"
+                    autofocus
+                />
+                <br />
+                <br />
+                <h2><b>Quick-Delete</b></h2>
+                <QuickRejectComponent on:select={(arg) => {
+                    rejectingTextboxArea.value = arg.detail;
+                }} />
+            </div>
+            <div style="display:flex;flex-direction:row;padding:1em">
+                <Button
+                    label="Hard Delete"
+                    color="red"
+                    on:click={() => {
+                        deleteProject(rejectingId, rejectingTextboxArea.value);
+                        deletionPageOpen = false;
+                    }}
+                />
+                <Button
+                    label="Cancel"
+                    on:click={() => {
+                        deletionPageOpen = false;
+                    }}
+                />
+            </div>
+        </div>
+    </div>
+
     {#if inspectMenuOpen}
         <div class="front-card-page">
             <div class="card-page big-card-page">
@@ -809,31 +957,37 @@
                         {#each inspectMenuDetails.extensions as extensionId}
                             <p>
                                 {extensionId}:
-                                <a
-                                    href={inspectMenuDetails.extensionUrls[
-                                        extensionId
-                                    ]}
-                                    target="_blank"
-                                >
-                                    {String(
-                                        inspectMenuDetails.extensionUrls[
+                                {#if inspectMenuDetails.extensionUrls[extensionId]}
+                                    <a
+                                        href={inspectMenuDetails.extensionUrls[
                                             extensionId
-                                        ]
-                                    ).length > 456
-                                        ? "Extension URL is too long"
-                                        : String(
-                                              inspectMenuDetails.extensionUrls[
-                                                  extensionId
-                                              ]
-                                          )}
-                                </a>
+                                        ]}
+                                        target="_blank"
+                                    >
+                                        {String(
+                                            inspectMenuDetails.extensionUrls[
+                                                extensionId
+                                            ]
+                                        ).length > 456
+                                            ? "Extension URL is too long"
+                                            : String(
+                                                inspectMenuDetails.extensionUrls[
+                                                    extensionId
+                                                ]
+                                            )}
+                                    </a>
+
+                                    <textarea
+                                        value={inspectMenuDetails.extensionData[
+                                            extensionId
+                                        ]}
+                                        style="width:90%;height:256px;font-family:monospace"
+                                    />
+                                {:else}
+                                    (Core Extension)
+                                {/if}
                             </p>
-                            <textarea
-                                value={inspectMenuDetails.extensionData[
-                                    extensionId
-                                ]}
-                                style="width:90%;height:256px;font-family:monospace"
-                            />
+                            
                         {/each}
                     {/if}
                     {#if inspectMenuDetails.error}
@@ -964,11 +1118,11 @@
                 <div class="card-projects">
                     <iframe
                         title="Guidelines Page"
-                        src="https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
+                        src="https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS"
                     />
                 </div>
                 <a
-                    href="https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
+                    href="https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS"
                     style="margin-top:6px;color:dodgerblue"
                     target="_blank"
                 >
@@ -1005,7 +1159,7 @@
                 <p>
                     Project ID:
                     <input
-                        type="number"
+                        type="string"
                         bind:this={projectIdSelection}
                         value="0"
                     />
@@ -1013,14 +1167,14 @@
                 {#if selectedProjectName}
                     <a
                         target="_blank"
-                        href={`https://studio.penguinmod.com/#${lastSelectedProjectId}`}
+                        href={`${PUBLIC_STUDIO_URL}/#${lastSelectedProjectId}`}
                         style="color: dodgerblue"
                     >
                         <p>
                             Selected <b>{selectedProjectName}</b>
                         </p>
                         <img
-                            src={`${ProjectApi.OriginApiUrl}/api/pmWrapper/iconUrl?id=${lastSelectedProjectId}`}
+                            src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectID=${lastSelectedProjectId}&requestType=thumbnail`}
                             alt="Project Thumbnail"
                         />
                     </a>
@@ -1042,16 +1196,23 @@
                     Send Approved Projects to Discord
                 </label> -->
                 <div style="height:24px" />
-                <Button
-                    label="Remove Project"
-                    color="red"
-                    on:click={openRemoveProjectMenu}
-                />
+                <div style="display: flex; flex-direction: row;">
+                    <Button
+                        label="Remove Project"
+                        color="red"
+                        on:click={openRemoveProjectMenu}
+                    />
+                    <Button
+                        label="Hard Delete Project"
+                        color="red"
+                        on:click={openDeleteProjectMenu}
+                    />
+                </div>
                 <div style="height:24px" />
                 <h3>Removed Projects</h3>
                 <p>
                     Target Removed Project:
-                    <input type="number" bind:value={rejectedProjectId} />
+                    <input type="text" bind:value={rejectedProjectId} />
                 </p>
                 <div
                     style="display: flex; flex-direction: row; align-items: center;"
@@ -1059,10 +1220,6 @@
                     <Button on:click={downloadRejectedProject}>Download</Button>
                     <Button color="remix" on:click={restoreRejectedProject}>
                         Restore
-                    </Button>
-                    <div style="margin-right:24px" />
-                    <Button color="red" on:click={deleteRejectedProject}>
-                        Delete
                     </Button>
                 </div>
             </div>
@@ -1089,16 +1246,11 @@
             </div>
             <br />
 
+            <!-- ATODO: add mod message (just send a message to the user, not a dispute response) -->
+
             <div class="card">
                 <h2 style="margin-block-start:0">Messages</h2>
                 <p>Respond to a project dispute/reply here.</p>
-                <p>Type username:</p>
-                <input
-                    type="text"
-                    size="50"
-                    placeholder="Scratch username..."
-                    bind:value={messageReplyInfo.username}
-                />
                 <p>Type message ID:</p>
                 <input
                     type="text"
@@ -1166,12 +1318,12 @@
                 <Button on:click={loadUserPerms}>Load Permited Users</Button>
                 {#if showUserPerms}
                     <h3>admins</h3>
-                    {#each admins as adminName}
-                        <p>{adminName}</p>
+                    {#each admins as admin}
+                        <p>{admin.username}</p>
                     {/each}
                     <h3>mods</h3>
-                    {#each mods as modName}
-                        <p>{modName}</p>
+                    {#each mods as mod}
+                        <p>{mod.username}</p>
                     {/each}
                 {/if}
                 <Button on:click={() => showUserPerms = !showUserPerms}>{showUserPerms ? 'Hide' : 'Show'} Permited Users</Button>
@@ -1190,6 +1342,13 @@
                     placeholder="Action reason..."
                     bind:value={banOrUnbanData.reason}
                 />
+                <br />
+                <br />
+                <input
+                    type="number"
+                    size="50"
+                    bind:value={banOrUnbanData.time}
+                /> temp ban time (in seconds)
                 <p>
                     Action reasons for user punishments must be translatable.
                     <br />
@@ -1211,14 +1370,47 @@
                     <input type="checkbox" bind:checked={approver} />
                     Grant User Moderator Perms
                 </label>
-                <div class="user-action-row">
-                    <Button on:click={unbanUser}>Unban User</Button>
-                    <Button color="red" on:click={banUser}>Ban User</Button>
-                    <Button on:click={setUsersPerms}>Assign User Perms</Button>
+                <div class="user-action-collumn">
+                    <div class="user-action-row">
+                        <Button on:click={unbanUser}>Unban User</Button>
+                        <Button color="red" on:click={banUser}>Ban User</Button>
+                        <Button color="red" on:click={tempBanUser}>Temp Ban User</Button>
+                    </div>
+                    <div class="user-action-row">
+                        <Button on:click={setUsersPerms}>Assign User Perms</Button>
+                        <Button color="red" on:click={() => ipBanUser(true)}>IP Ban User</Button>
+                        <Button on:click={() => ipBanUser(false)}>Un IP Ban User</Button>
+                    </div>
+                    <div class="user-action-row">
+                        <Button color="red" on:click={deleteAccount}>Delete User Account</Button>
+                    </div>
                 </div>
             </div>
 
-            <br />
+            <br>
+
+            <div class="card">
+                <h2 style="margin-block-start:0">IPs</h2>
+
+                <input
+                    type="text"
+                    size="50"
+                    placeholder="IP Address or Username"
+                    bind:value={ipBanData.input}
+                >
+
+                <textarea
+                    value={ipBanData.connectedIPs.join('\n')}
+                    style="width:80%;height:150px;font-family:monospace"
+                    readonly
+                />
+
+                <div class="user-action-row">
+                    <Button on:click={getConnectedIPs}>Get Connected IPs</Button>
+                    <Button color="red" on:click={() => banIP(true)}>Ban IP</Button>
+                    <Button on:click={() => banIP(false)}>Unban IP</Button>
+                </div>
+            </div>
 
             <div class="card">
                 <h2 style="margin-block-start:0">Badges</h2>
@@ -1369,16 +1561,6 @@
                             </p>
                         {/if}
                     {/if}
-                    {#if dropdownSelectMenu.value === "removed"}
-                        <p class="selection-info">
-                            Page
-                            <input
-                                type="number"
-                                on:change={openProjectsMenu}
-                                bind:value={unapprovedPage}
-                            >
-                        </p>
-                    {/if}
                     {#each unapprovedProjects as project}
                         <div>
                             <ClickableProject
@@ -1394,7 +1576,7 @@
                             <button
                                 class="reports-user-button"
                                 on:click={() => {
-                                    loadReportDetails(content.username);
+                                    loadReportDetails(content.target);
                                     if (selectedReportDetailed === idx) {
                                         selectedReportDetailed = -1;
                                         return;
@@ -1403,54 +1585,63 @@
                                 }}
                             >
                                 <img
-                                    src={`https://trampoline.turbowarp.org/avatars/by-username/${content.username}`}
-                                    alt={content.username}
+                                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${content.target}`}
+                                    alt={content.target}
                                 />
                                 <div class="reports-user-content">
                                     <p style="font-weight: bold;">
-                                        {content.username}
+                                        {content.target}
                                     </p>
-                                    <p>{content.reports} reports</p>
+                                    <p>{content.target} reports</p>
                                 </div>
                             </button>
                             {#if selectedReportDetailed === idx}
                                 <div class="reports-generic-details">
-                                    {#if !reportDetails[content.username]}
+                                    {#if !reportDetails[content.target]}
                                         <LoadingSpinner />
                                     {:else}
-                                        <a href={`https://penguinmod.com/profile?user=${content.username}`} target=”_blank”>go to profile</a>
+                                        <h5>By: {content.reporter}</h5>
+                                        <p>
+                                            {content.report}
+                                        </p>
+                                        <Button
+                                            on:click={() =>
+                                                closeUserReport(
+                                                    content.id
+                                                )}
+                                            color="red"
+                                        >
+                                            Close Report
+                                        </Button>
+                                        <a href={`https://penguinmod.com/profile?user=${content.target}`} target=”_blank”>go to profile</a>
                                         <h3>View reports by</h3>
-                                        {#each reportDetails[content.username] as report}
+                                        {#each reportDetails[content.target] as report}
                                             <details>
                                                 <summary>
                                                     {report.reporter}
                                                 </summary>
-                                                <p>
-                                                    {report.ids.length} reports
-                                                </p>
                                                 <Button
                                                     on:click={() =>
-                                                        closeUserReports(
-                                                            content.username,
-                                                            report.reporter
+                                                        closeUserReport(
+                                                            report.id
                                                         )}
                                                     color="red"
                                                 >
-                                                    Close Reports
+                                                    Close Report
                                                 </Button>
                                                 <p style="white-space:pre-wrap">
-                                                    {report.reason}
+                                                    {report.report}
                                                 </p>
                                             </details>
                                         {/each}
                                     {/if}
                                 </div>
                             {/if}
-                        {:else if content.exists}
+                        {:else}
                             <button
                                 class="reports-user-button reports-project-button"
                                 on:click={() => {
-                                    loadReportDetails(content.id);
+                                    loadReportDetails(content.targetID);
                                     if (selectedReportDetailed === idx) {
                                         selectedReportDetailed = -1;
                                         return;
@@ -1459,64 +1650,65 @@
                                 }}
                             >
                                 <img
-                                    src={`https://projects.penguinmod.com/api/pmWrapper/iconUrl?id=${content.id}`}
-                                    alt={content.name}
+                                    src={`${PUBLIC_API_URL}/api/v1/projects/getproject?projectID=${content.targetID}&requestType=thumbnail`}
+                                    alt={content.target}
                                 />
                                 <div
                                     class="reports-user-content reports-project-content"
                                 >
                                     <p style="font-weight: bold;">
-                                        {content.name}
+                                        {content.target}
                                     </p>
                                     <p>
-                                        by {content.author} | {content.reports} reports
+                                        by {content.author}
                                     </p>
                                 </div>
                             </button>
                             {#if selectedReportDetailed === idx}
                                 <div class="reports-generic-details">
+                                    <h5>By: {content.reporter}</h5>
+                                    <p>
+                                        {content.report}
+                                    </p>
+
                                     <p>
                                         View project at
                                         <a
-                                            href={`https://studio.penguinmod.com/#${content.id}`}
+                                            href={`${PUBLIC_STUDIO_URL}/#${content.targetID}`}
                                         >
-                                            {`https://studio.penguinmod.com/#${content.id}`}
+                                            {`${PUBLIC_STUDIO_URL}/#${content.targetID}`}
                                         </a>
                                         or
                                         <button
                                             on:click={() =>
                                                 selectProject(
-                                                    content.id,
-                                                    content.name
+                                                    content.targetID,
+                                                    content.target
                                                 )}
                                         >
                                             Select Project
                                         </button>
                                     </p>
-                                    {#if !reportDetails[content.id]}
+                                    {#if !reportDetails[content.targetID]}
                                         <LoadingSpinner />
                                     {:else}
                                         <h3>View reports by</h3>
-                                        {#each reportDetails[content.id] as report}
+                                        {#each reportDetails[content.targetID] as report}
                                             <details>
                                                 <summary>
                                                     {report.reporter}
                                                 </summary>
-                                                <p>
-                                                    {report.ids.length} reports
-                                                </p>
                                                 <Button
                                                     on:click={() =>
-                                                        closeUserReports(
-                                                            content.id,
-                                                            report.reporter
+                                                        closeUserReport(
+                                                            report.id
                                                         )}
                                                     color="red"
                                                 >
-                                                    Close Reports
+                                                    Close Report
                                                 </Button>
                                                 <p style="white-space:pre-wrap">
-                                                    {report.reason}
+                                                    {report.report}
                                                 </p>
                                             </details>
                                         {/each}
@@ -1682,6 +1874,11 @@
         align-items: center;
     }
 
+    .user-action-collumn {
+        display: flex;
+        flex-direction: column;
+    }
+
     .front-card-page {
         background: rgba(0, 0, 0, 0.5);
         position: fixed;
@@ -1760,4 +1957,6 @@
         cursor: pointer;
         margin-top: 16px;
     }
+
+    
 </style>

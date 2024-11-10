@@ -3,6 +3,7 @@
 // TRANSLATION DEFINITIONS HAVE MOVED TO src/translations/!locales.js
 // TRANSLATION DEFINITIONS HAVE MOVED TO src/translations/!locales.js
 import Locales from "../translations/!locales";
+import { getLocaleFinishedPercentage } from "../translations/!all-locale-text";
 
 const languages = Locales.languages;
 const rtlLanguages = Locales.rtlLanguages;
@@ -15,21 +16,23 @@ class TranslationHandler {
         if (language[key]) return language[key];
         return null;
     }
-    static tokened(key, lang) {
-        const text = TranslationHandler.text(key, lang);
-        if (!text) return null;
-        let newText = text;
-        let idx = 0;
-        for (const name of arguments) {
-            idx++;
-            if (idx === 1) continue; // skip key
-            if (idx === 2) continue; // skip lang
-            newText = String(newText).replace(`$${idx - 1}`, name);
-        }
-        return `${newText}`;
+    static textSafe(key, lang, defaultText) {
+        const langText = TranslationHandler.text(key, lang);
+        if (langText) return langText;
+        const englishText = TranslationHandler.text(key, "en");
+        if (englishText) return englishText;
+
+        return defaultText;
+    }
+    
+    static getLanguageFinishedPercentage(lang) {
+        return getLocaleFinishedPercentage(lang, languages[lang]);
     }
     static isLanguageAvailable(lang) {
         return (lang in languages);
+    }
+    static isLanguageDone(lang) {
+        return TranslationHandler.getLanguageFinishedPercentage(lang) >= 1;
     }
     static tryConvertingLocale(languageCode) {
         if (languageCode in Locales.autoLocale) {

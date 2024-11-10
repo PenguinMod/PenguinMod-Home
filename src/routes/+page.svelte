@@ -2,6 +2,8 @@
     import { onMount } from "svelte";
     import { page } from "$app/stores";
 
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
     import Authentication from "../resources/authentication.js";
     import ProjectApi from "../resources/projectapi.js";
     import censor from "../resources/basiccensorship.js";
@@ -154,19 +156,22 @@
     }
 
     const getAndUpdateMyFeed = async () => {
-        const feed = await ProjectClient.getMyFeed();
+        console.log("update feed");
+        const feed = await ProjectClient.getMyFeed(0);
         if (feed.length <= 0) {
             feedIsEmpty = true;
         }
         myFeed = feed;
     };
+
     const getFeedText = (type, author, content) => {
         switch (type) {
             case "follow":
                 return TranslationHandler.text(
                     "feed.following",
                     currentLang
-                ).replace("$1", author);
+                ).replace("$1", author)
+                .replace("$2", content.username === localStorage.getItem("username") ? "you" : content.username)
             case "upload":
                 return TranslationHandler.text("feed.uploaded", currentLang)
                     .replace("$1", author)
@@ -186,7 +191,7 @@
         switch (type) {
             case "upload":
             case "remixed":
-                return `https://studio.penguinmod.com/#${content.id}`;
+                return `${PUBLIC_STUDIO_URL}/#{content.id}`;
             case "posted":
                 return `/profile?user=${author}&post=${content.id}`;
             default:
@@ -198,7 +203,7 @@
     onMount(async () => {
         const projectId = Number(location.hash.replace("#", ""));
         if (!isNaN(projectId) && projectId != 0) {
-            location.href = `https://studio.penguinmod.com/#${projectId}`;
+            location.href = `${PUBLIC_STUDIO_URL}/#${projectId}`;
             return;
         }
 
@@ -242,24 +247,21 @@
     // login code below
     let loggedInUsername = "";
     onMount(async () => {
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
+        const username = localStorage.getItem("username")
+        const token = localStorage.getItem("token")
+        if (!token || !username) {
             loggedIn = false;
             return;
         }
-        Authentication.usernameFromCode(privateCode)
-            .then(({ username }) => {
-                if (username) {
-                    loggedInUsername = username;
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
-                    loggedIn = true;
-                    getAndUpdateMyFeed();
-                    return;
-                }
-                loggedIn = false;
+        Authentication.verifyToken(username, token)
+            .then(() => {
+                loggedInUsername = username;
+                ProjectClient.setUsername(username);
+                ProjectClient.setToken(token);
+                loggedIn = true;
+                getAndUpdateMyFeed();
             })
-            .catch(() => {
+            .catch((err) => {
                 loggedIn = false;
             });
     });
@@ -268,23 +270,13 @@
         loggedIn = false;
         myFeed = [];
     });
-    Authentication.onAuthentication((privateCode) => {
-        loggedIn = null;
-        Authentication.usernameFromCode(privateCode)
-            .then(({ username }) => {
-                if (username) {
-                    loggedInUsername = username;
-                    ProjectClient.setUsername(username);
-                    ProjectClient.setPrivateCode(privateCode);
-                    loggedIn = true;
-                    getAndUpdateMyFeed();
-                    return;
-                }
-                loggedIn = false;
-            })
-            .catch(() => {
-                loggedIn = false;
-            });
+    Authentication.onAuthentication((username, token) => {
+        loggedInUsername = username;
+        ProjectClient.setUsername(username);
+        ProjectClient.setToken(token);
+        loggedIn = true;
+        getAndUpdateMyFeed();
+        return;
     });
 
     onMount(() => {
@@ -327,21 +319,9 @@
         buttonText={"Donate"}
         buttonHref={"/donate"}
     />
-    <!-- TODO: should we remove this? -->
-    <!-- <Alert
-        onlyShowID={"privacee:_1"}
-        text={"Our privacy policy has been updated."}
-        textBreakup={true}
-        textColor={"white"}
-        backColor={"#009900"}
-        hasImage={false}
-        hasButton={true}
-        buttonText={"View"}
-        buttonHref={"https://studio.penguinmod.com/privacy.html"}
-    /> -->
     <StatusAlert />
 
-    {#if loggedIn === false}
+    {#if !loggedIn}
         <div class="section-info">
             <div style="margin-left: 8rem;">
                 <h1>
@@ -355,6 +335,7 @@
                     <LocalizedText
                         text="Built off of TurboWarp and Scratch"
                         key="home.introduction2"
+                        dolink={true}
                         lang={currentLang}
                     />
                 </h1>
@@ -393,7 +374,7 @@
             {/if}
         </div>
 
-        {#if langDecided && currentLang != "en" && loggedIn === false}
+        {#if langDecided && currentLang != "en" && !loggedIn}
             <div class="section-language-warning">
                 <img
                     src="/warning.png"
@@ -444,12 +425,11 @@
         </div>
     {/if}
 
-    {#if langDecided && currentLang != "en" && loggedIn !== false}
+    {#if langDecided && currentLang != "en" && loggedIn}
         <div class="section-language-warning">
             <img
                 src="/warning.png"
                 draggable="false"
-                style="height: 24px; margin-right: 6px"
                 alt="Warning"
             />
             <p>
@@ -467,14 +447,13 @@
             <LocalizedText
                 text="Scratch Note: Please don't mention PenguinMod on Scratch, we have different rules compared to Scratch! 😅"
                 key="home.scratchnote"
-                dontlink={true}
                 lang={currentLang}
             />
         </i>
     </p>
 
     <div class="section-categories">
-        {#if loggedIn !== true}
+        {#if !loggedIn}
             <ContentCategory
                 header={TranslationHandler.text(
                     "home.sections.whatsnew",
@@ -511,7 +490,7 @@
         {:else}
             <div class="welcome-back-card">
                 <img
-                    src={`https://trampoline.turbowarp.org/avatars/by-username/${loggedInUsername}`}
+                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${loggedInUsername}`}
                     alt="Profile"
                     class="profile-picture"
                 />
@@ -526,7 +505,7 @@
                         <button class="welcome-back-button">
                             <div class="welcome-back-icon-container">
                                 <img
-                                    src="/messages/create.svg"
+                                    src="/messagesstatic/create.svg"
                                     alt="Create"
                                     draggable="false"
                                 />
@@ -542,7 +521,7 @@
                         <button class="welcome-back-button">
                             <div class="welcome-back-icon-container">
                                 <img
-                                    src="/messages/mystuff.svg"
+                                    src="/messagesstatic/mystuff.svg"
                                     alt="My Stuff"
                                     draggable="false"
                                 />
@@ -561,7 +540,7 @@
                         <button class="welcome-back-button">
                             <div class="welcome-back-icon-container">
                                 <img
-                                    src="/messages/profile.svg"
+                                    src="/messagesstatic/profile.svg"
                                     alt="Profile"
                                     draggable="false"
                                 />
@@ -590,17 +569,16 @@
                                 <UserDisplay
                                     link={getFeedUrl(
                                         message.type,
-                                        message.username,
-                                        message.content
+                                        message.data.username
                                     )}
-                                    userLink={`/profile?user=${message.username}`}
+                                    userLink={`/profile?user=${message.user.username}`}
                                     text={getFeedText(
                                         message.type,
-                                        message.username,
-                                        message.content
+                                        message.user.username,
+                                        message.data
                                     )}
-                                    author={message.username}
-                                    image={`https://trampoline.turbowarp.org/avatars/by-username/${message.username}`}
+                                    author={message.user.username}
+                                    image={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${message.user.username}`}
                                 />
                             {/if}
                         {/each}
@@ -758,7 +736,7 @@
                 "home.sections.weeklyfeatured",
                 currentLang
             )}
-            seemore={`/search?q=featured%3Aprojects`}
+            seemore={`/search?q=featured%3A`}
             style="width:65%;"
             stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
         >
@@ -896,7 +874,7 @@
                 "home.sections.todaysprojects",
                 currentLang
             )}
-            seemore={`/search?q=featured%3Aexclude`}
+            seemore={`/search?q=newest%3A`}
             style="width:65%;"
             stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
         >
@@ -938,18 +916,11 @@
 
     <div class="footer">
         <p>
-            <!-- {#if !thingyActive} -->
-                <LocalizedText
-                    text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
-                    key="home.footer.notaffiliated"
-                    dontlink={true}
-                    lang={currentLang}
-                />
-            <!-- todo: find a better place to put this that isn't, the legal text -->
-            <!-- {:else}
-                EEAAOO EEAAOOEEAAOOEEAAOOEEAAOOEEAAOOEEAAOO EEAAOO
-                EEAAOOEEAAOOEEAAOO EEAAOO
-            {/if} -->
+            <LocalizedText
+                text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
+                key="home.footer.notaffiliated"
+                lang={currentLang}
+            />
         </p>
         <div class="footer-list">
             <div class="footer-section">
@@ -1032,6 +1003,13 @@
                     <LocalizedText
                         text="Uploading Guidelines"
                         key="home.footer.sections.info.guidelines"
+                        lang={currentLang}
+                    />
+                </a>
+                <a target="_blank" href={LINK.contact}>
+                    <LocalizedText
+                        text="Contact Us"
+                        key="home.footer.sections.info.contact"
                         lang={currentLang}
                     />
                 </a>
@@ -1306,13 +1284,20 @@
         text-align: center;
     }
     .section-language-warning > img {
+        height: 24px;
+        margin-right: 6px;
         filter: brightness(0);
     }
+
     :global(body.dark-mode) .section-language-warning {
         color: white;
     }
     :global(body.dark-mode) .section-language-warning > img {
         filter: brightness(1);
+    }
+    :global(html[dir="rtl"]) .section-language-warning img {
+        margin-right: initial;
+        margin-left: 6px;
     }
 
     .example-video {
@@ -1342,6 +1327,9 @@
         padding: 0;
         margin: 0;
         border: 0;
+    }
+    :global(body.dark-mode) .update-image {
+        color: white;
     }
 
     .project-list {

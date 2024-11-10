@@ -42,7 +42,7 @@
     let guidelinePageOpen = false;
 
     let projectId;
-    let projectMetadata;
+    let projectMetadata = {};
 
     let newProjectImage;
     let newProjectData;
@@ -80,21 +80,22 @@
             return;
         }
 
-        const privateCode = localStorage.getItem("PV");
-        if (!privateCode) {
+        const username = localStorage.getItem("username")
+        const token = localStorage.getItem("token");
+        if (!token || !username) {
             loggedIn = false;
             kickOut();
             return;
         }
-        Authentication.usernameFromCode(privateCode)
+        Authentication.usernameFromCode(username, token)
             .then(({ username }) => {
                 if (username) {
                     ProjectApi.getProjectMeta(projectId)
                         .then((metadata) => {
-                            projectName = metadata.name;
+                            projectName = metadata.title;
                             projectMetadata = metadata;
                             ProjectClient.setUsername(username);
-                            ProjectClient.setPrivateCode(privateCode);
+                            ProjectClient.setToken(token);
                             loggedIn = true;
                         })
                         .catch((err) => {
@@ -184,7 +185,7 @@
     });
     
     let isBusyUploading = false;
-    function updateProject() {
+    async function updateProject() {
         if (isBusyUploading) return;
         // if (projectMetadata.featured) {
         //     const code = projectId;
@@ -206,25 +207,19 @@
         const newMetadata = {};
         const data = {
             newMeta: newMetadata,
-        };
-        if (components.projectName.value !== projectName) {
-            newMetadata.name = components.projectName.value;
         }
-        if (
-            components.projectInstructions.value !==
-            projectMetadata.instructions
-        ) {
-            newMetadata.instructions = components.projectInstructions.value;
-        }
-        if (components.projectNotes.value !== projectMetadata.notes) {
-            newMetadata.notes = components.projectNotes.value;
-        }
+        newMetadata.title = projectName;
+        newMetadata.instructions = components.projectInstructions.value;
+        newMetadata.notes = components.projectNotes.value;
         if (newProjectImage) {
-            data.image = newProjectImage;
+            data.image = new File([newProjectImage], "thumbnail")
+        } else {
+            data.image = new File([await fetch("/empty-project.png").then((r) => r.blob())], "thumbnail");
         }
         if (newProjectData) {
             data.project = newProjectData;
         }
+
         ProjectClient.updateProject(projectId, data)
             .then(kickOut)
             .catch((err) => {
@@ -424,11 +419,11 @@
                 <div class="card-projects">
                     <iframe
                         title="Guidelines Page"
-                        src="https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
+                        src="https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS"
                     />
                 </div>
                 <a
-                    href="https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
+                    href="https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS"
                     style="margin-top:6px;color:dodgerblue"
                     target="_blank"
                 >
@@ -588,7 +583,7 @@
                         bind:this={components.projectName}
                         on:dragover={allowEmojiDrop}
                         on:drop={handleEmojiDrop}
-                        value={projectName}
+                        bind:value={projectName}
                     />
                     <p class="important notmargin" style="margin-top:24px">
                         <LocalizedText
@@ -665,7 +660,7 @@
                         src={newProjectImage
                             ? newProjectImage
                             : projectId
-                            ? `${LINK.projects}api/pmWrapper/iconUrl?id=${projectId}`
+                            ? `${LINK.projects}api/v1/projects/getproject?projectID=${projectId}&requestType=thumbnail`
                             : "/empty-project.png"}
                         style="border-width:1px;border-style:solid;border-color:rgba(0, 0, 0, 0.1);width:100%;"
                         alt="Project Thumbnail"
