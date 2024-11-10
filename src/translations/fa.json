@@ -191,7 +191,7 @@
     "uploading.guidelines.button": "دستورالعمل های آپلود و به روز رسانی پروژه",
     "uploading.guidelines.newtab": "در برگه جدیدی باز کن",
     "uploading.guidelines.darkmode": "این صفحه در حالت تاریک نیست زیرا یک وب سایت خارجی است.",
-    "uploading.guidelines.nottranslated": "ممکن است این دستورالعمل ها ترجمه نشوند. برای جایگزین ترجمه شده، <a href=\"https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS\">اینجا را ببینید</a>.",
+    "uploading.guidelines.nottranslated": "ممکن است این دستورالعمل ها ترجمه نشوند. برای جایگزین ترجمه شده، <a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">اینجا را ببینید</a>.",
     "uploading.error.toomanyrequests": "شما فقط می توانید پروژه ها را هر 8 دقیقه بارگذاری کنید.",
     "uploading.error.missingprojectdata": "داده های پروژه ارسال نشد. پروژه شما ممکن است خیلی بزرگ باشد.",
     "uploading.error.reauthenticate": "شما از سیستم خارج شدید لطفا دوباره وارد شوید.",
