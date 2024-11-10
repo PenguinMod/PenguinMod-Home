@@ -251,19 +251,37 @@
     {:else}
         <main>
             <img src="/penguins/frontpage.svg" alt="Finish your child's account" style="width:40%" />
-            <h1>Finish Sign Up</h1>
+            <!-- Only accounts from pre-server shutdown will need to view this page. -->
+            <!-- In this case, I think it's fine if this doesn't exactly say that it's completing sign up. -->
+            <!-- Also I forgot to add the original text to the translation sheets and most people already did their whole sheet so.... -->
+            <h1>
+                <LocalizedText
+                    text="Sign up"
+                    key="navigation.signup"
+                    lang={currentLang}
+                />
+            </h1>
 
             {#if specificFilloutForm !== "birthday"}
-                <!-- TODO: Translations. Specifically, the default disabled option and the input title. -->
                 <span class="input-title">
-                    Country:
+                    <LocalizedText
+                        text="Country"
+                        key="account.fields.country"
+                        lang={currentLang}
+                    />
                 </span>
                 <select
                     class="input-forced-class"
                     data-valid={countryValid}
                     on:input={countryInputChanged}
                 >
-                    <option value="" selected disabled>Select the country your child lives in</option>
+                    <option value="" selected disabled>
+                        <LocalizedText
+                            text="Select the country your child lives in"
+                            key="account.fields.country.placeholder"
+                            lang={currentLang}
+                        />
+                    </option>
                     {#each CountryLookup.countryCodes as countryCode}
                         <option value={countryCode}>{CountryLookup.countryNames[countryCode]}</option>
                     {/each}
@@ -271,9 +289,12 @@
             {/if}
             
             {#if specificFilloutForm !== "country"}
-                <!-- TODO: Translations. Specifically, the input title and warning message. -->
                 <span class="input-title">
-                    Your Child's Birthdate:
+                    <LocalizedText
+                        text="Your Child's Birthdate"
+                        key="account.fields.birthdate"
+                        lang={currentLang}
+                    />
                 </span>
                 <input
                     type="date"
@@ -284,14 +305,21 @@
                 />
                 {#if birthdayFaked}
                     <p class="birthday-warning">
-                        Did your parent/guardian give you permission to use PenguinMod?
+                        <LocalizedText
+                            text="Did your parent/guardian give you permission to use PenguinMod?"
+                            key="birthday.requirement.faked.line1"
+                            lang={currentLang}
+                        />
                         <br>
-                        That seems like your trying to secretly make an account without them knowing.
+                        <LocalizedText
+                            text="That seems like you're trying to secretly make an account without them knowing."
+                            key="birthday.requirement.faked.line2"
+                            lang={currentLang}
+                        />
                     </p>
                 {/if}
             {/if}
 
-            <!-- TODO: Translations. Specifically, the agreement. -->
             <label style="width:60%">
                 <input
                     type="checkbox"
@@ -299,7 +327,11 @@
                     on:change={checkIfValid}
                 />
                 <span class="disable-markdown-margin">
-                    {@html generateMarkdown(`I agree to allow PenguinMod to collect and use my country and date of birth (or my child's if I am registering on their behalf) in accordance with the [Privacy Policy](/privacy).`)}
+                    {@html generateMarkdown(`${TranslationHandler.textSafe(
+                        "account.fields.agreements.personalinfo",
+                        currentLang,
+                        "I agree to allow PenguinMod to collect and use my country and date of birth (or my child's if I am registering on their behalf) in accordance with the [Privacy Policy](/privacy)."
+                    )}`)}
                 </span>
             </label>
             <label style="width:60%">
@@ -309,16 +341,19 @@
                     on:change={checkIfValid}
                 />
                 <span class="disable-markdown-margin">
-                    {@html generateMarkdown(`I confirm that the information I have provided is accurate, and I understand that my date of birth and country cannot be changed after account creation without contacting support.`)}
+                    {@html generateMarkdown(`${TranslationHandler.textSafe(
+                        "account.fields.agreements.accurate",
+                        currentLang,
+                        "I confirm that the information I have provided is accurate, and I understand that my date of birth and country cannot be changed after account creation without contacting support."
+                    )}`)}
                 </span>
             </label>
 
-            <!-- TODO: This should refer to the parent/guardian. -->
             <p>
                 {@html generateMarkdown(`${TranslationHandler.textSafe(
-                    "signup.confirm.legal",
+                    "signup.confirm.legal.alt",
                     currentLang,
-                    "By creating a PenguinMod account through any means provided on this page, you agree to abide by the [Terms of Service](/terms) and [Uploading Guidelines](/guidelines/uploading) and confirm that you have read the [Privacy Policy](/privacy) in its entirety."
+                    "By creating a PenguinMod account through any means provided on this page, you agree to abide by the [Terms of Service](/terms) and [Uploading Guidelines](/guidelines/uploading) and confirm that you have read the [Privacy Policy](/privacy) in its entirety. If you are a parent or guardian creating an account for a child, you agree to these terms on their behalf. If you are legally an adult, you confirm that you are creating this account for yourself."
                 )}`)}
             </p>
         
