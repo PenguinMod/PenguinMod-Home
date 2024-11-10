@@ -1480,8 +1480,9 @@
                         let json = {};
                         try {
                             json = JSON.parse(filterJSONStuff.text);
-                        } catch {
-                            json = {};
+                        } catch(e) {
+                            alert("failed with error: " + e);
+                            return;
                         }
                         filterJSONStuff.set(json);
                     }}>
