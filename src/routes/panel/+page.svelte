@@ -199,7 +199,7 @@
     let deletionPageOpen = false;
     let rejectingId = 0;
     let rejectingName = "";
-    let rejectingTextboxArea;
+    let rejectingTextboxAreaText = "";
     let isRejectHard = false;
     function rejectProject(id) {
         id ??= Number(projectIdSelection.value);
@@ -209,16 +209,16 @@
                 'Hard reject is enabled.\nThe uploader will not be able to edit the original project once you reject it.'
                 : 'Soft reject is enabled.'}`;
         if (!confirm(confirmationMessage)) return;
-        if (rejectingTextboxArea.value.length <= 3) {
+        if (rejectingTextboxAreaText.length <= 3) {
             return alert("The action was cancelled.");
         }
         if (!isRejectHard) {
-            ProjectClient.rejectProject(id, rejectingTextboxArea.value).then(() => {
+            ProjectClient.rejectProject(id, rejectingTextboxAreaText).then(() => {
                 rejectionPageOpen = false;
                 refreshProjectMenu();
             });
         } else {
-            ProjectClient.hardRejectProject(id, rejectingTextboxArea.value).then(() => {
+            ProjectClient.hardRejectProject(id, rejectingTextboxAreaText).then(() => {
                 rejectionPageOpen = false;
                 refreshProjectMenu();
             });
@@ -859,7 +859,7 @@
                 >
                 <!-- svelte-ignore a11y-autofocus -->
                 <textarea
-                    bind:this={rejectingTextboxArea}
+                    bind:value={rejectingTextboxAreaText}
                     placeholder="Reason for rejecting..."
                     style="width: 95%;"
                     autofocus
@@ -875,7 +875,7 @@
                 <br />
                 <h2><b>Quick-Reject</b></h2>
                 <QuickRejectComponent on:select={(arg) => {
-                    rejectingTextboxArea.value = arg.detail;
+                    rejectingTextboxAreaText = arg.detail;
                 }} />
             </div>
             <div style="display:flex;flex-direction:row;padding:1em">
@@ -911,7 +911,7 @@
                 >
                 <!-- svelte-ignore a11y-autofocus -->
                 <textarea
-                    bind:this={rejectingTextboxArea}
+                    bind:value={rejectingTextboxAreaText}
                     placeholder="Reason for deletion..."
                     style="width: 95%;"
                     autofocus
@@ -920,7 +920,7 @@
                 <br />
                 <h2><b>Quick-Delete</b></h2>
                 <QuickRejectComponent on:select={(arg) => {
-                    rejectingTextboxArea.value = arg.detail;
+                    rejectingTextboxAreaText = arg.detail;
                 }} />
             </div>
             <div style="display:flex;flex-direction:row;padding:1em">
@@ -928,7 +928,7 @@
                     label="Hard Delete"
                     color="red"
                     on:click={() => {
-                        deleteProject(rejectingId, rejectingTextboxArea.value);
+                        deleteProject(rejectingId, rejectingTextboxAreaText);
                         deletionPageOpen = false;
                     }}
                 />
@@ -1331,7 +1331,7 @@
                 <input
                     type="text"
                     size="50"
-                    placeholder="Scratch username..."
+                    placeholder="PenguinMod username..."
                     bind:value={banOrUnbanData.username}
                 />
                 <br />
@@ -1418,7 +1418,7 @@
                 <input
                     type="text"
                     size="50"
-                    placeholder="Scratch username..."
+                    placeholder="PenguinMod username..."
                     on:change={() => {
                         areBadgesLoadedForVisibility = false;
                     }}
