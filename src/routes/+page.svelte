@@ -331,19 +331,6 @@
         buttonHref={"/donate"}
     />
     <StatusAlert />
-    <Alert
-        onlyShowID={"youtube_secretrev:_0"}
-        text={`Join us on ${unixToDisplayDate(1731283200000)} for the servers return! We are streaming it LIVE!`}
-        imgSrc={"/alert_icon.svg"}
-        textBreakup={true}
-        textColor={"black"}
-        hasImage={true}
-        hasButton={true}
-        backColor="#30e360"
-        buttonText={"Visit YouTube"}
-        buttonHref={"https://www.youtube.com/live/wciLqW4ByMI"}
-        buttonTooLight={true}
-    />
 
     {#if !loggedIn}
         <div class="section-info">
