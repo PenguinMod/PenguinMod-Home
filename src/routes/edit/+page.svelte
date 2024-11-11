@@ -217,6 +217,7 @@
             data.image = new File([await fetch("/empty-project.png").then((r) => r.blob())], "thumbnail");
         }
         if (newProjectData) {
+            console.log("newProjectData", newProjectData);
             data.project = newProjectData;
         }
 
@@ -268,8 +269,7 @@
         input = input.target;
         const file = input.files[0];
         if (!file) return;
-        const projectUri = await filePicked(input);
-        newProjectData = projectUri;
+        projectData = file;
         projectInputName.innerText = TranslationHandler.text(
             "uploading.project.ownfile.picked",
             currentLang

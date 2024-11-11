@@ -1227,7 +1227,6 @@ class ProjectApi {
                     if (relativePath === "project.json") return;
                     assets.push(file);
                 });
-
                 
                 const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/updateProject`;
                 const request = new XMLHttpRequest();
