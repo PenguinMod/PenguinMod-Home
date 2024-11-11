@@ -269,7 +269,7 @@
         input = input.target;
         const file = input.files[0];
         if (!file) return;
-        projectData = file;
+        newProjectData = file;
         projectInputName.innerText = TranslationHandler.text(
             "uploading.project.ownfile.picked",
             currentLang
