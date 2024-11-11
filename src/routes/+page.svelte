@@ -257,33 +257,28 @@
 
     // login code below
     let loggedInUsername = "";
-    let loggedInAdminOrMod = false;
     onMount(async () => {
         const username = localStorage.getItem("username")
         const token = localStorage.getItem("token")
         if (!token || !username) {
             loggedIn = false;
-            loggedInAdminOrMod = false;
             return;
         }
-        Authentication.usernameFromCode(username, token)
-            .then(({ isAdmin, isApprover }) => {
+        Authentication.verifyToken(username, token)
+            .then(() => {
                 loggedInUsername = username;
                 ProjectClient.setUsername(username);
                 ProjectClient.setToken(token);
                 loggedIn = true;
-                loggedInAdminOrMod = isAdmin || isApprover;
                 getAndUpdateMyFeed();
             })
             .catch((err) => {
                 loggedIn = false;
-                loggedInAdminOrMod = false;
             });
     });
 
     Authentication.onLogout(() => {
         loggedIn = false;
-        loggedInAdminOrMod = false;
         myFeed = [];
     });
     Authentication.onAuthentication((username, token) => {
@@ -885,44 +880,42 @@
                 </div>
             </ContentCategory>
         {/if}
-        {#if loggedInAdminOrMod}
-            <ContentCategory
-                header={TranslationHandler.text(
-                    "home.sections.todaysprojects",
-                    currentLang
-                )}
-                seemore={`/search?q=newest%3A`}
-                style="width:65%;"
-                stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
-            >
-                <div class="project-list">
-                    {#if projects.today.length > 0}
-                        {#each projects.today as project}
-                            <Project {...project} />
-                        {/each}
-                    {:else if projectsFailed === true}
-                        <div
-                            style="display:flex;flex-direction:column;align-items: center;width: 100%;"
-                        >
-                            <img
-                                src="/penguins/server.svg"
-                                alt="Server Penguin"
-                                style="width: 15rem"
+        <ContentCategory
+            header={TranslationHandler.text(
+                "home.sections.todaysprojects",
+                currentLang
+            )}
+            seemore={`/search?q=newest%3A`}
+            style="width:65%;"
+            stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
+        >
+            <div class="project-list">
+                {#if projects.today.length > 0}
+                    {#each projects.today as project}
+                        <Project {...project} />
+                    {/each}
+                {:else if projectsFailed === true}
+                    <div
+                        style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                    >
+                        <img
+                            src="/penguins/server.svg"
+                            alt="Server Penguin"
+                            style="width: 15rem"
+                        />
+                        <p>
+                            <LocalizedText
+                                text="Whoops! Our server's having some problems. Try again later."
+                                key="home.server.error"
+                                lang={currentLang}
                             />
-                            <p>
-                                <LocalizedText
-                                    text="Whoops! Our server's having some problems. Try again later."
-                                    key="home.server.error"
-                                    lang={currentLang}
-                                />
-                            </p>
-                        </div>
-                    {:else}
-                        <LoadingSpinner />
-                    {/if}
-                </div>
-            </ContentCategory>
-        {/if}
+                        </p>
+                    </div>
+                {:else}
+                    <LoadingSpinner />
+                {/if}
+            </div>
+        </ContentCategory>
         
         {#if isAprilFools()}
             <button class="cat-button" on:click={catSpeak}>
