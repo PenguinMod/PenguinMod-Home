@@ -45,6 +45,7 @@
     let projectMetadata = {};
 
     let newProjectImage;
+    let newProjectURL;
     let newProjectData;
 
     let projectInputName;
@@ -157,7 +158,15 @@
                 }
                 // image: uri of thumbnail image
                 if (data.type === "image") {
-                    newProjectImage = data.uri;
+                    newProjectURL = data.uri;
+
+                    var arr = data.uri.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+                    while(n--){
+                        u8arr[n] = bstr.charCodeAt(n);
+                    }
+
+                    newProjectImage = new Blob([u8arr], {type:mime});
                 }
                 // project: uri of project data
                 if (data.type === "project") {
@@ -211,13 +220,13 @@
         newMetadata.title = projectName;
         newMetadata.instructions = components.projectInstructions.value;
         newMetadata.notes = components.projectNotes.value;
-        if (newProjectImage) {
-            data.image = new File([newProjectImage], "thumbnail")
-        } else {
-            data.image = new File([await fetch("/empty-project.png").then((r) => r.blob())], "thumbnail");
+        if (!newProjectImage) {
+            newProjectImage = await fetch("/empty-project.png").then(res => res.blob());
         }
+
+        data.image = newProjectImage;
+
         if (newProjectData) {
-            console.log("newProjectData", newProjectData);
             data.project = newProjectData;
         }
 
@@ -262,8 +271,8 @@
 
     async function imageFilePicked(input) {
         input = input.target;
-        const imageUrl = await filePicked(input);
-        newProjectImage = imageUrl;
+        newProjectImage = input.files[0];
+        newProjectURL = await filePicked(input);
     }
     async function projectFilePicked(input) {
         input = input.target;
@@ -658,7 +667,7 @@
                 <div style="width:50%;">
                     <img
                         src={newProjectImage
-                            ? newProjectImage
+                            ? newProjectURL
                             : projectId
                             ? `${LINK.projects}api/v1/projects/getproject?projectID=${projectId}&requestType=thumbnail`
                             : "/empty-project.png"}
