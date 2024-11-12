@@ -313,6 +313,15 @@
 			/>
 		</button>
 	</a>
+	<a href="/account-switcher">
+		<button>
+			<LocalizedText
+				text="Account Switcher"
+				key="navigation.accswitch"
+				lang={currentLang}
+			/>
+		</button>
+	</a>
 	<a href="/settings">
 		<button>
 			<LocalizedText
@@ -691,6 +700,7 @@
 		border-top-right-radius: 0;
 		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 		z-index: 9999;
+		width: 200px;
 	}
 	.profile-dropdown-menu button {
 		background: transparent;
