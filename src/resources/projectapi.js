@@ -193,9 +193,9 @@ class ProjectApi {
         })
     }
     
-    static getFrontPage() {
+    async getFrontPage() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/frontpage`;
+            const url = `${OriginApiUrl}/api/v1/projects/frontpage?username=${this.username}&token=${this.token}`; // so mods can see ALL!!!!!!!!!!!!!
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {

@@ -27,21 +27,21 @@
     let searchType = "project";
 
     const fetchNewProjects = () => {
-        let api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(searchQuery)}`;
+        let api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(searchQuery)}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
         const query = searchQuery.split(":", 1)[0];
         switch (query) {
             case "user":
                 const userQuery = searchQuery.split(":");
                 searchType = "user";
                 userQuery.shift();
-                api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}`;
+                api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
                 break;
             case "featured":
             case "newest":
             case "views":
                 const actual_query = searchQuery.split(":");
                 actual_query.shift();
-                api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}`;
+                api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
                 break;
         }
 

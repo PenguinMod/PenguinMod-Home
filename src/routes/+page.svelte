@@ -212,6 +212,28 @@
 
     let tagForProjects = "";
     onMount(async () => {
+        Language.forceUpdate();
+        const username = localStorage.getItem("username")
+        const token = localStorage.getItem("token")
+        if (!token || !username) {
+            loggedIn = false;
+            loggedInAdminOrMod = false;
+            return;
+        }
+        Authentication.usernameFromCode(username, token)
+            .then(({ isAdmin, isApprover }) => {
+                loggedInUsername = username;
+                ProjectClient.setUsername(username);
+                ProjectClient.setToken(token);
+                loggedIn = true;
+                loggedInAdminOrMod = isAdmin || isApprover;
+                getAndUpdateMyFeed();
+            })
+            .catch((err) => {
+                loggedIn = false;
+                loggedInAdminOrMod = false;
+            });
+
         const projectId = Number(location.hash.replace("#", ""));
         if (!isNaN(projectId) && projectId != 0) {
             location.href = `${PUBLIC_STUDIO_URL}/#${projectId}`;
@@ -239,7 +261,7 @@
             });
         });
 
-        ProjectApi.getFrontPage()
+        ProjectClient.getFrontPage()
             .then(results => {
                 projects.today = results.latest;
                 projects.featured = results.featured;
@@ -258,28 +280,6 @@
     // login code below
     let loggedInUsername = "";
     let loggedInAdminOrMod = false;
-    onMount(async () => {
-        const username = localStorage.getItem("username")
-        const token = localStorage.getItem("token")
-        if (!token || !username) {
-            loggedIn = false;
-            loggedInAdminOrMod = false;
-            return;
-        }
-        Authentication.usernameFromCode(username, token)
-            .then(({ isAdmin, isApprover }) => {
-                loggedInUsername = username;
-                ProjectClient.setUsername(username);
-                ProjectClient.setToken(token);
-                loggedIn = true;
-                loggedInAdminOrMod = isAdmin || isApprover;
-                getAndUpdateMyFeed();
-            })
-            .catch((err) => {
-                loggedIn = false;
-                loggedInAdminOrMod = false;
-            });
-    });
 
     Authentication.onLogout(() => {
         loggedIn = false;
@@ -295,9 +295,6 @@
         return;
     });
 
-    onMount(() => {
-        Language.forceUpdate();
-    });
     Language.onChange((lang) => {
         currentLang = lang;
         langDecided = true;
