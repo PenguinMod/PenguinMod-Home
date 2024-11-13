@@ -265,11 +265,12 @@
         }
         deletionPageOpen = true;
     }
-    // function featureProject(id, name) {
-    //     const usure = confirm("Feature " + name + " ?");
-    //     if (!usure) return;
-    //     ProjectClient.featureProject(id).catch((err) => alert(err));
-    // }
+    function featureProject(value) {
+        const id = String(projectIdSelection.value);
+        const usure = confirm(`${value ? "Feature" : "Unfeature"} project?`);
+        if (!usure) return;
+        ProjectClient.featureProject(id, value).catch((err) => alert(err));
+    }
 
     onMount(() => {
         projectIdSelection.onchange = () => {
@@ -1196,16 +1197,27 @@
                     Send Approved Projects to Discord
                 </label> -->
                 <div style="height:24px" />
-                <div style="display: flex; flex-direction: row;">
+                <div style="display: flex; flex-direction: row; width: 100%;">
                     <Button
-                        label="Remove Project"
+                        label="Remove"
                         color="red"
                         on:click={openRemoveProjectMenu}
                     />
                     <Button
-                        label="Hard Delete Project"
-                        color="red"
+                        label="Hard Delete"
+                        color="purple"
                         on:click={openDeleteProjectMenu}
+                    />
+                    <div style="width:24px" />
+                    <Button
+                        label="Feature"
+                        color="orange"
+                        on:click={() => featureProject(true)}
+                    />
+                    <Button
+                        label="Unfeature"
+                        color="red"
+                        on:click={() => featureProject(false)}
                     />
                 </div>
                 <div style="height:24px" />

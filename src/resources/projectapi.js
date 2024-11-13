@@ -1711,10 +1711,21 @@ class ProjectApi {
             })
         })
     }
-    featureProject(id, webhook) {
-        const url = `${OriginApiUrl}/api/projects/feature?token=${this.token}&approver=${this.username}&webhook=${webhook}&id=${id}`;
+    featureProject(id, value) {
+        const body = JSON.stringify({
+            username: this.username,
+            token: this.token,
+            projectID: id,
+            toggle: value,
+        });
         return new Promise((resolve, reject) => {
-            fetch(url).then(res => {
+            fetch(`${OriginApiUrl}/api/v1/projects/manualfeature`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);
@@ -1727,7 +1738,7 @@ class ProjectApi {
             }).catch(err => {
                 reject(err);
             })
-        })
+        });
     }
 
     toggleVoteProject(id, type, toggle) {
