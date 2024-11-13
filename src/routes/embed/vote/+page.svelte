@@ -13,10 +13,6 @@
         return neww;
     }
 
-    function inFrame() {
-        return window !== window.parent
-    }
-
     let likes = 0;
     let votes = 0;
     let views = 0;
@@ -33,10 +29,6 @@
     let projectId = 0;
 
     function vote() {
-        if (inFrame()) {
-            window.open(document.location.href)
-            return
-        }
         if (loggedIn === false) {
             Authentication.authenticate().then(() => {
                 const username = localStorage.getItem("username");
@@ -59,10 +51,6 @@
         userVoted = !userVoted;
     }
     function love() {
-        if (inFrame()) {
-            window.open(document.location.href)
-            return
-        }
         if (loggedIn === false) {
             Authentication.authenticate().then(() => {
                 const username = localStorage.getItem("username");
