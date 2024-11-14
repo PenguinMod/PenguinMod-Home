@@ -868,7 +868,7 @@
                 header={String(TranslationHandler.text(
                     "home.sections.sortedbytag",
                     currentLang
-                )).replace('$1', tagForProjects)}
+                )).replace('$1', tagForProjects.slice(1))}
                 seemore={`/search?q=%23${tagForProjects}`}
                 style="width:65%;"
                 stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
