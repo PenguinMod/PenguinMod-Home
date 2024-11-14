@@ -221,19 +221,19 @@
             loggedInAdminOrMod = false;
             return;
         }
-        Authentication.usernameFromCode(username, token)
-            .then(({ isAdmin, isApprover }) => {
-                loggedInUsername = username;
-                ProjectClient.setUsername(username);
-                ProjectClient.setToken(token);
-                loggedIn = true;
-                loggedInAdminOrMod = isAdmin || isApprover;
-                getAndUpdateMyFeed();
-            })
+        
+        const {isAdmin, isApprover} = Authentication.usernameFromCode(username, token)
             .catch((err) => {
                 loggedIn = false;
                 loggedInAdminOrMod = false;
             });
+
+        loggedInUsername = username;
+        ProjectClient.setUsername(username);
+        ProjectClient.setToken(token);
+        loggedIn = true;
+        loggedInAdminOrMod = isAdmin || isApprover;
+        getAndUpdateMyFeed();
 
         const projectId = Number(location.hash.replace("#", ""));
         if (!isNaN(projectId) && projectId != 0) {
