@@ -221,7 +221,7 @@
             loggedInAdminOrMod = false;
             return;
         }
-        Authentication.verifyToken(username, token)
+        Authentication.usernameFromCode(username, token)
             .then(({ isAdmin, isApprover }) => {
                 loggedInUsername = username;
                 ProjectClient.setUsername(username);
