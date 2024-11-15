@@ -79,7 +79,7 @@
         canSendSaveReq = false;
         profileEditingData.isBioInappropriate = false;
         profileEditingData.isBioEditLoading = true;
-        ProjectClient.setBio(profileEditingData.bio, user !== loggedInUser, user).then(() => {
+        ProjectClient.setBio(profileEditingData.bio, String(user).toLowerCase() !== String(loggedInUser).toLowerCase(), user).then(() => {
             fullProfile.bio = profileEditingData.bio;
             profileEditingData.isEditingBio = false;
             setTimeout(() => {
@@ -279,7 +279,7 @@
             }
         };
 
-        if (username && username === user) {
+        if (username && String(user).toLowerCase() === String(username).toLowerCase()) {
             ProjectApi.getMyProjects(0).then(then).catch(catch_func).finally(() => {
                     fetchedFullProfile = true;
                     setTimeout(() => {
@@ -297,7 +297,7 @@
 
         page.subscribe(v => {
             if (!v.url.searchParams.get("user") || !user) return;
-            if (v.url.searchParams.get("user") == user) return;
+            if (String(v.url.searchParams.get("user")).toLowerCase() === String(user).toLowerCase()) return;
             
             window.location.reload();
         });
@@ -874,7 +874,7 @@
                                     {/if}
                                 </div>
                             </div>
-                            {#if !isProfilePrivate || loggedInUser === user || (isProfilePublicToFollowers && isFollowedByUser) || loggedInAdmin}
+                            {#if !isProfilePrivate || String(user).toLowerCase() === String(loggedInUser).toLowerCase() || (isProfilePublicToFollowers && isFollowedByUser) || loggedInAdmin}
                                 <div class="follower-section">
                                     <p class="follower-count">
                                         {TranslationHandler.text(
@@ -883,7 +883,7 @@
                                         ).replace("$1", followerCount - Number(followOnLoad) + Number(isFollowingUser))}
                                     </p>
                                     <div>
-                                        {#if !(loggedIn && user === loggedInUser)}
+                                        {#if !(loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase())}
                                             {#key isFollowingUser}
                                                 <button
                                                     class={`follower-button
@@ -914,7 +914,7 @@
                     </div>
                 </div>
             {/if}
-            {#if isProfilePrivate && loggedInUser !== user && !(isProfilePublicToFollowers && isFollowedByUser) && !loggedInAdmin}
+            {#if isProfilePrivate && String(user).toLowerCase() !== String(loggedInUser).toLowerCase() && !(isProfilePublicToFollowers && isFollowedByUser) && !loggedInAdmin}
                 <div class="section-private">
                     <img
                         src="/account/lock.svg"
@@ -1094,7 +1094,7 @@
                                     </button>
                                 {/if}
                             {:else}
-                                {#if loggedIn && (user === loggedInUser || loggedInAdmin)}
+                                {#if loggedIn && (String(user).toLowerCase() === String(loggedInUser).toLowerCase() || loggedInAdmin)}
                                     <button class="edit-link" on:click={() => {
                                         profileEditingData.bio = fullProfile.bio || '';
                                         profileEditingData.isEditingBio = true;
@@ -1139,7 +1139,7 @@
                                     {@html generateMarkdown(fullProfile.bio)}
                                 {:else}
                                     <p style="opacity:0.5">
-                                        {#if user === loggedInUser}
+                                        {#if String(user).toLowerCase() === String(loggedInUser).toLowerCase()}
                                             <LocalizedText
                                                 text="There's nothing here.. yet! Write some things you want to share here!"
                                                 key="profile.bio.none"
@@ -1164,7 +1164,7 @@
                                 key="profile.featured.title{fullProfile.myFeaturedProjectTitle || 1}"
                                 lang={currentLang}
                             />
-                            {#if loggedIn && user === loggedInUser && profileFeaturedProject && !profileEditingData.isEditingProject}
+                            {#if loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase() && profileFeaturedProject && !profileEditingData.isEditingProject}
                                 <button class="edit-link" on:click={() => {
                                     profileEditingData.project = profileFeaturedProject.id || 0;
                                     profileEditingData.projectTitle = fullProfile.myFeaturedProjectTitle || 1;
@@ -1252,7 +1252,7 @@
                                         lang={currentLang}
                                     />
                                 {/if}
-                                {#if loggedIn && user === loggedInUser && fullProfile.rank === 0}
+                                {#if loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase() && fullProfile.rank === 0}
                                     {#if fullProfile.canrankup !== true}
                                         <span style="opacity: 0.5;font-size:.7em;">
                                             <br>
@@ -1391,7 +1391,7 @@
                 </ContentCategory>
             </div>
             <div class="section-serious-actions">
-                {#if !(loggedIn && user === loggedInUser)}
+                {#if !(loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase())}
                     <div class="report-action">
                         <a
                             href={`/report?type=user&id=${user}`}
