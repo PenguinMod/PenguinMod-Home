@@ -223,6 +223,36 @@
             }
           }
         },
+        "extensionData": {
+          "oneofs": {
+            "_data": {
+              "oneof": [
+                "data"
+              ]
+            },
+            "_parse": {
+              "oneof": [
+                "parse"
+              ]
+            }
+          },
+          "fields": {
+            "data": {
+              "type": "string",
+              "id": 1,
+              "options": {
+                "proto3_optional": true
+              }
+            },
+            "parse": {
+              "type": "bool",
+              "id": 2,
+              "options": {
+                "proto3_optional": true
+              }
+            }
+          }
+        },
         "Project": {
           "oneofs": {
             "_metaSemver": {
@@ -273,10 +303,15 @@
               "type": "monitor",
               "id": 5
             },
-            "extensionData": {
+            "antiSigmaExtensionData": {
               "keyType": "string",
               "type": "string",
               "id": 6
+            },
+            "extensionData": {
+              "keyType": "string",
+              "type": "extensionData",
+              "id": 10
             },
             "extensions": {
               "rule": "repeated",
@@ -586,6 +621,11 @@
                 "mutation"
               ]
             },
+            "_is_variable_reporter": {
+              "oneof": [
+                "is_variable_reporter"
+              ]
+            },
             "_varReporterBlock": {
               "oneof": [
                 "varReporterBlock"
@@ -661,7 +701,10 @@
             },
             "is_variable_reporter": {
               "type": "bool",
-              "id": 11
+              "id": 11,
+              "options": {
+                "proto3_optional": true
+              }
             },
             "varReporterBlock": {
               "type": "var_reporter_block",
