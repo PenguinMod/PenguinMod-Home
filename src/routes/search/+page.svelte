@@ -39,6 +39,8 @@
             case "featured":
             case "newest":
             case "views":
+            case "votes":
+            case "loves":
                 const actual_query = searchQuery.split(":");
                 actual_query.shift();
                 api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
