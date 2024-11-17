@@ -101,8 +101,7 @@ class Authentication {
         return new Promise((resolve, reject) => {
             const username = localStorage.getItem("username")
 		    const token = localStorage.getItem("token");
-		    fetch(
-		    	`${LINK.projects}api/v1/users/logout`,
+		    fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/logout`,
 		    	{
 		    		method: "POST",
 		    		headers: {
