@@ -130,6 +130,12 @@
         if (normalizedText.includes("clicker") || normalizedText.includes("clicking")) {
             recommendedTagList.push("clicker");
         }
+        if (normalizedText.includes("metroid") || normalizedText.includes("metroidvania")) {
+            recommendedTagList.push("metroidvania");
+        }
+        if (normalizedText.includes("towerdefense") || normalizedText.includes("btd") || normalizedText.includes("bloonstd")) {
+            recommendedTagList.push("towerdefense");
+        }
         if (normalizedText.includes("christmas") || normalizedText.includes("festive") || normalizedText.includes("xmas") || normalizedText.includes("presents")) {
             recommendedTagList.push("christmas");
         }
