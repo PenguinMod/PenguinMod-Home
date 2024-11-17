@@ -138,6 +138,7 @@ const emojiList = [
   "joe",
   "laughing",
   "lock",
+  "loud",
   "lostinconfusion",
   "lucky",
   "lying",
