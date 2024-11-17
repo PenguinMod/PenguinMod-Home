@@ -626,21 +626,66 @@
             });
     };
 
-    const banOrUnbanData = {
+    const userSelectionData = {
         username: "",
         reason: "",
         time: 0,
+        admin: false,
+        approver: false,
+        newUsername: "",
+        newPfp: null,
     };
-    let admin = false;
-    let approver = false;
-    const banUser = () => {
+    const renameUser = () => {
         const promptMessage = prompt(
-            `Are you sure you want to ban ${banOrUnbanData.username} for "${banOrUnbanData.reason}"? Type "ok" to confirm.`
+            `Are you sure you want to rename ${userSelectionData.username} to ${userSelectionData.newUsername}?\nType "ok" to confirm.`
         );
         if (promptMessage !== "ok") return;
-        ProjectClient.banUser(banOrUnbanData.username, banOrUnbanData.reason, 0, true)
+        ProjectClient.setUsernameOfUser(userSelectionData.username, userSelectionData.newUsername)
             .then(() => {
-                alert(`Banned ${banOrUnbanData.username}.`);
+                alert(`Renamed ${userSelectionData.username} to ${userSelectionData.newUsername}`);
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to rename user; ${err}`);
+            });
+    };
+    const setNewPfpInput = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async () => {
+            const arrayBuffer = reader.result;
+            console.log(arrayBuffer);
+            userSelectionData.newPfp = arrayBuffer;
+        };
+
+        // get it as a blob
+        reader.readAsArrayBuffer(file);
+    };
+    const changePfpUser = () => {
+        const promptMessage = prompt(
+            `Are you sure you want to change ${userSelectionData.username}'s Profile Picture?\nType "ok" to confirm.`
+        );
+        if (promptMessage !== "ok") return;
+        ProjectClient.setPFPOfUser(userSelectionData.username, userSelectionData.newPfp)
+            .then(() => {
+                alert(`Changed ${userSelectionData.username}'s Profile Picture.`);
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to change profile picture of user; ${err}`);
+            });
+    };
+
+    const banUser = () => {
+        const promptMessage = prompt(
+            `Are you sure you want to ban ${userSelectionData.username} for "${userSelectionData.reason}"? Type "ok" to confirm.`
+        );
+        if (promptMessage !== "ok") return;
+        ProjectClient.banUser(userSelectionData.username, userSelectionData.reason, 0, true)
+            .then(() => {
+                alert(`Banned ${userSelectionData.username}.`);
             })
             .catch((err) => {
                 console.error(err);
@@ -650,12 +695,12 @@
 
     const tempBanUser = () => {
         const promptMessage = prompt(
-            `Are you sure you want to temp ban ${banOrUnbanData.username} for "${banOrUnbanData.reason}" for ${banOrUnbanData.time} seconds (${banOrUnbanData.time / (60 * 60)} hours)? Type "ok" to confirm.`
+            `Are you sure you want to temp ban ${userSelectionData.username} for "${userSelectionData.reason}" for ${userSelectionData.time} seconds (${userSelectionData.time / (60 * 60)} hours)? Type "ok" to confirm.`
         );
         if (promptMessage !== "ok") return;
-        ProjectClient.banUser(banOrUnbanData.username, banOrUnbanData.reason, Math.ceil(banOrUnbanData.time*1000), true)
+        ProjectClient.banUser(userSelectionData.username, userSelectionData.reason, Math.ceil(userSelectionData.time*1000), true)
             .then(() => {
-                alert(`Banned ${banOrUnbanData.username}.`);
+                alert(`Banned ${userSelectionData.username}.`);
             })
             .catch((err) => {
                 console.error(err);
@@ -665,12 +710,12 @@
 
     const unbanUser = () => {
         const promptMessage = prompt(
-            `Are you sure you want to unban ${banOrUnbanData.username}? Type "ok" to confirm.`
+            `Are you sure you want to unban ${userSelectionData.username}? Type "ok" to confirm.`
         );
         if (promptMessage !== "ok") return;
-        ProjectClient.banUser(banOrUnbanData.username, banOrUnbanData.reason, 0, false)
+        ProjectClient.banUser(userSelectionData.username, userSelectionData.reason, 0, false)
             .then(() => {
-                alert(`Unbanned ${banOrUnbanData.username}.`);
+                alert(`Unbanned ${userSelectionData.username}.`);
             })
             .catch((err) => {
                 console.error(err);
@@ -713,25 +758,25 @@
             });
     };
     const setUsersPerms = () => {
-        const verbAdmin = admin
-            ? `grant ${banOrUnbanData.username} admin?`
-            : `revoke ${banOrUnbanData.username}'s admin?`;
-        const verbApprover = approver
-            ? `grant ${banOrUnbanData.username} modderator?`
-            : `revoke ${banOrUnbanData.username}'s modderation possition?`;
+        const verbAdmin = userSelectionData.admin
+            ? `grant ${userSelectionData.username} admin?`
+            : `revoke ${userSelectionData.username}'s admin?`;
+        const verbApprover = userSelectionData.approver
+            ? `grant ${userSelectionData.username} modderator?`
+            : `revoke ${userSelectionData.username}'s modderation possition?`;
         const promptMessage = prompt(
             `Are you sure you want to ${verbAdmin} & ${verbApprover} Type "ok" to confirm.`
         );
         if (promptMessage !== "ok") return;
         ProjectClient.assingUsersPermisions(
-            banOrUnbanData.username,
-            admin,
-            approver
+            userSelectionData.username,
+            userSelectionData.admin,
+            userSelectionData.approver
         )
             .then(() => {
                 // i don wana make it re-say the whole grant-revoke thingy
                 alert(
-                    `Successfully did what ever you said to do ${banOrUnbanData.username}.`
+                    `Successfully did what ever you said to do ${userSelectionData.username}.`
                 );
             })
             .catch((err) => {
@@ -743,14 +788,14 @@
     function ipBanUser(toggle=true) {
         if (toggle) {
             const promptMessage = prompt(
-                `Are you sure you want to IP ban ${banOrUnbanData.username}? They will be unable to use ANY part of the site that requires the server. People who are on the same network may not be able to access that either. Type "ok" to confirm.`
+                `Are you sure you want to IP ban ${userSelectionData.username}? They will be unable to use ANY part of the site that requires the server. People who are on the same network may not be able to access that either. Type "ok" to confirm.`
             );
             if (promptMessage !== "ok") return;
         }
         
-        ProjectClient.ipBanUser(banOrUnbanData.username, toggle)
+        ProjectClient.ipBanUser(userSelectionData.username, toggle)
             .then(() => {
-                alert(`${toggle ? "" : "Un "}IP Banned ${banOrUnbanData.username}.`);
+                alert(`${toggle ? "" : "Un "}IP Banned ${userSelectionData.username}.`);
             })
             .catch((err) => {
                 console.error(err);
@@ -760,7 +805,7 @@
 
     function deleteAccount() {
         if (prompt("Are you sure you want to delete this account? THIS IS PERMANENT AND DELETES **ALL** DATA. enter \"ok\" to confirm.") !== "ok") return;
-        ProjectClient.deleteUserAccount(banOrUnbanData.username, banOrUnbanData.reason)
+        ProjectClient.deleteUserAccount(userSelectionData.username, userSelectionData.reason)
             .then(() => {
                 alert("Account deleted.");
             })
@@ -810,13 +855,13 @@
             });
     }
 
-    let showUserPerms = false
-    let admins = []
-    let mods = []
+    let showUserPerms = false;
+    let listOfAdmins = [];
+    let listOfMods = [];
     const loadUserPerms = () => ProjectClient.getAllPermitedUsers()
         .then(users => {
-            admins = users.admins
-            mods = users.mods
+            listOfAdmins = users.admins;
+            listOfMods = users.mods;
         })
         .catch((err) => {
             console.error(err);
@@ -1292,7 +1337,6 @@
                 <p>Send update notifications for TOS, Privacy Policy, or Uploading Guidelines.</p>
                 <p>Will send to all users on the website.</p>
                 <br />
-                <br />
                 <label>
                     <input
                         type="checkbox"
@@ -1300,6 +1344,7 @@
                     />
                     Terms of Service
                 </label>
+                <br />
                 <label>
                     <input
                         type="checkbox"
@@ -1307,6 +1352,7 @@
                     />
                     Privacy Policy
                 </label>
+                <br />
                 <label>
                     <input
                         type="checkbox"
@@ -1329,12 +1375,12 @@
                 <h2 style="margin-block-start:0">Users</h2>
                 <Button on:click={loadUserPerms}>Load Permited Users</Button>
                 {#if showUserPerms}
-                    <h3>admins</h3>
-                    {#each admins as admin}
+                    <h3>Admins</h3>
+                    {#each listOfAdmins as admin}
                         <p>{admin.username}</p>
                     {/each}
-                    <h3>mods</h3>
-                    {#each mods as mod}
+                    <h3>Mods</h3>
+                    {#each listOfMods as mod}
                         <p>{mod.username}</p>
                     {/each}
                 {/if}
@@ -1344,58 +1390,86 @@
                     type="text"
                     size="50"
                     placeholder="PenguinMod username..."
-                    bind:value={banOrUnbanData.username}
+                    bind:value={userSelectionData.username}
                 />
+                <br />
+                <br />
+                Temp-Ban Time
+                <input
+                    type="number"
+                    size="50"
+                    bind:value={userSelectionData.time}
+                /> (in seconds)
                 <br />
                 <br />
                 <input
                     type="text"
                     size="50"
                     placeholder="Action reason..."
-                    bind:value={banOrUnbanData.reason}
+                    bind:value={userSelectionData.reason}
                 />
-                <br />
-                <br />
-                <input
-                    type="number"
-                    size="50"
-                    bind:value={banOrUnbanData.time}
-                /> temp ban time (in seconds)
                 <p>
                     Action reasons for user punishments must be translatable.
                     <br />
-                    Punishment may occur if your action reasons continue to be informal.
-                    <br />
-                    <br />
-                    Reasons for banning users MUST be professional.
+                    This means you should use formal wording and never use profanity.
                     <br />
                     Do NOT ban a user with something like "you know why" or "check
                     (url here) for info"
+                    <br />
+                    <br />
+                    Punishment may occur if your action reasons become informal.
                 </p>
-                <br />
-                <br />
-                <label>
-                    <input type="checkbox" bind:checked={admin} />
-                    Grant User Admin Perms
-                </label>
-                <label>
-                    <input type="checkbox" bind:checked={approver} />
-                    Grant User Moderator Perms
-                </label>
                 <div class="user-action-collumn">
                     <div class="user-action-row">
-                        <Button on:click={unbanUser}>Unban User</Button>
                         <Button color="red" on:click={banUser}>Ban User</Button>
-                        <Button color="red" on:click={tempBanUser}>Temp Ban User</Button>
+                        <Button color="purple" on:click={tempBanUser}>Temp-Ban User</Button>
+                        <Button on:click={unbanUser}>Unban User</Button>
                     </div>
+                    <br>
                     <div class="user-action-row">
-                        <Button on:click={setUsersPerms}>Assign User Perms</Button>
                         <Button color="red" on:click={() => ipBanUser(true)}>IP Ban User</Button>
-                        <Button on:click={() => ipBanUser(false)}>Un IP Ban User</Button>
+                        <Button on:click={() => ipBanUser(false)}>Un-IP Ban User</Button>
                     </div>
+                    <br>
                     <div class="user-action-row">
                         <Button color="red" on:click={deleteAccount}>Delete User Account</Button>
                     </div>
+                </div>
+                <br>
+                <br>
+                <!-- <input
+                    type="text"
+                    size="50"
+                    minlength="3"
+                    maxlength="20"
+                    placeholder="New username..."
+                    bind:value={userSelectionData.newUsername}
+                />
+                <br> -->
+                <label>
+                    New Profile Picture:
+                    <input
+                        type="file"
+                        on:change={setNewPfpInput}
+                    />
+                </label>
+                <br />
+                <br />
+                <!-- <Button color="purple" on:click={renameUser}>Rename User</Button> -->
+                <Button color="purple" on:click={changePfpUser}>Change User's Profile Picture</Button>
+                <br>
+                <br>
+                <label>
+                    <input type="checkbox" bind:checked={userSelectionData.admin} />
+                    Grant User Admin Perms
+                </label>
+                <br>
+                <label>
+                    <input type="checkbox" bind:checked={userSelectionData.approver} />
+                    Grant User Moderator Perms
+                </label>
+                <div class="user-action-row">
+                    <Button color="remix" on:click={setUsersPerms}>Assign User Perms</Button>
                 </div>
             </div>
 
@@ -1504,6 +1578,7 @@
             </div>
             <br/>
 
+            <p>Global Server Toggles: (applies to all users)</p>
             <Button on:click={() => setGetProjects(false)} color="red"
                 >Disable Getting Projects</Button
             >
@@ -1739,22 +1814,6 @@
 <style>
     * {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    }
-
-    input[type="number"] {
-        width: 50%;
-        border-radius: 6px;
-        border-color: rgba(0, 162, 255, 0.15);
-        border-width: 2px;
-        border-style: dashed;
-    }
-    input[type="number"]:focus {
-        border-color: rgba(0, 162, 255, 0.35);
-        outline: none;
-    }
-    :global(body.dark-mode) input[type="number"] {
-        background-color: transparent;
-        color: white;
     }
 
     .main {

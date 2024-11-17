@@ -2094,6 +2094,38 @@ class ProjectApi {
             })
         });
     }
+    setUsernameOfUser(targetUsername, newName) {
+        const url = `${OriginApiUrl}/api/v1/users/changeusernameadmin`;
+
+        const body = JSON.stringify({
+            username: this.username,
+            token: this.token,
+            target: targetUsername,
+            newUsername: newName,
+        });
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
     setPFP(file) {
         return new Promise((resolve, reject) => {
             const API_ENDPOINT = `${OriginApiUrl}/api/v1/users/setpfp?username=${this.username}&token=${this.token}`;
@@ -2112,6 +2144,32 @@ class ProjectApi {
                 resolve();
             };
 
+            formData.append("picture", new Blob([file]));
+
+            request.send(formData);
+        });
+    }
+    setPFPOfUser(target, file) {
+        return new Promise((resolve, reject) => {
+            const API_ENDPOINT = `${OriginApiUrl}/api/v1/users/setpfpadmin`;
+            const request = new XMLHttpRequest();
+            const formData = new FormData();
+
+            request.open("POST", API_ENDPOINT, true);
+            request.onload = () => {
+                const response = JSON.parse(request.response);
+
+                if (response.error) {
+                    reject(response.error);
+                    return;
+                }
+
+                resolve();
+            };
+
+            formData.append("username", this.username);
+            formData.append("token", this.token);
+            formData.append("target", target);
             formData.append("picture", new Blob([file]));
 
             request.send(formData);
