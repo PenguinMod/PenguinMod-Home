@@ -656,7 +656,6 @@
         const reader = new FileReader();
         reader.onload = async () => {
             const arrayBuffer = reader.result;
-            console.log(arrayBuffer);
             userSelectionData.newPfp = arrayBuffer;
         };
 
@@ -1435,8 +1434,8 @@
                         <Button color="red" on:click={deleteAccount}>Delete User Account</Button>
                     </div>
                 </div>
-                <br>
-                <br>
+                <!-- <br>
+                <br> -->
                 <!-- <input
                     type="text"
                     size="50"
@@ -1446,7 +1445,7 @@
                     bind:value={userSelectionData.newUsername}
                 />
                 <br> -->
-                <label>
+                <!-- <label>
                     New Profile Picture:
                     <input
                         type="file"
@@ -1455,8 +1454,8 @@
                 </label>
                 <br />
                 <br />
-                <!-- <Button color="purple" on:click={renameUser}>Rename User</Button> -->
-                <Button color="purple" on:click={changePfpUser}>Change User's Profile Picture</Button>
+                <Button color="purple" on:click={renameUser}>Rename User</Button>
+                <Button color="purple" on:click={changePfpUser}>Change User's Profile Picture</Button> -->
                 <br>
                 <br>
                 <label>

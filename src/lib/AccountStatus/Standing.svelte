@@ -4,6 +4,8 @@
     export let username = "";
     export let image = "/navicon.png";
     export let showname = false;
+    export let showpfp = true;
+    export let showdeleted = false;
     export let status = 1; // 1 for first icon
     
     export let detail = 1; // 1 is image & status, 2 adds status labels, 3 adds punishment info, and 4 adds mod messages section
@@ -38,12 +40,14 @@
 </script>
 
 <div class="display">
-    <img
-        src={image}
-        alt={username}
-        title={username}
-        class="pfp"
-    />
+    {#if showpfp}
+        <img
+            src={image}
+            alt={username}
+            title={username}
+            class="pfp"
+        />
+    {/if}
     {#if showname}
         <h1 style="margin-block:4px;">{username}</h1>
     {/if}
@@ -91,11 +95,19 @@
     {#if detail >= 3}
         <div class="detail-section">
             <p>
-                <LocalizedText
-                    text="Your account does not currently have any punishments on it."
-                    key="account.settings.standing.descriptive.{localeText.descriptive[status]}"
-                    lang={currentLang}
-                />
+                {#if showdeleted && status === 4}
+                    <LocalizedText
+                        text="Your account has been deleted."
+                        key="account.settings.standing.descriptive.deleted"
+                        lang={currentLang}
+                    />
+                {:else}
+                    <LocalizedText
+                        text="Your account does not currently have any punishments on it."
+                        key="account.settings.standing.descriptive.{localeText.descriptive[status]}"
+                        lang={currentLang}
+                    />
+                {/if}
             </p>
 
             {#if detail >= 4}

@@ -44,7 +44,7 @@
     
         <main>
             <!-- UPDATE THIS WHEN MAKING CONTENT CHANGES -->
-            <p><i>Updated May 27th, 2024 (Mountain Time)</i></p>
+            <p><i>Updated November 17th, 2024 (Mountain Time)</i></p>
 
             <!-- some things are intentionally not formatted as they are in the HTML file on the website -->
             <p>
@@ -84,24 +84,24 @@
             <h2>Your use of PenguinMod</h2>
             <p>
                 When uploading projects or posting content on PenguinMod, your content must abide by the
-                <a href="https://penguinmod.com/guidelines/uploading">Uploading Guidelines</a>
+                <a href="https://penguinmod.com/guidelines/uploading">Uploading Guidelines</a> and Terms of Service
                 at all times. 
             </p>
             <p>
-                PenguinMod is allowed to remove/limit access to your ability to publish, update, or remix projects if you do not
-                abide by these rules, and PenguinMod has the right to remove/limit your access to any services we provide if we believe you
+                Failure to follow these rules may result in restrictions on publishing projects, updating projects, remixing projects, or editing profile information. 
+                PenguinMod has the right to remove/limit your access to any services we provide if we believe you
                 are violating these guidelines or the Terms of Service.
             </p>
             <p>
-                PenguinMod is allowed to remove/limit your ability to publish, update, remix or change any profile info you have if you do not
-                use language appropriate for kids or younger on your profile, and PenguinMod has the right to remove/limit your access to any services
-                we provide if we believe you are violating this ruling or the Terms of Service.
+                Accounts may be limited from certain features, deleted, or prevented from being used if they are found to violate the 
+                <a href="https://penguinmod.com/guidelines/uploading">Uploading Guidelines</a> or the Terms of Service.
             </p>
             <p>
-                PenguinMod is allowed to remove/limit your ability to create or login to accounts if we believe you are violating the Terms of Service.
+                Engaging in or encouraging abusive behavior toward PenguinMod systems, such as mass reporting, impersonation,
+                exploiting bugs to cause harm, botting, manipulating statistics like likes, votes, and views,
+                circumventing bans or deletions, or incentivizing others to break PenguinMod's rules, is strictly prohibited.
                 <br>
-                PenguinMod is allowed to limit or delete accounts created on PenguinMod if we believe you are violating the
-                <a href="https://penguinmod.com/guidelines/uploading">Uploading Guidelines</a> or Terms of Service.
+                Violations may lead to limiting your account's access to certain features, account deletion, or permanent loss of access to PenguinMod's services.
             </p>
 
             <h2>Copyright</h2>

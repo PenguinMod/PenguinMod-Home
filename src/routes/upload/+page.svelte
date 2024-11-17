@@ -58,10 +58,101 @@
     let projectPage = 0;
     let lastProjectPage = false;
 
+    let recommendedTagList = [];
+    let recommendedTagUpdate = 0;
     const components = {
         projectName: null,
         projectInstructions: null,
         projectNotes: null,
+    };
+
+    const updateRecommendedTags = () => {
+        const combinedText = `${String(components.projectName.value)} ${String(components.projectInstructions.value)} ${String(components.projectNotes.value)}`;
+        const normalizedText = combinedText
+            .toLowerCase()
+            .replace(/[\s\-_\W]+/gi, "");
+        recommendedTagList = [];
+
+        const hashtags = combinedText.match(/#([\w-]+)/g) || [];
+
+        // Frontpage-able tags:
+        if (normalizedText.includes("game") || normalizedText.includes("playable")) {
+            recommendedTagList.push("games");
+        }
+        if (normalizedText.includes("animation") || normalizedText.includes("animated") || normalizedText.includes("animate")) {
+            recommendedTagList.push("animation");
+        }
+        if (normalizedText.includes("art") || normalizedText.includes("drawn") || normalizedText.includes("drawing") || normalizedText.includes("paint")) {
+            recommendedTagList.push("art");
+        }
+        if (normalizedText.includes("platform") || normalizedText.includes("jumping")) {
+            recommendedTagList.push("platformer");
+        }
+        if (normalizedText.includes("rpg") || normalizedText.includes("roguelike")) {
+            recommendedTagList.push("rpg");
+        }
+        if (normalizedText.includes("story") || normalizedText.includes("lore")) {
+            recommendedTagList.push("story");
+        }
+        if (normalizedText.includes("minigame") || normalizedText.includes("warioware")) {
+            recommendedTagList.push("minigames");
+        }
+        if (normalizedText.includes("online") || normalizedText.includes("multiplayer") || normalizedText.includes("cloudlink")) {
+            recommendedTagList.push("online");
+        }
+        if (normalizedText.includes("remade") || normalizedText.includes("remake") || normalizedText.includes("demake")) {
+            recommendedTagList.push("remake");
+        }
+        if (normalizedText.includes("physics") || normalizedText.includes("box2d")) {
+            recommendedTagList.push("physics");
+        }
+        if (normalizedText.includes("contest")) {
+            recommendedTagList.push("contest");
+        }
+        if (normalizedText.includes("horror") || normalizedText.includes("scary") || normalizedText.includes("spook") || normalizedText.includes("spoop") || normalizedText.includes("halloween")) {
+            recommendedTagList.push("horror");
+        }
+        if (normalizedText.includes("tutorial") || normalizedText.includes("teach")) {
+            recommendedTagList.push("tutorial");
+        }
+        if (normalizedText.includes("3d")) {
+            recommendedTagList.push("3d");
+        }
+        if (normalizedText.includes("2d")) {
+            recommendedTagList.push("2d");
+        }
+        if (normalizedText.includes("dimension")) {
+            recommendedTagList.push("3d");
+            recommendedTagList.push("2d");
+        }
+
+        // Misc
+        if (normalizedText.includes("clicker") || normalizedText.includes("clicking")) {
+            recommendedTagList.push("clicker");
+        }
+        if (normalizedText.includes("christmas") || normalizedText.includes("festive") || normalizedText.includes("xmas") || normalizedText.includes("presents")) {
+            recommendedTagList.push("christmas");
+        }
+        if (normalizedText.includes("aprilfools")) {
+            recommendedTagList.push("aprilfools");
+        }
+
+        // remove recommended tags present inside the text
+        for (const hashtag of hashtags) {
+            recommendedTagList = recommendedTagList.filter((recommendedTag) => `#${recommendedTag}` !== hashtag);
+        }
+        // remove duplicate tags
+        recommendedTagList = [...new Set(recommendedTagList)];
+        recommendedTagUpdate += 1;
+    };
+    const clickOnRecommendedTag = (tagText) => {
+        const originalText = String(components.projectNotes.value);
+        if (originalText.endsWith(" ") || originalText.length <= 0 || originalText.match(/^[\s]+$/gi)) {
+            components.projectNotes.value += `#${tagText}`;
+        } else {
+            components.projectNotes.value += ` #${tagText}`;
+        }
+        updateRecommendedTags();
     };
 
     function floatTo2Decimals(number) {
@@ -774,6 +865,7 @@
                             currentLang
                         )}
                         bind:this={components.projectName}
+                        on:input={updateRecommendedTags}
                         on:dragover={allowEmojiDrop}
                         on:drop={handleEmojiDrop}
                         value={projectName}
@@ -791,6 +883,7 @@
                             currentLang
                         )}
                         bind:this={components.projectInstructions}
+                        on:input={updateRecommendedTags}
                         on:dragover={allowEmojiDrop}
                         on:drop={handleEmojiDrop}
                     />
@@ -807,9 +900,17 @@
                             currentLang
                         )}
                         bind:this={components.projectNotes}
+                        on:input={updateRecommendedTags}
                         on:dragover={allowEmojiDrop}
                         on:drop={handleEmojiDrop}
                     />
+                    {#key recommendedTagUpdate}
+                        {#each recommendedTagList as recommendedTag}
+                            <button class="recommended-tag" on:click={() => clickOnRecommendedTag(recommendedTag)}>
+                                + #{recommendedTag}
+                            </button>
+                        {/each}
+                    {/key}
                     <input
                         id="FILERI"
                         type="file"
@@ -1178,6 +1279,21 @@
     }
     :global(body.dark-mode) .emoji-picker-emoji:hover {
         background: rgba(255, 255, 255, 0.15);
+    }
+
+    .recommended-tag {
+        background: #00c3ff;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        border-radius: 4px;
+        padding: 2px 4px;
+        margin-right: 4px;
+        margin-bottom: 4px;
+        color: white;
+        cursor: pointer;
+    }
+    :global(html[dir="rtl"]) .recommended-tag {
+        margin-right: initial;
+        margin-left: 4px;
     }
 
     .card {
