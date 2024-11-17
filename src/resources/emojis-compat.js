@@ -286,7 +286,7 @@ const emojiList = [
   "arrow_up",
   "arrow_down",
   "arrow_right"
-];
+].sort();
 
 export function mockRequest() {
     return emojiList;
