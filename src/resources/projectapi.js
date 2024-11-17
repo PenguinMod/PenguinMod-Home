@@ -2030,6 +2030,28 @@ class ProjectApi {
         });
     }
 
+    getConnectedUsers(ip) {
+        const url = `${OriginApiUrl}/api/v1/users/getAllAccountsWithIP`
+
+        const query = `?username=${this.username}&token=${this.token}&target=${ip}`;
+
+        return new Promise((resolve, reject) => {
+            fetch(url + query).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve(json.users);
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
+
     banIP(ip, toggle) {
         const url = `${OriginApiUrl}/api/v1/users/banip`;
 
