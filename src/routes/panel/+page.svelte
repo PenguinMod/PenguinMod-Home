@@ -830,6 +830,17 @@
             });
     }
 
+    function getConnectedUsers() {
+        ProjectClient.getConnectedUsers(ipBanData.input)
+            .then((users) => {
+                ipBanData.connectedIPs = users.map(v => v.username);
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to get connected users; ${err}`);
+            });
+    }
+
     function _parseIPs(ips) {
         return ips.map((ip) => {
             return `IP: ${ip.ip}, banned: ${ip.banned}, last login: ${unixToDisplayDate(ip.lastLogin)}`;
@@ -1492,6 +1503,7 @@
 
                 <div class="user-action-row">
                     <Button on:click={getConnectedIPs}>Get Connected IPs</Button>
+                    <Button on:click={getConnectedUsers}>Get Connected Users</Button>
                     <Button color="red" on:click={() => banIP(true)}>Ban IP</Button>
                     <Button on:click={() => banIP(false)}>Unban IP</Button>
                 </div>
