@@ -841,6 +841,19 @@
                     {#each projects.voted as project}
                         <Project {...project} />
                     {/each}
+                {:else if projectsLoaded === true}
+                    <div
+                        style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                    >
+                        <PenguinConfusedSVG width="8rem" />
+                        <p>
+                            <LocalizedText
+                                text="Nothing found. You can help feature projects by clicking the yellow checkmark below them."
+                                key="home.none.featured"
+                                lang={currentLang}
+                            />
+                        </p>
+                    </div>
                 {:else if projectsFailed === true}
                     <div
                         style="display:flex;flex-direction:column;align-items: center;width: 100%;"
