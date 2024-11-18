@@ -146,6 +146,9 @@
             loggedInAdmin = isAdmin || isApprover;
         });
     });
+    function prettyNumber(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
 </script>
 
 <div class="main">
@@ -160,7 +163,7 @@
                     data-activated={userLiked}
                 />
             </button>
-            <p>{likes - Number(userLikedOnLoad) + Number(userLiked)}</p>
+            <p>{prettyNumber(likes - Number(userLikedOnLoad) + Number(userLiked))}</p>
         </div>
         <div title="Vote to Feature this project" class="parent button-text">
             <button class="feature" on:click={vote}>
@@ -172,9 +175,7 @@
                     data-activated={userVoted}
                 />
             </button>
-            <p>
-                {votes - Number(userVotedOnLoad) + Number(userVoted)}
-            </p>
+            <p>{prettyNumber(votes - Number(userVotedOnLoad) + Number(userVoted))}</p>
         </div>
         <div title="Project views" class="parent button-text">
             <button class="view" disabled>
@@ -185,7 +186,7 @@
                     draggable="false"
                 />
             </button>
-            <p>{views}</p>
+            <p>{prettyNumber(views)}</p>
         </div>
         {#if loggedInAdmin}
             <div>
