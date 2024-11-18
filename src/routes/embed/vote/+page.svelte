@@ -7,6 +7,10 @@
     // Components
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
 
+    function prettyNumber(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
     function numberCast(num) {
         const neww = Number(num);
         if (isNaN(neww)) return 0;
@@ -16,6 +20,10 @@
     let likes = 0;
     let votes = 0;
     let views = 0;
+
+    $: prettyLikes = prettyNumber(likes - Number(userLikedOnLoad) + Number(userLiked));
+    $: prettyVotes = prettyNumber(votes - Number(userVotedOnLoad) + Number(userVoted));
+    $: prettyViews = prettyNumber(views);
 
     let userLiked = false;
     let userVoted = false;
@@ -146,9 +154,6 @@
             loggedInAdmin = isAdmin || isApprover;
         });
     });
-    function prettyNumber(number) {
-        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
 </script>
 
 <div class="main">
@@ -175,7 +180,7 @@
                     data-activated={userVoted}
                 />
             </button>
-            <p>{prettyNumber(votes - Number(userVotedOnLoad) + Number(userVoted))}</p>
+            <p>{prettyLikes}</p>
         </div>
         <div title="Project views" class="parent button-text">
             <button class="view" disabled>
@@ -186,7 +191,7 @@
                     draggable="false"
                 />
             </button>
-            <p>{prettyNumber(views)}</p>
+            <p>{prettyVotes}</p>
         </div>
         {#if loggedInAdmin}
             <div>
