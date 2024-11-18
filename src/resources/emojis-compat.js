@@ -278,7 +278,20 @@ const emojiList = [
   "xsimple",
   "yawn",
   "zipper",
-];
+  "chart",
+  "lowering_chart",
+  "rising_chart",
+  "bell",
+  "no_bell",
+  "laptop",
+  "person_running",
+  "person_walking",
+  "arrow_left",
+  "arrow_up",
+  "arrow_down",
+  "arrow_right",
+  "penguin"
+].sort();
 
 export function mockRequest() {
     return emojiList;
