@@ -280,7 +280,7 @@ const emojiList = [
   "zipper",
   "chart",
   "lowering_chart",
-  "rising_chart",
+  "risingchart",
   "bell",
   "no_bell",
   "laptop",
