@@ -424,7 +424,7 @@
                         </p>
                         {#if message.message.hardReject === false}
                             <h3>
-                                <a href="/edit?id={message.projectId}" style="display:flex;align-items:center;">
+                                <a href="/edit?id={message.message.project.id}" style="display:flex;align-items:center;">
                                     <img
                                         src="/pencil.png"
                                         alt="Edit"

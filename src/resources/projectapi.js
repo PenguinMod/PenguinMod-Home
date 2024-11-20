@@ -1216,6 +1216,39 @@ class ProjectApi {
         const notes = data.newMeta.notes;
 
         return new Promise(async (resolve, reject) => {
+
+            if (!data.project) {
+                const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/updateProject`;
+                const request = new XMLHttpRequest();
+                const formData = new FormData();
+
+                request.open("POST", API_ENDPOINT, true);
+                request.onload = () => {
+                    const response = JSON.parse(request.response);
+
+                    if (response.error) {
+                        reject(response.error);
+                        return;
+                    }
+
+                    resolve(response.id);
+                };
+
+                formData.append("username", username);
+                formData.append("token", token);
+                formData.append("title", title);
+                formData.append("instructions", instructions);
+                formData.append("notes", notes);
+                formData.append("projectID", id);
+
+                if (data.image) {
+                    formData.append("thumbnail", data.image);
+                }
+
+                request.send(formData);
+                return;
+            }
+
             JSZip.loadAsync(data.project).then(async zip => {
                 const projectJSON = JSON.parse(await zip.file("project.json").async("text"))
 
