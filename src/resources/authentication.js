@@ -97,6 +97,30 @@ class Authentication {
             }
         })
     }
+    static logout() {
+        return new Promise((resolve, reject) => {
+            const username = localStorage.getItem("username")
+		    const token = localStorage.getItem("token");
+		    fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/logout`,
+		    	{
+		    		method: "POST",
+		    		headers: {
+		    			"Content-Type": "application/json",
+		    		},
+		    		body: JSON.stringify({
+		    			username: username,
+		    			token: token,
+		    		})
+		    	}
+		    ).then((res) => {
+		    	if (!res.ok) return reject("Not OK");
+                localStorage.removeItem("username");
+                localStorage.removeItem("token");
+                Authentication.fireLogout();
+                resolve();
+		    }).catch(reject);
+        });
+    }
     static fireLogout() {
         Authentication.eventListeners.forEach(thinkle => {
             if (thinkle.type === "LOGOUT") {

@@ -113,28 +113,10 @@
 
 	function logout() {
 		accountMenu.style.display = "none";
-		const username = localStorage.getItem("username")
-		const token = localStorage.getItem("token");
-		fetch(
-			`${LINK.projects}api/v1/users/logout`,
-			{
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					username: username,
-					token: token,
-				})
-			}
-		).then((res) => {
-			if (!res.ok) return;
-			localStorage.removeItem("username");
-			localStorage.removeItem("token");
-			Authentication.fireLogout();
-			loggedIn = false;
-			canRankUp = false;
-			messageCount = 0;
+		Authentication.logout().then(() => {
+		    loggedIn = false;
+		    canRankUp = false;
+		    messageCount = 0;
 		});
 	}
 	function login() {
@@ -399,11 +381,6 @@
 		<BarPage
 			link="/mystuff"
 			label="<img src='/messagesstatic/mystuff.svg' width='25' alt='My Stuff'>"
-			style="padding:0.5rem"
-		/>
-		<BarPage
-			link="/upload"
-			label="<img src='/messagesstatic/upload.svg' width='25' alt='Upload'>"
 			style="padding:0.5rem"
 		/>
 	{/if}

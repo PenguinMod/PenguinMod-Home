@@ -26,9 +26,9 @@ This is a rule because the only purpose of this is to show content that is not y
 
 # Credit
 Users should be properly credited within your project's info.
-Your project may be removed if specific people or groups are not mentioned in your project's notes & credits.
+Your project may be removed if moderators are informed that specific people or groups are not mentioned in your project's notes & credits.
 
-Using short-terms like "credit to all" or "C2A" may not be allowed as individual users are not mentioned.
+Using short-terms like "credit to all" or "C2A" cannot replace the use of individual mentions.
 If a user or group is not on PenguinMod, you may use their name instead.
 
 Please note, you do not need to credit the use of:
@@ -101,6 +101,18 @@ If the moderators can not access the project and its contents from within the si
 Using these actions to prevent remixing or reuploading will be implemented into PenguinMod at a later date.
 Preventing remixing or reuploading currently will get your project removed as it will limit the ability for moderators to access your project.
 
+# Exploiting or Abusing PenguinMod systems
+You are not allowed to encourage, create, or upload projects that abuse PenguinMod's systems.
+This means you can't make projects that:
+- Report other users or projects in large amounts (mass-reporting)
+- Reward or encourage others to break PenguinMod's rules
+- Try to get around PenguinMod's time limits, like uploading projects too quickly
+- Include or use tools to spam reports, project views/loves/votes, or create fake/bot accounts
+- Show ways to avoid bans, account deletions, or other punishments
+- Abuse a bug/glitch in PenguinMod to harm other users or projects
+
+Your account may be banned or deleted for breaking these rules and your project may be removed.
+
 # Limits on Audio/Sound
 If any audio clips in your project are past the top of the audio preview in the Sounds tab,
 moderators are allowed to mute/remove the offending audio or remove your project entirely.
@@ -110,7 +122,7 @@ This also applies if you are using multiple audio clips to play loud/unpleasant 
 If you intend to include loud audio in the project, you must display a warning screen that the user must interact with to continue.
 Stating loud sounds are in the project using the title, instructions or notes is not sufficent.
 
-# Be respectful to others.
+# Be respectful to others
 Your project cannot contain any derogatory terms (slurs).
 Your project will be removed and repeated violation will cause your account to be banned.
 
@@ -145,6 +157,18 @@ Any content that promotes or encourages suicide, self-harm or creating/sending d
 
 Content related to, glorifying, or referencing mass shootings, bombings, or any form of violent extremism will be removed.
 Repeated violation will cause your account to be banned.
+
+# Keeping yourself safe
+You should not include personal info about yourself in your project.
+This means you should not share:
+- Your real name
+- How old you are or when you were born
+- Where you live
+- Your password or your email
+- Pictures of yourself
+
+We will delete or censor your project if it contains this info.
+This is to protect you and your safety. We may ban your account for sharing your personal information if you continue to do it.
 
 # Keeping others safe
 Your project should not put others in danger. General rules for this are:
@@ -212,7 +236,7 @@ You also cannot:
 - Encourage or make reference to shooting living things in real life
 - Encourage or make reference to shooting buildings in real life
 
-# Use other platforms sparingly.
+# Use other platforms sparingly
 If you are linking to a seperate Discord or site anywhere on your project (including iframes),
 your actions on that site (or the site itself if it is not a major platform) must not endanger others
 or display content to them that is only appropriate for certain ages.
