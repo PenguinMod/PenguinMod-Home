@@ -220,15 +220,14 @@
         newMetadata.title = projectName;
         newMetadata.instructions = components.projectInstructions.value;
         newMetadata.notes = components.projectNotes.value;
-        if (!newProjectImage) {
-            newProjectImage = await fetch("/empty-project.png").then(res => res.blob());
-        }
 
-        data.image = newProjectImage;
+        if (newProjectImage) {
+            data.image = newProjectImage;
+        } // we're not going to send the image if it's not changed
 
         if (newProjectData) {
             data.project = newProjectData;
-        }
+        } // we're not going to send the project if it's not changed
 
         ProjectClient.updateProject(projectId, data)
             .then(kickOut)
