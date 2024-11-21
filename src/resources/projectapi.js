@@ -1323,7 +1323,6 @@ class ProjectApi {
         newjson.metaAgent = json.meta.agent;
 
         for (const target in json.targets) {
-
             let newtarget = {
                 id: json.targets[target].id,
                 isStage: json.targets[target].isStage,
@@ -1339,10 +1338,10 @@ class ProjectApi {
                 sounds: [],
                 volume: json.targets[target].volume,
                 layerOrder: json.targets[target].layerOrder,
-                x: json.targets[target].x,
-                y: json.targets[target].y,
-                size: json.targets[target].size,
-                direction: json.targets[target].direction,
+                x: Math.round(json.targets[target].x || 0),
+                y: Math.round(json.targets[target].y || 0),
+                size: Math.round(json.targets[target].size || 0),
+                direction: Math.round(json.targets[target].direction || 0),
                 draggable: json.targets[target].draggable,
                 rotationStyle: json.targets[target].rotationStyle,
                 tempo: json.targets[target].tempo,
@@ -1418,7 +1417,7 @@ class ProjectApi {
                         argumentdefaults: blocks[block].mutation.argumentdefaults,
                         warp: blocks[block].mutation.warp == "true" ? true : false,
                         _returns: blocks[block].mutation.returns,
-                        edited: blocks[block].mutation.edited,
+                        edited: Boolean(blocks[block].mutation.edited),
                         optype: blocks[block].mutation.optype,
                         color: blocks[block].mutation.color
                     }
@@ -1482,18 +1481,22 @@ class ProjectApi {
                 id: json.monitors[monitor].id,
                 mode: json.monitors[monitor].mode,
                 opcode: json.monitors[monitor].opcode,
-                params: json.monitors[monitor].params,
-                spriteName: json.monitors[monitor].spriteName,
+                params: {},
+                spriteName: json.monitors[monitor].spriteName || "",
                 value: String(json.monitors[monitor].value),
                 width: json.monitors[monitor].width,
                 height: json.monitors[monitor].height,
-                x: json.monitors[monitor].x,
-                y: json.monitors[monitor].y,
+                x: Math.round(json.monitors[monitor].x || 0),
+                y: Math.round(json.monitors[monitor].y || 0),
                 visible: json.monitors[monitor].visible,
                 sliderMin: json.monitors[monitor].sliderMin,
                 sliderMax: json.monitors[monitor].sliderMax,
                 isDiscrete: json.monitors[monitor].isDiscrete,
             });
+
+            for (const param in json.monitors[monitor].params) {
+                newjson.monitors[monitor].params[param] = JSON.stringify(json.monitors[monitor].params[param]);
+            }
         }
 
         // loop over the extensionData
@@ -1510,11 +1513,18 @@ class ProjectApi {
             newjson.extensionURLs[extensionURL] = json.extensionURLs[extensionURL];
         }
 
+        const verify = project.verify(newjson);
+        if (verify) {
+            alert(verify);
+            throw new Error(verify);
+        }
+
         return project.encode(project.create(newjson)).finish();
     }
 
     protobufToJson(buffer) {
         const message = project.decode(buffer);
+
         const json = project.toObject(message);
 
         const newJson = {
@@ -1645,8 +1655,8 @@ class ProjectApi {
                 id: json.monitors[monitor].id,
                 mode: json.monitors[monitor].mode,
                 opcode: json.monitors[monitor].opcode,
-                params: json.monitors[monitor].params,
-                spriteName: json.monitors[monitor].spriteName || null,
+                params: {},
+                spriteName: json.monitors[monitor].spriteName || "",
                 value: json.monitors[monitor].value,
                 width: json.monitors[monitor].width,
                 height: json.monitors[monitor].height,
@@ -1656,6 +1666,10 @@ class ProjectApi {
                 sliderMin: json.monitors[monitor].sliderMin,
                 sliderMax: json.monitors[monitor].sliderMax,
                 isDiscrete: json.monitors[monitor].isDiscrete
+            }
+
+            for (const param in json.monitors[monitor].params) {
+                newMonitor.params[param] = JSON.parse(json.monitors[monitor].params[param]);
             }
 
             newJson.monitors.push(newMonitor);
