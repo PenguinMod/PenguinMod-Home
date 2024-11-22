@@ -1438,14 +1438,17 @@ class ProjectApi {
             for (const comment in json.targets[target].comments) {
                 newtarget.comments[comment] = {
                     blockId: json.targets[target].comments[comment].blockId,
-                    x: json.targets[target].comments[comment].x,
-                    y: json.targets[target].comments[comment].y,
-                    width: json.targets[target].comments[comment].width,
-                    height: json.targets[target].comments[comment].height,
+                    x: Math.round(json.targets[target].comments[comment].x || 0),
+                    y: Math.round(json.targets[target].comments[comment].y || 0),
+                    width: Math.round(json.targets[target].comments[comment].width || 0),
+                    height: Math.round(json.targets[target].comments[comment].height || 0),
                     minimized: json.targets[target].comments[comment].minimized,
                     text: json.targets[target].comments[comment].text
                 }
+                console.log(newtarget.comments[comment]);
             }
+
+            console.log(json.targets[target].comments);
 
             // loop over the costumes
             for (const costume in json.targets[target].costumes) {
@@ -1636,15 +1639,7 @@ class ProjectApi {
             }
 
             for (const comment in target.comments) {
-                newTarget.comments[comment] = {
-                    blockId: target.comments[comment].blockId,
-                    x: Math.round(target.comments[comment].x || 0),
-                    y: Math.round(target.comments[comment].y || 0),
-                    width: Math.round(target.comments[comment].width || 0),
-                    height: Math.round(target.comments[comment].height || 0),
-                    minimized: target.comments[comment].minimized,
-                    text: target.comments[comment].text
-                }
+                newTarget.comments[comment] = target.comments[comment];
             }
 
             for (const costume in target.costumes) {
