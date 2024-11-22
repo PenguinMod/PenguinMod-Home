@@ -177,8 +177,6 @@
             hCaptcha_token = token;
         };
     });
-
-    let captcha_box;
 </script>
     
 <svelte:head>

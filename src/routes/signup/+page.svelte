@@ -435,8 +435,10 @@
 
         hcaptcha.render('hcaptcha', {
             sitekey: "1200fd04-661a-4cd4-ac36-1494e69a24b4",
-            theme: "dark",
+            // if body contains dark-mode class, use dark
+            theme: document.body.classList.contains("dark-mode") ? "dark" : "light",
             'error-callback': 'onHcaptchaError',
+            hl: currentLang
         });
 
         window.on_captcha_complete = (token) => {
@@ -703,9 +705,10 @@
             on:input={birthdayInputChanged}
         />
         
-        <div
+        <div 
             id="hcaptcha"
             data-callback="on_captcha_complete"
+            data-theme="light"
         />
 
         {#if birthdayFaked}
