@@ -1448,8 +1448,6 @@ class ProjectApi {
                 console.log(newtarget.comments[comment]);
             }
 
-            console.log(json.targets[target].comments);
-
             // loop over the costumes
             for (const costume in json.targets[target].costumes) {
                 newtarget.costumes[costume] = {
