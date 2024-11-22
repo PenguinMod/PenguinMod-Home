@@ -1636,7 +1636,15 @@ class ProjectApi {
             }
 
             for (const comment in target.comments) {
-                newTarget.comments[comment] = target.comments[comment];
+                newTarget.comments[comment] = {
+                    blockId: target.comments[comment].blockId,
+                    x: Math.round(target.comments[comment].x || 0),
+                    y: Math.round(target.comments[comment].y || 0),
+                    width: Math.round(target.comments[comment].width || 0),
+                    height: Math.round(target.comments[comment].height || 0),
+                    minimized: target.comments[comment].minimized,
+                    text: target.comments[comment].text
+                }
             }
 
             for (const costume in target.costumes) {
