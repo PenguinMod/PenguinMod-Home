@@ -55,6 +55,8 @@
     let consentedToDataUsage = false;
     let accurateDataAgreement = false;
 
+    let hCaptcha_token = null;
+
     const usernameRequirements = [
         {name: "username.requirement.length", value: false},
         {name: "username.requirement.letters", value: false},
@@ -69,8 +71,12 @@
     ]
 
     async function createAccount() {
-        const token = await Authentication.createAccount(username, password, email, birthday, country);
+        const token = await Authentication.createAccount(username, password, email, birthday, country, hCaptcha_token);
         
+        if (!token) {
+            throw "Failed to create account";
+        }
+
         localStorage.setItem("username", username);
         localStorage.setItem("token", token);
     }
@@ -225,6 +231,10 @@
         if (userCheck) {
             // the username is unique if it doesnt meet any of the other requirements
             usernameRequirements[2].value = true;
+        }
+
+        if (hCaptcha_token === null) {
+            canCreateAccount = false;
         }
 
         return canCreateAccount;
@@ -414,6 +424,25 @@
         const bodyHTML = md.renderer.render(tokens, md.options, env);
         return bodyHTML;
     };
+
+    // h-captcha
+
+    onMount(() => {
+        window.onHcaptchaError = () => {
+            alert("Failed to verify you are human. Please try again.");
+            hcaptcha.reset();
+        };
+
+        hcaptcha.render('hcaptcha', {
+            sitekey: "1200fd04-661a-4cd4-ac36-1494e69a24b4",
+            theme: "dark",
+            'error-callback': 'onHcaptchaError',
+        });
+
+        window.on_captcha_complete = (token) => {
+            hCaptcha_token = token;
+        };
+    });
 </script>
     
 <svelte:head>
@@ -425,6 +454,7 @@
     <meta property="twitter:description" content="Sign up for PenguinMod to start sharing your projects!">
     <meta property="og:url" content="https://penguinmod.com/signup">
     <meta property="twitter:url" content="https://penguinmod.com/signup">
+    <script src="https://js.hcaptcha.com/1/api.js?render=explicit" async defer></script>
 </svelte:head>
 
 {#if !embed}
@@ -672,6 +702,12 @@
             data-valid={birthdayValid}
             on:input={birthdayInputChanged}
         />
+        
+        <div
+            id="hcaptcha"
+            data-callback="on_captcha_complete"
+        />
+
         {#if birthdayFaked}
             <p class="birthday-warning">
                 <LocalizedText
@@ -725,7 +761,7 @@
             )}`)}
         </p>
 
-        <button class="create-acc" data-canCreate={canCreateAccount} on:click={createAccountSafe}>
+        <button type="submit" class="create-acc" data-canCreate={canCreateAccount} on:click={createAccountSafe}>
             {#if creatingAccount}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}

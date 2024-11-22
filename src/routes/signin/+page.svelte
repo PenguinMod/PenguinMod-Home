@@ -34,13 +34,14 @@
     let showingPassword = false;
 
     let wrongInfo = false;
+    let hCaptcha_token = false;
 
     const togglePasswordView = () => {
         showingPassword = !showingPassword;
     };
 
     async function login() {
-        const token = await Authentication.verifyPassword(username, password);
+        const token = await Authentication.verifyPassword(username, password, hCaptcha_token);
 
         if (token) {
             localStorage.setItem("username", username);
@@ -83,6 +84,9 @@
             }
         }, (err) => {
             wrongInfo = true;
+            alert('error:', err);
+        })
+        .catch((err) => {
             alert('error:', err);
         })
         .finally(() => {
@@ -154,6 +158,27 @@
         password = event.target.value;
         wrongInfo = false
     }
+
+    onMount(() => {
+        window.onHcaptchaError = () => {
+            alert("Failed to verify you are human. Please try again.");
+            hcaptcha.reset();
+        };
+
+        hcaptcha.render('hcaptcha', {
+            sitekey: "1200fd04-661a-4cd4-ac36-1494e69a24b4",
+            // if body contains dark-mode class, use dark
+            theme: document.body.classList.contains("dark-mode") ? "dark" : "light",
+            'error-callback': 'onHcaptchaError',
+            hl: currentLang
+        });
+
+        window.on_captcha_complete = (token) => {
+            hCaptcha_token = token;
+        };
+    });
+
+    let captcha_box;
 </script>
     
 <svelte:head>
@@ -165,6 +190,7 @@
     <meta property="twitter:description" content="Login for PenguinMod to start sharing your projects!">
     <meta property="og:url" content="https://penguinmod.com/signin">
     <meta property="twitter:url" content="https://penguinmod.com/signin">
+    <script src="https://js.hcaptcha.com/1/api.js?render=explicit&hl=__LANGUAGE_CODE__" async defer></script>
 </svelte:head>
 
 {#if !embed}
@@ -333,7 +359,14 @@
                 {/if}
             </button>
         </div>
-        <button class="Login-acc" on:click={LoginAccountSafe}>
+
+        <div 
+            id="hcaptcha"
+            data-callback="on_captcha_complete"
+            data-theme="light"
+        />
+
+        <button class="Login-acc" data-canClick={hCaptcha_token!==null} on:click={LoginAccountSafe}>
             {#if loggingIn}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}
@@ -527,6 +560,11 @@
         justify-content: center;
         border: 1px solid rgba(0, 0, 0, 0.2);
         font-size: 18px;
+        background: #00546d;
+        color: grey;
+    }
+
+    .Login-acc[data-canClick=true] {
         background: #00c3ff;
         cursor: pointer;
         color: white;
