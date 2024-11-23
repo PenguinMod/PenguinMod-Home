@@ -26,7 +26,6 @@
             );
             title = translated;
         }
-        console.log(title);
     }
 </script>
 
