@@ -324,6 +324,8 @@
 		style="padding:0.5rem"
 		classActor={"themeSwitcher"}
 		on:click={switchTheme}
+		title="navigation.theme"
+		lang={currentLang}
 	/>
 	<div class="only-non-launcher">
 		<BarPage link={LINK.editor}>
@@ -367,6 +369,8 @@
 			link="/messages"
 			label={"<img src='/messagesstatic/messages.svg' width='25' alt='Messages'>"}
 			style="padding:0.5rem"
+			title="messages.title"
+			lang={currentLang}
 		>
 			{#if messageCount > 0}
 				<div class="message-badge">
@@ -382,6 +386,8 @@
 			link="/mystuff"
 			label="<img src='/messagesstatic/mystuff.svg' width='25' alt='My Stuff'>"
 			style="padding:0.5rem"
+			title="mystuff.title"
+			lang={currentLang}
 		/>
 	{/if}
 	{#if (isAdmin || isApprover) && loggedIn}
@@ -389,6 +395,7 @@
 			link="/panel"
 			label="<img src='/messagesstatic/panel.svg' width='25' alt='Panel'>"
 			style="padding:0.5rem"
+			title="Admin Panel"
 		/>
 	{/if}
 	{#if loggedIn === false}
@@ -430,6 +437,8 @@
 				: "")}
 		classActor={"languageButton"}
 		on:click={openLanguageMenu}
+		title="navigation.language"
+		lang={currentLang}
 	/>
 </div>
 

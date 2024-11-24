@@ -1,5 +1,6 @@
 <script>
     import { createEventDispatcher } from "svelte";
+    import Translations from "../../resources/translations.js";
 
     export let link = false;
     export let label = "";
@@ -7,11 +8,24 @@
     export let noredirect = false;
     export let classActor = "";
     export let id = "";
+    export let title = "";
+    export let lang = "en";
 
     const dispatch = createEventDispatcher();
 
     function event(...args) {
         dispatch("click", ...args);
+    }
+
+    $: {
+        if (!title == "") {
+            const translated = Translations.textSafe(
+                title,
+                lang,
+                title
+            );
+            title = translated;
+        }
     }
 </script>
 
@@ -21,6 +35,7 @@
         on:click={event}
         {style}
         {id}
+        {title}
     >
         {@html label}
         <slot />
@@ -31,6 +46,7 @@
         target={noredirect ? "_blank" : "_self"}
         style="text-decoration: none;"
         class={`${classActor ? ` ca-${classActor}` : ""}`}
+        {title}
     >
         <button class="button" on:click={event} {style} {id}>
             {@html label}
