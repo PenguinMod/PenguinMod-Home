@@ -1232,6 +1232,7 @@
                         <img
                             src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectID=${lastSelectedProjectId}&requestType=thumbnail`}
                             alt="Project Thumbnail"
+                            style={{ maxWidth: '100%' }} 
                         />
                     </a>
                 {/if}
