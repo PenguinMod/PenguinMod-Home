@@ -257,10 +257,26 @@
                 if (data.type === "image") {
                     projectImageURL = data.uri;
                     projectImage = dataURLtoBlob(data.uri);
+                    if (projectData) ProjectClient.handleProjectFile(projectData, projectImage.size)
+                        .catch(err => {
+                            if (err === 'ProjectToLarge') {
+                                alert('Icon to large!! remember that the icon size is included as a part of project size!');
+                                return;
+                            }
+                            throw err;
+                        });
                 }
                 // project: uri of project data
                 if (data.type === "project") {
                     projectData = dataURLtoBlob(data.uri);
+                    ProjectClient.handleProjectFile(projectData, projectImage?.size)
+                        .catch(err => {
+                            if (err === 'ProjectToLarge') {
+                                alert('Project to large!! remember that the icon size is included as a part of project size!');
+                                return;
+                            }
+                            throw err;
+                        });
                 }
 
                 // we done here
@@ -293,6 +309,14 @@
         input = input.target;
         projectImage = input.files[0];
         projectImageURL = await filePicked(projectImage);
+        if (projectData) ProjectClient.handleProjectFile(projectData, projectImage.size)
+            .catch(err => {
+                if (err === 'ProjectToLarge') {
+                    alert('Icon to large!! remember that the icon size is included as a part of project size!');
+                    return;
+                }
+                throw err;
+            });
     }
     async function projectFilePicked(input) {
         input = input.target;
@@ -305,6 +329,14 @@
         )
             .replace("$2", floatTo2Decimals(file.size / 1250000))
             .replace("$1", file.name);
+        ProjectClient.handleProjectFile(projectData, projectImage?.size)
+            .catch(err => {
+                if (err === 'ProjectToLarge') {
+                    alert('Project to large!! remember that the icon size is included as a part of project size!');
+                    return;
+                }
+                throw err;
+            });
     }
 
     let isBusyUploading = false;
@@ -324,10 +356,8 @@
             remix: remixProjectId,
             project: projectData,
         })
-        .then((projectId) => {
-            window.open(`${PUBLIC_STUDIO_URL}/#${projectId}`);
-        })
-            .catch((err) => {
+            .then(projectId => open(`${PUBLIC_STUDIO_URL}/#${projectId}`))
+            .catch(err => {
                 const message = TranslationHandler.text(
                     `uploading.error.${String(err).toLowerCase()}`,
                     currentLang
@@ -974,7 +1004,7 @@
                 </div>
             </div>
             <div style="display:flex;flex-direction:row;margin-top:48px">
-                {#if loggedIn && projectData !== undefined}
+                {#if loggedIn && projectData}
                     <div>
                         {#if remixingProjectName}
                             <p>
