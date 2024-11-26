@@ -260,7 +260,7 @@
                     if (projectData) ProjectClient.handleProjectFile(projectData, projectImage.size)
                         .catch(err => {
                             if (err === 'ProjectToLarge') {
-                                alert('Icon to large!! remember that the icon size is included as a part of project size!');
+                                alert(TranslationHandler.text('uploading.error.projecttoolarge', currentLang));
                                 return;
                             }
                             throw err;
@@ -272,7 +272,7 @@
                     ProjectClient.handleProjectFile(projectData, projectImage?.size)
                         .catch(err => {
                             if (err === 'ProjectToLarge') {
-                                alert('Project to large!! remember that the icon size is included as a part of project size!');
+                                alert(TranslationHandler.text('uploading.error.projecttoolarge', currentLang));
                                 return;
                             }
                             throw err;
@@ -312,7 +312,7 @@
         if (projectData) ProjectClient.handleProjectFile(projectData, projectImage.size)
             .catch(err => {
                 if (err === 'ProjectToLarge') {
-                    alert('Icon to large!! remember that the icon size is included as a part of project size!');
+                    alert(TranslationHandler.text('uploading.error.projecttoolarge', currentLang));
                     return;
                 }
                 throw err;
@@ -332,7 +332,7 @@
         ProjectClient.handleProjectFile(projectData, projectImage?.size)
             .catch(err => {
                 if (err === 'ProjectToLarge') {
-                    alert('Project to large!! remember that the icon size is included as a part of project size!');
+                    alert(TranslationHandler.text('uploading.error.projecttoolarge', currentLang));
                     return;
                 }
                 throw err;
