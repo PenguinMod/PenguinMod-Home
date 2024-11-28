@@ -160,7 +160,6 @@
     }
 
     onMount(() => {
-
         window.on_captcha_complete = (token) => {
             captcha_token = token;
         };
@@ -349,7 +348,7 @@
         <div
             class="cf-turnstile"
             data-sitekey="0x4AAAAAAA0-uEePyt9NmTMl"
-            data-callback="javascriptCallback"
+            data-callback="on_captcha_complete"
         ></div>
 
         <button class="Login-acc" data-canClick={captcha_token&&username&&password} on:click={LoginAccountSafe}>
