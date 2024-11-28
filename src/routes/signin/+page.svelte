@@ -161,6 +161,7 @@
 
     onMount(() => {
         window.on_captcha_complete = (token) => {
+            console.log("Captcha completed", token);
             captcha_token = token;
         };
     });
