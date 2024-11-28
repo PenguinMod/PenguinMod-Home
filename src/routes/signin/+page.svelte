@@ -352,7 +352,7 @@
             data-callback="on_captcha_complete"
         ></div>
 
-        <button class="Login-acc" data-canClick={captcha_token} on:click={LoginAccountSafe}>
+        <button class="Login-acc" data-canClick={!!captcha_token} on:click={LoginAccountSafe}>
             {#if loggingIn}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}
