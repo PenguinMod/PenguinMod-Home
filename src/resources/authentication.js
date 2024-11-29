@@ -26,11 +26,9 @@ class Authentication {
         const body = {
             username,
             password,
-            captcha_token
+            captcha_token,
+            temp_use_cf: true,
         };
-
-        console.log(captcha_token);
-        return new Promise((resolve, reject) => {reject("NotImplemented")});
 
         return new Promise((resolve, reject) => {
             fetch(url, {

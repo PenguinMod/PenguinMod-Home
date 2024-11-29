@@ -161,8 +161,11 @@
 
     onMount(() => {
         window.on_captcha_complete = (token) => {
-            console.log("Captcha completed", token);
             captcha_token = token;
+        };
+
+        window.on_captcha_expired = () => {
+            captcha_token = false;
         };
     });
 </script>
@@ -350,6 +353,7 @@
             class="cf-turnstile"
             data-sitekey="0x4AAAAAAA0-uEePyt9NmTMl"
             data-callback="on_captcha_complete"
+            data-expired-callback="on_captcha_expired"
         ></div>
 
         <button class="Login-acc" data-canClick={!!captcha_token} on:click={LoginAccountSafe}>
