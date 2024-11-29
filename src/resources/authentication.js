@@ -27,7 +27,6 @@ class Authentication {
             username,
             password,
             captcha_token,
-            temp_use_cf: true,
         };
 
         return new Promise((resolve, reject) => {
