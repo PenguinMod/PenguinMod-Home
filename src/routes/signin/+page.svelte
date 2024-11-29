@@ -54,6 +54,8 @@
 
     const LoginAccountSafe = () => {
         if (loggingIn) return;
+        if (!captcha_token) return;
+
         loggingIn = true;
         login()
         .then((success) => {
