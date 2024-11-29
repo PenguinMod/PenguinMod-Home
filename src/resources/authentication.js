@@ -26,9 +26,9 @@ class Authentication {
         const body = {
             username,
             password,
-            captcha_token
-        }
-        
+            captcha_token,
+        };
+
         return new Promise((resolve, reject) => {
             fetch(url, {
                 method: "POST",

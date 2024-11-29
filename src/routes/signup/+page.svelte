@@ -55,7 +55,7 @@
     let consentedToDataUsage = false;
     let accurateDataAgreement = false;
 
-    let hCaptcha_token = null;
+    let captcha_token = false;
 
     const usernameRequirements = [
         {name: "username.requirement.length", value: false},
@@ -71,7 +71,7 @@
     ]
 
     async function createAccount() {
-        const token = await Authentication.createAccount(username, password, email, birthday, country, hCaptcha_token);
+        const token = await Authentication.createAccount(username, password, email, birthday, country, captcha_token);
         
         if (!token) {
             throw "Failed to create account";
@@ -233,7 +233,7 @@
             usernameRequirements[2].value = true;
         }
 
-        if (hCaptcha_token === null) {
+        if (captcha_token === false) {
             canCreateAccount = false;
         }
 
@@ -425,25 +425,18 @@
         return bodyHTML;
     };
 
-    // h-captcha
+    // captcha
 
     onMount(() => {
-        window.onHcaptchaError = () => {
-            alert("Failed to verify you are human. Please try again.");
-            hcaptcha.reset();
-        };
-
-        hcaptcha.render('hcaptcha', {
-            sitekey: "1200fd04-661a-4cd4-ac36-1494e69a24b4",
-            // if body contains dark-mode class, use dark
-            theme: document.body.classList.contains("dark-mode") ? "dark" : "light",
-            'error-callback': 'onHcaptchaError',
-            hl: currentLang
-        });
-
+        onMount(() => {
         window.on_captcha_complete = (token) => {
-            hCaptcha_token = token;
+            captcha_token = token;
         };
+
+        window.on_captcha_expired = () => {
+            captcha_token = false;
+        };
+    });
     });
 </script>
     
@@ -456,7 +449,7 @@
     <meta property="twitter:description" content="Sign up for PenguinMod to start sharing your projects!">
     <meta property="og:url" content="https://penguinmod.com/signup">
     <meta property="twitter:url" content="https://penguinmod.com/signup">
-    <script src="https://js.hcaptcha.com/1/api.js?render=explicit" async defer></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </svelte:head>
 
 {#if !embed}
@@ -705,11 +698,12 @@
             on:input={birthdayInputChanged}
         />
         
-        <div 
-            id="hcaptcha"
+        <div
+            class="cf-turnstile"
+            data-sitekey="0x4AAAAAAA0-uEePyt9NmTMl"
             data-callback="on_captcha_complete"
-            data-theme="light"
-        />
+            data-expired-callback="on_captcha_expired"
+        ></div>
 
         {#if birthdayFaked}
             <p class="birthday-warning">
