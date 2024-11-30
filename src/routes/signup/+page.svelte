@@ -99,6 +99,10 @@
                 return alert("Not all agreements have been checked.");
             }
 
+            if (captcha_token === false) {
+                return alert("Please complete the captcha");
+            }
+
             alert(TranslationHandler.textSafe(
                 "username.requirement.notmet",
                 currentLang,
