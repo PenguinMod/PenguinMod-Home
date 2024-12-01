@@ -161,16 +161,14 @@
     };
 
     let unapprovedPage = 1;
-    /*
     function openProjectsMenu(type) {
         // type is assumed to be unapproved because we have nothing else right now
         unapprovedProjects = [];
         contentWithReports = [];
-        ProjectClient.getUnapprovedProjects(unapprovedPage - 1).then(unapprovedProjs => {
+        ProjectClient.getRemovedProjects(unapprovedPage - 1).then(unapprovedProjs => {
             unapprovedProjects = unapprovedProjs;
         });
     }
-    */
     function openReportsMenu(type) {
         unapprovedProjects = [];
         contentWithReports = [];

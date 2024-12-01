@@ -136,10 +136,7 @@ class ProjectApi {
         });
     }
 
-    /**
-     * @deprecated Cannot be used statically anymore.
-     */
-    static getUnapprovedProjects() {
+    getRemovedProjects() {
         throw new Error("Unapproved Projects can only be viewed in a client")
     }
 
@@ -1482,7 +1479,7 @@ class ProjectApi {
                 id: json.monitors[monitor].id,
                 mode: json.monitors[monitor].mode,
                 opcode: json.monitors[monitor].opcode,
-                params: {},
+                params: json.monitors[monitor].params,
                 spriteName: json.monitors[monitor].spriteName || "",
                 value: String(json.monitors[monitor].value),
                 width: json.monitors[monitor].width,
@@ -1494,10 +1491,6 @@ class ProjectApi {
                 sliderMax: json.monitors[monitor].sliderMax,
                 isDiscrete: json.monitors[monitor].isDiscrete,
             });
-
-            for (const param in json.monitors[monitor].params) {
-                newjson.monitors[monitor].params[param] = JSON.stringify(json.monitors[monitor].params[param]);
-            }
         }
 
         // loop over the extensionData
