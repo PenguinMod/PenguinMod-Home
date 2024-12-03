@@ -99,7 +99,7 @@
                 return alert("Not all agreements have been checked.");
             }
 
-            if (captcha_token === false) {
+            if (!captcha_token) {
                 return alert("Please complete the captcha");
             }
 
@@ -237,7 +237,7 @@
             usernameRequirements[2].value = true;
         }
 
-        if (captcha_token === false) {
+        if (!captcha_token) {
             canCreateAccount = false;
         }
 
@@ -435,10 +435,12 @@
         onMount(() => {
         window.on_captcha_complete = (token) => {
             captcha_token = token;
+            checkIfValid();
         };
 
         window.on_captcha_expired = () => {
             captcha_token = false;
+            checkIfValid();
         };
     });
     });
