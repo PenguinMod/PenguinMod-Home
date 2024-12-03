@@ -432,7 +432,6 @@
     // captcha
 
     onMount(() => {
-        onMount(() => {
         window.on_captcha_complete = (token) => {
             captcha_token = token;
             checkIfValid();
@@ -442,7 +441,6 @@
             captcha_token = false;
             checkIfValid();
         };
-    });
     });
 </script>
     
