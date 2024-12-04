@@ -1333,7 +1333,7 @@ class ProjectApi {
                 currentCostume: json.targets[target].currentCostume,
                 costumes: [],
                 sounds: [],
-                volume: json.targets[target].volume,
+                volume: Math.round(json.targets[target].volume || 0),
                 layerOrder: json.targets[target].layerOrder,
                 x: Math.round(json.targets[target].x || 0),
                 y: Math.round(json.targets[target].y || 0),

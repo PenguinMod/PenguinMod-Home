@@ -176,14 +176,14 @@ class Authentication {
         });
     }
 
-    static sendResetPasswordEmail(email) {
+    static sendResetPasswordEmail(email, captcha_token) {
         return new Promise((resolve, reject) => {
             fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/resetpassword/sendEmail`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ email })
+                body: JSON.stringify({ email, captcha_token })
             }).then(r => r.json().then(j => {
                 if (j.error) return reject(j.error);
                 resolve(j.token);

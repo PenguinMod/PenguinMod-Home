@@ -27,9 +27,10 @@
     let sendingEmail = false;
     let emailValid = false;
     let embed = false;
+    let captcha_token = false;
 
     async function sendEmail() {
-        await Authentication.sendResetPasswordEmail(email);
+        await Authentication.sendResetPasswordEmail(email, captcha_token);
         alert("Check your email.");
     }
     const sendEmailSafe = () => {
@@ -82,9 +83,29 @@
         ) ? true : false;
     };
 
-    function emailInputChanged(event) {
-        emailValid = validateEmail(event.target.value);
+    function emailInputChanged() {
+        email = event.target.value;
+        checkIfValid();
     }
+
+    function checkIfValid() {
+        emailValid = validateEmail(email);
+        canCreate = emailValid && captcha_token;
+    }
+
+    let canCreate = false;
+
+    onMount(() => {
+        window.on_captcha_complete = (token) => {
+            captcha_token = token;
+            checkIfValid();
+        };
+
+        window.on_captcha_expired = () => {
+            captcha_token = false;
+            checkIfValid();
+        };
+    });
 </script>
     
 <svelte:head>
@@ -96,6 +117,7 @@
     <meta property="twitter:description" content="Sign up for PenguinMod to start sharing your projects!">
     <meta property="og:url" content="https://penguinmod.com/forgotpassword">
     <meta property="twitter:url" content="https://penguinmod.com/forgotpassword">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </svelte:head>
     
 <NavigationBar />
@@ -139,7 +161,14 @@
             bind:value={email}
         />
 
-        <button class="send-email" data-canCreate={emailValid} on:click={sendEmailSafe}>
+        <div
+            class="cf-turnstile"
+            data-sitekey="0x4AAAAAAA0-uEePyt9NmTMl"
+            data-callback="on_captcha_complete"
+            data-expired-callback="on_captcha_expired"
+        ></div>
+
+        <button class="send-email" data-canCreate={canCreate} on:click={sendEmailSafe}>
             {#if sendingEmail}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}
