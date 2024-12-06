@@ -187,7 +187,7 @@
                 return TranslationHandler.text("feed.uploaded", currentLang)
                     .replace("$1", author)
                     .replace("$2", content.name);
-            case "remixed":
+            case "remix":
                 return TranslationHandler.text("feed.remixed", currentLang)
                     .replace("$1", author)
                     .replace("$2", content.name);
@@ -201,8 +201,8 @@
     const getFeedUrl = (type, author, content) => {
         switch (type) {
             case "upload":
-            case "remixed":
-                return `${PUBLIC_STUDIO_URL}/#{content.id}`;
+            case "remix":
+                return `${PUBLIC_STUDIO_URL}/#${content.id}`;
             case "posted":
                 return `/profile?user=${author}&post=${content.id}`;
             default:
@@ -580,16 +580,17 @@
                                 <UserDisplay
                                     link={getFeedUrl(
                                         message.type,
-                                        message.data.username
-                                    )}
-                                    userLink={`/profile?user=${message.user.username}`}
-                                    text={getFeedText(
-                                        message.type,
-                                        message.user.username,
+                                        message.username,
                                         message.data
                                     )}
-                                    author={message.user.username}
-                                    image={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${message.user.username}`}
+                                    userLink={`/profile?user=${message.username}`}
+                                    text={getFeedText(
+                                        message.type,
+                                        message.username,
+                                        message.data
+                                    )}
+                                    author={message.username}
+                                    image={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${message.username}`}
                                 />
                             {/if}
                         {/each}
