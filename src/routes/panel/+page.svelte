@@ -45,12 +45,22 @@
             return;
         }
 
+        function Flatten(obj) {
+            let stats = [];
+            for (const name in stats) {
+                if (typeof stats[name] === "object") {
+                    // concat
+                    stats = stats.concat(Flatten(stats[name]));
+                    continue;
+                }
+                stats.push(`${name}: ${stats[name]}`)
+            }
+            return stats;
+        }
+
         ProjectApi.getServerInfo()
             .then((stats) => {
-                for (const name in stats) {
-                    serverStats.push(`${name}: ${stats[name]}`)
-                }
-                serverStats = serverStats
+                serverStats = Flatten(stats);
             })
             .catch((err) => {
                 console.error(err);
