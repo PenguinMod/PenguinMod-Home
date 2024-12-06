@@ -105,6 +105,13 @@
             captcha_token = false;
             checkIfValid();
         };
+
+        window.on_captcha_error = () => {
+            // reload the captcha
+            turnstile.reset();
+            captcha_token = false;
+            checkIfValid();
+        };
     });
 </script>
     
@@ -166,6 +173,7 @@
             data-sitekey="0x4AAAAAAA0-uEePyt9NmTMl"
             data-callback="on_captcha_complete"
             data-expired-callback="on_captcha_expired"
+            data-error-callback="on_captcha_error"
         ></div>
 
         <button class="send-email" data-canCreate={canCreate} on:click={sendEmailSafe}>
