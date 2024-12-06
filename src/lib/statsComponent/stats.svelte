@@ -20,7 +20,7 @@
     {#each stats_data as stat}
         {#if typeof stat === 'object'}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <p class="click_object" on:click={() => {object_clicks[stat.name] = !object_clicks[stat.name]}}>v {stat.name}</p>
+            <p class="click_object" on:click={() => {object_clicks[stat.name] = !object_clicks[stat.name]}}>{object_clicks[stat.name] ? ">" : "v"} {stat.name}</p>
             <Stats stats_data={stat.value} bind:render={object_clicks[stat.name]} />
         {:else}
             <p>{stat}</p>
