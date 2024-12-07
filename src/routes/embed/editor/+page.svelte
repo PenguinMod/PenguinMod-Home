@@ -5,15 +5,15 @@
     import { PUBLIC_STUDIO_URL } from "$env/static/public";
 
     const getLoginDetails = async () => {
-        const username = localStorage.getItem("username")
+        const username = localStorage.getItem("username");
         const token = localStorage.getItem("token");
         if (!token || !username) {
             return { loggedIn: false };
         }
 
         try {
-            const { _username } = await Authentication.usernameFromCode(username, token);
-            if (!_username) return { loggedIn: false };
+            const { username } = await Authentication.usernameFromCode(username, token);
+            if (!username) return { loggedIn: false };
             return {
                 loggedIn: true,
                 username
