@@ -31,21 +31,14 @@
     let tab = 'projects';
     let admin = false;
     let loggedIn = true;
+    let serverStats = [];
 
-    /*
     function kickOut(loggedOut) {
         const error = loggedOut ? 401 : 403;
         location.href = location.origin + `/error?error=${error}`;
     }
 
     onMount(() => {
-        const username = localStorage.getItem("username");
-        const token = localStorage.getItem("token");
-        if (!token || !username) {
-            loggedIn = false;
-            return;
-        }
-
         function Flatten(obj) {
             let stats = [];
             for (const name in obj) {
@@ -65,6 +58,15 @@
             .catch((err) => {
                 console.error(err);
             });
+        
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+        if (!token || !username) {
+            loggedIn = false;
+            return;
+        }
+
+        /*
         Authentication.usernameFromCode(username, token)
             .then(({ isAdmin, isApprover }) => {
                 admin = isAdmin;
@@ -80,6 +82,7 @@
                 loggedIn = false;
                 kickOut(true);
             });
+        */
     });
     // we dont need to add an "onAuthenticate" event
     // because you cant sign in on the /panel page,
@@ -89,7 +92,6 @@
         loggedIn = false;
         location.href = location.origin;
     });
-    */
 </script>
 
 <svelte:head>
@@ -136,7 +138,7 @@
         <div class="card-chunk">ip management</div>
     {:else if tab === 'misc'}
         <div class="projects-control">
-            <div class="card-chunk" style="grid-column: 1;">server stats</div>
+            <div class="card-chunk" style="grid-column: 1;"><Stats stats_data={serverStats} render={true}></Stats></div>
             <div class="card-chunk" style="grid-column: 2;">server on/offs and profanity config</div>
         </div>
     {/if}
