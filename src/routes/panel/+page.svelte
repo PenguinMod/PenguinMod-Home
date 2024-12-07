@@ -11,6 +11,7 @@
     import JSZip from "jszip";
     import BlobAndDataUrl from "./blobanddataurl.js";
     import FileTypes from "./filetypes.js";
+    import Stats from "../../lib/statsComponent/stats.svelte";
 
     const ProjectClient = new ProjectApi();
 
@@ -45,12 +46,21 @@
             return;
         }
 
+        function Flatten(obj) {
+            let stats = [];
+            for (const name in obj) {
+                if (typeof obj[name] === "object") {
+                    stats.push({ name: name, value: Flatten(obj[name]) });
+                    continue;
+                }
+                stats.push(`${name}: ${obj[name]}`)
+            }
+            return stats;
+        }
+
         ProjectApi.getServerInfo()
             .then((stats) => {
-                for (const name in stats) {
-                    serverStats.push(`${name}: ${stats[name]}`)
-                }
-                serverStats = serverStats
+                serverStats = Flatten(stats);
             })
             .catch((err) => {
                 console.error(err);
