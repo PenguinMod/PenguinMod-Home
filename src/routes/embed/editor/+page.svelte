@@ -12,11 +12,11 @@
         }
 
         try {
-            const { username } = await Authentication.usernameFromCode(username, token);
-            if (!username) return { loggedIn: false };
+            const { username:_username } = await Authentication.usernameFromCode(username, token);
+            if (!_username) return { loggedIn: false };
             return {
                 loggedIn: true,
-                username
+                _username
             };
         } catch (e) {
             console.warn(e);
