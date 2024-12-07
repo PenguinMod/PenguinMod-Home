@@ -16,7 +16,7 @@
             if (!_username) return { loggedIn: false };
             return {
                 loggedIn: true,
-                _username
+                username: _username
             };
         } catch (e) {
             console.warn(e);
