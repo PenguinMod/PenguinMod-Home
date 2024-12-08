@@ -3,6 +3,7 @@
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
     import EmojiList from "../../resources/emojis.js";
+    import { PUBLIC_STUDIO_URL, PUBLIC_MAX_UPLOAD_SIZE } from "$env/static/public";
 
     const ProjectClient = new ProjectApi();
 
@@ -15,6 +16,7 @@
     import Button from "$lib/Button/Button.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import StatusAlert from "$lib/Alert/StatusAlert.svelte";
+    import Stats from "../../lib/statsComponent/stats.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
@@ -47,6 +49,18 @@
     let newProjectImage;
     let newProjectURL;
     let newProjectData;
+    let projectSizes = ['thumbnail: 0MB', { name: 'project: 0MB', value: [] }];
+    function updateSize() {
+        projectSizes[0] = `thumbnail: ${(((projectImage?.size ?? 0) / 1024) / 1024).toFixed(2)}MB`;
+        if (projectData) 
+            ProjectClient.resolveProjectSizes(projectData, projectImage?.size ?? 0, true)
+                .then(([sizes, toLarge]) => {
+                    projectSizes = sizes;
+                    console.log(sizes);
+                    if (toLarge) 
+                        alert(TranslationHandler.text('uploading.error.projecttoolarge', currentLang));
+                });
+    }
 
     let projectInputName;
 
@@ -687,6 +701,9 @@
                             lang={currentLang}
                         />
                     </label>
+                    <span>Max project size: {PUBLIC_MAX_UPLOAD_SIZE}MB</span>
+                    <hr>
+                    <Stats stats_data={projectSizes} render={true}></Stats>
                 </div>
             </div>
             <div style="display:flex;flex-direction:row;margin-top:48px">

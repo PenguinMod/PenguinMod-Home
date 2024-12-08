@@ -3,7 +3,7 @@
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
     import EmojiList from "../../resources/emojis.js";
-    import { PUBLIC_STUDIO_URL } from "$env/static/public";
+    import { PUBLIC_STUDIO_URL, PUBLIC_MAX_UPLOAD_SIZE } from "$env/static/public";
 
     const ProjectClient = new ProjectApi();
 
@@ -986,6 +986,8 @@
                             lang={currentLang}
                         />
                     </label>
+                    <span>Max project size: {PUBLIC_MAX_UPLOAD_SIZE}MB</span>
+                    <hr>
                     <Stats stats_data={projectSizes} render={true}></Stats>
                 </div>
             </div>
