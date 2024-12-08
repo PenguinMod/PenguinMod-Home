@@ -33,7 +33,7 @@
         ? location.hash.slice(1) 
         : 'projects';
     let admin = false;
-    let loggedIn = true;
+    let loggedIn = null;
 
     function kickOut(loggedOut) {
         const error = loggedOut ? 401 : 403;
@@ -60,7 +60,6 @@
             return;
         }
 
-        /*
         Authentication.usernameFromCode(username, token)
             .then(({ isAdmin, isApprover }) => {
                 admin = isAdmin;
@@ -76,7 +75,6 @@
                 loggedIn = false;
                 kickOut(true);
             });
-        */
     });
     // we dont need to add an "onAuthenticate" event
     // because you cant sign in on the /panel page,
@@ -102,7 +100,6 @@
         case 'projects': break;
         case 'messages': break;
         case 'users': break;
-        case 'admin': break;
         case 'misc': 
             ProjectApi.getServerInfo()
                 .then(stats => serverStats = Flatten(stats))
@@ -147,9 +144,8 @@
         <div class="category-toggle-section">
             <button active={tab === 'projects'} on:click={() => tab = 'projects'}>Projects</button>
             <button active={tab === 'messages'} on:click={() => tab = 'messages'}>Messages</button>
-            <button active={tab === 'users'} admin={admin} on:click={() => tab = 'users'}>Users</button>
-            <button active={tab === 'admin'} admin={admin} on:click={() => tab = 'admin'}>Admin</button>
-            <button active={tab === 'misc'} admin={admin} on:click={() => tab = 'misc'}>Misc</button>
+            <button active={tab === 'users'} admin={!admin} on:click={() => tab = 'users'}>Users</button>
+            <button active={tab === 'misc'} admin={!admin} on:click={() => tab = 'misc'}>Misc</button>
         </div>
     </div>
     {#if tab === 'projects'}
@@ -161,8 +157,6 @@
         <div class="card-chunk">messages</div>
     {:else if tab === 'users'}
         <div class="card-chunk">users bans and badges</div>
-    {:else if tab === 'admin'}
-        <div class="card-chunk">ip management</div>
     {:else if tab === 'misc'}
         <div class="projects-control">
             <div class="card-chunk" style="grid-column: 1;"><Stats stats_data={serverStats} render={true}></Stats></div>
@@ -172,6 +166,7 @@
                         User IP Lookup
                         <div class="text-controlable" style="height:100%;">
                             <div style="width: 100%">
+                                <input  type="text">
                                 <textarea 
                                     bind:value={connections}
                                     class="text-box"
@@ -317,7 +312,7 @@
     }
     .category-toggle-section {
         display: grid;
-        grid-template-columns: repeat(5, 20%);
+        grid-template-columns: repeat(4, 20%);
         align-items: flex-end;
         justify-content: center;
         width: 100%;
