@@ -87,12 +87,16 @@
 
     $: if (browser) location.hash = tab;
 
+    /* --- Admin category --- */
+    let connections = '';
+    let connectionCheck = '';
+    let isCheckIP = false;
+
     /* --- Misc category --- */
     let serverStats = [];
     let canUploadProjects = true;
     let canViewProjects = true;
     let profanityFilter = '';
-    let connections = '';
 
     /* --- Preloaders --- */
     $: {
@@ -145,6 +149,7 @@
             <button active={tab === 'projects'} on:click={() => tab = 'projects'}>Projects</button>
             <button active={tab === 'messages'} on:click={() => tab = 'messages'}>Messages</button>
             <button active={tab === 'users'} admin={!admin} on:click={() => tab = 'users'}>Users</button>
+            <button active={tab === 'admin'} admin={!admin} on:click={() => tab = 'admin'}>Admin</button>
             <button active={tab === 'misc'} admin={!admin} on:click={() => tab = 'misc'}>Misc</button>
         </div>
     </div>
@@ -157,27 +162,64 @@
         <div class="card-chunk">messages</div>
     {:else if tab === 'users'}
         <div class="card-chunk">users bans and badges</div>
+    {:else if tab === 'admin'}
+        <div class="card-chunk">
+            <div class="misc-members">
+                <div class="misc-member">
+                    User IP Lookup
+                    <div class="text-controlable" style="height:100%;">
+                        <div style="width: 100%">
+                            <div style="display: grid; grid-template-columns: minmax(auto, 1fr) max-content">
+                                <input 
+                                    placeholder={isCheckIP ? "IP" : "Username"} 
+                                    type="text" 
+                                    style="width: 100%; box-sizing: border-box;"
+                                    bind:value={connectionCheck}
+                                >
+                                <div>
+                                    <input type="checkbox" name="checkIp" bind:value={isCheckIP}>
+                                    <label for="checkIp">Get IP</label>
+                                </div>
+                            </div>
+                            <textarea 
+                                bind:value={connections}
+                                class="text-box"
+                            ></textarea>
+                        </div>
+                        <div>
+                            <Button on:click={() => {
+                                console.log(connectionCheck, isCheckIP);
+                                (isCheckIP
+                                    ? ProjectClient.getConnectedUsers(connectionCheck)
+                                    : ProjectClient.getConnectedIPs(connectionCheck)
+                                )
+                                    .then(res => {
+                                        if (res.length <= 0) return connections = 'No connections';
+                                        connections = res
+                                            .map(ip => isCheckIP
+                                                ? ip.username
+                                                : `IP: ${ip.ip}, banned: ${ip.banned}, last login: ${unixToDisplayDate(ip.lastLogin)}`)
+                                            .join('\n');
+                                    })
+                                    .catch(err => {
+                                        console.error(err);
+                                        connections = `Failed to get connections: ${err}`
+                                    })
+                            }}>Get Connected</Button>
+                            <br>
+                            <Button on:click={() => {}} color="red">Ban IP</Button>
+                            <Button on:click={() => {}}>Unban IP</Button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div misc="member"></div>
+        </div>
     {:else if tab === 'misc'}
         <div class="projects-control">
             <div class="card-chunk" style="grid-column: 1;"><Stats stats_data={serverStats} render={true}></Stats></div>
             <div class="card-chunk" style="grid-column: 2;">
                 <div class="misc-members">
-                    <div class="misc-member">
-                        User IP Lookup
-                        <div class="text-controlable" style="height:100%;">
-                            <div style="width: 100%">
-                                <input  type="text">
-                                <textarea 
-                                    bind:value={connections}
-                                    class="text-box"
-                                ></textarea>
-                            </div>
-                            <div>
-                                <Button on:click={() => {}} color="red">Ban IP</Button>
-                                <Button on:click={() => {}}>Unban IP</Button>
-                            </div>
-                        </div>
-                    </div>
                     <div class="misc-member">
                         Profanity List
                         <div class="text-controlable" style="height:100%;">
@@ -253,6 +295,7 @@
 
     .text-box {
         box-sizing: border-box;
+        resize: none;
         width: 100%;
         height: 150px;
     }
@@ -272,7 +315,7 @@
     .misc-members {
         display: grid;
         grid-template-columns: 100%;
-        grid-template-rows: repeat(2, minmax(auto, 1fr)) max-content;
+        grid-template-rows: minmax(auto, 1fr) max-content;
         justify-content: end;
         height: 100%;
         width: 100%;
@@ -312,7 +355,7 @@
     }
     .category-toggle-section {
         display: grid;
-        grid-template-columns: repeat(4, 20%);
+        grid-template-columns: repeat(5, 20%);
         align-items: flex-end;
         justify-content: center;
         width: 100%;
