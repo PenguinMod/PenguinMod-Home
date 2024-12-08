@@ -495,13 +495,15 @@
         const meta = await ProjectApi.getProjectMeta(projectId);
         const thumbnail = await ProjectApi.getProjectThumbnail(projectId);
 
-        await ProjectClient.updateProject(projectId, {newMeta: {
+        await ProjectClient.updateProject(projectId, {
             project: penguinModProject,
-            title: meta.title,
-            instructions: meta.instructions,
-            notes: meta.notes,
+            newMeta: {
+                title: meta.title,
+                instructions: meta.instructions,
+                notes: meta.notes
+            },
             image: thumbnail
-        }});
+        });
     };
     const applyCensorChanges = async () => {
         censorMenuDetails.uploading = true;
