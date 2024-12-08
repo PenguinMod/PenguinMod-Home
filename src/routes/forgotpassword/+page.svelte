@@ -9,6 +9,7 @@
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
+    import Captcha from "$lib/Captcha.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import Language from "../../resources/language.js";
@@ -94,25 +95,6 @@
     }
 
     let canCreate = false;
-
-    onMount(() => {
-        window.on_captcha_complete = (token) => {
-            captcha_token = token;
-            checkIfValid();
-        };
-
-        window.on_captcha_expired = () => {
-            captcha_token = false;
-            checkIfValid();
-        };
-
-        window.on_captcha_error = () => {
-            // reload the captcha
-            turnstile.reset();
-            captcha_token = false;
-            checkIfValid();
-        };
-    });
 </script>
     
 <svelte:head>
@@ -124,7 +106,6 @@
     <meta property="twitter:description" content="Sign up for PenguinMod to start sharing your projects!">
     <meta property="og:url" content="https://penguinmod.com/forgotpassword">
     <meta property="twitter:url" content="https://penguinmod.com/forgotpassword">
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </svelte:head>
     
 <NavigationBar />
@@ -168,13 +149,9 @@
             bind:value={email}
         />
 
-        <div
-            class="cf-turnstile"
-            data-sitekey="0x4AAAAAAA0-uEePyt9NmTMl"
-            data-callback="on_captcha_complete"
-            data-expired-callback="on_captcha_expired"
-            data-error-callback="on_captcha_error"
-        ></div>
+        <Captcha on:update={(event) => {
+            captcha_token = event.detail;
+        }} />
 
         <button class="send-email" data-canCreate={canCreate} on:click={sendEmailSafe}>
             {#if sendingEmail}

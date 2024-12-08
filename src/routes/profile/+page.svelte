@@ -1,16 +1,17 @@
 <script>
     import { onMount } from "svelte";
+    import { page } from "$app/stores";
     import MarkdownIt from "markdown-it";
 
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
-    import scratchblocks from "$lib/scratchblocks.js";
     import LINK from "../../resources/urls.js";
+    import scratchblocks from "$lib/scratchblocks.js";
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
     import EmojiList from "../../resources/emojis.js";
     const ProjectClient = new ProjectApi();
-
+    
     // Static values
     import ProfileBadges from "../../resources/badges.js";
 
@@ -23,6 +24,7 @@
     import Project from "$lib/Project/Project.svelte";
     import ClickableProject from "$lib/ClickableProject/Project.svelte";
     import StatusAlert from "$lib/Alert/StatusAlert.svelte";
+    import ProfileBadge from "$lib/Badge.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
@@ -31,8 +33,6 @@
     // Icons
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
     import SearchSVG from "../../icons/Search/icon.svelte";
-
-    import { page } from "$app/stores";
 
     let loggedIn = null;
     let loggedInUser = "";
@@ -45,7 +45,6 @@
         featured: [],
     };
     let badges = [];
-    let focusedBadge = -1;
     let isDonator = false;
     let isFollowingUser = false;
     let followOnLoad = false;
@@ -1285,7 +1284,7 @@
                                 {/if}
                             </p>
                         </div>
-                        <div class="user-stat-box">
+                        <div class="user-stat-box" style="align-content: flex-start;">
                             <div class="user-stat-box-inner">
                                 <LocalizedText
                                     text="Badges"
@@ -1293,68 +1292,24 @@
                                     lang={currentLang}
                                 />
                             </div>
-                            <div class="user-box-maxwidth"></div>
                             <div class="user-badge-container">
-                            <div class="user-badges">
-                                {#each badges as badge, idx}
-                                    {#if ProfileBadges[badge]}
-                                        <button
-                                            on:click={() => {
-                                                focusedBadge = idx;
-                                            }}
-                                            on:focusout={() => {
-                                                focusedBadge = -1;
-                                            }}
-                                            title={TranslationHandler.text(
-                                                `profile.badge.${badge}`,
-                                                currentLang
-                                            ) || TranslationHandler.text(
-                                                `profile.badge.${badge}`,
-                                                'en'
-                                            )}
-                                        >
-                                            <img
-                                                src={`/badges/${ProfileBadges[badge]}.png`}
-                                                alt={TranslationHandler.text(
-                                                    `profile.badge.${badge}`,
-                                                    currentLang
-                                                ) || TranslationHandler.text(
-                                                    `profile.badge.${badge}`,
-                                                    'en'
-                                                )}
-                                                title={TranslationHandler.text(
-                                                    `profile.badge.${badge}`,
-                                                    currentLang
-                                                ) || TranslationHandler.text(
-                                                    `profile.badge.${badge}`,
-                                                    'en'
-                                                )}
+                                <div class="user-badges">
+                                    {#each badges as badge, idx}
+                                        {#if ProfileBadges[badge]}
+                                            <ProfileBadge {badge} {currentLang} />
+                                        {/if}
+                                    {:else}
+                                        <p style="font-size: initial; font-weight: normal; width: 100%; text-align: center;">
+                                            <LocalizedText
+                                                text="Nothing was found."
+                                                key="generic.notfound"
+                                                lang={currentLang}
                                             />
-                                            {#if focusedBadge === idx}
-                                                <div class="badge-info">
-                                                    {TranslationHandler.text(
-                                                        `profile.badge.${badge}`,
-                                                        currentLang
-                                                    ) || TranslationHandler.text(
-                                                        `profile.badge.${badge}`,
-                                                        'en'
-                                                    )}
-                                                </div>
-                                            {/if}
-                                        </button>
-                                    {/if}
-                                {:else}
-                                    <p style="font-size: initial; font-weight: normal; width: 100%; text-align: center;">
-                                        <LocalizedText
-                                            text="Nothing was found."
-                                            key="generic.notfound"
-                                            lang={currentLang}
-                                        />
-                                    </p>
-                                {/each}
+                                        </p>
+                                    {/each}
+                                </div>
                             </div>
                         </div>
-                    </div>
                     </div>
                 </div>
                 <ContentCategory
@@ -1869,10 +1824,6 @@
         margin-left: 4px;
     }
 
-    .user-box-maxwidth {
-        width: 100%;
-        height: 1px;
-    }
     :global(body.dark-mode) .section-user-stats {
         border-color: rgba(255, 255, 255, 0.3);
     }
@@ -2057,45 +2008,15 @@
 
     .user-badge-container {
         margin: 0px;
-        /* TODO: this is a bandaid fix, properly fix it later */
-        margin-top: -64px;
-        height: 32px;
-        width: 200px;
-        /* TODO: too many badges will overflow this box, fix this later */
+        margin-top: 4px;
+        width: 100%;
+        height: calc(100% - 46px);
+        overflow: auto;
     }
     .user-badges {
         display: flex;
         flex-flow: row;
         flex-wrap: wrap;
-    }
-    .user-badges button {
-        position: relative;
-        margin: 0 4px;
-        border: 0;
-        padding: 0;
-        width: 32px;
-        height: 32px;
-        background: transparent;
-        cursor: pointer;
-    }
-    .user-badges button img {
-        margin: 0;
-        border: 0;
-        padding: 0;
-        width: 32px;
-        height: 32px;
-    }
-
-    .badge-info {
-        position: absolute;
-        top: 36px;
-        left: 0;
-        padding: 8px 16px;
-        border-radius: 4px;
-        background: rgba(0, 0, 0, 0.5);
-        color: white;
-        transform-origin: center;
-        transform: translateX(calc(50% - 64px));
-        z-index: 5000;
+        justify-content: center;
     }
 </style>
