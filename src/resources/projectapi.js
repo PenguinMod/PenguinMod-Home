@@ -14,7 +14,7 @@ function MB(num) {
     if (Gb) return `${(num / 1024 / 1024 / 1024).toFixed(2)}GB`;
     if (Mb) return `${(num / 1024 / 1024).toFixed(2)}MB`;
     if (Kb) return `${(num / 1024).toFixed(2)}KB`;
-    return `${num.toFixed(2)}B`;
+    return `${num}B`;
 }
 
 class ProjectApi {
@@ -1570,13 +1570,19 @@ class ProjectApi {
 
                 const size = Object.values(assets)
                     .reduce((c,v) => c + v.size, projectSize + imageSize);
-                return [[
-                    `thumbnail: ${MB(imageSize)}`,
+                return [
                     {
-                        name: `project: ${MB(size)}`,
-                        value: statTree
-                    }
-                ], size > (Number(PUBLIC_MAX_UPLOAD_SIZE) * 1024 * 1024)]
+                        name: `${MB(size)}/${PUBLIC_MAX_UPLOAD_SIZE}MB`,
+                        value: [
+                        `thumbnail: ${MB(imageSize)}`,
+                        {
+                            name: `project: ${MB(size)}`,
+                            value: statTree
+                        }
+                        ]
+                    }, 
+                    size > (Number(PUBLIC_MAX_UPLOAD_SIZE) * 1024 * 1024)
+                ];
             });
     }
     handleProjectFile(file, imageSize = 0) {

@@ -46,14 +46,13 @@
     let projectImage;
     let projectImageURL;
     let projectData;
-    let projectSizes = ['thumbnail: 0MB', { name: 'project: 0MB', value: [] }];
+    let projectSizes = { name: `0/${PUBLIC_MAX_UPLOAD_SIZE}MB`, value: [] };
     function updateSize() {
         projectSizes[0] = `thumbnail: ${(((projectImage?.size ?? 0) / 1024) / 1024).toFixed(2)}MB`;
         if (projectData) 
             ProjectClient.resolveProjectSizes(projectData, projectImage?.size ?? 0, true)
                 .then(([sizes, toLarge]) => {
                     projectSizes = sizes;
-                    console.log(sizes);
                     if (toLarge) 
                         alert(TranslationHandler.text('uploading.error.projecttoolarge', currentLang));
                 });
@@ -986,7 +985,6 @@
                             lang={currentLang}
                         />
                     </label>
-                    <span>Max project size: {PUBLIC_MAX_UPLOAD_SIZE}MB</span>
                     <hr>
                     <Stats stats_data={projectSizes} render={true}></Stats>
                 </div>
