@@ -986,7 +986,7 @@
                         />
                     </label>
                     <hr>
-                    <Stats stats_data={projectSizes} render={true}></Stats>
+                    <Stats stats_data={[projectSizes]} render={true}></Stats>
                 </div>
             </div>
             <div style="display:flex;flex-direction:row;margin-top:48px">
