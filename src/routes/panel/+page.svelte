@@ -1218,6 +1218,16 @@
 
     <div class="double-list">
         <div class="full">
+            <p>
+                <a
+                    class="guidelines-link"
+                    target="_blank"
+                    href={"/guidelines/moderation"}
+                >
+                    PenguinMod Moderation Expectations
+                </a>
+            </p>
+
             <div class="card">
                 <h2 style="margin-block-start:0">Projects</h2>
                 <p>
