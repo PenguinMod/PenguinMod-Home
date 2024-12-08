@@ -3,6 +3,7 @@
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
     import EmojiList from "../../resources/emojis.js";
+    import { PUBLIC_STUDIO_URL, PUBLIC_MAX_UPLOAD_SIZE } from "$env/static/public";
 
     const ProjectClient = new ProjectApi();
 
@@ -15,6 +16,7 @@
     import Button from "$lib/Button/Button.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import StatusAlert from "$lib/Alert/StatusAlert.svelte";
+    import Stats from "../../lib/statsComponent/stats.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
@@ -47,6 +49,16 @@
     let newProjectImage;
     let newProjectURL;
     let newProjectData;
+    let projectSizes = { name: `0/${PUBLIC_MAX_UPLOAD_SIZE}MB`, value: [] };
+    function updateSize() {
+        if (newProjectData) 
+            ProjectClient.resolveProjectSizes(newProjectData, newProjectImage?.size ?? 0, true)
+                .then(([sizes, toLarge]) => {
+                    projectSizes = sizes;
+                    if (toLarge) 
+                        alert(TranslationHandler.text('uploading.error.projecttoolarge', currentLang));
+                });
+    }
 
     let projectInputName;
 
@@ -687,6 +699,8 @@
                             lang={currentLang}
                         />
                     </label>
+                    <hr>
+                    <Stats stats_data={[projectSizes]} render={true}></Stats>
                 </div>
             </div>
             <div style="display:flex;flex-direction:row;margin-top:48px">

@@ -20,9 +20,18 @@ If for any reason you cannot access the report page, please contact us [using an
 Uploading empty or default projects will get your project removed.
 Please do not do this multiple times as your account's ability to upload will be limited if we see you doing this.
 
-Projects that are based around using an iframe or other method to display other websites or projects will be removed.
-This is a rule because the only purpose of this is to show content that is not yours or can be viewed anyways in your browser.
-*(This may not apply to projects uploaded before October 6th, 2023 due to communication issues.)*
+An empty/blank project is defined as a project that just contains a default sprite or costume on the stage, and there is nothing like art or a message from the creator.
+This does not include projects that have a realistic use, like a library of sounds or costumes or fonts or maybe a template.
+
+# Projects that display websites (iframes)
+```warning
+This rule only applies as of October 6th, 2023 due to miscommunication, any project uploaded on an older date will not have to follow this rule.
+```
+
+You can use iframes in your projects, but they cannot be the main purpose of the project. ("Browser" projects are a good example.)
+
+Projects that are just about displaying other websites or projects using iframes (or similar tools) will be removed.
+This rule exists because these tools are only used to show content that is not yours or can already be seen in your browser.
 
 # Credit
 Users should be properly credited within your project's info.
@@ -261,7 +270,9 @@ If you would like to use other platforms not mentioned here, please reach out to
 You are responsible for making sure you have the necessary rights, licenses, or permission for any user-generated content you submit to PenguinMod.
 PenguinMod will remove your project if the project violates copyright rules for any specific company or individual, and you may face further punishment.
 Any company, business, or individual reserves the right to take down your project if they believe it violates their copyright.
-We will also remove your project if it contains pirated content or material, and you may face further punishment.
+
+You also may not include pirated content or instructions/tools that allow the viewing/use of paid content without actually paying.
+Including pirated content means you cannot provide audio, videos, software, video games, or other types of media for free via link, attachable tool or downloadable file that would otherwise require payment to access.
 
 Reasons your project might be removed include, but are not limited to:
 - Including logos or designs without explicit permission from the owner(s)

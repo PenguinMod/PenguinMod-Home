@@ -7,6 +7,15 @@ import protobuf from "protobufjs";
 import jsonDescriptor from "./protobuf-bundle.json";
 let protobufRoot = protobuf.Root.fromJSON(jsonDescriptor);
 let project = protobufRoot.lookupType("project.Project");
+function MB(num) {
+    const Kb = (num >> 10) & 0b1111111111;
+    const Mb = (num >> 20) & 0b1111111111;
+    const Gb = (num >> 30) & 0b1111111111;
+    if (Gb) return `${(num / 1024 / 1024 / 1024).toFixed(2)}GB`;
+    if (Mb) return `${(num / 1024 / 1024).toFixed(2)}MB`;
+    if (Kb) return `${(num / 1024).toFixed(2)}KB`;
+    return `${num}B`;
+}
 
 class ProjectApi {
     constructor(token, username) {
@@ -1460,7 +1469,6 @@ class ProjectApi {
                     minimized: json.targets[target].comments[comment].minimized,
                     text: json.targets[target].comments[comment].text
                 }
-                console.log(newtarget.comments[comment]);
             }
 
             // loop over the costumes
@@ -1532,6 +1540,68 @@ class ProjectApi {
         }
 
         return project.encode(project.create(newjson)).finish();
+    }
+    resolveProjectSizes(file, imageSize = 0) {
+        return JSZip.loadAsync(file)
+            .then(async zip => {
+                const projectJSON = JSON.parse(await zip.file("project.json").async("text"));
+                const projectSize = this.jsonToProtobuf(projectJSON).length;
+                const targets = projectJSON.targets;
+                projectJSON.targets = [];
+                const metaSize = this.jsonToProtobuf(projectJSON).length;
+                const assets = (await Promise.all(zip
+                    .filter((name, file) => 
+                            !file.dir && 
+                            name !== 'project.json')
+                    .map(async file => [await file.async('blob'), file.name])))
+                    .reduce((c,v) => (c[v[1]] = v[0], c), {});
+
+                const statTree = [];
+                for (const target of targets) {
+                    projectJSON.targets[0] = target;
+                    const costumes = target.costumes
+                        .map(asset => [asset.name, assets[asset.md5ext]]);
+                    const sounds = target.sounds
+                        .map(asset => [asset.name, assets[asset.md5ext]]);
+
+                    const codeSize = this.jsonToProtobuf(projectJSON).length - metaSize;
+                    const costumeSize = costumes.reduce((c,v) => c + v[1].size, 0);
+                    const soundSize = sounds.reduce((c,v) => c + v[1].size, 0);
+                    const size = codeSize
+                        + costumeSize
+                        + soundSize;
+                    statTree.push({
+                        name: `${target.name}: ${MB(size)}`,
+                        value: [
+                            `code: ${MB(codeSize)}`,
+                            {
+                                name: `costumes: ${MB(costumeSize)}`,
+                                value: costumes.map(([name, asset]) => `${name}: ${MB(asset.size)}`)
+                            },
+                            {
+                                name: `sounds: ${MB(soundSize)}`,
+                                value: sounds.map(([name, asset]) => `${name}: ${MB(asset.size)}`)
+                            }
+                        ]
+                    })
+                }
+
+                const size = Object.values(assets)
+                    .reduce((c,v) => c + v.size, projectSize + imageSize);
+                return [
+                    {
+                        name: `${MB(size)}/${PUBLIC_MAX_UPLOAD_SIZE}MB`,
+                        value: [
+                        `thumbnail: ${MB(imageSize)}`,
+                        {
+                            name: `project: ${MB(size)}`,
+                            value: statTree
+                        }
+                        ]
+                    }, 
+                    size > (Number(PUBLIC_MAX_UPLOAD_SIZE) * 1024 * 1024)
+                ];
+            });
     }
     handleProjectFile(file, imageSize = 0) {
         return JSZip.loadAsync(file)
