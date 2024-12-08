@@ -21,9 +21,11 @@
         {#if typeof stat === 'object'}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <p class="click_object" on:click={() => {object_clicks[stat.name] = !object_clicks[stat.name]}}>{object_clicks[stat.name] ? ">" : "v"} {stat.name}</p>
-            <Stats stats_data={stat.value} bind:render={object_clicks[stat.name]} />
+            <div style="padding-left: 10px; border-left: 1px solid grey">
+                <Stats stats_data={stat.value} bind:render={object_clicks[stat.name]} />
+            </div>
         {:else}
-            <p>{stat}</p>
+            <span>{stat}</span><br>
         {/if}
     {/each}
 {/if}
@@ -33,5 +35,8 @@
         cursor: pointer;
         /* underline */
         text-decoration: underline;
+        margin-left: -3px;
+        margin-top: 10px;
+        margin-bottom: 0px;
     }
 </style>
