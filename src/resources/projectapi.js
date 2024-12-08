@@ -17,6 +17,24 @@ class ProjectApi {
     static OriginApiUrl = OriginApiUrl;
     static CachedDonators = {};
 
+    static canUploadProjects() {
+        return fetch(`${OriginApiUrl}/api/v1/projects/canuploadprojects`)
+            .then(async res => {
+                // if this api call fails, expect that all others will fail aswell
+                if (!res.ok) return false;
+                return (await res.json()).canUpload;
+            })
+            .catch(() => false);
+    }
+    static canViewProjects() {
+        return fetch(`${OriginApiUrl}/api/v1/projects/canviewprojects`)
+            .then(async res => {
+                // if this api call fails, expect that all others will fail aswell
+                if (!res.ok) return false;
+                return (await res.json()).viewing;
+            })
+            .catch(() => false);
+    }
     static getServerInfo(user) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/misc/getStats`;
