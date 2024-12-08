@@ -15,6 +15,7 @@
     import Button from "$lib/Button/Button.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import StatusAlert from "$lib/Alert/StatusAlert.svelte";
+    import ProfileBadge from "$lib/Badge.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import AutoLocalizedText from "$lib/AutoLocalizedText/Node.svelte";
@@ -493,20 +494,23 @@
                             ).replace("$1", message.message.user.username)}
                         </a>
                     {:else if message.message.type === "newBadge"}
-                        <p>
-                            {String(
-                                TranslationHandler.text(
-                                    "messages.alert.badge",
-                                    currentLang
-                                )
-                            ).replace(
-                                "$1",
-                                TranslationHandler.text(
-                                    `profile.badge.${message.message.badge}`,
-                                    currentLang
-                                )
-                            )}
-                        </p>
+                        <div style="display:flex; flex-direction:row; align-items:center;">
+                            <p>
+                                {String(
+                                    TranslationHandler.text(
+                                        "messages.alert.badge",
+                                        currentLang
+                                    )
+                                ).replace(
+                                    "$1",
+                                    TranslationHandler.text(
+                                        `profile.badge.${message.message.badge}`,
+                                        currentLang
+                                    )
+                                )}
+                            </p>
+                            <ProfileBadge badge={message.message.badge} {currentLang} />
+                        </div>
                     {:else if message.message.type === "remix"}
                         <p>
                             <a
