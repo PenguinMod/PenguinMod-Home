@@ -11,6 +11,7 @@
 
     // Static values
     import LINK from "../resources/urls.js";
+    import LoadingTips from "$lib/LoadingSpinner/Tips.json";
 
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
@@ -123,7 +124,7 @@
         'my g what are you doing, go back to 50%<',
         'dude, are how unlucky are you dear god',
         'dude just got owned by the js random number generater at a whoping $1% off from success'
-    ]
+    ];
     function formatNumber(num) {
         return Math.abs(num) >= 0.01 && num % 1 !== 0
             ? num.toFixed(2)
@@ -568,7 +569,7 @@
         {/if}
         {#if loggedIn && selectedFrontTabSelected === "feed"}
             <ContentCategory
-                header={TranslationHandler.text(
+                header={TranslationHandler.textSafe(
                     "home.sections.feed",
                     currentLang
                 )}
@@ -610,7 +611,7 @@
             </ContentCategory>
         {:else if !loggedIn || selectedFrontTabSelected === "commit"}
             <ContentCategory
-                header={TranslationHandler.text(
+                header={TranslationHandler.textSafe(
                     "home.sections.githubcommits",
                     currentLang
                 )}
@@ -658,7 +659,7 @@
             </ContentCategory>
         {:else if loggedIn && selectedFrontTabSelected === "new"}
             <ContentCategory
-                header={TranslationHandler.text(
+                header={TranslationHandler.textSafe(
                     "home.sections.whatsnew",
                     currentLang
                 )}
@@ -689,6 +690,69 @@
                     {/if}
                 </div>
             </ContentCategory>
+        {:else if loggedIn && selectedFrontTabSelected === "news"}
+            <ContentCategory
+                header={TranslationHandler.textSafe(
+                    "home.sections.informational",
+                    currentLang
+                )}
+                seemore={`https://wiki.penguinmod.com/wiki/Main_Page`}
+            >
+                <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
+                <div class="category-news">
+                    <div class="category-news-content">
+                        <h2 style="margin-block:4px;">Fill out the PenguinMod Wiki!</h2>
+                        <div style="display:flex;">
+                            <div style="width:calc(100% - 200px);">
+                                <p>
+                                    <span style="margin-left:2rem;"></span>
+                                    <span style="font-size:small;opacity:0.65">G1nX - </span>
+                                    "Since many people think the PenguinMod wiki is another documentation page, I would like to say that the wiki's purpose is <i>NOT</i> only for documentation, even if there are explanations for blocks.
+                                    <br />
+                                    <span style="margin-left:2rem;"></span>It acts as an archive of everything the community has done, so it isn't lost to time. This is also a good resource for newcomers, to know about how the community is managed, or maybe just to get insight on your favorite extensions!
+                                    It's powered by Miraheze, a super good wiki farm that hosts many other great wikis, like the Pizza Tower wiki."
+                                </p>
+                            </div>
+                            <div style="width:200px;display:flex;flex-direction:column;align-items:center;">
+                                <div style="transform:scale(0.8)">
+                                    <Project
+                                        id="2390249781"
+                                        title="About the PenguinMod Wiki"
+                                        featured="true"
+                                        author={{
+                                            username: "wikignome",
+                                            id: "01JE831N8849Z8ADQMD33HK4T9",
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div style="width:100%">
+                            <p>
+                                PenguinMod asks you guys help build articles on stuff by the community, secrets in the website,
+                                specific features on the website, or maybe even write up some trivia about a block or two!
+                            </p>
+                            <p style="margin-block-end:4px;">Visit the PenguinMod Community Wiki here:</p>
+                            <p style="margin-block-start:4px;">
+                                <a href="https://wiki.penguinmod.com/wiki/Main_Page">https://wiki.penguinmod.com</a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="category-footer">
+                        <p>
+                            {#if currentLang === "en"}
+                                {LoadingTips[Math.round(Math.random() * (LoadingTips.length - 1))]}
+                            {:else}
+                                <LocalizedText
+                                    text="PenguinNews is not translated in your language. Sorry! :("
+                                    key="home.sections.informational.notranslation"
+                                    lang={currentLang}
+                                />
+                            {/if}
+                        </p>
+                    </div>
+                </div>
+            </ContentCategory>
         {/if}
     </div>
     {#if loggedIn}
@@ -705,6 +769,19 @@
                     <LocalizedText
                         text="What's new?"
                         key="home.sections.whatsnew"
+                        lang={currentLang}
+                    />
+                </button>
+                <button
+                    class="section-toggle-button"
+                    data-active={selectedFrontTabSelected === "news"}
+                    on:click={() => {
+                        selectedFrontTabSelected = "news";
+                    }}
+                >
+                    <LocalizedText
+                        text="PenguinNews"
+                        key="home.sections.informational"
                         lang={currentLang}
                     />
                 </button>
@@ -1187,6 +1264,7 @@
         margin: 0 4px;
         color: white;
         cursor: pointer;
+        white-space: nowrap;
     }
     .section-toggle-button[data-active="true"] {
         background: #003bdd;
@@ -1337,6 +1415,29 @@
         display: flex;
         align-items: center;
         flex-direction: column;
+    }
+    .category-news {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+    }
+    .category-news-content {
+        height: calc(312px - 28px);
+        overflow: auto;
+    }
+    .category-footer {
+        border-top: 1px solid rgba(0, 0, 0, 0.15);
+        margin: 0 0.35rem;
+        width: calc(100% - 0.35rem);
+    }
+    .category-footer p {
+        margin-block: 0;
+        margin-block-start: 8px;
+        width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
     }
 
     .update-image {
