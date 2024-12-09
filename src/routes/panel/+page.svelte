@@ -497,9 +497,11 @@
 
         await ProjectClient.updateProject(projectId, {
             project: penguinModProject,
-            title: meta.title,
-            instructions: meta.instructions,
-            notes: meta.notes,
+            newMeta: {
+                title: meta.title,
+                instructions: meta.instructions,
+                notes: meta.notes
+            },
             image: thumbnail
         });
     };
