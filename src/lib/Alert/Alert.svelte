@@ -86,7 +86,7 @@
                             saveClosedLocally();
                         }
                     }}
-                />
+                ></button>
             {/if}
         </p>
     </div>

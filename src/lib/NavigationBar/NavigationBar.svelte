@@ -304,7 +304,7 @@
 			/>
 		</button>
 	</a>
-	<div class="seperated-navopt" />
+	<div class="seperated-navopt"></div>
 	<button on:click={logout}>
 		<LocalizedText
 			text="Logout"
@@ -317,8 +317,8 @@
 	<a class="logo" href="/">
 		<img class="logo-image" src="/navicon.png" alt="PenguinMod" />
 	</a>
-	<div style="margin-right: 12px;" />
-	<div class="logo-launcher-margin" />
+	<div style="margin-right: 12px;"></div>
+	<div class="logo-launcher-margin"></div>
 	<BarPage
 		label="<img src='/moon.svg' alt='ThemeSwitcher'>"
 		style="padding:0.5rem"

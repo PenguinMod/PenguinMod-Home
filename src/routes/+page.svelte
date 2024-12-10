@@ -382,7 +382,7 @@
                     height="240"
                     frameborder="0"
                     class="example-video"
-                />
+                ></iframe>
             {/if}
         </div>
 
@@ -757,7 +757,7 @@
     </div>
     {#if loggedIn}
         <div class="section-category-toggles">
-            <div class="category-toggle-section" />
+            <div class="category-toggle-section"></div>
             <div class="category-toggle-section">
                 <button
                     class="section-toggle-button"

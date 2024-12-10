@@ -1,1 +1,1 @@
-<div style="height: 3rem;" />
+<div style="height: 3rem;"></div>

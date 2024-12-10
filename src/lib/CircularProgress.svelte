@@ -32,4 +32,4 @@
     }
 </style>
 
-<div id="progress-circle" style={cssVarStyles} />
+<div id="progress-circle" style={cssVarStyles}></div>
