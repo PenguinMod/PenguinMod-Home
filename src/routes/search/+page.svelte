@@ -38,7 +38,7 @@
                 break;
             case "by":
                 const byQuery = searchQuery.split(":");
-                searchType = "by";
+                searchType = "project";
                 byQuery.shift();
                 api = `${LINK.projects}api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(byQuery.join())}`;
                 break;
