@@ -380,6 +380,7 @@
                         <p>{message.message.message}</p>
                         {#if canAutoTranslate && !autoTranslations[message.id] && !autoTranslationCode.startsWith("en")}
                             <br />
+                            <!-- svelte-ignore node_invalid_placement_ssr -->
                             <button
                                 class="fake-link"
                                 style="display:flex;align-items:center;"
@@ -441,6 +442,7 @@
                                 </a>
                             </h3>
                         {:else}
+                            <!-- svelte-ignore node_invalid_placement_ssr -->
                             <button
                                 class="fake-link"
                                 style="display:flex;align-items:center;"
@@ -658,6 +660,7 @@
                             {message.message.message}
                             {#if canAutoTranslate && !autoTranslationCode.startsWith("en")}
                                 <br />
+                                <!-- svelte-ignore node_invalid_placement_ssr -->
                                 <p style="display:flex;align-items:center;">
                                     <img
                                         src="/messagesstatic/translate.png"
@@ -686,6 +689,7 @@
                             {message.dispute}
                             {#if canAutoTranslate && !autoTranslationCode.startsWith("en")}
                                 <br />
+                                <!-- svelte-ignore node_invalid_placement_ssr -->
                                 <p style="display:flex;align-items:center;">
                                     <img
                                         src="/messagesstatic/translate.png"

@@ -288,7 +288,8 @@
                     class="password-show invert-on-dark"
                     data-visible={showingOldPassword}
                     onclick={toggleOldPasswordView}
-></button>
+                    aria-label="Show Password"
+                ></button>
             </div>
             
             <span class="input-title">
@@ -316,7 +317,8 @@
                     class="password-show invert-on-dark"
                     data-visible={showingNewPassword}
                     onclick={toggleNewPasswordView}
-></button>
+                    aria-label="Show Password"
+                ></button>
             </div>
             {#if focused}
                 <ChecksBox items={passwordRequirements} />

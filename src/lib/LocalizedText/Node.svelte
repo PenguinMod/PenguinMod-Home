@@ -26,22 +26,23 @@
     let displayText = $state('');
     let shouldHTML = $state(html);
 
-    run(() => {
+    $effect(() => {
         const translated = Translations.textSafe(
             key,
             lang,
             text
         );
-        displayText = translated;
+        let tmp_dtext = translated;
 
         for (const key in replace) {
             const value = replace[key];
-            displayText = displayText.replace(key, value);
+            tmp_dtext = tmp_dtext.replace(key, value);
         }
 
         if (dolink) {
             shouldHTML = true;
-            displayText = displayText.replace(/TurboWarp|Turbowarp|Scratch/gm, (value) => {
+            displayText = tmp_dtext.replace(/TurboWarp|Turbowarp|Scratch/gm, (value) => {
+                console.log(value, tmp_dtext);
                 let url = "";
                 switch (value) {
                     case "TurboWarp":
@@ -53,6 +54,8 @@
                 }
                 return `<a href="${url}" target="_blank" style="color: inherit">${value}</a>`;
             });
+        } else {
+            displayText = tmp_dtext;
         }
     });
 </script>

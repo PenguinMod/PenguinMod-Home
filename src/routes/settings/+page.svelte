@@ -79,9 +79,10 @@
         email = email || "";
         let emailPeek = `${email.substring(0, 3)}...${email.substring(email.indexOf("@"))}`
 
-        accountInformation.emailSet = !!email;
+        const emailSet = !!email;
+        accountInformation.emailSet = emailSet;
         accountInformation.emailFull = email || "";
-        accountInformation.emailPeek = email ? emailPeek : "";
+        accountInformation.emailPeek = emailSet ? emailPeek : "";
         emailIsVerified = isEmailVerified;
 
         standing = _standing + 1;
@@ -540,6 +541,7 @@
                                     }}
                                 />
                                 {#if !accountInformation.emailSet}
+                                sigma sigma on the gyatt
                                     <span style="opacity:0.65">
                                         <LocalizedText
                                             text="Not set"

@@ -786,6 +786,7 @@
                     <select bind:value={profileEditingData.projectTitle} onchange={updateProjectFeaturedTitle}>
                         {#each projectTitles as title}
                             <option value="{title}">
+                                <!-- svelte-ignore attribute_quoted -->
                                 <LocalizedText
                                     text="{projectTitleStrings[title - 1]}"
                                     key="profile.featured.title{title}"
@@ -1274,6 +1275,7 @@
                                                 key="profile.rankup.title"
                                                 lang={currentLang}
                                             />
+                                            <!-- svelte-ignore node_invalid_placement_ssr -->
                                             <div class="rankup-badge">
                                                 !
                                             </div>

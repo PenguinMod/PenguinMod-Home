@@ -38,7 +38,7 @@
 	 */
 
 	/** @type {Props} */
-	let { pfpkey = false } = $props();
+	let { pfpkey = $bindable(false) } = $props();
 
 	let loggedIn = $state(null);
 	let isAdmin = $state(false);
