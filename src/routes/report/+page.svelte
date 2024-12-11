@@ -19,10 +19,10 @@
     // Icons
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
 
-    let loggedIn = null;
+    let loggedIn = $state(null);
     let loggedInUser = "";
 
-    const pageDetails = {
+    const pageDetails = $state({
         loaded: false,
         type: "",
         id: 0,
@@ -38,7 +38,7 @@
         projectIllegalReason: "",
 
         isCurrentlyReporting: false,
-    };
+    });
 
     const reportReasons = {
         user: [
@@ -145,7 +145,7 @@
             });
     };
 
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
     });
@@ -365,7 +365,7 @@
                     {/if}
                 </div>
             </div>
-            <div style="height:16px" />
+            <div style="height:16px"></div>
             {#if pageDetails.isCurrentlyReporting}
                 <LoadingSpinner />
             {:else if !pageDetails.pickedReason || (pageDetails.pickedReason === "report.reason.other" && !pageDetails.otherReason)}

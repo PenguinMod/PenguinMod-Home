@@ -21,14 +21,14 @@
     // Icons
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
 
-    let projects = [];
+    let projects = $state([]);
     let error = null;
-    let loggedIn = null;
-    let page = 0;
-    let pageIsLast = false;
-    let username = "";
+    let loggedIn = $state(null);
+    let page = $state(0);
+    let pageIsLast = $state(false);
+    let username = $state("");
 
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
     });
@@ -37,8 +37,8 @@
     });
     
     // dropdown
-    let editProjectDropdownMenu;
-    let editProjectOptions = [];
+    let editProjectDropdownMenu = $state();
+    let editProjectOptions = $state([]);
     function showEditProjectDropdown(pointer, options) {
         editProjectOptions = options;
         editProjectDropdownMenu.style.display = "flex";
@@ -186,7 +186,7 @@
                 <button
                     class={"dropdown-option dropdown-option-" +
                         (option.color ? option.color : "default")}
-                    on:click={option.callback ? option.callback : null}
+                    onclick={option.callback ? option.callback : null}
                 >
                     {option.name}
                 </button>
@@ -195,7 +195,7 @@
             <button
                 class={"dropdown-option dropdown-option-" +
                     (option.color ? option.color : "default")}
-                on:click={option.callback ? option.callback : null}
+                onclick={option.callback ? option.callback : null}
             >
                 {option.name}
             </button>
@@ -243,7 +243,7 @@
         {:else if projects[0] !== "notfound"}
             {#each projects as project}
                 <div style="position: relative;">
-                    <button class="dots-menu" on:click={(pointer) => showEditProjectDropdown(pointer, [
+                    <button class="dots-menu" onclick={(pointer) => showEditProjectDropdown(pointer, [
                         {
                             name: String(project.remix) !== "0"
                                 ? TranslationHandler.text(
@@ -339,7 +339,7 @@
 
     {#if projects[0] !== "notfound"}
         {#if !pageIsLast && projects.length > 0}
-            <div style="height: 16px;" />
+            <div style="height: 16px;"></div>
             <div class="more-projects-wrapper">
                 <Button
                     label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
@@ -352,7 +352,7 @@
         {/if}
     {/if}
 
-    <div style="height: 16px;" />
+    <div style="height: 16px;"></div>
 </div>
 
 <style>

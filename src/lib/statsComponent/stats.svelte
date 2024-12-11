@@ -2,10 +2,16 @@
     import Stats from './stats.svelte';
     import { onMount } from 'svelte';
 
-    export let stats_data;
-    export let render = false;
+    /**
+     * @typedef {Object} Props
+     * @property {any} stats_data
+     * @property {boolean} [render]
+     */
 
-    let object_clicks = {};
+    /** @type {Props} */
+    let { stats_data, render = false } = $props();
+
+    let object_clicks = $state({});
 
     onMount(() => {
         stats_data.forEach(stat => {
@@ -19,10 +25,10 @@
 {#if stats_data && render}
     {#each stats_data as stat}
         {#if typeof stat === 'object'}
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <!-- svelte-ignore a11y_click_events_have_key_events -->
             <p 
                 class="click_object" 
-                on:click={() => {object_clicks[stat.name] = !object_clicks[stat.name]}}
+                onclick={() => {object_clicks[stat.name] = !object_clicks[stat.name]}}
             >
                 {object_clicks[stat.name] ? "v" : ">"} {stat.name}
             </p>

@@ -25,8 +25,8 @@
     // Icons
     import SearchSVG from "../../icons/Search/icon.svelte";
 
-    let projectName = "";
-    let currentLang = "en";
+    let projectName = $state("");
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
     });
@@ -40,13 +40,13 @@
         }
     });
 
-    let loggedIn = null;
-    let loadingExternal = false;
+    let loggedIn = $state(null);
+    let loadingExternal = $state(false);
 
-    let projectImage;
-    let projectImageURL;
-    let projectData;
-    let projectSizes = { name: `0/${PUBLIC_MAX_UPLOAD_SIZE}MB`, value: [] };
+    let projectImage = $state();
+    let projectImageURL = $state();
+    let projectData = $state();
+    let projectSizes = $state({ name: `0/${PUBLIC_MAX_UPLOAD_SIZE}MB`, value: [] });
     function updateSize() {
         projectSizes[0] = `thumbnail: ${(((projectImage?.size ?? 0) / 1024) / 1024).toFixed(2)}MB`;
         if (projectData) 
@@ -58,25 +58,25 @@
                 });
     }
 
-    let projectInputName;
-    let remixingProjectName;
+    let projectInputName = $state();
+    let remixingProjectName = $state();
     let remixProjectId;
 
-    let username;
+    let username = $state();
 
-    let remixedInURL = false;
+    let remixedInURL = $state(false);
 
-    let projectPageType = "remix";
+    let projectPageType = $state("remix");
     let projectPage = 0;
-    let lastProjectPage = false;
+    let lastProjectPage = $state(false);
 
-    let recommendedTagList = [];
-    let recommendedTagUpdate = 0;
-    const components = {
+    let recommendedTagList = $state([]);
+    let recommendedTagUpdate = $state(0);
+    const components = $state({
         projectName: null,
         projectInstructions: null,
         projectNotes: null,
-    };
+    });
 
     const updateRecommendedTags = () => {
         const combinedText = `${String(components.projectName.value)} ${String(components.projectInstructions.value)} ${String(components.projectNotes.value)}`;
@@ -323,7 +323,7 @@
         updateSize();
     }
 
-    let isBusyUploading = false;
+    let isBusyUploading = $state(false);
     async function uploadProject() {
         if (isBusyUploading) return;
         isBusyUploading = true;
@@ -372,11 +372,11 @@
         ProjectClient.setToken(privateCode);
     });
 
-    let canRemix = [];
-    let otherProjects = [];
+    let canRemix = $state([]);
+    let otherProjects = $state([]);
 
-    let remixPageOpen = false;
-    let updatePageOpen = false;
+    let remixPageOpen = $state(false);
+    let updatePageOpen = $state(false);
     let guidelinePageOpen = false;
 
     function incrementPageAndAddToMenu(pageType) {
@@ -524,9 +524,9 @@
         'confusedthinking',
         'cool',
     ];
-    let emojiPickerRandomEmoji = '';
-    let emojiSearchQuery = '';
-    let emojiSearchBar;
+    let emojiPickerRandomEmoji = $state('');
+    let emojiSearchQuery = $state('');
+    let emojiSearchBar = $state();
     let lastSelectedFormArea;
     const pickRandomEmojiPickerDisplay = () => {
         emojiPickerRandomEmoji = emojiPickerRandomEmojis
@@ -534,7 +534,7 @@
     };
     pickRandomEmojiPickerDisplay();
 
-    let emojiPickerListUpdate = 0;
+    let emojiPickerListUpdate = $state(0);
     const allowEmojiDrop = (ev) => {
         const data = ev.dataTransfer.getData("emoji");
         if (data && typeof data === 'string') {
@@ -568,7 +568,7 @@
         emojiPickerListUpdate++;
     };
 
-    let emojiPickerOpened = false;
+    let emojiPickerOpened = $state(false);
     onMount(() => {
         components.projectName.addEventListener('click', (e) => {
             lastSelectedFormArea = e.target;
@@ -792,8 +792,8 @@
     <div class="full">
         <div class="card">
             <button
-                on:mouseenter={pickRandomEmojiPickerDisplay}
-                on:click={() => {
+                onmouseenter={pickRandomEmojiPickerDisplay}
+                onclick={() => {
                     emojiPickerOpened = !emojiPickerOpened;
                 }}
                 title="Pick an emoji"
@@ -803,7 +803,7 @@
                     src={`https://library.penguinmod.com/files/emojis/${emojiPickerRandomEmoji}.png`}
                     alt="Emoji"
                     title="Pick an emoji"
-                    on:dragstart={(ev) => {
+                    ondragstart={(ev) => {
                         useEmojiDrag(ev, emojiPickerRandomEmoji);
                     }}
                 >
@@ -820,8 +820,8 @@
                         />
                     </div>
                     <input
-                        on:dragover={allowEmojiDrop}
-                        on:drop={handleEmojiDrop}
+                        ondragover={allowEmojiDrop}
+                        ondrop={handleEmojiDrop}
                         type="text"
                         placeholder="..."
                         bind:value={emojiSearchQuery}
@@ -848,11 +848,10 @@
                                         emojiSearchQuery
                                             .toLowerCase()
                                             .replace(/[^a-z]+/gmi, '')
-                                    )
-                                }
+                                    )}
                                     <button
                                         class="emoji-picker-emoji"
-                                        on:click={() => placeEmojiInTextbox(emoji)}
+                                        onclick={() => placeEmojiInTextbox(emoji)}
                                     >
                                         <img
                                             src={`https://library.penguinmod.com/files/emojis/${emoji}.png`}
@@ -885,9 +884,9 @@
                             currentLang
                         )}
                         bind:this={components.projectName}
-                        on:input={updateRecommendedTags}
-                        on:dragover={allowEmojiDrop}
-                        on:drop={handleEmojiDrop}
+                        oninput={updateRecommendedTags}
+                        ondragover={allowEmojiDrop}
+                        ondrop={handleEmojiDrop}
                         value={projectName}
                     />
                     <p class="important notmargin" style="margin-top:24px">
@@ -903,10 +902,10 @@
                             currentLang
                         )}
                         bind:this={components.projectInstructions}
-                        on:input={updateRecommendedTags}
-                        on:dragover={allowEmojiDrop}
-                        on:drop={handleEmojiDrop}
-                    />
+                        oninput={updateRecommendedTags}
+                        ondragover={allowEmojiDrop}
+                        ondrop={handleEmojiDrop}
+></textarea>
                     <p class="important notmargin">
                         <LocalizedText
                             text="Notes and Credits"
@@ -920,13 +919,13 @@
                             currentLang
                         )}
                         bind:this={components.projectNotes}
-                        on:input={updateRecommendedTags}
-                        on:dragover={allowEmojiDrop}
-                        on:drop={handleEmojiDrop}
-                    />
+                        oninput={updateRecommendedTags}
+                        ondragover={allowEmojiDrop}
+                        ondrop={handleEmojiDrop}
+></textarea>
                     {#key recommendedTagUpdate}
                         {#each recommendedTagList as recommendedTag}
-                            <button class="recommended-tag" on:click={() => clickOnRecommendedTag(recommendedTag)}>
+                            <button class="recommended-tag" onclick={() => clickOnRecommendedTag(recommendedTag)}>
                                 + #{recommendedTag}
                             </button>
                         {/each}
@@ -936,7 +935,7 @@
                         type="file"
                         class="hidden-picker"
                         accept=".pmp,.pm,.sb3,.sb2,.sb,.goobert"
-                        on:change={projectFilePicked}
+                        onchange={projectFilePicked}
                     />
                     <label
                         class="file-picker"
@@ -950,7 +949,7 @@
                             lang={currentLang}
                         />
                     </label>
-                    <div style="height:16px" />
+                    <div style="height:16px"></div>
                     <p>
                         <a
                             class="guidelines-link"
@@ -976,7 +975,7 @@
                         type="file"
                         class="hidden-picker"
                         accept=".png"
-                        on:change={imageFilePicked}
+                        onchange={imageFilePicked}
                     />
                     <label class="file-picker" for="FILEPI">
                         <LocalizedText

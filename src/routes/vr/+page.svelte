@@ -29,10 +29,10 @@
         return String(message || `!! ${key} !!`);
     };
     
-    let loggedIn = false;
-    let loggedInUser = '';
-    let isLiveTests = false;
-    let vrIsSupported = null;
+    let loggedIn = $state(false);
+    let loggedInUser = $state('');
+    let isLiveTests = $state(false);
+    let vrIsSupported = $state(null);
     if ($page.url.searchParams.has("livetests")) {
         isLiveTests = true;
     }
@@ -113,7 +113,7 @@
         <p>{loggedInUser}</p>
         <button
             class="vr-test-button"
-            on:click={openSession}
+            onclick={openSession}
         >
             Enter VR
         </button>

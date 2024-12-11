@@ -32,14 +32,20 @@
 	import Translations from "../../resources/translations.js";
 	import Language from "../../resources/language.js";
 
-	export let pfpkey=false;
+	/**
+	 * @typedef {Object} Props
+	 * @property {boolean} [pfpkey]
+	 */
 
-	let loggedIn = null;
-	let isAdmin = false;
-	let isApprover = false;
-	let accountUsername = "";
-	let messageCount = 0;
-	let canRankUp = false;
+	/** @type {Props} */
+	let { pfpkey = false } = $props();
+
+	let loggedIn = $state(null);
+	let isAdmin = $state(false);
+	let isApprover = $state(false);
+	let accountUsername = $state("");
+	let messageCount = $state(0);
+	let canRankUp = $state(false);
 
 	const isAprilFirst = isAprilFools();
 	const randomColor = (() => {
@@ -107,9 +113,9 @@
 	}
 	Authentication.onAuthentication(loggedInCheck);
 
-	let languageMenu;
-	let accountMenu;
-	let accountButton;
+	let languageMenu = $state();
+	let accountMenu = $state();
+	let accountButton = $state();
 
 	function logout() {
 		accountMenu.style.display = "none";
@@ -143,7 +149,7 @@
 
 	onMount(loggedInCheck);
 
-	let currentLang = "en";
+	let currentLang = $state("en");
 	onMount(() => {
 		Language.forceUpdate();
 	});
@@ -217,7 +223,7 @@
 	<button
 		class="languageOption"
 		style="margin-bottom: 8px;"
-		on:click={() => chooseLang("default")}
+		onclick={() => chooseLang("default")}
 	>
 		<LocalizedText
 			text="Same as browser"
@@ -238,7 +244,7 @@
 	{#each languageKeys as languageCode}
 		<button
 			class="languageOption"
-			on:click={() => chooseLang(languageCode)}
+			onclick={() => chooseLang(languageCode)}
 		>
 			<div class="languageProgress">
 				<div class="only-in-dark-mode">
@@ -305,7 +311,7 @@
 		</button>
 	</a>
 	<div class="seperated-navopt"></div>
-	<button on:click={logout}>
+	<button onclick={logout}>
 		<LocalizedText
 			text="Logout"
 			key="navigation.logout"
@@ -414,11 +420,11 @@
 			/>
 		</BarPage>
 	{:else if loggedIn === true}
-		<!-- svelte-ignore a11y-img-redundant-alt -->
+		<!-- svelte-ignore a11y_img_redundant_alt -->
 		<button
 			class="profile-dropdown"
 			bind:this={accountButton}
-			on:click={openAccountMenu}
+			onclick={openAccountMenu}
 		>
 			<img
 				src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${accountUsername}&reload=${pfpkey}`}

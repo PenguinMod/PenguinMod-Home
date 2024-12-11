@@ -11,7 +11,7 @@
   import Language from "../../resources/language.js";
   import TranslationHandler from "../../resources/translations.js";
 
-  let currentLang = "en";
+  let currentLang = $state("en");
   onMount(() => {
     Language.forceUpdate();
   });
@@ -64,7 +64,7 @@
     </h1>
   </div>
 
-  <div style="height: 16px;" />
+  <div style="height: 16px;"></div>
 
   <div class="section-content">
     <p>
@@ -107,7 +107,7 @@
           </i>
         </p>
     </div>
-    <div style="height: 32px;" />
+    <div style="height: 32px;"></div>
     <p>
       <LocalizedText
           text="Your donation can help us fund PenguinMod's server and domain!"
@@ -123,7 +123,7 @@
         />
       </b>
     </p>
-    <div style="height: 8px;" />
+    <div style="height: 8px;"></div>
     <Button link="/donate">
       <LocalizedText
           text="Back"

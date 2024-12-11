@@ -13,20 +13,20 @@
         return neww;
     }
 
-    let likes = 0;
-    let votes = 0;
-    let views = 0;
+    let likes = $state(0);
+    let votes = $state(0);
+    let views = $state(0);
 
-    let userLiked = false;
-    let userVoted = false;
-    let userLikedOnLoad = false;
-    let userVotedOnLoad = false;
+    let userLiked = $state(false);
+    let userVoted = $state(false);
+    let userLikedOnLoad = $state(false);
+    let userVotedOnLoad = $state(false);
 
-    let loaded = false;
+    let loaded = $state(false);
     let loggedIn = true;
-    let loggedInAdmin = false;
+    let loggedInAdmin = $state(false);
 
-    let projectId = 0;
+    let projectId = $state(0);
 
     function vote() {
         if (loggedIn === false) {
@@ -151,7 +151,7 @@
 <div class="main">
     {#if loaded}
         <div title="Like this project" class="parent button-text">
-            <button class="like" on:click={love}>
+            <button class="like" onclick={love}>
                 <img
                     src="/vote/heart{userLiked ? "" : "_white"}.svg"
                     alt="Like"
@@ -163,7 +163,7 @@
             <p>{likes - Number(userLikedOnLoad) + Number(userLiked)}</p>
         </div>
         <div title="Vote to Feature this project" class="parent button-text">
-            <button class="feature" on:click={vote}>
+            <button class="feature" onclick={vote}>
                 <img
                     src="/vote/feature{userVoted ? "" : "_white"}.svg"
                     alt="Vote to Feature"

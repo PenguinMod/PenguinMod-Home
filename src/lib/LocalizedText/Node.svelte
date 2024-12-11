@@ -1,17 +1,32 @@
 <script>
+    import { run } from 'svelte/legacy';
+
     import Translations from "../../resources/translations.js";
 
-    export let text = "";
-    export let key = "";
-    export let lang = "";
-    export let dolink = false;
-    export let html = false;
-    export let replace = {};
+    /**
+     * @typedef {Object} Props
+     * @property {string} [text]
+     * @property {string} [key]
+     * @property {string} [lang]
+     * @property {boolean} [dolink]
+     * @property {boolean} [html]
+     * @property {any} [replace]
+     */
 
-    let displayText = '';
-    let shouldHTML = html;
+    /** @type {Props} */
+    let {
+        text = "",
+        key = "",
+        lang = "",
+        dolink = false,
+        html = false,
+        replace = {}
+    } = $props();
 
-    $: {
+    let displayText = $state('');
+    let shouldHTML = $state(html);
+
+    run(() => {
         const translated = Translations.textSafe(
             key,
             lang,
@@ -39,7 +54,7 @@
                 return `<a href="${url}" target="_blank" style="color: inherit">${value}</a>`;
             });
         }
-    }
+    });
 </script>
 
 {#if shouldHTML}

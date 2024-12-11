@@ -1,9 +1,11 @@
 <script>
-    export let width;
-    export let height;
-    export let color;
-    export let scale;
-    export let style;
+    let {
+        width,
+        height,
+        color,
+        scale,
+        style
+    } = $props();
 </script>
 
 <svg

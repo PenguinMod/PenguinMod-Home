@@ -7,9 +7,9 @@
     
 	import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     
-    export let items;
+    let { items } = $props();
     
-	let currentLang = "en";
+	let currentLang = $state("en");
 	onMount(() => {
 		Language.forceUpdate();
 	});

@@ -12,7 +12,7 @@
     import TranslationHandler from "../resources/translations.js";
     import Language from "../resources/language.js";
 
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
     });
@@ -22,8 +22,8 @@
 
     let pageStatus = Number($page.url.searchParams.get("error")) || $page.status;
 
-    let displayGame = false;
-    let showGameVignette = false;
+    let displayGame = $state(false);
+    let showGameVignette = $state(false);
     const showGame = () => {
         if (pageStatus !== 404) return;
         displayGame = true;
@@ -88,7 +88,7 @@
         </div>
 
         <div class="image-container">
-            <button class="image-button" on:click={showGame}>
+            <button class="image-button" onclick={showGame}>
                 <img
                     src={getErrorImage(pageStatus)}
                     alt="{pageStatus} - {$page.error.message}"

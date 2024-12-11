@@ -9,17 +9,36 @@
     // Static values
     import LINK from "../../resources/urls.js";
 
-    export let id;
-    export let title;
-    export let lastUpdate = false;
-    export let featured = false;
-    export let fromDonator = false;
-    export let author;
-    export let date = 0;
-    export let style = "";
 
-    export let linkOverride = false;
-    export let openNewtab = false;
+    /**
+     * @typedef {Object} Props
+     * @property {any} id
+     * @property {any} title
+     * @property {boolean} [lastUpdate]
+     * @property {boolean} [featured]
+     * @property {boolean} [fromDonator]
+     * @property {any} author
+     * @property {number} [date]
+     * @property {string} [style]
+     * @property {boolean} [linkOverride]
+     * @property {boolean} [openNewtab]
+     * @property {import('svelte').Snippet} [children]
+     */
+
+    /** @type {Props} */
+    let {
+        id,
+        title,
+        lastUpdate = false,
+        featured = false,
+        fromDonator = false,
+        author = $bindable(),
+        date = 0,
+        style = "",
+        linkOverride = false,
+        openNewtab = false,
+        children
+    } = $props();
 
     // let isDonator = false;
     const xmlEscape = function (unsafe) {
@@ -48,7 +67,7 @@
     };
 
     // translation
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => {
         if (typeof author === "string") {
             author = {
@@ -141,7 +160,7 @@
             </a>
         {/if}
     </div>
-    <slot />
+    {@render children?.()}
 </div>
 
 <style>

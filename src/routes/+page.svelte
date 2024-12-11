@@ -1,4 +1,6 @@
 <script>
+    import { run } from 'svelte/legacy';
+
     import { onMount } from "svelte";
     import { page } from "$app/stores";
 
@@ -41,20 +43,20 @@
         return isAprilFools || runningLocal;
     };
 
-    let loggedIn = null;
-    let langDecided = false;
-    let currentLang = "en";
+    let loggedIn = $state(null);
+    let langDecided = $state(false);
+    let currentLang = $state("en");
 
-    let ghcommits = [];
-    let myFeed = [];
-    let updates = [];
-    let feedIsEmpty = false;
-    let ghcommitsFailed = false;
-    let ghcommitsLoaded = false;
-    let projectsLoaded = false;
-    let projectsFailed = false;
+    let ghcommits = $state([]);
+    let myFeed = $state([]);
+    let updates = $state([]);
+    let feedIsEmpty = $state(false);
+    let ghcommitsFailed = $state(false);
+    let ghcommitsLoaded = $state(false);
+    let projectsLoaded = $state(false);
+    let projectsFailed = $state(false);
 
-    let catText = '⠀';
+    let catText = $state('⠀');
     let existingInterval;
     const catAudio = () => {
         const audio = new Audio('./cat/speak.mp3');
@@ -101,14 +103,14 @@
         }, 100);
     };
 
-    let projects = {
+    let projects = $state({
         today: [],
         featured: [],
         liked: [],
         voted: [],
         viewed: [],
         tagged: [],
-    };
+    });
 
     const ratings = [
         'omg you where so close with $1%!!!!! but sadly not this time',
@@ -151,9 +153,9 @@
                 .replace('$1', formatNumber(randomNumber * 100))
         return [underThresh, ratingMsg]
     }
-    let thingyActive = false;
+    let thingyActive = $state(false);
     // do the thingy
-    $: {
+    run(() => {
         if (!loggedIn) {
             // 1:9000 chance that we will play the video imediatly rather then after four hours
             // we use 9000 because thats roughly how many users we have, so there will now
@@ -165,7 +167,7 @@
                 thingyActive = true;
             }, 1.44e7);
         } else console.log("you dont get to see the thingy :trol:");
-    }
+    });
 
     const getAndUpdateMyFeed = async () => {
         console.log("update feed");
@@ -211,7 +213,7 @@
         }
     };
 
-    let tagForProjects = "";
+    let tagForProjects = $state("");
     let loggedInAdminOrMod = false;
     onMount(async () => {
         Language.forceUpdate();
@@ -279,7 +281,7 @@
     });
 
     // login code below
-    let loggedInUsername = "";
+    let loggedInUsername = $state("");
 
     Authentication.onLogout(() => {
         loggedIn = false;
@@ -299,7 +301,7 @@
         langDecided = true;
     });
 
-    let selectedFrontTabSelected = "new";
+    let selectedFrontTabSelected = $state("new");
 </script>
 
 <svelte:head>
@@ -762,7 +764,7 @@
                 <button
                     class="section-toggle-button"
                     data-active={selectedFrontTabSelected === "new"}
-                    on:click={() => {
+                    onclick={() => {
                         selectedFrontTabSelected = "new";
                     }}
                 >
@@ -775,7 +777,7 @@
                 <button
                     class="section-toggle-button"
                     data-active={selectedFrontTabSelected === "news"}
-                    on:click={() => {
+                    onclick={() => {
                         selectedFrontTabSelected = "news";
                     }}
                 >
@@ -788,7 +790,7 @@
                 <button
                     class="section-toggle-button"
                     data-active={selectedFrontTabSelected === "feed"}
-                    on:click={() => {
+                    onclick={() => {
                         selectedFrontTabSelected = "feed";
                     }}
                 >
@@ -801,7 +803,7 @@
                 <button
                     class="section-toggle-button"
                     data-active={selectedFrontTabSelected === "commit"}
-                    on:click={() => {
+                    onclick={() => {
                         selectedFrontTabSelected = "commit";
                     }}
                 >
@@ -1009,7 +1011,7 @@
         </ContentCategory>
         
         {#if isAprilFools()}
-            <button class="cat-button" on:click={catSpeak}>
+            <button class="cat-button" onclick={catSpeak}>
                 <img src="/cat/dave.png" alt="cat">
                 <p>{catText}</p>
             </button>

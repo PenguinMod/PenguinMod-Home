@@ -1,10 +1,25 @@
 <script>
-    export let highlighted = false;
-    export let link = false;
-    export let label = "";
-    export let noredirect = false;
-    export let classActor = "";
-    export let id = "";
+    /**
+     * @typedef {Object} Props
+     * @property {boolean} [highlighted]
+     * @property {boolean} [link]
+     * @property {string} [label]
+     * @property {boolean} [noredirect]
+     * @property {string} [classActor]
+     * @property {string} [id]
+     * @property {import('svelte').Snippet} [children]
+     */
+
+    /** @type {Props} */
+    let {
+        highlighted = false,
+        link = false,
+        label = "",
+        noredirect = false,
+        classActor = "",
+        id = "",
+        children
+    } = $props();
 </script>
 
 {#if link}
@@ -16,7 +31,7 @@
     >
         <button class={highlighted ? "button button-highlight" : "button"} {id}>
             {@html label}
-            <slot />
+            {@render children?.()}
         </button>
     </a>
 {/if}
@@ -27,7 +42,7 @@
         {id}
     >
         {@html label}
-        <slot />
+        {@render children?.()}
     </button>
 {/if}
 

@@ -1,15 +1,31 @@
 <script>
     import { createEventDispatcher } from "svelte";
 
-    export let highlighted = false;
-    export let link = false;
-    export let toggled = false;
-    export let label = "";
-    export let noredirect = false;
 
-    // extras
-    export let icon = false;
-    export let color = false;
+    
+    /**
+     * @typedef {Object} Props
+     * @property {boolean} [highlighted]
+     * @property {boolean} [link]
+     * @property {boolean} [toggled]
+     * @property {string} [label]
+     * @property {boolean} [noredirect]
+     * @property {boolean} [icon] - extras
+     * @property {boolean} [color]
+     * @property {import('svelte').Snippet} [children]
+     */
+
+    /** @type {Props} */
+    let {
+        highlighted = false,
+        link = false,
+        toggled = false,
+        label = "",
+        noredirect = false,
+        icon = false,
+        color = false,
+        children
+    } = $props();
 
     const dispatch = createEventDispatcher();
 
@@ -27,13 +43,13 @@
         <button
             class={(highlighted ? "button button-highlight" : "button") +
                 (color ? ` ${color}` : "")}
-            on:click={event}
+            onclick={event}
         >
             {#if icon}
                 <img src={`/${icon}`} alt={icon} style="margin-right:6px;" />
             {/if}
             {@html label}
-            <slot />
+            {@render children?.()}
         </button>
     </a>
 {/if}
@@ -42,13 +58,13 @@
         class={(highlighted ? "button button-highlight" : "button") +
             (color ? ` ${color}` : "") +
             (toggled ? " button-toggled" : "")}
-        on:click={event}
+        onclick={event}
     >
         {#if icon}
             <img src={`/${icon}`} alt={icon} style="margin-right:6px;" />
         {/if}
         {@html label}
-        <slot />
+        {@render children?.()}
     </button>
 {/if}
 

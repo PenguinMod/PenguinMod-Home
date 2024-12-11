@@ -13,10 +13,10 @@
     // Static values
     import LINK from "../../resources/urls.js";
 
-    let currentLang = "en";
-    let forceHtmlClass;
-    let forceHtmlClass2;
-    let forceHtmlClass3;
+    let currentLang = $state("en");
+    let forceHtmlClass = $state();
+    let forceHtmlClass2 = $state();
+    let forceHtmlClass3 = $state();
     onMount(() => {
         Language.forceUpdate();
         forceHtmlClass.classList.add('donate-card-html');
@@ -77,7 +77,7 @@
         <img src="/penguins/donate.svg" alt="Penguin" class="penguin-donate" />
     </div>
 
-    <div style="height: 16px;" />
+    <div style="height: 16px;"></div>
 
     <div class="section-discussion-wrapper">
         <div class="section-discussions">
@@ -112,7 +112,7 @@
                     />
                 </p>
 
-                <div style="height: 16px;" />
+                <div style="height: 16px;"></div>
 
                 <!-- donation buttons -->
                 <div class="donation-section">
@@ -195,7 +195,7 @@
                 </div>
 
                 <!-- other stuff -->
-                <div style="height: 48px;" />
+                <div style="height: 48px;"></div>
 
                 <p class="small">
                     <LocalizedText
@@ -273,7 +273,7 @@
         </div>
     </div>
 
-    <div style="height: 16px;" />
+    <div style="height: 16px;"></div>
 </div>
 
 <style>

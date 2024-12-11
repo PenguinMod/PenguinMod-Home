@@ -76,7 +76,7 @@
 
     <div class="box">
         {#if !opened}
-            <div style="height:32px;" />
+            <div style="height:32px;"></div>
             <Button label="Click to begin" on:click={begin} />
         {:else}
             <LoadingSpinner />

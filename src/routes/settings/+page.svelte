@@ -20,16 +20,16 @@
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
 
-    let loggedIn = null;
-    let loggedInUsername = null;
+    let loggedIn = $state(null);
+    let loggedInUsername = $state(null);
     let token = null;
-    let loginMethods = [];
-    let emailIsVerified = false;
-    let emailIsVisible = false;
+    let loginMethods = $state([]);
+    let emailIsVerified = $state(false);
+    let emailIsVisible = $state(false);
 
-    let standing = 1;
+    let standing = $state(1);
 
-    const accountInformation = {
+    const accountInformation = $state({
         emailPeek: "...", // a peek of the email (censors most of it), probably made by the api
         emailFull: "...", // the full email (remove show button if this becomes deprecated)
         emailSet: false,
@@ -41,9 +41,9 @@
             privateToNonFollowers: false,
             showCubesOnProfile: false,
         },
-    };
+    });
 
-    let currentTab = "account";
+    let currentTab = $state("account");
     const changeTab = (to) => {
         currentTab = to;
     };
@@ -57,7 +57,7 @@
             break;
     }
 
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
     });
@@ -209,11 +209,11 @@
         });
     }
 
-    let pfpReload = false;
-    let changingUsername = false;
-    let changingUsernameProcessing = false;
-    let newChangedUsernameError = "";
-    let newChangedUsername = "";
+    let pfpReload = $state(false);
+    let changingUsername = $state(false);
+    let changingUsernameProcessing = $state(false);
+    let newChangedUsernameError = $state("");
+    let newChangedUsername = $state("");
     const setNewUsername = async () => {
         await ProjectClient.setNewUsername(newChangedUsername);
         localStorage.setItem("username", newChangedUsername.toLowerCase());
@@ -257,9 +257,9 @@
         changingUsername = !changingUsername;
     };
 
-    let editingEmail = false;
+    let editingEmail = $state(false);
     let editingEmailProcessing = false;
-    let newEmail = "";
+    let newEmail = $state("");
 
     function saveEmail() {
         if (editingEmailProcessing) return;
@@ -396,11 +396,11 @@
             <LoadingSpinner enableTips={true} />
         </div>
     {:else}
-        <div style="height: 16px;" />
+        <div style="height: 16px;"></div>
 
         <div class="center-area">
             <div class="profile-section">
-                <button class="profile-section-image" on:click={setPFP}>
+                <button class="profile-section-image" onclick={setPFP}>
                     <img
                         src="{PUBLIC_API_URL}/api/v1/users/getpfp?username={loggedInUsername}&reload={pfpReload}"
                         alt={loggedInUsername}
@@ -416,7 +416,7 @@
                     {#if !changingUsername}
                         <h1 style="margin-block:0;font-size:40px">
                             {loggedInUsername}
-                            <button class="change-username" on:click={toggleUsernameMenu}>
+                            <button class="change-username" onclick={toggleUsernameMenu}>
                                 <img
                                     src="/pencil.png"
                                     alt="Edit"
@@ -437,7 +437,7 @@
                                 class="change-username-field"
                                 maxlength="20"
                             />
-                            <button class="change-username" on:click={toggleUsernameMenu}>
+                            <button class="change-username" onclick={toggleUsernameMenu}>
                                 {#if changingUsernameProcessing}
                                     <LoadingSpinner style="width:32px;height:32px;" single={true} />
                                 {:else}
@@ -464,7 +464,7 @@
                             </p>
                         {/if}
                     {/if}
-                    <button class="edit-link" on:click={changePassword}>
+                    <button class="edit-link" onclick={changePassword}>
                         {#if loginMethods.includes("password")}
                             <LocalizedText
                                 text="Change Password"
@@ -487,7 +487,7 @@
                     <button
                         class="settings-section"
                         data-selected={currentTab === 'account'}
-                        on:click={() => changeTab('account')}
+                        onclick={() => changeTab('account')}
                     >
                         <LocalizedText
                             text="Account"
@@ -498,7 +498,7 @@
                     <button
                         class="settings-section"
                         data-selected={currentTab === 'login'}
-                        on:click={() => changeTab('login')}
+                        onclick={() => changeTab('login')}
                     >
                         <LocalizedText
                             text="Login"
@@ -509,7 +509,7 @@
                     <button
                         class="settings-section"
                         data-selected={currentTab === 'standing'}
-                        on:click={() => changeTab('standing')}
+                        onclick={() => changeTab('standing')}
                     >
                         <LocalizedText
                             text="Standing"
@@ -548,7 +548,7 @@
                                         />
                                     </span>
                                 {:else}
-                                    <button class="show-email-link" on:click={() => {emailIsVisible = !emailIsVisible}}>
+                                    <button class="show-email-link" onclick={() => {emailIsVisible = !emailIsVisible}}>
                                         {#if !emailIsVisible}
                                             <img
                                                 src="/account/showpassword.svg"
@@ -564,7 +564,7 @@
                                         {/if}
                                     </button>
                                 {/if}
-                                <button class="edit-email-link" on:click={() => editingEmail = true}>
+                                <button class="edit-email-link" onclick={() => editingEmail = true}>
                                     <img
                                         src="/pencil.png"
                                         alt="Edit"
@@ -589,14 +589,14 @@
                                             "Type here...",
                                         )}
                                     >
-                                    <button on:click={() => editingEmail = false} class="email-edit-cancel">
+                                    <button onclick={() => editingEmail = false} class="email-edit-cancel">
                                         <LocalizedText
                                             text="Cancel"
                                             key="generic.cancel"
                                             lang={currentLang}
                                         />
                                     </button>
-                                    <button on:click={saveEmail} class="email-edit-save">
+                                    <button onclick={saveEmail} class="email-edit-save">
                                         <LocalizedText
                                             text="Save"
                                             key="generic.save"
@@ -619,7 +619,7 @@
                                     lang={currentLang}
                                 />
                             </p>
-                            <button class="verify-link" on:click={verifyEmail}>
+                            <button class="verify-link" onclick={verifyEmail}>
                                 <LocalizedText
                                     text="Verify your email"
                                     key="account.settings.account.email.verify"
@@ -632,7 +632,7 @@
                                 <input
                                     type="checkbox"
                                     bind:checked={accountInformation.settings.private}
-                                    on:change={updatePrivateProfile}
+                                    onchange={updatePrivateProfile}
                                 >
                                 <LocalizedText
                                     text="Make my profile private"
@@ -647,7 +647,7 @@
                                     type="checkbox"
                                     disabled={!accountInformation.settings.private}
                                     bind:checked={accountInformation.settings.privateToNonFollowers}
-                                    on:change={updatePrivateProfile}
+                                    onchange={updatePrivateProfile}
                                 >
                                 <LocalizedText
                                     text="Allow people I follow to view my profile"
@@ -708,7 +708,7 @@
                                 lang={currentLang}
                             />
                         </p>
-                        <button class="login-method-selector" on:click={() => loginMethodToggled("google", "Google")}>
+                        <button class="login-method-selector" onclick={() => loginMethodToggled("google", "Google")}>
                             <img
                                 src="/google.svg"
                                 alt="Google"
@@ -728,7 +728,7 @@
                                 />
                             {/if}
                         </button>
-                        <button class="login-method-selector" on:click={() => loginMethodToggled("github", "GitHub")}>
+                        <button class="login-method-selector" onclick={() => loginMethodToggled("github", "GitHub")}>
                             <img
                                 src="/github-mark/github-mark.svg"
                                 class="invert-on-dark"
@@ -749,7 +749,7 @@
                                 />
                             {/if}
                         </button>
-                        <button class="login-method-selector" on:click={() => loginMethodToggled("scratch", "Scratch")}>
+                        <button class="login-method-selector" onclick={() => loginMethodToggled("scratch", "Scratch")}>
                             <img
                                 src="/Scratch_S.svg"
                                 alt="Scratch"
@@ -774,10 +774,10 @@
             </div>
         </div>
 
-        <div style="height: 16px;" />
+        <div style="height: 16px;"></div>
     {/if}
 
-    <div style="height: 16px;" />
+    <div style="height: 16px;"></div>
 </div>
 
 <style>

@@ -34,33 +34,33 @@
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
     import SearchSVG from "../../icons/Search/icon.svelte";
 
-    let loggedIn = null;
-    let loggedInUser = "";
+    let loggedIn = $state(null);
+    let loggedInUser = $state("");
     let loggedInUserId = "";
-    let loggedInAdmin = false;
+    let loggedInAdmin = $state(false);
 
-    let user;
-    const projects = {
+    let user = $state();
+    const projects = $state({
         all: [],
         featured: [],
-    };
-    let badges = [];
-    let isDonator = false;
-    let isFollowingUser = false;
-    let followOnLoad = false;
-    let wasNotFound = false;
-    let isForceView = false;
-    let followerCount = null;
-    let fullProfile = {};
-    let isRankingUpMenu = false;
-    let isAttemptingRankUp = false;
-    let profileFeaturedProject = null;
+    });
+    let badges = $state([]);
+    let isDonator = $state(false);
+    let isFollowingUser = $state(false);
+    let followOnLoad = $state(false);
+    let wasNotFound = $state(false);
+    let isForceView = $state(false);
+    let followerCount = $state(null);
+    let fullProfile = $state({});
+    let isRankingUpMenu = $state(false);
+    let isAttemptingRankUp = $state(false);
+    let profileFeaturedProject = $state(null);
     
-    let isProfilePrivate = false;
-    let isProfilePublicToFollowers = false;
-    let isFollowedByUser = false;
+    let isProfilePrivate = $state(false);
+    let isProfilePublicToFollowers = $state(false);
+    let isFollowedByUser = $state(false);
 
-    const profileEditingData = {
+    const profileEditingData = $state({
         bio: '',
         project: 0,
         projectTitle: 1,
@@ -70,7 +70,7 @@
         isEditingProject: false,
         isProjectEditLoading: false,
         bioComponent: null,
-    };
+    });
     let canSendSaveReq = true;
     let canSendEditedProject = true;
     const saveEditedBio = () => {
@@ -205,7 +205,7 @@
         });
     };
     
-    let fetchedFullProfile = false;
+    let fetchedFullProfile = $state(false);
     onMount(async () => {
         const params = new URLSearchParams(location.search);
         const query = params.get("user");
@@ -304,7 +304,7 @@
         isFollowedByUser = await ProjectClient.isFollowing(user, username);
     });
 
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
     });
@@ -466,17 +466,17 @@
         'confusedthinking',
         'cool',
     ];
-    let emojiPickerRandomEmoji = '';
-    let emojiSearchQuery = '';
-    let emojiSearchBar;
-    let lastSelectedFormArea;
+    let emojiPickerRandomEmoji = $state('');
+    let emojiSearchQuery = $state('');
+    let emojiSearchBar = $state();
+    let lastSelectedFormArea = $state();
     const pickRandomEmojiPickerDisplay = () => {
         emojiPickerRandomEmoji = emojiPickerRandomEmojis
             [Math.round(Math.random() * (emojiPickerRandomEmojis.length - 1))];
     };
     pickRandomEmojiPickerDisplay();
 
-    let emojiPickerListUpdate = 0;
+    let emojiPickerListUpdate = $state(0);
     const allowEmojiDrop = (ev) => {
         const data = ev.dataTransfer.getData("emoji");
         if (data && typeof data === 'string') {
@@ -518,7 +518,7 @@
         emojiPickerListUpdate++;
     };
 
-    let emojiPickerOpened = false;
+    let emojiPickerOpened = $state(false);
     onMount(() => {
         EmojiList.fetch().finally(() => {
             emojiPickerListUpdate++;
@@ -783,7 +783,7 @@
                         key="profile.featured.chooselabel"
                         lang={currentLang}
                     />
-                    <select bind:value={profileEditingData.projectTitle} on:change={updateProjectFeaturedTitle}>
+                    <select bind:value={profileEditingData.projectTitle} onchange={updateProjectFeaturedTitle}>
                         {#each projectTitles as title}
                             <option value="{title}">
                                 <LocalizedText
@@ -839,8 +839,7 @@
     {#if (projects.all.length > 0 && fetchedFullProfile) || wasNotFound || isForceView}
         {#if
             !wasNotFound
-            || isForceView
-        }
+            || isForceView}
         <div class="background">
             {#if user}
                 <div class="section-user">
@@ -888,7 +887,7 @@
                                                     class={`follower-button
                                                         ${isDonator ? ' follower-button-donator' : ''}
                                                         ${isFollowingUser ? ' follower-button-following' : ''}`}
-                                                    on:click={safeFollowUser}
+                                                    onclick={safeFollowUser}
                                                 >
                                                     {#if isFollowingUser}
                                                         <LocalizedText
@@ -949,8 +948,8 @@
                         {#if profileEditingData.isEditingBio}
                             <div>
                                 <button
-                                    on:mouseenter={pickRandomEmojiPickerDisplay}
-                                    on:click={() => {
+                                    onmouseenter={pickRandomEmojiPickerDisplay}
+                                    onclick={() => {
                                         emojiPickerOpened = !emojiPickerOpened;
                                     }}
                                     title="Pick an emoji"
@@ -960,7 +959,7 @@
                                         src={`https://library.penguinmod.com/files/emojis/${emojiPickerRandomEmoji}.png`}
                                         alt="Emoji"
                                         title="Pick an emoji"
-                                        on:dragstart={(ev) => {
+                                        ondragstart={(ev) => {
                                             useEmojiDrag(ev, emojiPickerRandomEmoji);
                                         }}
                                     >
@@ -977,8 +976,8 @@
                                             />
                                         </div>
                                         <input
-                                            on:dragover={allowEmojiDrop}
-                                            on:drop={handleEmojiDrop}
+                                            ondragover={allowEmojiDrop}
+                                            ondrop={handleEmojiDrop}
                                             type="text"
                                             placeholder="..."
                                             bind:value={emojiSearchQuery}
@@ -1005,11 +1004,10 @@
                                                             emojiSearchQuery
                                                                 .toLowerCase()
                                                                 .replace(/[^a-z]+/gmi, '')
-                                                        )
-                                                    }
+                                                        )}
                                                         <button
                                                             class="emoji-picker-emoji"
-                                                            on:click={() => placeEmojiInTextbox(emoji)}
+                                                            onclick={() => placeEmojiInTextbox(emoji)}
                                                         >
                                                             <img
                                                                 src={`https://library.penguinmod.com/files/emojis/${emoji}.png`}
@@ -1084,7 +1082,7 @@
                             />
                             {#if profileEditingData.isEditingBio}
                                 {#if !profileEditingData.isBioEditLoading}
-                                    <button class="edit-done" on:click={saveEditedBio}>
+                                    <button class="edit-done" onclick={saveEditedBio}>
                                         <img
                                             src="/badges/approver.png"
                                             alt="Save"
@@ -1094,7 +1092,7 @@
                                 {/if}
                             {:else}
                                 {#if loggedIn && (String(user).toLowerCase() === String(loggedInUser).toLowerCase() || loggedInAdmin)}
-                                    <button class="edit-link" on:click={() => {
+                                    <button class="edit-link" onclick={() => {
                                         profileEditingData.bio = fullProfile.bio || '';
                                         profileEditingData.isEditingBio = true;
                                     }}>
@@ -1112,18 +1110,18 @@
                             {#if profileEditingData.isEditingBio}
                                 <textarea
                                     class="profile-bio-textarea{profileEditingData.isBioInappropriate ? ' profile-bio-textarea-inappropriate' : ''}"
-                                    on:click={() => {
+                                    onclick={() => {
                                         lastSelectedFormArea = profileEditingData.bioComponent;
                                     }}
-                                    on:focus={() => {
+                                    onfocus={() => {
                                         lastSelectedFormArea = profileEditingData.bioComponent;
                                     }}
                                     bind:this={profileEditingData.bioComponent}
                                     bind:value={profileEditingData.bio}
-                                    on:dragover={allowEmojiDrop}
-                                    on:drop={handleEmojiDrop}
+                                    ondragover={allowEmojiDrop}
+                                    ondrop={handleEmojiDrop}
                                     maxLength="2048"
-                                />
+></textarea>
                                 {#if profileEditingData.isBioInappropriate}
                                     <div class="profile-bio-warning-inappropriate">
                                         <LocalizedText
@@ -1164,7 +1162,7 @@
                                 lang={currentLang}
                             />
                             {#if loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase() && profileFeaturedProject && !profileEditingData.isEditingProject}
-                                <button class="edit-link" on:click={() => {
+                                <button class="edit-link" onclick={() => {
                                     profileEditingData.project = profileFeaturedProject.id || 0;
                                     profileEditingData.projectTitle = fullProfile.myFeaturedProjectTitle || 1;
                                     if (profileFeaturedProject.id === -1) {
@@ -1262,11 +1260,11 @@
                                             />
                                         </span>
                                     {:else}
-                                        <!-- svelte-ignore a11y-invalid-attribute -->
+                                        <!-- svelte-ignore a11y_invalid_attribute -->
                                         <a
                                             href="#"
                                             style="color:dodgerblue;font-size:.6em;"
-                                            on:click={() => {
+                                            onclick={() => {
                                                 isRankingUpMenu = true;
                                             }}
                                         >
@@ -1371,7 +1369,7 @@
             {/if}
         </div>
         {:else}
-            <div style="height:32px;" />
+            <div style="height:32px;"></div>
             <div style="display:flex;flex-direction:column;align-items:center;">
                 <PenguinConfusedSVG height="10rem" />
                 <p>
@@ -1402,7 +1400,7 @@
             </div>
         {/if}
     {:else}
-        <div style="height:32px;" />
+        <div style="height:32px;"></div>
         <LoadingSpinner enableTips={true} />
     {/if}
 </div>

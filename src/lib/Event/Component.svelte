@@ -8,7 +8,7 @@
     const eventPath = "example";
     
     let currentLang = "en";
-    let pageLang = "en";
+    let pageLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
     });

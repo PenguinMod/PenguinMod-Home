@@ -4,8 +4,7 @@
     import { browser } from '$app/environment';
     
 
-    /** @type {import('./$types').PageData} */
-    export let data;
+    
 
     // import { onMount } from "svelte";
     import MarkdownIt from "markdown-it";
@@ -14,6 +13,13 @@
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../../resources/translations.js";
     import Language from "../../../resources/language.js";
+    /**
+     * @typedef {Object} Props
+     * @property {import('./$types').PageData} data
+     */
+
+    /** @type {Props} */
+    let { data } = $props();
 
     const eventPath = data.slug;
     const language = $page.url.searchParams.get('l');
@@ -29,11 +35,11 @@
         breaks: true,
     });
 
-    let eventHost = "";
-    let eventCollaborator = "";
+    let eventHost = $state("");
+    let eventCollaborator = $state("");
     
-    let currentLang = "en";
-    let hasLoadedLang = false;
+    let currentLang = $state("en");
+    let hasLoadedLang = $state(false);
     onMount(() => {
         Language.forceUpdate();
         hasLoadedLang = true;
@@ -74,8 +80,8 @@
     const tokens = md.parse(markdownSource, env);
 
     // Extract the header
-    let headerHTML = "## file did not contain header ##";
-    let headerText = headerHTML;
+    let headerHTML = $state("## file did not contain header ##");
+    let headerText = $state(headerHTML);
     const headerStart = tokens.findIndex(
         (token) => token.type === "heading_open" && token.tag === "h1"
     );

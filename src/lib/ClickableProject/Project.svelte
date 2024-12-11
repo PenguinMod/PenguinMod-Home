@@ -6,14 +6,30 @@
     // Static values
     import LINK from "../../resources/urls.js";
 
-    export let id;
-    export let title;
-    export let lastUpdate = false;
-    export let featured = false;
-    export let author;
-    //export let date = 0; // when the project was originally uploaded
-    export let style = "";
-    export let showdate = true;
+    
+    /**
+     * @typedef {Object} Props
+     * @property {any} id
+     * @property {any} title
+     * @property {boolean} [lastUpdate]
+     * @property {boolean} [featured]
+     * @property {any} author
+     * @property {string} [style] - export let date = 0; // when the project was originally uploaded
+     * @property {boolean} [showdate]
+     * @property {import('svelte').Snippet} [children]
+     */
+
+    /** @type {Props} */
+    let {
+        id,
+        title,
+        lastUpdate = false,
+        featured = false,
+        author,
+        style = "",
+        showdate = true,
+        children
+    } = $props();
 
     function unixToDisplayDate(unix) {
         unix = Number(unix);
@@ -34,7 +50,7 @@
     }
 </script>
 
-<button class="project" data-featured={featured} {style} on:click={event}>
+<button class="project" data-featured={featured} {style} onclick={event}>
     <div class="project-image">
         <img
             src={`${LINK.projects}api/v1/projects/getproject?projectID=${id}&requestType=thumbnail`}
@@ -63,7 +79,7 @@
             </div>
         {/if}
     </div>
-    <slot />
+    {@render children?.()}
 </button>
 
 <style>

@@ -7,8 +7,8 @@
     
     const dispatch = createEventDispatcher();
     
-    let mockCompleted = false;
-    let mockExpired = false;
+    let mockCompleted = $state(false);
+    let mockExpired = $state(false);
     const mockComplete = () => {
         mockCompleted = true;
         dispatch("update", "captcha_disabled");
@@ -58,14 +58,14 @@
             {:else if mockCompleted}
                 ✅ Success!
             {:else}
-                <button style="border: 1px solid black; padding: 14px;" on:click={mockComplete}>X</button>
+                <button style="border: 1px solid black; padding: 14px;" onclick={mockComplete}>X</button>
                 I'm not a robot
             {/if}
         </span>
         <br>
         <br>
-        <button on:click={mockExpire}>Expire</button>
-        <button on:click={mockError}>Error (Reset)</button>
+        <button onclick={mockExpire}>Expire</button>
+        <button onclick={mockError}>Error (Reset)</button>
         <br>
         Emulator, Captcha is disabled in .env, see PUBLIC_CAPTCHA_ENABLED
     </div>
@@ -76,5 +76,5 @@
         data-callback="on_captcha_complete"
         data-expired-callback="on_captcha_expired"
         data-error-callback="on_captcha_error"
-    />
+></div>
 {/if}

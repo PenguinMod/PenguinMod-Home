@@ -1,11 +1,17 @@
 <script>
-    /** @type {import('./$types').PageData} */
-    export let data;
+    
 
     import { onMount } from "svelte";
     import { browser } from '$app/environment';
     import MarkdownIt from "markdown-it";
     import GuidelinePages from "../../../guidelines/pages";
+    /**
+     * @typedef {Object} Props
+     * @property {import('./$types').PageData} data
+     */
+
+    /** @type {Props} */
+    let { data } = $props();
 
     const markdownSource = GuidelinePages[data.slug] || "404 Page Not Found";
     if (markdownSource === '404 Page Not Found' && browser) {

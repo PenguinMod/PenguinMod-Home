@@ -1,12 +1,26 @@
 <script>
-	export let progress = 0.5;
-	export let style = "";
 
-	export let leftToRight = true;
-	export let holeSize = 50;
-	export let holeColor = "white";
-	export let emptyColor = "gainsboro";
-	export let fillColor = "orange 0deg, yellow 90deg, lightgreen 180deg, green";
+	/**
+	 * @typedef {Object} Props
+	 * @property {number} [progress]
+	 * @property {string} [style]
+	 * @property {boolean} [leftToRight]
+	 * @property {number} [holeSize]
+	 * @property {string} [holeColor]
+	 * @property {string} [emptyColor]
+	 * @property {string} [fillColor]
+	 */
+
+	/** @type {Props} */
+	let {
+		progress = 0.5,
+		style = "",
+		leftToRight = true,
+		holeSize = 50,
+		holeColor = "white",
+		emptyColor = "gainsboro",
+		fillColor = "orange 0deg, yellow 90deg, lightgreen 180deg, green"
+	} = $props();
 
 	let angle = 360 * progress;
     if (leftToRight) {
@@ -22,7 +36,7 @@
         }
         conic-gradient(${fillColor});`;
 	
-	$: cssVarStyles = `--background: ${background}; ${style}`;
+	let cssVarStyles = $derived(`--background: ${background}; ${style}`);
 </script>
 
 <style>

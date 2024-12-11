@@ -22,7 +22,7 @@
     import Authentication from "../../resources/authentication.js";
     import CountryLookup from "../../resources/country-lookup.json";
 
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
         checkIfValid();
@@ -36,40 +36,40 @@
     let email = "";
     let birthday = "";
     let country = "";
-    let creatingAccount = false;
-    let canCreateAccount = false;
+    let creatingAccount = $state(false);
+    let canCreateAccount = $state(false);
     let apiCreateRejectReason = '';
-    let showingPassword = false;
-    let focused = "";
-    let embed = false;
+    let showingPassword = $state(false);
+    let focused = $state("");
+    let embed = $state(false);
     if (browser) {
         embed = $page.url.searchParams.get('embed') === "true";
     }
 
-    let emailValid = 0;
-    let usernameValid = false;
-    let passwordValid = false;
-    let birthdayValid = false;
-    let countryValid = false;
+    let emailValid = $state(0);
+    let usernameValid = $state(false);
+    let passwordValid = $state(false);
+    let birthdayValid = $state(false);
+    let countryValid = $state(false);
 
-    let birthdayFaked = false;
-    let consentedToDataUsage = false;
-    let accurateDataAgreement = false;
+    let birthdayFaked = $state(false);
+    let consentedToDataUsage = $state(false);
+    let accurateDataAgreement = $state(false);
 
-    let captcha_token = false;
+    let captcha_token = $state(false);
 
-    const usernameRequirements = [
+    const usernameRequirements = $state([
         {name: "username.requirement.length", value: false},
         {name: "username.requirement.letters", value: false},
         {name: "username.requirement.unique", value: false}
-    ]
+    ])
 
-    const passwordRequirements = [
+    const passwordRequirements = $state([
         {name: "password.requirement.length", value: false},
         {name: "password.requirement.casing", value: false},
         {name: "password.requirement.number", value: false},
         {name: "password.requirement.symbol", value: false},
-    ]
+    ])
 
     async function createAccount() {
         const token = await Authentication.createAccount(username, password, email, birthday, country, captcha_token);
@@ -472,7 +472,7 @@
             />
         </p>
 
-        <button class="gsi-material-button" on:click={googleOAuth}>
+        <button class="gsi-material-button" onclick={googleOAuth}>
             <div class="gsi-material-button-state"></div>
             <div class="gsi-material-button-content-wrapper">
                 <div class="gsi-material-button-icon">
@@ -501,7 +501,7 @@
             </div>
         </button>
 
-        <button class="gsi-material-button" on:click={githubOAuth}>
+        <button class="gsi-material-button" onclick={githubOAuth}>
             <div class="gsi-material-button-state"></div>
             <div class="gsi-material-button-content-wrapper">
                 <div class="gsi-material-button-icon">
@@ -529,7 +529,7 @@
             </div>
         </button>
 
-        <button class="gsi-material-button" on:click={scratchOauth}>
+        <button class="gsi-material-button" onclick={scratchOauth}>
             <div class="gsi-material-button-state"></div>
             <div class="gsi-material-button-content-wrapper">
                 <div class="gsi-material-button-icon">
@@ -576,9 +576,9 @@
             )}
             data-valid={usernameValid}
             maxlength="20"
-            on:input={usernameInputChanged}
-            on:focusin={() => focused = "username"}
-            on:focusout={() => focused = ""}
+            oninput={usernameInputChanged}
+            onfocusin={() => focused = "username"}
+            onfocusout={() => focused = ""}
         />
         {#if focused === "username"}
             <ChecksBox items={usernameRequirements} />
@@ -601,9 +601,9 @@
             data-valid={emailValid}
             class="email-input"
             maxlength="254"
-            on:input={emailInputChanged}
-            on:focusin={() => focused = "email"}
-            on:focusout={() => focused = ""}
+            oninput={emailInputChanged}
+            onfocusin={() => focused = "email"}
+            onfocusout={() => focused = ""}
         />
 
         <span class="input-title">
@@ -623,13 +623,13 @@
                 )}
                 data-valid={passwordValid}
                 maxlength="50"
-                on:input={passwordInputChanged}
-                on:focusin={() => focused = "password"}
-                on:focusout={() => focused = ""}
+                oninput={passwordInputChanged}
+                onfocusin={() => focused = "password"}
+                onfocusout={() => focused = ""}
             />
             <button
                 class="password-show"
-                on:click={togglePasswordView}>
+                onclick={togglePasswordView}>
                 {#if showingPassword}
                     <img
                         src="/account/hidepassword.svg"
@@ -659,7 +659,7 @@
         <select
             class="input-forced-class"
             data-valid={countryValid}
-            on:input={countryInputChanged}
+            oninput={countryInputChanged}
         >
             <option value="" selected disabled>
                 <LocalizedText
@@ -685,7 +685,7 @@
             min="1900-01-01"
             max={getMaxBirthdate()}
             data-valid={birthdayValid}
-            on:input={birthdayInputChanged}
+            oninput={birthdayInputChanged}
         />
         
         <Captcha on:update={(event) => {
@@ -712,7 +712,7 @@
             <input
                 type="checkbox"
                 bind:checked={consentedToDataUsage}
-                on:change={checkIfValid}
+                onchange={checkIfValid}
             />
             <span class="disable-markdown-margin">
                 {@html generateMarkdown(`${TranslationHandler.textSafe(
@@ -726,7 +726,7 @@
             <input
                 type="checkbox"
                 bind:checked={accurateDataAgreement}
-                on:change={checkIfValid}
+                onchange={checkIfValid}
             />
             <span class="disable-markdown-margin">
                 {@html generateMarkdown(`${TranslationHandler.textSafe(
@@ -745,7 +745,7 @@
             )}`)}
         </p>
 
-        <button type="submit" class="create-acc" data-canCreate={canCreateAccount} on:click={createAccountSafe}>
+        <button type="submit" class="create-acc" data-canCreate={canCreateAccount} onclick={createAccountSafe}>
             {#if creatingAccount}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}
@@ -777,7 +777,7 @@
     </div>
 
     <!-- the magical div of scroll -->
-    <div style="height:32px" />
+    <div style="height:32px"></div>
 </div>
     
 <style>

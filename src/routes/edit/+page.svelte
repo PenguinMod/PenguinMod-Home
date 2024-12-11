@@ -24,8 +24,8 @@
     // Icons
     import SearchSVG from "../../icons/Search/icon.svelte";
 
-    let projectName = "";
-    let currentLang = "en";
+    let projectName = $state("");
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
     });
@@ -39,17 +39,17 @@
         }
     });
 
-    let loggedIn = null;
-    let loadingExternal = false;
+    let loggedIn = $state(null);
+    let loadingExternal = $state(false);
     let guidelinePageOpen = false;
 
-    let projectId;
-    let projectMetadata = {};
+    let projectId = $state();
+    let projectMetadata = $state({});
 
-    let newProjectImage;
-    let newProjectURL;
+    let newProjectImage = $state();
+    let newProjectURL = $state();
     let newProjectData;
-    let projectSizes = { name: `0/${PUBLIC_MAX_UPLOAD_SIZE}MB`, value: [] };
+    let projectSizes = $state({ name: `0/${PUBLIC_MAX_UPLOAD_SIZE}MB`, value: [] });
     function updateSize() {
         if (newProjectData) 
             ProjectClient.resolveProjectSizes(newProjectData, newProjectImage?.size ?? 0, true)
@@ -60,13 +60,13 @@
                 });
     }
 
-    let projectInputName;
+    let projectInputName = $state();
 
-    const components = {
+    const components = $state({
         projectName: null,
         projectInstructions: null,
         projectNotes: null,
-    };
+    });
 
     function floatTo2Decimals(number) {
         const num = Number(number);
@@ -205,7 +205,7 @@
         }
     });
     
-    let isBusyUploading = false;
+    let isBusyUploading = $state(false);
     async function updateProject() {
         if (isBusyUploading) return;
         // if (projectMetadata.featured) {
@@ -333,9 +333,9 @@
         'confusedthinking',
         'cool',
     ];
-    let emojiPickerRandomEmoji = '';
-    let emojiSearchQuery = '';
-    let emojiSearchBar;
+    let emojiPickerRandomEmoji = $state('');
+    let emojiSearchQuery = $state('');
+    let emojiSearchBar = $state();
     let lastSelectedFormArea;
     const pickRandomEmojiPickerDisplay = () => {
         emojiPickerRandomEmoji = emojiPickerRandomEmojis
@@ -343,7 +343,7 @@
     };
     pickRandomEmojiPickerDisplay();
 
-    let emojiPickerListUpdate = 0;
+    let emojiPickerListUpdate = $state(0);
     const allowEmojiDrop = (ev) => {
         const data = ev.dataTransfer.getData("emoji");
         if (data && typeof data === 'string') {
@@ -377,7 +377,7 @@
         emojiPickerListUpdate++;
     };
 
-    let emojiPickerOpened = false;
+    let emojiPickerOpened = $state(false);
     onMount(() => {
         components.projectName.addEventListener('click', (e) => {
             lastSelectedFormArea = e.target;
@@ -508,8 +508,8 @@
     <div class="full">
         <div class="card">
             <button
-                on:mouseenter={pickRandomEmojiPickerDisplay}
-                on:click={() => {
+                onmouseenter={pickRandomEmojiPickerDisplay}
+                onclick={() => {
                     emojiPickerOpened = !emojiPickerOpened;
                 }}
                 title="Pick an emoji"
@@ -519,7 +519,7 @@
                     src={`https://library.penguinmod.com/files/emojis/${emojiPickerRandomEmoji}.png`}
                     alt="Emoji"
                     title="Pick an emoji"
-                    on:dragstart={(ev) => {
+                    ondragstart={(ev) => {
                         useEmojiDrag(ev, emojiPickerRandomEmoji);
                     }}
                 >
@@ -536,8 +536,8 @@
                         />
                     </div>
                     <input
-                        on:dragover={allowEmojiDrop}
-                        on:drop={handleEmojiDrop}
+                        ondragover={allowEmojiDrop}
+                        ondrop={handleEmojiDrop}
                         type="text"
                         placeholder="..."
                         bind:value={emojiSearchQuery}
@@ -564,11 +564,10 @@
                                         emojiSearchQuery
                                             .toLowerCase()
                                             .replace(/[^a-z]+/gmi, '')
-                                    )
-                                }
+                                    )}
                                     <button
                                         class="emoji-picker-emoji"
-                                        on:click={() => placeEmojiInTextbox(emoji)}
+                                        onclick={() => placeEmojiInTextbox(emoji)}
                                     >
                                         <img
                                             src={`https://library.penguinmod.com/files/emojis/${emoji}.png`}
@@ -601,8 +600,8 @@
                             currentLang
                         )}
                         bind:this={components.projectName}
-                        on:dragover={allowEmojiDrop}
-                        on:drop={handleEmojiDrop}
+                        ondragover={allowEmojiDrop}
+                        ondrop={handleEmojiDrop}
                         bind:value={projectName}
                     />
                     <p class="important notmargin" style="margin-top:24px">
@@ -618,12 +617,12 @@
                             currentLang
                         )}
                         bind:this={components.projectInstructions}
-                        on:dragover={allowEmojiDrop}
-                        on:drop={handleEmojiDrop}
+                        ondragover={allowEmojiDrop}
+                        ondrop={handleEmojiDrop}
                         value={projectMetadata
                             ? projectMetadata.instructions
                             : ""}
-                    />
+></textarea>
                     <p class="important notmargin">
                         <LocalizedText
                             text="Notes and Credits"
@@ -637,16 +636,16 @@
                             currentLang
                         )}
                         bind:this={components.projectNotes}
-                        on:dragover={allowEmojiDrop}
-                        on:drop={handleEmojiDrop}
+                        ondragover={allowEmojiDrop}
+                        ondrop={handleEmojiDrop}
                         value={projectMetadata ? projectMetadata.notes : ""}
-                    />
+></textarea>
                     <input
                         id="FILERI"
                         type="file"
                         class="hidden-picker"
                         accept=".pmp,.pm,.sb3,.sb2,.sb,.goobert"
-                        on:change={projectFilePicked}
+                        onchange={projectFilePicked}
                     />
                     <label
                         class="file-picker"
@@ -660,7 +659,7 @@
                             lang={currentLang}
                         />
                     </label>
-                    <div style="height:16px" />
+                    <div style="height:16px"></div>
                     <p>
                         <a
                             class="guidelines-link"
@@ -690,7 +689,7 @@
                         type="file"
                         class="hidden-picker"
                         accept=".png"
-                        on:change={imageFilePicked}
+                        onchange={imageFilePicked}
                     />
                     <label class="file-picker" for="FILEPI">
                         <LocalizedText

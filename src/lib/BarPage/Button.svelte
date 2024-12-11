@@ -1,15 +1,34 @@
 <script>
+    import { run } from 'svelte/legacy';
+
     import { createEventDispatcher } from "svelte";
     import Translations from "../../resources/translations.js";
 
-    export let link = false;
-    export let label = "";
-    export let style = "";
-    export let noredirect = false;
-    export let classActor = "";
-    export let id = "";
-    export let title = "";
-    export let lang = "en";
+    /**
+     * @typedef {Object} Props
+     * @property {boolean} [link]
+     * @property {string} [label]
+     * @property {string} [style]
+     * @property {boolean} [noredirect]
+     * @property {string} [classActor]
+     * @property {string} [id]
+     * @property {string} [title]
+     * @property {string} [lang]
+     * @property {import('svelte').Snippet} [children]
+     */
+
+    /** @type {Props} */
+    let {
+        link = false,
+        label = "",
+        style = "",
+        noredirect = false,
+        classActor = "",
+        id = "",
+        title = $bindable(""),
+        lang = "en",
+        children
+    } = $props();
 
     const dispatch = createEventDispatcher();
 
@@ -17,7 +36,7 @@
         dispatch("click", ...args);
     }
 
-    $: {
+    run(() => {
         if (!title == "") {
             const translated = Translations.textSafe(
                 title,
@@ -26,19 +45,19 @@
             );
             title = translated;
         }
-    }
+    });
 </script>
 
 {#if !link}
     <button
         class={`button${classActor ? ` ca-${classActor}` : ""}`}
-        on:click={event}
+        onclick={event}
         {style}
         {id}
         {title}
     >
         {@html label}
-        <slot />
+        {@render children?.()}
     </button>
 {:else}
     <a
@@ -48,9 +67,9 @@
         class={`${classActor ? ` ca-${classActor}` : ""}`}
         {title}
     >
-        <button class="button" on:click={event} {style} {id}>
+        <button class="button" onclick={event} {style} {id}>
             {@html label}
-            <slot />
+            {@render children?.()}
         </button>
     </a>
 {/if}

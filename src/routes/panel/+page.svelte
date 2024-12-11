@@ -28,9 +28,9 @@
         ).toLocaleTimeString()}`;
     }
 
-    let loggedIn = null;
-    let projectIdSelection;
-    let serverStats = [];
+    let loggedIn = $state(null);
+    let projectIdSelection = $state();
+    let serverStats = $state([]);
     const selectForReject = $page.url.searchParams.get('reject');
 
     function kickOut(loggedOut) {
@@ -90,18 +90,18 @@
     });
 
     // moved this here so it can be used latter on
-    let dropdownSelectMenu;
+    let dropdownSelectMenu = $state();
 
-    let contentWithReports = [];
-    let unapprovedProjects = [];
-    let selectedReportDetailed = -1;
-    let reportDetails = Object.create(null);
+    let contentWithReports = $state([]);
+    let unapprovedProjects = $state([]);
+    let selectedReportDetailed = $state(-1);
+    let reportDetails = $state(Object.create(null));
 
-    const guidelinesNotifs = {
+    const guidelinesNotifs = $state({
         tos: false,
         pp: false,
         ug: false
-    };
+    });
 
     const loadReportDetails = (id) => {
         let type = "user";
@@ -140,7 +140,7 @@
             });
     };
 
-    let projectListStyle = '';
+    let projectListStyle = $state('');
     const refreshProjectMenu = () => {
         unapprovedProjects = [];
         contentWithReports = [];
@@ -203,12 +203,12 @@
     //     }
     //     ProjectClient.deleteProject(id);
     // }
-    let rejectionPageOpen = false;
-    let deletionPageOpen = false;
-    let rejectingId = 0;
-    let rejectingName = "";
-    let rejectingTextboxAreaText = "";
-    let isRejectHard = false;
+    let rejectionPageOpen = $state(false);
+    let deletionPageOpen = $state(false);
+    let rejectingId = $state(0);
+    let rejectingName = $state("");
+    let rejectingTextboxAreaText = $state("");
+    let isRejectHard = $state(false);
     function rejectProject(id) {
         id ??= Number(projectIdSelection.value);
         if (isNaN(id)) return;
@@ -232,8 +232,8 @@
             });
         }
     }
-    let selectedProjectName = "";
-    let lastSelectedProjectId = 0;
+    let selectedProjectName = $state("");
+    let lastSelectedProjectId = $state(0);
     function selectProject(id, name) {
         projectIdSelection.value = id;
         lastSelectedProjectId = id;
@@ -310,9 +310,9 @@
     //         });
     // }
 
-    const filterJSONStuff = {
+    const filterJSONStuff = $state({
         text: ''
-    };
+    });
     filterJSONStuff.get = async () => {
         filterJSONStuff.text = JSON.stringify(await ProjectClient.getProfanityFilter(), null, 4);
     };
@@ -320,17 +320,17 @@
         ProjectClient.setProfanityFilter(data);
     };
 
-    let inspectMenuOpen = false;
-    let censorMenuOpen = false;
-    const inspectMenuDetails = {
+    let inspectMenuOpen = $state(false);
+    let censorMenuOpen = $state(false);
+    const inspectMenuDetails = $state({
         downloading: false,
         error: false,
         errorText: false,
         extensions: [],
         extensionData: {},
         extensionUrls: {},
-    };
-    const censorMenuDetails = {
+    });
+    const censorMenuDetails = $state({
         downloading: false,
         uploading: false,
         error: false,
@@ -343,8 +343,8 @@
         previewBlack: false,
         size: 128,
         rawProject: null,
-    };
-    let _resettingInspectMenu = true;
+    });
+    let _resettingInspectMenu = $state(true);
     function resetInspectMenu() {
         _resettingInspectMenu = false;
         setTimeout(() => {
@@ -553,10 +553,10 @@
         }, 1000);
     }
 
-    const messageReplyInfo = {
+    const messageReplyInfo = $state({
         id: "",
         text: "",
-    };
+    });
     const replyToMessage = () => {
         if (!messageReplyInfo.id) return alert("Message ID is not specified.");
         if (!messageReplyInfo.text)
@@ -593,7 +593,7 @@
         ProjectClient.setLastPolicyUpdate(notifs)
     };
 
-    let rejectedProjectId = "0";
+    let rejectedProjectId = $state("0");
     const downloadRejectedProject = async () => {
         try {
             const projectFile = await ProjectClient.downloadHardRejectedProject(
@@ -636,7 +636,7 @@
             });
     };
 
-    const userSelectionData = {
+    const userSelectionData = $state({
         username: "",
         reason: "",
         time: 0,
@@ -644,7 +644,7 @@
         approver: false,
         newUsername: "",
         newPfp: null,
-    };
+    });
     const renameUser = () => {
         const promptMessage = prompt(
             `Are you sure you want to rename ${userSelectionData.username} to ${userSelectionData.newUsername}?\nType "ok" to confirm.`
@@ -732,9 +732,9 @@
             });
     };
 
-    let areBadgesLoadedForVisibility = false;
-    let currentUserBadges = {};
-    let userBadgesUsername = "";
+    let areBadgesLoadedForVisibility = $state(false);
+    let currentUserBadges = $state({});
+    let userBadgesUsername = $state("");
     const loadUserBadges = async () => {
         areBadgesLoadedForVisibility = false;
         if (!userBadgesUsername) return;
@@ -824,10 +824,10 @@
             });
     }
 
-    let ipBanData = {
+    let ipBanData = $state({
         input: "",
         connectedIPs: [],
-    }
+    })
 
     function getConnectedIPs() {
         ProjectClient.getConnectedIPs(ipBanData.input)
@@ -875,9 +875,9 @@
             });
     }
 
-    let showUserPerms = false;
-    let listOfAdmins = [];
-    let listOfMods = [];
+    let showUserPerms = $state(false);
+    let listOfAdmins = $state([]);
+    let listOfMods = $state([]);
     const loadUserPerms = () => ProjectClient.getAllPermitedUsers()
         .then(users => {
             listOfAdmins = users.admins;
@@ -923,13 +923,13 @@
                     width="240"
                     height="180"
                 >
-                <!-- svelte-ignore a11y-autofocus -->
+                <!-- svelte-ignore a11y_autofocus -->
                 <textarea
                     bind:value={rejectingTextboxAreaText}
                     placeholder="Reason for rejecting..."
                     style="width: 95%;"
                     autofocus
-                />
+></textarea>
                 <details>
                     <summary>Dangerous options</summary>
                     <label style="color:red">
@@ -975,13 +975,13 @@
                     width="240"
                     height="180"
                 >
-                <!-- svelte-ignore a11y-autofocus -->
+                <!-- svelte-ignore a11y_autofocus -->
                 <textarea
                     bind:value={rejectingTextboxAreaText}
                     placeholder="Reason for deletion..."
                     style="width: 95%;"
                     autofocus
-                />
+></textarea>
                 <br />
                 <br />
                 <h2><b>Quick-Delete</b></h2>
@@ -1048,7 +1048,7 @@
                                             extensionId
                                         ]}
                                         style="width:90%;height:256px;font-family:monospace"
-                                    />
+></textarea>
                                 {:else}
                                     (Core Extension)
                                 {/if}
@@ -1136,7 +1136,7 @@
                                     volume={0.5}
                                     src={sound.url}
                                     controls
-                                />
+></audio>
                                 <br>
                                 <a download="{sound.name}" href={sound.url} target="_blank">
                                     Download
@@ -1272,7 +1272,7 @@
                     <input type="checkbox" bind:checked={sendWebhook} />
                     Send Approved Projects to Discord
                 </label> -->
-                <div style="height:24px" />
+                <div style="height:24px"></div>
                 <div style="display: flex; flex-direction: row; width: 100%;">
                     <Button
                         label="Remove"
@@ -1284,7 +1284,7 @@
                         color="purple"
                         on:click={openDeleteProjectMenu}
                     />
-                    <div style="width:24px" />
+                    <div style="width:24px"></div>
                     <Button
                         label="Feature"
                         color="orange"
@@ -1296,7 +1296,7 @@
                         on:click={() => featureProject(false)}
                     />
                 </div>
-                <div style="height:24px" />
+                <div style="height:24px"></div>
                 <h3>Removed Projects</h3>
                 <p>
                     Target Removed Project:
@@ -1350,7 +1350,7 @@
                     size="50"
                     placeholder="Reply..."
                     bind:value={messageReplyInfo.text}
-                />
+></textarea>
                 <br />
                 <br />
                 <div class="user-action-row">
@@ -1518,7 +1518,7 @@
                     value={ipBanData.connectedIPs.join('\n')}
                     style="width:80%;height:150px;font-family:monospace"
                     readonly
-                />
+></textarea>
 
                 <div class="user-action-row">
                     <Button on:click={getConnectedIPs}>Get Connected IPs</Button>
@@ -1535,7 +1535,7 @@
                     type="text"
                     size="50"
                     placeholder="PenguinMod username..."
-                    on:change={() => {
+                    onchange={() => {
                         areBadgesLoadedForVisibility = false;
                     }}
                     bind:value={userBadgesUsername}
@@ -1556,7 +1556,7 @@
                         {#each Object.keys(ProfileBadges) as badgeName}
                             <button
                                 class="user-badge-button"
-                                on:click={() => {
+                                onclick={() => {
                                     currentUserBadges[badgeName] =
                                         !currentUserBadges[badgeName];
                                 }}
@@ -1574,7 +1574,7 @@
                     <p>Badges have not been loaded.</p>
                 {/if}
                 <br />
-                <div style="width:100%;height:32px;" />
+                <div style="width:100%;height:32px;"></div>
                 <br />
                 <div class="user-action-row">
                     <Button color="remix" on:click={applyUserBadges}>
@@ -1630,14 +1630,14 @@
                 <Button on:click={refreshProjectMenu}>Refresh</Button>
                 <select
                     value=""
-                    on:change={refreshProjectMenu}
+                    onchange={refreshProjectMenu}
                     bind:this={dropdownSelectMenu}
                 >
                     <option value="" disabled>(Select an option)</option>
-                    <option value="" disabled />
+                    <option value="" disabled></option>
                     <option value="user">User Reports</option>
                     <option value="project">Project Reports</option>
-                    <option value="" disabled />
+                    <option value="" disabled></option>
                     <optgroup label="Moderation">
                         <option value="removed">Removed Projects</option>
                         <option value="" disabled>
@@ -1693,7 +1693,7 @@
                         {#if dropdownSelectMenu.value === "user"}
                             <button
                                 class="reports-user-button"
-                                on:click={() => {
+                                onclick={() => {
                                     loadReportDetails(content.target);
                                     if (selectedReportDetailed === idx) {
                                         selectedReportDetailed = -1;
@@ -1758,7 +1758,7 @@
                         {:else}
                             <button
                                 class="reports-user-button reports-project-button"
-                                on:click={() => {
+                                onclick={() => {
                                     loadReportDetails(content.targetID);
                                     if (selectedReportDetailed === idx) {
                                         selectedReportDetailed = -1;
@@ -1798,7 +1798,7 @@
                                         </a>
                                         or
                                         <button
-                                            on:click={() =>
+                                            onclick={() =>
                                                 selectProject(
                                                     content.targetID,
                                                     content.target

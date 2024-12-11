@@ -4,18 +4,29 @@
     import Language from "../../resources/language.js";
     import tips from './Tips.json';
     
-    export let enableTips = false;
-    export let single = false;
     
-    export let icon = "/loading.png";
-    export let style = "width: 64px; height: 64px;";
+    /**
+     * @typedef {Object} Props
+     * @property {boolean} [enableTips]
+     * @property {boolean} [single]
+     * @property {string} [icon]
+     * @property {string} [style]
+     */
 
-    let tipId = Math.round(Math.random() * (tips.length - 1));
+    /** @type {Props} */
+    let {
+        enableTips = false,
+        single = false,
+        icon = "/loading.png",
+        style = "width: 64px; height: 64px;"
+    } = $props();
+
+    let tipId = $state(Math.round(Math.random() * (tips.length - 1)));
     const inter = setInterval(() => {
         tipId = Math.round(Math.random() * (tips.length - 1));
     }, 7000);
 
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => Language.forceUpdate());
     onDestroy(() => clearInterval(inter));
     Language.onChange((lang) => {

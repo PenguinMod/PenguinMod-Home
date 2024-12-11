@@ -25,13 +25,13 @@
     // Icons
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
 
-    let messages = [];
+    let messages = $state([]);
     let error = null;
-    let loggedIn = null;
-    let page = 0;
-    let pageIsLast = false;
-    let canAutoTranslate = false;
-    let autoTranslationCode = "en";
+    let loggedIn = $state(null);
+    let page = $state(0);
+    let pageIsLast = $state(false);
+    let canAutoTranslate = $state(false);
+    let autoTranslationCode = $state("en");
 
     const now = Date.now();
     let lastPolicyRead = {
@@ -46,10 +46,10 @@
         guidelines: now
     }
 
-    const disputeTexts = {};
-    const autoTranslations = {};
+    const disputeTexts = $state({});
+    const autoTranslations = $state({});
 
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
         canAutoTranslate = true;
@@ -204,7 +204,7 @@
                 });
         });
     }
-    let readMessages = [];
+    let readMessages = $state([]);
     function markAsRead(id) {
         if (id && readMessages.includes(id)) {
             console.log("skipped");
@@ -335,7 +335,7 @@
                 </Button>
             </div>
         {:else if messages[0] !== "notfound"}
-            <div style="margin-top: 16px; width: 100%;" />
+            <div style="margin-top: 16px; width: 100%;"></div>
             {#if messages.length > 0}
                 <div class="action-bar">
                     <Button on:click={() => markAllMessagesAsRead()}>
@@ -346,7 +346,7 @@
                         />
                     </Button>
                 </div>
-                <div style="margin-top: 16px; width: 100%;" />
+                <div style="margin-top: 16px; width: 100%;"></div>
             {/if}
             {#each messages as message}
                 <button
@@ -354,7 +354,7 @@
                     data-moderator={message.message.type === "modresponse"}
                     data-read={message.read === true ||
                         readMessages.includes(message.id)}
-                    on:click={() => markAsRead(message.id)}
+                    onclick={() => markAsRead(message.id)}
                 >
                     {#if message.message.type === "modresponse"}
                         <h2>
@@ -383,7 +383,7 @@
                             <button
                                 class="fake-link"
                                 style="display:flex;align-items:center;"
-                                on:click={() =>
+                                onclick={() =>
                                     autoTranslate(message.id, message.reason)}
                             >
                                 <img
@@ -444,7 +444,7 @@
                             <button
                                 class="fake-link"
                                 style="display:flex;align-items:center;"
-                                on:click={() =>
+                                onclick={() =>
                                     downloadRejectedProject(message.message.project.id)}
                             >
                                 <img
@@ -785,9 +785,9 @@
                                     {/if}
                                 </b>
                             </summary>
-                            <div style="margin-top: 8px; width: 100%;" />
-                            <textarea bind:value={disputeTexts[message.id]} />
-                            <div style="margin-top: 8px; width: 100%;" />
+                            <div style="margin-top: 8px; width: 100%;"></div>
+                            <textarea bind:value={disputeTexts[message.id]}></textarea>
+                            <div style="margin-top: 8px; width: 100%;"></div>
                             <div class="action-bar-full">
                                 <Button
                                     on:click={() => disputeMessage(message.id)}
@@ -822,7 +822,7 @@
 
     {#if messages[0] !== "notfound"}
         {#if !pageIsLast && messages.length > 0}
-            <div style="height: 16px;" />
+            <div style="height: 16px;"></div>
             <div class="more-messages-wrapper">
                 <Button
                     label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
@@ -835,7 +835,7 @@
         {/if}
     {/if}
 
-    <div style="height: 16px;" />
+    <div style="height: 16px;"></div>
 </div>
 
 <style>

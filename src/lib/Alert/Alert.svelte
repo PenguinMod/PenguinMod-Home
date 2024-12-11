@@ -2,25 +2,46 @@
     import { onMount } from "svelte";
     import AutoLocalizedText from "$lib/AutoLocalizedText/Node.svelte";
 
-    let isDismissed = false;
+    let isDismissed = $state(false);
 
-    export let text = "";
-    export let textLocalize = true;
-    export let textBreakup = false;
-    export let backColor = "rgb(118, 80, 168)";
-    export let textColor = "black";
-    export let dismissable = true;
 
-    export let onlyShowID = false;
 
-    export let hasImage = true;
-    export let imgSrc = "/alert_icon.svg";
-    export let imgAlt = "(!)";
 
-    export let hasButton = false;
-    export let buttonText = "";
-    export let buttonHref = "/";
-    export let buttonTooLight = false; // makes button text black
+    /**
+     * @typedef {Object} Props
+     * @property {string} [text]
+     * @property {boolean} [textLocalize]
+     * @property {boolean} [textBreakup]
+     * @property {string} [backColor]
+     * @property {string} [textColor]
+     * @property {boolean} [dismissable]
+     * @property {boolean} [onlyShowID]
+     * @property {boolean} [hasImage]
+     * @property {string} [imgSrc]
+     * @property {string} [imgAlt]
+     * @property {boolean} [hasButton]
+     * @property {string} [buttonText]
+     * @property {string} [buttonHref]
+     * @property {boolean} [buttonTooLight] - makes button text black
+     */
+
+    /** @type {Props} */
+    let {
+        text = "",
+        textLocalize = true,
+        textBreakup = false,
+        backColor = "rgb(118, 80, 168)",
+        textColor = "black",
+        dismissable = true,
+        onlyShowID = false,
+        hasImage = true,
+        imgSrc = "/alert_icon.svg",
+        imgAlt = "(!)",
+        hasButton = false,
+        buttonText = "",
+        buttonHref = "/",
+        buttonTooLight = false
+    } = $props();
 
     const splitText = [];
 
@@ -80,7 +101,7 @@
             {#if dismissable}
                 <button
                     class="alert-dismiss"
-                    on:click={() => {
+                    onclick={() => {
                         isDismissed = true;
                         if (onlyShowID) {
                             saveClosedLocally();

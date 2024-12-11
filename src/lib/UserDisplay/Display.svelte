@@ -1,9 +1,11 @@
 <script>
-    export let link;
-    export let userLink;
-    export let text;
-    export let author;
-    export let image;
+    let {
+        link,
+        userLink,
+        text,
+        author,
+        image
+    } = $props();
 </script>
 
 <div class="display" title={author + ": " + text}>

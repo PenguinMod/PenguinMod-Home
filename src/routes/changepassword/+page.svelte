@@ -15,9 +15,9 @@
     import Authentication from "../../resources/authentication.js";
     import { page } from '$app/stores';
 
-    let loginMethods = [];
+    let loginMethods = $state([]);
 
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
         checkIfValid();
@@ -48,22 +48,22 @@
 
     let oldPassword = "";
     let password = "";
-    let changingPassword = false;
-    let canChangePassword = false;
-    let showingOldPassword = false;
-    let showingNewPassword = false;
-    let focused = false;
+    let changingPassword = $state(false);
+    let canChangePassword = $state(false);
+    let showingOldPassword = $state(false);
+    let showingNewPassword = $state(false);
+    let focused = $state(false);
     let username = "";
     let token = "";
 
-    let passwordValid = false;
+    let passwordValid = $state(false);
 
-    const passwordRequirements = [
+    const passwordRequirements = $state([
         {name: "password.requirement.length", value: false},
         {name: "password.requirement.casing", value: false},
         {name: "password.requirement.number", value: false},
         {name: "password.requirement.symbol", value: false},
-    ]
+    ])
 
     async function checkIfValid() {
         const passwordDoesNotMeetLength = password.length < 8 || password.length > 50;
@@ -170,7 +170,7 @@
         </p>
 
         {#if loginMethods.includes("google")}
-            <button class="gsi-material-button" on:click={googleOAuth}>
+            <button class="gsi-material-button" onclick={googleOAuth}>
                 <div class="gsi-material-button-state"></div>
                 <div class="gsi-material-button-content-wrapper">
                     <div class="gsi-material-button-icon">
@@ -201,7 +201,7 @@
         {/if}
 
         {#if loginMethods.includes("github")}
-            <button class="gsi-material-button" on:click={githubOAuth}>
+            <button class="gsi-material-button" onclick={githubOAuth}>
                 <div class="gsi-material-button-state"></div>
                 <div class="gsi-material-button-content-wrapper">
                     <div class="gsi-material-button-icon">
@@ -231,7 +231,7 @@
         {/if}
 
         {#if loginMethods.includes("scratch")}
-            <button class="gsi-material-button" on:click={scratchOauth}>
+            <button class="gsi-material-button" onclick={scratchOauth}>
                 <div class="gsi-material-button-state"></div>
                 <div class="gsi-material-button-content-wrapper">
                     <div class="gsi-material-button-icon">
@@ -282,13 +282,13 @@
                         "You won't need this anymore!"
                     )}
                     maxlength="50"
-                    on:input={oldPasswordInputChanged}
+                    oninput={oldPasswordInputChanged}
                 />
                 <button
                     class="password-show invert-on-dark"
                     data-visible={showingOldPassword}
-                    on:click={toggleOldPasswordView}
-                />
+                    onclick={toggleOldPasswordView}
+></button>
             </div>
             
             <span class="input-title">
@@ -308,21 +308,21 @@
                     )}
                     data-valid={passwordValid}
                     maxlength="50"
-                    on:input={passwordInputChanged}
-                    on:focusin={() => focused = true}
-                    on:focusout={() => focused = false}
+                    oninput={passwordInputChanged}
+                    onfocusin={() => focused = true}
+                    onfocusout={() => focused = false}
                 />
                 <button
                     class="password-show invert-on-dark"
                     data-visible={showingNewPassword}
-                    on:click={toggleNewPasswordView}
-                />
+                    onclick={toggleNewPasswordView}
+></button>
             </div>
             {#if focused}
                 <ChecksBox items={passwordRequirements} />
             {/if}
 
-            <button class="create-acc" data-canCreate={canChangePassword} on:click={changePassword}>
+            <button class="create-acc" data-canCreate={canChangePassword} onclick={changePassword}>
                 {#if changingPassword}
                     <LoadingSpinner icon="/loading_white.png" />
                 {:else}

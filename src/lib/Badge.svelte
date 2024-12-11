@@ -8,10 +8,16 @@
     import TranslationHandler from "../resources/translations.js";
     import Language from "../resources/language.js";
 
-    export let badge = "test";
-    export let currentLang = "en";
+    /**
+     * @typedef {Object} Props
+     * @property {string} [badge]
+     * @property {string} [currentLang]
+     */
 
-    let badgeIsFocused = false;
+    /** @type {Props} */
+    let { badge = "test", currentLang = "en" } = $props();
+
+    let badgeIsFocused = $state(false);
     const badgeFocus = () => {
         badgeIsFocused = true;
     };
@@ -22,8 +28,8 @@
 
 <button
     class="badge"
-    on:click={badgeFocus}
-    on:focusout={badgeUnfocus}
+    onclick={badgeFocus}
+    onfocusout={badgeUnfocus}
     title={TranslationHandler.text(
         `profile.badge.${badge}`,
         currentLang

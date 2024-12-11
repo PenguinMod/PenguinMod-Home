@@ -21,7 +21,7 @@
     
     const ProjectClient = new ProjectApi();
 
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
     });
@@ -44,28 +44,28 @@
 
     let username = "";
     let token = "";
-    let loggedIn = null;
+    let loggedIn = $state(null);
     
-    let embed = false;
+    let embed = $state(false);
     if (browser) {
         embed = $page.url.searchParams.get('embed') === "true";
     }
-    let specificFilloutForm = "";
+    let specificFilloutForm = $state("");
     if (browser) {
         specificFilloutForm = $page.url.searchParams.get('fillout');
     }
 
     let country = "";
     let birthday = "";
-    let countryValid = false;
-    let birthdayValid = false;
+    let countryValid = $state(false);
+    let birthdayValid = $state(false);
 
-    let birthdayFaked = false;
-    let consentedToDataUsage = false;
-    let accurateDataAgreement = false;
-    let canFinishSignup = false;
+    let birthdayFaked = $state(false);
+    let consentedToDataUsage = $state(false);
+    let accurateDataAgreement = $state(false);
+    let canFinishSignup = $state(false);
 
-    let processingSignupFinish = false;
+    let processingSignupFinish = $state(false);
     let apiProcessFailReason = null;
     const finishSignup = async () => {
         await ProjectClient.filloutSafetyDetails(birthday, country);
@@ -273,7 +273,7 @@
                 <select
                     class="input-forced-class"
                     data-valid={countryValid}
-                    on:input={countryInputChanged}
+                    oninput={countryInputChanged}
                 >
                     <option value="" selected disabled>
                         <LocalizedText
@@ -301,7 +301,7 @@
                     min="1900-01-01"
                     max={getMaxBirthdate()}
                     data-valid={birthdayValid}
-                    on:input={birthdayInputChanged}
+                    oninput={birthdayInputChanged}
                 />
                 {#if birthdayFaked}
                     <p class="birthday-warning">
@@ -324,7 +324,7 @@
                 <input
                     type="checkbox"
                     bind:checked={consentedToDataUsage}
-                    on:change={checkIfValid}
+                    onchange={checkIfValid}
                 />
                 <span class="disable-markdown-margin">
                     {@html generateMarkdown(`${TranslationHandler.textSafe(
@@ -338,7 +338,7 @@
                 <input
                     type="checkbox"
                     bind:checked={accurateDataAgreement}
-                    on:change={checkIfValid}
+                    onchange={checkIfValid}
                 />
                 <span class="disable-markdown-margin">
                     {@html generateMarkdown(`${TranslationHandler.textSafe(
@@ -357,7 +357,7 @@
                 )}`)}
             </p>
         
-            <button class="create-acc" data-canCreate={canFinishSignup} on:click={finishSignupSafe}>
+            <button class="create-acc" data-canCreate={canFinishSignup} onclick={finishSignupSafe}>
                 {#if processingSignupFinish}
                     <LoadingSpinner icon="/loading_white.png" />
                 {:else}
@@ -381,7 +381,7 @@
         </a>
     </div>
 
-    <div style="height: 32px;" />
+    <div style="height: 32px;"></div>
 </div>
 
 <style>

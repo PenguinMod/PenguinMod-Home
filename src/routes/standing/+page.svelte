@@ -18,15 +18,15 @@
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
     
-    let loggedIn = null;
-    let loggedInUsername = null;
+    let loggedIn = $state(null);
+    let loggedInUsername = $state(null);
     let token = null;
     
     const displayAccountDeleted = $page.url.searchParams.get('deleted');
     const deletedUsername = $page.url.searchParams.get('username');
     let accountStanding = 1;
 
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
     });

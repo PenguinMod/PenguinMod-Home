@@ -14,7 +14,7 @@
     <a href={`/events/${page}`}>{page}</a>
 {/each}
 
-<div style="height: 32px;" />
+<div style="height: 32px;"></div>
 
 <style>
     .lil-guy {

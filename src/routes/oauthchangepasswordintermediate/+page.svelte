@@ -15,7 +15,7 @@
     import Authentication from "../../resources/authentication.js";
     import { page } from '$app/stores';
 
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
         checkIfValid();
@@ -25,19 +25,19 @@
     });
 
     let password = "";
-    let changingPassword = false;
-    let canChangePassword = false;
-    let showingPassword = false;
-    let focused = false;
+    let changingPassword = $state(false);
+    let canChangePassword = $state(false);
+    let showingPassword = $state(false);
+    let focused = $state(false);
 
-    let passwordValid = false;
+    let passwordValid = $state(false);
 
-    const passwordRequirements = [
+    const passwordRequirements = $state([
         {name: "password.requirement.length", value: false},
         {name: "password.requirement.casing", value: false},
         {name: "password.requirement.number", value: false},
         {name: "password.requirement.symbol", value: false},
-    ]
+    ])
 
     function changePasswordRedirect() {
         // get url params
@@ -153,21 +153,21 @@
                 placeholder="Remember to write it down!"
                 data-valid={passwordValid}
                 maxlength="50"
-                on:input={passwordInputChanged}
-                on:focusin={() => focused = true}
-                on:focusout={() => focused = false}
+                oninput={passwordInputChanged}
+                onfocusin={() => focused = true}
+                onfocusout={() => focused = false}
             />
             <button
                 class="password-show invert-on-dark"
                 data-visible={showingPassword}
-                on:click={togglePasswordView}
-            />
+                onclick={togglePasswordView}
+></button>
         </div>
         {#if focused}
             <ChecksBox items={passwordRequirements} />
         {/if}
 
-        <button class="create-acc" data-canCreate={canChangePassword} on:click={changePasswordRedirectSafe}>
+        <button class="create-acc" data-canCreate={canChangePassword} onclick={changePasswordRedirectSafe}>
             {#if changingPassword}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}

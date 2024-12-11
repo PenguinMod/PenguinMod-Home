@@ -18,7 +18,7 @@
     import TranslationHandler from "../../resources/translations.js";
     import Authentication from "../../resources/authentication.js";
 
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
         embed = $page.url.searchParams.get('embed') === "true";
@@ -27,15 +27,15 @@
         currentLang = lang;
     });
 
-    let username = "";
+    let username = $state("");
     let password = "";
-    let loggingIn = false;
-    let embed = false;
+    let loggingIn = $state(false);
+    let embed = $state(false);
 
-    let showingPassword = false;
+    let showingPassword = $state(false);
 
-    let wrongInfo = false;
-    let captcha_token = false;
+    let wrongInfo = $state(false);
+    let captcha_token = $state(false);
 
     const togglePasswordView = () => {
         showingPassword = !showingPassword;
@@ -198,7 +198,7 @@
             />
         </p>
 
-        <button class="gsi-material-button" on:click={googleOAuth}>
+        <button class="gsi-material-button" onclick={googleOAuth}>
             <div class="gsi-material-button-state"></div>
             <div class="gsi-material-button-content-wrapper">
                 <div class="gsi-material-button-icon">
@@ -227,7 +227,7 @@
             </div>
         </button>
 
-        <button class="gsi-material-button" on:click={githubOAuth}>
+        <button class="gsi-material-button" onclick={githubOAuth}>
             <div class="gsi-material-button-state"></div>
             <div class="gsi-material-button-content-wrapper">
                 <div class="gsi-material-button-icon">
@@ -255,7 +255,7 @@
             </div>
         </button>
 
-        <button class="gsi-material-button" on:click={scratchOauth}>
+        <button class="gsi-material-button" onclick={scratchOauth}>
             <div class="gsi-material-button-state"></div>
             <div class="gsi-material-button-content-wrapper">
                 <div class="gsi-material-button-icon">
@@ -302,7 +302,7 @@
                 "Type here..."
             )}
             maxlength="20"
-            on:input={() => wrongInfo = false}
+            oninput={() => wrongInfo = false}
         />
         <span class="input-title">
             <LocalizedText
@@ -320,11 +320,11 @@
                     "Type here..."
                 )}
                 maxlength="50"
-                on:input={passwordInputChanged}
+                oninput={passwordInputChanged}
             />
             <button
                 class="password-show"
-                on:click={togglePasswordView}>
+                onclick={togglePasswordView}>
                 {#if showingPassword}
                     <img
                         src="/account/hidepassword.svg"
@@ -345,7 +345,7 @@
             captcha_token = event.detail;
         }} />
 
-        <button class="Login-acc" data-canClick={!!captcha_token} on:click={LoginAccountSafe}>
+        <button class="Login-acc" data-canClick={!!captcha_token} onclick={LoginAccountSafe}>
             {#if loggingIn}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}

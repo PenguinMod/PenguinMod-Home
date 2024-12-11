@@ -19,12 +19,12 @@
     // Icons
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
 
-    let searchQuery = "...";
-    let projects = [];
+    let searchQuery = $state("...");
+    let projects = $state([]);
     let requestFailed = false;
-    let page = 0;
-    let pageIsLast = false;
-    let searchType = "project";
+    let page = $state(0);
+    let pageIsLast = $state(false);
+    let searchType = $state("project");
 
     const fetchNewProjects = () => {
         let api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(searchQuery)}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
@@ -79,7 +79,7 @@
         fetchNewProjects();
     });
 
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
     });
@@ -182,7 +182,7 @@
 
     {#if projects[0] !== "notfound"}
         {#if !pageIsLast && projects.length > 0}
-            <div style="height: 16px;" />
+            <div style="height: 16px;"></div>
             <div class="more-projects-wrapper">
                 <Button
                     label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
@@ -195,7 +195,7 @@
         {/if}
     {/if}
 
-    <div style="height: 16px;" />
+    <div style="height: 16px;"></div>
 </div>
 
 <style>

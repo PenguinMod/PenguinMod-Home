@@ -16,7 +16,7 @@
     import TranslationHandler from "../../resources/translations.js";
     import Authentication from "../../resources/authentication.js";
 
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
     });
@@ -24,11 +24,11 @@
         currentLang = lang;
     });
 
-    let email = "";
-    let sendingEmail = false;
-    let emailValid = false;
+    let email = $state("");
+    let sendingEmail = $state(false);
+    let emailValid = $state(false);
     let embed = false;
-    let captcha_token = false;
+    let captcha_token = $state(false);
 
     async function sendEmail() {
         await Authentication.sendResetPasswordEmail(email, captcha_token);
@@ -94,7 +94,7 @@
         canCreate = emailValid && captcha_token;
     }
 
-    let canCreate = false;
+    let canCreate = $state(false);
 </script>
     
 <svelte:head>
@@ -145,7 +145,7 @@
             data-valid={emailValid}
             class="email-input"
             maxlength="254"
-            on:input={emailInputChanged}
+            oninput={emailInputChanged}
             bind:value={email}
         />
 
@@ -153,7 +153,7 @@
             captcha_token = event.detail;
         }} />
 
-        <button class="send-email" data-canCreate={canCreate} on:click={sendEmailSafe}>
+        <button class="send-email" data-canCreate={canCreate} onclick={sendEmailSafe}>
             {#if sendingEmail}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}

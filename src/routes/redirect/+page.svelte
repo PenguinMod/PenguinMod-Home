@@ -12,7 +12,7 @@
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
 
-    let currentLang = "en";
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
     });
@@ -32,8 +32,8 @@
         });
     };
 
-    let url = '';
-    let urlOrigin = '';
+    let url = $state('');
+    let urlOrigin = $state('');
     try {
         const path = atob($page.url.searchParams.get('t'));
         const urlObj = new URL(path);
@@ -48,7 +48,7 @@
         }
     }
 
-    let canVisit = false;
+    let canVisit = $state(false);
     const tryClosingTab = () => {
         const parent = window.opener || window.parent;
         const parentIsNotThis = parent !== window;

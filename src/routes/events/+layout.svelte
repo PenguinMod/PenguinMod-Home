@@ -2,6 +2,13 @@
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
+    /**
+     * @typedef {Object} Props
+     * @property {import('svelte').Snippet} [children]
+     */
+
+    /** @type {Props} */
+    let { children } = $props();
 </script>
 
 <NavigationBar />
@@ -9,7 +16,7 @@
 <div class="main">
     <NavigationMargin />
 
-    <slot />
+    {@render children?.()}
 </div>
 
 <style>

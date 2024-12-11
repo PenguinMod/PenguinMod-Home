@@ -1,16 +1,29 @@
 <script>
     import { onMount } from "svelte";
 
-    export let header = false;
-    export let seemore = false;
-    export let style = "";
-    export let stylec = "";
 
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import Language from "../../resources/language.js";
+    /**
+     * @typedef {Object} Props
+     * @property {boolean} [header]
+     * @property {boolean} [seemore]
+     * @property {string} [style]
+     * @property {string} [stylec]
+     * @property {import('svelte').Snippet} [children]
+     */
 
-    let currentLang = "en";
+    /** @type {Props} */
+    let {
+        header = false,
+        seemore = false,
+        style = "",
+        stylec = "",
+        children
+    } = $props();
+
+    let currentLang = $state("en");
     onMount(() => {
         Language.forceUpdate();
     });
@@ -36,7 +49,7 @@
             {/if}
         </div>
     {/if}
-    <div style={stylec} class="container"><slot /></div>
+    <div style={stylec} class="container">{@render children?.()}</div>
 </div>
 
 <style>

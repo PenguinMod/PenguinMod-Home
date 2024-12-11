@@ -1,13 +1,19 @@
 <script>
     import { onMount } from "svelte";
 
-    export let placeholder;
-    export let text = "";
 
-    let searchBar;
+    let searchBar = $state();
 
     // Icons
     import SearchSVG from "../../icons/Search/icon.svelte";
+    /**
+     * @typedef {Object} Props
+     * @property {any} placeholder
+     * @property {string} [text]
+     */
+
+    /** @type {Props} */
+    let { placeholder, text = "" } = $props();
 
     // Functions
     function search(query) {
@@ -37,7 +43,7 @@
 </script>
 
 <div class="search">
-    <button class="search-button" on:click={search}>
+    <button class="search-button" onclick={search}>
         <SearchSVG
             width="30px"
             height="20px"
@@ -52,7 +58,7 @@
         value={text}
         {placeholder}
         name="search"
-        on:keypress={enterCheck}
+        onkeypress={enterCheck}
     />
 </div>
 

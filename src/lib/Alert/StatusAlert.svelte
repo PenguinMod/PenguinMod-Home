@@ -3,11 +3,11 @@
     import Alert from "./Alert.svelte";
     import LINK from "../../resources/urls.js";
 
-    let currentStatus = {
+    let currentStatus = $state({
         loading: true,
         type: "empty",
         text: "",
-    };
+    });
 
     onMount(() => {
         fetch(`${LINK.basicApi}status`).then((res) => {
