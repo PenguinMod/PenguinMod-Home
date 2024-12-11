@@ -36,6 +36,12 @@
                 userQuery.shift();
                 api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
                 break;
+            case "by":
+                const byQuery = searchQuery.split(":");
+                searchType = "by";
+                byQuery.shift();
+                api = `${LINK.projects}api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(byQuery.join())}`;
+                break;
             case "featured":
             case "newest":
             case "views":
