@@ -2,8 +2,8 @@
     // localstorage
     import { browser } from '$app/environment';
 
-    let gameIsActive = false;
-    let currentMenu = 'start';
+    let gameIsActive = $state(false);
+    let currentMenu = $state('start');
     const gameAssets = {
         penguin: null,
         brick: null
@@ -23,9 +23,9 @@
         mustBeTop: false,
         canIncreasePoints: true,
     };
-    let highscore = browser ? (localStorage.getItem("flappypangHighscore") || 0) : 0;
+    let highscore = $state(browser ? (localStorage.getItem("flappypangHighscore") || 0) : 0);
     const defaultGameState = {...gameState};
-    let gameButton = null;
+    let gameButton = $state(null);
     let buttonUninitialized = true;
     const gameClick = () => {
         gameState.playerFalling = -constants.jumpHeight;
@@ -139,14 +139,15 @@
         }, 1000 / 60);
     };
 
-    $: {
+    $effect(() => {
         startGame();
-    }
+    });
 </script>
 
-<button class="game" on:click={gameClick} bind:this={gameButton}>
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div class="game" onclick={gameClick} bind:this={gameButton} onkeypress={gameButton}>
     {#if currentMenu === 'start'}
-        <button class="menuButton" on:click={gameStartPressed}>start game</button>
+        <button class="menuButton" onclick={gameStartPressed}>start game</button>
     {:else if currentMenu === 'death'}
         <img
             src="/secret/penginDead.svg"
@@ -156,7 +157,7 @@
             bind:this={gameAssets.penguin}
         >
         <br/>
-        <button class="menuButton" on:click={restartGame}>restart game</button>
+        <button class="menuButton" onclick={restartGame}>restart game</button>
     {:else if currentMenu === 'game'}
         <p class="game-points score-counter">{gameState.points.toLocaleString()}</p>
         <p class="high-score score-counter">highscore<br>{highscore.toLocaleString()}</p>
@@ -180,7 +181,7 @@
         style="top: {gameState.playerY}px; z-index: {gameState.mustBeTop ? 9999 : 9990}"
         bind:this={gameAssets.penguin}
     >
-</button>
+</div>
 
 <style>
     .game {

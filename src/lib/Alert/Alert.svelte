@@ -86,6 +86,7 @@
                             saveClosedLocally();
                         }
                     }}
+                    aria-label="Dismiss"
                 ></button>
             {/if}
         </p>

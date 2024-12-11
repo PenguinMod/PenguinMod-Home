@@ -1,21 +1,15 @@
 <script>
     import { onMount } from "svelte";
 
-    export let username = "";
-    export let image = "/navicon.png";
-    export let showname = false;
-    export let showpfp = true;
-    export let showdeleted = false;
-    export let status = 1; // 1 for first icon
+    let { username="", image="/navicon.png", showname=false, showpfp=true, showdeleted=false, status=1, detail=1, messagecount=0 } = $props();
     
-    export let detail = 1; // 1 is image & status, 2 adds status labels, 3 adds punishment info, and 4 adds mod messages section
-    export let messagecount = 0;
+    // detail:  1 is image & status, 2 adds status labels, 3 adds punishment info, and 4 adds mod messages section
     
 	import LocalizedText from "$lib/LocalizedText/Node.svelte";
 	import Translations from "../../resources/translations.js";
 	import Language from "../../resources/language.js";
     
-	let currentLang = "en";
+	let currentLang = $state("en");
 	onMount(() => {
 		Language.forceUpdate();
 	});
@@ -53,7 +47,7 @@
     {/if}
 
     <div class="status-section" data-detail={detail}>
-        <div class="status-line" />
+        <div class="status-line"></div>
         <div data-detail="1" data-selected={status === 1}>
             <p>
                 <LocalizedText
