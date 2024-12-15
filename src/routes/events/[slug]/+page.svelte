@@ -136,7 +136,7 @@
     {/if}
     
     {#if eventHost}
-        <p>
+        <p><i>
             {String(TranslationHandler.text(
                 "event.host",
                 currentLang
@@ -145,10 +145,10 @@
                 'en'
             ))
             .replace('$1', eventHost)}
-        </p>
+        </i></p>
     {/if}
     {#if eventCollaborator}
-        <p>
+        <p><i>
             {String(TranslationHandler.text(
                 "event.collab",
                 currentLang
@@ -157,7 +157,7 @@
                 'en'
             ))
             .replace('$1', eventCollaborator)}
-        </p>
+        </i></p>
     {/if}
 
     <img

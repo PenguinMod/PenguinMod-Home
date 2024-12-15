@@ -3,9 +3,9 @@
     import Language from "../../resources/language.js";
     import EventPages from "../../events/pages.js";
 
-    const isHavingEvent = false;
-    const eventName = "Example Event";
-    const eventPath = "example";
+    const isHavingEvent = true;
+    const eventName = "Winter 2024 PenguinJam";
+    const eventPath = "penguinjamwinter2024";
     
     let currentLang = "en";
     let pageLang = "en";
