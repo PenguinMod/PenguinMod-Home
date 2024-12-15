@@ -24,7 +24,7 @@
     <a href="/events/{eventPath}?l={pageLang}">
         <button title={eventName}>
             <img
-                src="/events/{pageLang}/{eventPath}.png"
+                src="/events/{pageLang}/{eventPath}.webp"
                 title={eventName}
                 alt={eventName}
             >

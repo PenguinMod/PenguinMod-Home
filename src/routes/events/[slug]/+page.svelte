@@ -161,7 +161,7 @@
     {/if}
 
     <img
-        src="/events/{language}/{eventPath}.png"
+        src="/events/{language}/{eventPath}.webp"
         alt={headerText}
         class="event-banner"
     >
