@@ -701,41 +701,23 @@
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">Fill out the PenguinMod Wiki!</h2>
-                        <div style="display:flex;">
-                            <div style="width:calc(100% - 200px);">
-                                <p>
-                                    <span style="margin-left:2rem;"></span>
-                                    <span style="font-size:small;opacity:0.65">G1nX - </span>
-                                    "Since many people think the PenguinMod wiki is another documentation page, I would like to say that the wiki's purpose is <i>NOT</i> only for documentation, even if there are explanations for blocks.
-                                    <br />
-                                    <span style="margin-left:2rem;"></span>It acts as an archive of everything the community has done, so it isn't lost to time. This is also a good resource for newcomers, to know about how the community is managed, or maybe just to get insight on your favorite extensions!
-                                    It's powered by Miraheze, a super good wiki farm that hosts many other great wikis, like the Pizza Tower wiki."
-                                </p>
-                            </div>
-                            <div style="width:200px;display:flex;flex-direction:column;align-items:center;">
-                                <div style="transform:scale(0.8)">
-                                    <Project
-                                        id="2390249781"
-                                        title="About the PenguinMod Wiki"
-                                        featured="true"
-                                        author={{
-                                            username: "wikignome",
-                                            id: "01JE831N8849Z8ADQMD33HK4T9",
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                        <h2 style="margin-block:4px;">PenguinJam is getting ready!</h2>
                         <div style="width:100%">
                             <p>
-                                PenguinMod asks you guys help build articles on stuff by the community, secrets in the website,
-                                specific features on the website, or maybe even write up some trivia about a block or two!
+                                That's right! We're doing a Game Jam on PenguinMod's website!
+                                <br />
+                                Check out the event page for more information on what that means:
                             </p>
-                            <p style="margin-block-end:4px;">Visit the PenguinMod Community Wiki here:</p>
                             <p style="margin-block-start:4px;">
-                                <a href="https://wiki.penguinmod.com/wiki/Main_Page">https://wiki.penguinmod.com</a>
+                                <a href="https://penguinmod.com/events/penguinjamwinter2024">PenguinJam Winter 2024</a>
                             </p>
+                            <a href="https://penguinmod.com/events/penguinjamwinter2024">
+                                <img
+                                    src="/events/news/penguinjamwinter2024.png"
+                                    alt="PenguinJam Winter 2024"
+                                    style="width:100%;"
+                                />
+                            </a>
                         </div>
                     </div>
                     <div class="category-footer">
