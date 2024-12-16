@@ -1212,6 +1212,32 @@ class ProjectApi {
             })
         })
     }
+    deleteModeratorMessage(messageID) {
+        const data = {
+            username: this.username,
+            token: this.token,
+            messageID,
+        };
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/v1/projects/deletemodmessage`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
     addMessage(type, target, data) {
         const gdata = {
             token: this.token,

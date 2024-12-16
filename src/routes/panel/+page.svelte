@@ -559,6 +559,7 @@
         target: "",
         canBeReplied: true,
         inReplyTab: true,
+        deleteId: "",
     };
     const replyToMessage = () => {
         if (!messageReplyInfo.id) return alert("Message ID is not specified.");
@@ -589,6 +590,16 @@
             messageReplyInfo.target = "";
             messageReplyInfo.text = "";
         }).catch(err => alert('Failed to send message:' + err));
+    };
+    const deleteModMessage = () => {
+        if (!messageReplyInfo.deleteId)
+            return alert("No message ID was specified.");
+        if (prompt("Delete moderator message? Type \"ok\" to confirm.") !== "ok")
+            return;
+        ProjectClient.deleteModeratorMessage(messageReplyInfo.deleteId).then(() => {
+            alert("Deleted.");
+            messageReplyInfo.deleteId = "";
+        }).catch(err => alert('Failed to delete message:' + err));
     };
     const sendGuidelinesNotifs = () => {
         const notifs = [];
@@ -1439,6 +1450,17 @@
                 {/if}
                 <br />
                 <br />
+                <h3>Delete Mod Message</h3>
+                <p>Type message ID:</p>
+                <input
+                    type="text"
+                    size="50"
+                    placeholder="Message ID..."
+                    bind:value={messageReplyInfo.deleteId}
+                />
+                <Button color="red" on:click={deleteModMessage}>
+                    Delete
+                </Button>
                 <br />
                 <br />
                 <h3>Guidelines</h3>
