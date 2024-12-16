@@ -12,6 +12,16 @@ Bu, ara sıra tekrarlanan bir etkinlik olacak. Bu sefer şansını kaçırırsan
 
 *(İlk PenguenJam'imizi aslında başka bir yerde yapmıştık.)*
 
+# PenguinJam başladı!
+PenguinJam’in Teması:
+**Çok Fazla** (Too Much)
+
+Başlaman için bazı örnekler: Süratle giden çok fazla araba, bir ağacın altında çok fazla hediye, çok fazla risk veya bir restoranda servis edilecek çok fazla insan var.
+
+Bu temaya dayalı bir proje oluştur ve ***24 Aralık 22:00 (Türkiye Saati)*** tarihinden önce yükle!
+
+Projeyi PenguinJam’e ** [#penguinjam2](/search?q=%23penguinjam2) etiketini başlıkta veya notlarda kullanarak** göndermelisin.
+
 ## PenguinJam nedir?
 PenguinJam ***16 Aralık 22:00 (Türkiye Saati)*** tarihinde başlayan bir Game Jam’dir.
 
@@ -20,11 +30,14 @@ Game Jam'in ne olduğunu bilmiyorsan "Game Jam Nedir?" bölümüne ilerle.
 Projeni PenguinJam’e **[#penguinjam2](/search?q=%23penguinjam2) etiketlerini başlıkta veya notlarda kullanarak paylaş**
 
 ## Tema nedir?
-Tema henüz açıklanmadı. Açıklandığında buraya tekrar gel.
+PenguinJam Teması:
+**Çok Fazla** (Too Much)
 
-Tema şu tarihte açıklanacak: ***16 Aralık 22:00 (Türkiye Saati)***.
+Başlaman için bazı örnekler: Süratle giden çok fazla araba, bir ağacın altında çok fazla hediye, çok fazla risk veya bir restoranda servis edilecek çok fazla insan var.
 
-Bu rozetlerden birini kazanmaya çalışmak istiyorsan katıl:
+Bu temaya dayalı bir proje oluştur ve ***24 Aralık 22:00 (Türkiye Saati)*** tarihinden önce yükle!
+
+Bu rozetlerden birini kazanmaya çalışmak istersen katılabilirsin!:
 <div style="display:flex;flex-direction:row">
     <img src="https://penguinmod.com/badges/participant.png" width="48"></img>
     <img src="https://penguinmod.com/badges/eventwinner.png" width="48"></img>
@@ -43,8 +56,6 @@ PenguinJam'imiz nasıl çalışacak?
 Bir temaya dayalı bir PenguinMod projesi oluşturman gerekir.
 
 Sana verdiğimiz temayla herhangi bir şekilde ilişkili bir oyun yapabilirsin. **Oyununun tasarımının büyük bir parçası verdiğimiz tema olmalıdır.**
-
-Tema şu tarihte açıklanacak: ***16 Aralık 22:00 (Türkiye Saati)***.
 
 ### Bir proje gönder
 Temaya dayalı projeni PenguinMod’a **#penguinjam2 etiketini başlıkta veya notlarda kullanarak** göndermelisin.

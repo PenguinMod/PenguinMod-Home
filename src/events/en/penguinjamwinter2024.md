@@ -12,6 +12,16 @@ This will be a reoccurring event that will appear every now and then. If you mis
 
 *(We originally did our very first PenguinJam elsewhere.)*
 
+# The PenguinJam is active!
+The PenguinJam theme is:
+**Too Much**
+
+Some examples to get you started: there are too many cars speeding, too many presents under a tree, too many risks, or too many people to serve in a restaurant.
+
+Create and upload projects based on this theme before ***December 24th at 2:00 PM (Eastern Time)***!
+
+Submit projects to PenguinJam by **using the tag [#penguinjam2](/search?q=%23penguinjam2) in the title or notes.**
+
 ## What is PenguinJam?
 PenguinJam is a Game Jam, starting ***December 16th at 2:00 PM (Eastern Time)***.
 
@@ -20,9 +30,12 @@ Scroll to the "What is a Game Jam?" section if you don't know what a Game Jam is
 Submit projects to PenguinJam by **using the tag [#penguinjam2](/search?q=%23penguinjam2) in the title or notes.**
 
 ## What is the theme?
-The theme has not been revealed yet. Come back here when it is.
+The PenguinJam theme is:
+**Too Much**
 
-The theme will be revealed on ***December 16th at 2:00 PM (Eastern Time)***.
+Some examples to get you started: there are too many cars speeding, too many presents under a tree, too many risks, or too many people to serve in a restaurant.
+
+Create and upload projects based on this theme before ***December 24th at 2:00 PM (Eastern Time)***!
 
 Participate if you want to try to earn one of these badges:
 <div style="display:flex;flex-direction:row">
@@ -43,8 +56,6 @@ How our PenguinJam will work is:
 You need to create a PenguinMod project based on a theme.
 
 You can make a game that relates to the theme we give you in any way. **It should be a big part of your game's design.**
-
-The theme will be revealed on ***December 16th at 2:00 PM (Eastern Time)***.
 
 ### Submit a project
 You need to upload your theme-related project to PenguinMod **using the tag #penguinjam2 in the title or notes.**

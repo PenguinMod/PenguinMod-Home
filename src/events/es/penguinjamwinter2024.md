@@ -1,7 +1,7 @@
 # Invierno 2024 PenguinJam
 
 <!-- Try not to touch the ```host or ```collab sections, they are direct user links -->
-<!-- You should translate ```warning sections though. UwU -->
+<!-- You should translate ```warning sections though. -->
 ```host
 puzzlingggg
 ```
@@ -12,6 +12,16 @@ Esto será un evento recurrente que aparecerá de vez en cuando. Si pierdes tu o
 
 *(Originalmente hicimos nuestro primer PenguinJam en otro lado.)*
 
+# ¡El PenguinJam está activo!
+El tema PenguinJam es:
+**Demasiado** (“Too Much” en ingles)
+
+Algunos ejemplos para empezar: hay demasiados coches conduciendo a gran velocidad, demasiados regalos bajo un árbol, demasiados riesgos o demasiada gente para servir en un restaurante.
+
+Crea y sube proyectos basados en el tema antes de ***24 de diciembre a las 2:00 PM (Hora del Este)***!
+
+Envía tus proyectos a PenguinJam **usando la etiqueta [#penguinjam2](/search?q=%23penguinjam2) en el título o en las notas.**
+
 ## ¿Que es PenguinJam?
 PenguinJam es una Game Jam, empezando ***16 de diciembre a las 2:00 PM (Hora del Este)***.
 
@@ -19,10 +29,13 @@ Ve a la sección "¿Qué es una Game Jam?" si no sabes que es una Game Jam.
 
 Envíe tus proyectos a PenguinJam **usando la etiqueta [#penguinjam2](/search?q=%23penguinjam2) en el título o notas.**
 
-## ¿Que es un tema?
-El tema no ha sido revelado aún. Vuelve cuando lo sea.
+## ¿Cual es el tema?
+El tema PenguinJam es:
+**Demasiado** (“Too Much” en ingles)
 
-El tema será revelado el ***16 de diciembre a las 2:00 PM (Hora del Este)***.
+Algunos ejemplos para empezar: hay demasiados coches conduciendo a gran velocidad, demasiados regalos bajo un árbol, demasiados riesgos o demasiada gente para servir en un restaurante.
+
+Crea y sube proyectos basados en el tema antes de ***24 de diciembre a las 2:00 PM (Hora del Este)***!
 
 Participa si quieres ganar cualquiera de estas insignias:
 <div style="display:flex;flex-direction:row">
