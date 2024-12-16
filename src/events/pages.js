@@ -7,6 +7,7 @@ import PenguinJamWinter2024Es from "./es/penguinjamwinter2024.md?raw";
 import PenguinJamWinter2024Fr from "./fr/penguinjamwinter2024.md?raw";
 import PenguinJamWinter2024Tr from "./tr/penguinjamwinter2024.md?raw";
 import PenguinJamWinter2024Ru from "./ru/penguinjamwinter2024.md?raw";
+import PenguinJamWinter2024Ja from "./ja/penguinjamwinter2024.md?raw";
 
 export default {
     "example": {
@@ -19,5 +20,6 @@ export default {
         "fr": PenguinJamWinter2024Fr,
         "tr": PenguinJamWinter2024Tr,
         "ru": PenguinJamWinter2024Ru,
+        "ja": PenguinJamWinter2024Ja,
     },
 };
