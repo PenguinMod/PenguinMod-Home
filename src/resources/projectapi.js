@@ -1184,6 +1184,34 @@ class ProjectApi {
             })
         })
     }
+    sendModeratorMessage(target, text, disputable) {
+        const data = {
+            token: this.token,
+            username: this.username,
+            target,
+            message: text,
+            disputable
+        };
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/v1/projects/modmessage`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
     addMessage(type, target, data) {
         const gdata = {
             token: this.token,

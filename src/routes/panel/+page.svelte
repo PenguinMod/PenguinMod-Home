@@ -556,16 +556,15 @@
     const messageReplyInfo = {
         id: "",
         text: "",
+        target: "",
+        canBeReplied: true,
+        inReplyTab: true,
     };
     const replyToMessage = () => {
         if (!messageReplyInfo.id) return alert("Message ID is not specified.");
         if (!messageReplyInfo.text)
             return alert("No message text was specified.");
-        if (
-            !confirm(
-                `Reply to message with "${messageReplyInfo.text}"?`
-            )
-        )
+        if (!confirm(`Reply to message with "${messageReplyInfo.text}"?`))
             return;
         ProjectClient.respondToDispute(
             messageReplyInfo.id,
@@ -573,6 +572,21 @@
         ).then(() => {
             alert("Sent!");
             messageReplyInfo.id = "";
+            messageReplyInfo.text = "";
+        }).catch(err => alert('Failed to send message:' + err));
+    };
+    const sendNewMessage = () => {
+        if (!messageReplyInfo.text)
+            return alert("No message text was specified.");
+        if (!confirm(`Send ${messageReplyInfo.canBeReplied ? "respondable" : "non-respondable"} message to ${messageReplyInfo.target} with "${messageReplyInfo.text}"?${messageReplyInfo.canBeReplied ? "" : "\nThe user will not be able to respond to your message."}`))
+            return;
+        ProjectClient.sendModeratorMessage(
+            messageReplyInfo.target,
+            messageReplyInfo.text,
+            messageReplyInfo.canBeReplied
+        ).then(() => {
+            alert("Sent!");
+            messageReplyInfo.target = "";
             messageReplyInfo.text = "";
         }).catch(err => alert('Failed to send message:' + err));
     };
@@ -1336,28 +1350,93 @@
 
             <div class="card">
                 <h2 style="margin-block-start:0">Messages</h2>
-                <p>Respond to a project dispute/reply here.</p>
-                <p>Type message ID:</p>
-                <input
-                    type="text"
-                    size="50"
-                    placeholder="Message ID..."
-                    bind:value={messageReplyInfo.id}
-                />
-                <p>Type reply:</p>
-                <textarea
-                    type="text"
-                    size="50"
-                    placeholder="Reply..."
-                    bind:value={messageReplyInfo.text}
-                />
-                <br />
-                <br />
-                <div class="user-action-row">
-                    <Button color="green" on:click={replyToMessage}>
-                        Send
-                    </Button>
-                </div>
+                <p>
+                    <a
+                        class="guidelines-link"
+                        target="_blank"
+                        href={"/guidelines/moderation"}
+                    >
+                        PenguinMod Moderation Expectations
+                    </a>
+                </p>
+                <button on:click={() => {
+                    messageReplyInfo.inReplyTab = true;
+                }}>Reply Menu</button>
+                <button on:click={() => {
+                    messageReplyInfo.inReplyTab = false;
+                }}>Send Menu</button>
+                {#if messageReplyInfo.inReplyTab}
+                    <p>Respond to a project dispute/reply here.</p>
+                    <p><i>
+                        NOTE: Your usage of the moderator messaging system must be appropriate.
+                        <br />
+                        View the <a
+                            target="_blank"
+                            href={"/guidelines/moderation"}
+                        >
+                            PenguinMod Moderation Expectations
+                        </a> for more info.
+                    </i></p>
+                    <p>Type message ID:</p>
+                    <input
+                        type="text"
+                        size="50"
+                        placeholder="Message ID..."
+                        bind:value={messageReplyInfo.id}
+                    />
+                    <p>Type reply:</p>
+                    <textarea
+                        type="text"
+                        size="50"
+                        placeholder="Reply..."
+                        bind:value={messageReplyInfo.text}
+                    />
+                    <br />
+                    <br />
+                    <div class="user-action-row">
+                        <Button color="remix" on:click={replyToMessage}>
+                            Reply
+                        </Button>
+                    </div>
+                {:else}
+                    <p>Send a new moderator message to a user.</p>
+                    <p><i>
+                        NOTE: Your usage of the moderator messaging system must be appropriate.
+                        <br />
+                        View the <a
+                            target="_blank"
+                            href={"/guidelines/moderation"}
+                        >
+                            PenguinMod Moderation Expectations
+                        </a> for more info.
+                    </i></p>
+                    <p>Type receiver username:</p>
+                    <input
+                        type="text"
+                        size="50"
+                        placeholder="PenguinMod Username..."
+                        bind:value={messageReplyInfo.target}
+                    />
+                    <p>Type message:</p>
+                    <textarea
+                        type="text"
+                        size="50"
+                        placeholder="Message..."
+                        bind:value={messageReplyInfo.text}
+                    />
+                    <br />
+                    <label>
+                        <input type="checkbox" bind:checked={messageReplyInfo.canBeReplied} />
+                        Can the receiver reply back?
+                    </label>
+                    <br />
+                    <br />
+                    <div class="user-action-row">
+                        <Button color="remix" on:click={sendNewMessage}>
+                            Send
+                        </Button>
+                    </div>
+                {/if}
                 <br />
                 <br />
                 <br />
@@ -1392,7 +1471,7 @@
                 <br />
                 <br />
                 <div class="user-action-row">
-                    <Button color="green" on:click={sendGuidelinesNotifs}>
+                    <Button color="remix" on:click={sendGuidelinesNotifs}>
                         Send Guidelines Update
                     </Button>
                 </div>
