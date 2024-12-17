@@ -696,7 +696,7 @@
                     "home.sections.informational",
                     currentLang
                 )}
-                seemore={`https://wiki.penguinmod.com/wiki/Main_Page`}
+                seemore={`https://penguinmod.com/events/penguinjamwinter2024`}
             >
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
