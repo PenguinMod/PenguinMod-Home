@@ -912,6 +912,53 @@
             console.error(err);
             alert(`Failed to get permited users; ${err}`);
         });
+
+    const rulette = {
+        getting_followers: "",
+        followers: [],
+        page: -1,
+        username: "",
+    };
+
+    rulette.next = () => {
+        if (rulette.followers.length < 1) {
+            rulette.page++;
+            rulette.getFollowers().then(() => {
+                rulette.username = rulette.followers.pop().username;
+            }).catch(() => {
+                alert("No more followers to ban.");
+            })
+        } else {
+            rulette.username = rulette.followers.pop().username;
+        }
+    }
+
+    rulette.getFollowers = () => {
+        return new Promise((resolve, reject) => {
+            fetch(`http://localhost:8080/api/v1/users/meta/getfollowers?username=${rulette.getting_followers}&page=${rulette.page}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length < 1) {
+                    reject();
+                }
+                rulette.followers = data;
+                resolve();
+            })
+            .catch(reject);
+        });
+    }
+
+    rulette.ban = () => {
+        ProjectClient.banUser(rulette.username, "bot account", 0, true)
+        .then(() => {
+            // next
+            rulette.next();
+        })
+        .catch((err) => {
+            console.error(err);
+            alert(`Failed to ban user; ${err}`);
+        });
+    }
 </script>
 
 <svelte:head>
@@ -1704,6 +1751,27 @@
                         filterJSONStuff.set(json);
                     }}>
                         Update Filter
+                    </Button>
+                </div>
+            </div>
+            <br/>
+            <div class="card">
+                <h2>User ban rulette! (DO NOT USE. IM USING THIS TO BAN SOME BOTS.)</h2>
+                <p>This person's followers:</p>
+                <input
+                    type="text"
+                    size="50"
+                    placeholder="PenguinMod username..."
+                    bind:value={rulette.getting_followers}
+                />
+                <p>Username: {rulette.username}</p>
+                <br />
+                <div class="user-action-row">
+                    <Button color="red" on:click={rulette.ban}>
+                        Ban
+                    </Button>
+                    <Button on:click={rulette.next}>
+                        Next
                     </Button>
                 </div>
             </div>
