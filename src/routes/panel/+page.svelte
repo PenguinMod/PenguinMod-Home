@@ -935,7 +935,7 @@
 
     rulette.getFollowers = () => {
         return new Promise((resolve, reject) => {
-            fetch(`http://localhost:8080/api/v1/users/meta/getfollowers?username=${rulette.getting_followers}&page=${rulette.page}`)
+            fetch(`https://projects.penguinmod.com/api/v1/users/meta/getfollowers?username=${rulette.getting_followers}&page=${rulette.page}`)
             .then(res => res.json())
             .then(data => {
                 if (data.length < 1) {
