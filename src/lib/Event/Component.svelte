@@ -3,7 +3,7 @@
     import Language from "../../resources/language.js";
     import EventPages from "../../events/pages.js";
 
-    const isHavingEvent = true;
+    const isHavingEvent = false;
     const eventName = "Winter 2024 PenguinJam";
     const eventPath = "penguinjamwinter2024";
     
