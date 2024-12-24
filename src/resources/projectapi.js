@@ -1475,7 +1475,7 @@ class ProjectApi {
                         argumentids: blocks[block].mutation.argumentids,
                         argumentnames: blocks[block].mutation.argumentnames,
                         argumentdefaults: blocks[block].mutation.argumentdefaults,
-                        warp: blocks[block].mutation.warp == "true" ? true : false,
+                        warp: String(blocks[block].mutation.warp) === "true" ? true : false,
                         _returns: blocks[block].mutation.returns,
                         edited: Boolean(blocks[block].mutation.edited),
                         optype: blocks[block].mutation.optype,
