@@ -696,28 +696,27 @@
                     "home.sections.informational",
                     currentLang
                 )}
-                seemore={`https://penguinmod.com/events/penguinjamwinter2024`}
             >
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">PenguinJam is getting ready!</h2>
+                        <h2 style="margin-block:4px;">We're ranking PenguinJam projects!</h2>
                         <div style="width:100%">
                             <p>
-                                That's right! We're doing a Game Jam on PenguinMod's website!
+                                Thanks to everyone who participated in PenguinJam this year!
                                 <br />
-                                Check out the event page for more information on what that means:
+                                We're grading each project now. You'll likely receive your badges in January of 2025.
+                                <br />
+                                See you all next year!
                             </p>
-                            <p style="margin-block-start:4px;">
-                                <a href="https://penguinmod.com/events/penguinjamwinter2024">PenguinJam Winter 2024</a>
+                            <p>
+                                If your project <i>wasn't a game or didn't match the theme</i>, you won't be receiving <i>any</i> badge!
                             </p>
-                            <a href="https://penguinmod.com/events/penguinjamwinter2024">
-                                <img
-                                    src="/events/news/penguinjamwinter2024.png"
-                                    alt="PenguinJam Winter 2024"
-                                    style="width:100%;"
-                                />
-                            </a>
+                            <img
+                                src="/events/news/penguinjamwinter2024.png"
+                                alt="PenguinJam Winter 2024"
+                                style="width:100%;"
+                            />
                         </div>
                     </div>
                     <div class="category-footer">
