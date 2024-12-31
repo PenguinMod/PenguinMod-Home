@@ -1549,8 +1549,8 @@ class ProjectApi {
                 x: Math.round(json.monitors[monitor].x || 0),
                 y: Math.round(json.monitors[monitor].y || 0),
                 visible: json.monitors[monitor].visible,
-                sliderMin: json.monitors[monitor].sliderMin,
-                sliderMax: json.monitors[monitor].sliderMax,
+                sliderMin: Math.round(json.monitors[monitor].sliderMin || 0),
+                sliderMax: Math.round(json.monitors[monitor].sliderMax || 0),
                 isDiscrete: json.monitors[monitor].isDiscrete,
             });
         }
