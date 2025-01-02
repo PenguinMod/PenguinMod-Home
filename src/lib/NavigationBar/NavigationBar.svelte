@@ -342,7 +342,7 @@
 		</BarPage>
 	</div>
 	<BarSearch placeholder={Translations.textSafe("navigation.search", currentLang, "Search for projects...")} />
-	<BarButton
+	<!-- <BarButton
 		highlighted="true"
 		link={LINK.discord}
 		noredirect="true"
@@ -358,7 +358,7 @@
 		<div class="discord-button-icon">
 			<img src="/discord_white.png" alt="Discord" />
 		</div>
-	</BarButton>
+	</BarButton> -->
 	<!-- <BarPage
 		link={LINK.discord}
 		label="<img src='/discord_white.png' width='25' alt='Discord'>"

@@ -833,5 +833,18 @@
     "account.settings.messages.toggles.notifreply": "Get messages when people reply to my comments",
     "account.settings.messages.toggles.notifreplypost": "Get messages when people reply to my posts",
     "account.settings.messages.toggles.notifcomment": "Get messages when people comment on my projects",
-    "generic.understand": "I understand"
+    "generic.understand": "I understand",
+    "home.footer.sections.info.reportissue": "Report an issue",
+    "cookies.title": "Cookie Agreement",
+    "cookies.message1": "We use cookies and some local data to make PenguinMod work, but we use some other cookies and data for enhancing your usage of project sharing, project viewing, security, and analytics.",
+    "cookies.message1.alt": "We use cookies and some local data to make PenguinMod work, but we use some other cookies and data for enhancing your usage of project sharing, project viewing, security, analytics, and advertising.",
+    "cookies.message2": "By clicking \"Accept All\", you agree to the usage of cookies described in the [Privacy Policy](/privacy).",
+    "cookies.reject": "Reject Non-Essential",
+    "cookies.reject.alt": "Reject All",
+    "cookies.accept": "Accept All",
+    "account.settings.cookies.title": "Cookies",
+    "account.settings.cookies.note1": "Changing these settings will require the page to be refreshed. If you want to remove existing cookies, you may be able to clear existing PenguinMod cookies and data in your browser.",
+    "account.settings.cookies.note2": "You can see more information about why we use cookies in the [Privacy Policy](/privacy).",
+    "account.settings.cookies.toggles.essential": "Save Non-Essential Cookies & Data",
+    "account.settings.cookies.toggles.all": "Save Any Cookies & Data"
 }

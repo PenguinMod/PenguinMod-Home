@@ -1051,7 +1051,13 @@
                         lang={currentLang}
                     />
                 </p>
-                <a target="_blank" href={LINK.discord}>Discord</a>
+                <a target="_blank" href={"https://github.com/PenguinMod/PenguinMod-Home/issues"}>
+                    <LocalizedText
+                        text="Report an issue"
+                        key="home.footer.sections.info.reportissue"
+                        lang={currentLang}
+                    />
+                </a>
                 <a target="_blank" href={LINK.wiki}>
                     <LocalizedText
                         text="Wiki"
@@ -1059,6 +1065,7 @@
                         lang={currentLang}
                     />
                 </a>
+                <a target="_blank" href={`https://penguinmod.com/redirect?t=${encodeURIComponent(btoa(LINK.discord))}`}>Discord</a>
             </div>
             <div class="footer-section">
                 <p>
