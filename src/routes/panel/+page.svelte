@@ -103,18 +103,23 @@
         ug: false
     };
 
-    const loadReportDetails = (id) => {
-        let type = "user";
-        if (dropdownSelectMenu.value === "project") {
-            type = "project";
-        }
-        if (id in reportDetails) {
-            return;
-        }
-        ProjectClient.getReports(type, id).then((reports) => {
+    const loadReportDetails = async (id) => {
+        try {
+            let type = "user";
+            if (dropdownSelectMenu.value === "project") {
+                type = "project";
+            }
+            if (id in reportDetails) {
+                return;
+            }
+            let reports = await ProjectClient.getReports(type, id)
             reportDetails[id] = reports;
             reportDetails = reportDetails;
-        });
+        } catch {
+            console.warn(`Failed to load report details for ${id}`)
+            reportDetails[id] = [];
+            reportDetails = reportDetails; 
+        }
     };
 
     const setGetProjects = (allowGetProjects) => {
@@ -184,6 +189,7 @@
         contentWithReports = [];
         ProjectClient.getTypeWithReports(type, 0).then((projectsWithReports) => {
             contentWithReports = projectsWithReports;
+            console.log(contentWithReports)
         });
         // get approved projects anyways cuz we need to update list
         // todo: getProjects is paged breh what we do?
@@ -1931,6 +1937,17 @@
                                                 </p>
                                             </details>
                                         {/each}
+                                        {#if reportDetails[content.targetID].length == 0}
+                                            <Button
+                                                on:click={() =>
+                                                    closeUserReport(
+                                                        content.id
+                                                    )}
+                                                color="red"
+                                            >
+                                                Force Close Report
+                                            </Button>
+                                        {/if}
                                     {/if}
                                 </div>
                             {/if}
