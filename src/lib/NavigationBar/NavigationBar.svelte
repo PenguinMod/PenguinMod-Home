@@ -518,20 +518,6 @@
 		height: 90px;
 	}
 
-	.discord-button-icon {
-		display: none;
-	}
-	.discord-button-icon > img {
-		width: 2rem;
-		padding: 2px 0;
-	}
-	:global(body.launcher-mode) .discord-button-icon {
-		display: initial;
-	}
-	:global(body.launcher-mode) .discord-button-text {
-		display: none;
-	}
-
 	.languageSelect {
 		position: fixed;
 		width: 256px;

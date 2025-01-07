@@ -342,19 +342,51 @@
         })
             .then(projectId => open(`${PUBLIC_STUDIO_URL}/#${projectId}`))
             .catch(err => {
-                const message = TranslationHandler.text(
-                    `uploading.error.${String(err).toLowerCase()}`,
-                    currentLang
-                );
-                if (!message)
-                    return alert(
-                        String(
-                            TranslationHandler.text(
-                                "uploading.error.unknown",
-                                currentLang
-                            )
-                        ).replace("$1", err)
+                let message = "";
+                switch (err) {
+                    case "Uploaded in the last 8 minutes":
+                        message = TranslationHandler.textSafe(
+                            "uploading.error.toomanyrequests",
+                            currentLang,
+                            "You can only upload projects every 8 minutes."
+                        );
+                        break;
+                    case "Uploading is disabled":
+                        message = TranslationHandler.textSafe(
+                            "uploading.error.publishdisabled",
+                            currentLang,
+                            "We are undergoing maintenance, so you are not able to upload projects at this time."
+                        );
+                        break;
+                    case "Missing json file, thumbnail, or assets":
+                        message = TranslationHandler.textSafe(
+                            "uploading.error.formaterror",
+                            currentLang,
+                            "Some values are not right. Check that all required fields are filled."
+                        );
+                        break;
+                    case "IllegalWordsUsed":
+                        message = TranslationHandler.textSafe(
+                            "uploading.error.illegalwordsused",
+                            currentLang,
+                            "Words or phrases were used that are not allowed in PenguinMod. Please check through your project's details for any inappropriate words or phrases."
+                        );
+                        break;
+                    default:
+                        message = TranslationHandler.textSafe(
+                            "uploading.error.unknown",
+                            currentLang,
+                            "Unknown error. The file may be too large or something unexpected happened. Full error: $1",
+                        ).replace("$1", err);
+                        break;
+                }
+                if (String(err).startsWith("Extension not allowed:")) {
+                    message = TranslationHandler.textSafe(
+                        "uploading.error.cannotusethisextensionforthisrank",
+                        currentLang,
+                        "You cannot upload this project yet as it contains custom extensions or certain blocked extensions. Upload a few other projects and wait a few days to rank up before you can post this project."
                     );
+                }
                 alert(message);
             })
             .finally(() => {
