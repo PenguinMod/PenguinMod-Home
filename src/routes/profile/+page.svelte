@@ -240,9 +240,8 @@
                 projects.featured = ["none"];
             }
             wasNotFound = false;
-            ProjectApi.getProfile(user_, true).then((proffile) => {
+            ProjectApi.getProfile(user, true).then((proffile) => {
                 fullProfile = proffile;
-                user = fullProfile.real_username;
                 badges = fullProfile.badges;
                 isDonator = fullProfile.donator;
                 followerCount = fullProfile.followers;
@@ -856,9 +855,9 @@
                                 />
                                 <div class="user-after-image">
                                     {#if isDonator}
-                                        <h1 class="donator-color">{user}</h1>
+                                        <h1 class="donator-color">{fullProfile.real_username}</h1>
                                     {:else}
-                                        <h1>{user}</h1>
+                                        <h1>{fullProfile.real_username}</h1>
                                     {/if}
                                     
                                     {#if isProfilePrivate && !loggedInAdmin}
