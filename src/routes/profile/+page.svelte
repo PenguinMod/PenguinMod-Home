@@ -240,8 +240,9 @@
                 projects.featured = ["none"];
             }
             wasNotFound = false;
-            ProjectApi.getProfile(user, true).then((proffile) => {
+            ProjectApi.getProfile(user_, true).then((proffile) => {
                 fullProfile = proffile;
+                user = fullProfile.real_username;
                 badges = fullProfile.badges;
                 isDonator = fullProfile.donator;
                 followerCount = fullProfile.followers;
