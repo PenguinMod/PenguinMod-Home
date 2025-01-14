@@ -855,9 +855,9 @@
                                 />
                                 <div class="user-after-image">
                                     {#if isDonator}
-                                        <h1 class="donator-color">{fullProfile.real_username}</h1>
+                                        <h1 class="donator-color">{fullProfile.real_username || user}</h1>
                                     {:else}
-                                        <h1>{fullProfile.real_username}</h1>
+                                        <h1>{fullProfile.real_username || user}</h1>
                                     {/if}
                                     
                                     {#if isProfilePrivate && !loggedInAdmin}
