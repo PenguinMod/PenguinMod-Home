@@ -145,6 +145,62 @@ class ProjectApi {
         });
     }
 
+    /**
+     * @param {number} page page
+     * @param {string} query query for searching projects
+     * @param {string} username username of user
+     * @param {string} token token of user
+     * @returns Array of projects
+     */
+    static searchProjects(page, searchQuery, username, token, allow_user=false) {
+        const query = searchQuery.split(":", 1)[0];
+        let api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${query}&username=${username}&token=${token}`;
+        switch (query) {
+            case "user":
+                if (allow_user) {
+                    const userQuery = searchQuery.split(":");
+                    searchType = "user";
+                    userQuery.shift();
+                    api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
+                    break;
+                }
+                // fallthrough
+            case "by":
+                const byQuery = searchQuery.split(":");
+                byQuery.shift();
+                api = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(byQuery.join())}`;
+                break;
+            case "featured":
+            case "newest":
+            case "views":
+            case "votes":
+            case "loves":
+                const actual_query = searchQuery.split(":");
+                actual_query.shift();
+                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}&username=${username}&token=${token}`;
+                break;
+            default:
+                break;
+        }
+
+        return new Promise((resolve, reject) => {
+            fetch(api)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((projectList) => {
+                        resolve(projectList);
+                    });
+                })
+                .catch((err) => {
+                    console.error(err);
+                    reject(err);
+                });
+        });
+    }
+
     getRemovedProjects() {
         throw new Error("Unapproved Projects can only be viewed in a client")
     }
