@@ -404,19 +404,21 @@
         ProjectClient.setToken(privateCode);
     });
 
-    let canRemix = [];
     let otherProjects = [];
+    let canRemix = [];
+    $: filteredProjects = (projectRemixSearchQuery ?? '') !== ''
+        ? canRemix.filter(
+            project => project.title.toLowerCase().includes(projectRemixSearchQuery.toLowerCase()) || String(project.id).toLowerCase().includes(projectRemixSearchQuery.toLowerCase())
+        )
+        : canRemix;
 
     let remixPageOpen = false;
     let updatePageOpen = false;
     let guidelinePageOpen = false;
 
-    function incrementPageAndAddToMenu(pageType) {
+    async function incrementPageAndAddToMenu(pageType) {
         projectPage += 1;
-        // todo: not this thats for sure
-        //       just do one of them and then await it idk
-        //       gonna do that later
-        //       (aka in like 3 months when i finally look at this code again)
+
         if (pageType === "remix") {
             ProjectApi.getProjects(projectPage).then((projectss) => {
                 canRemix.push(...projectss);
@@ -442,8 +444,24 @@
         lastProjectPage = false;
         projectPageType = "remix";
         remixPageOpen = true;
-        ProjectApi.getProjects(projectPage).then((projects) => {
-            canRemix = projects;
+
+        let morePlease = [];
+
+        ProjectApi
+        .getProjects(projectPage)
+        .then((projects) => {
+            morePlease = projects;
+            canRemix = morePlease;
+        })
+        .then(() => {
+            projectPage + 1;
+
+            ProjectApi
+            .getProjects(projectPage + 1)
+            .then((projects) => {
+                morePlease = [...morePlease, ...projects];
+                canRemix = morePlease;
+            });
         });
     }
     function openUpdateMenu() {
@@ -461,6 +479,18 @@
     function generateExportEditPageForId(id) {
         const origin = String(_window.location.origin);
         return `${origin}/edit?id=${id}&external=${origin}`;
+    }
+
+    function projectRemixSearchInputFnc() {
+        if (/^[0-9]+$/.test(projectRemixSearchQuery)) { // probably searching an id
+            ProjectApi.getProjectMeta(projectRemixSearchQuery.trim())
+            .then((meta) => {
+                console.log(meta);
+                canRemix.push(meta);
+                canRemix = canRemix;
+            })
+            .catch((err) => console.warn("that's not a project id"));
+        }
     }
 
     onMount(() => {
@@ -555,10 +585,12 @@
         'grimacing',
         'confusedthinking',
         'cool',
+        'tada'
     ];
     let emojiPickerRandomEmoji = '';
     let emojiSearchQuery = '';
     let emojiSearchBar;
+    let projectRemixSearchQuery = '';
     let lastSelectedFormArea;
     const pickRandomEmojiPickerDisplay = () => {
         emojiPickerRandomEmoji = emojiPickerRandomEmojis
@@ -699,7 +731,7 @@
             </div>
         </div>
     {/if}
-
+    
     {#if remixPageOpen}
         <div class="front-card-page">
             <div class="card-page">
@@ -712,8 +744,16 @@
                         />
                     </h1>
                 </div>
+                <input
+                        type="text"
+                        placeholder={TranslationHandler.text(
+                            "uploading.project.title.default",
+                            currentLang
+                        ) + ' | ID'}
+                        bind:value={projectRemixSearchQuery}
+                    >
                 <div class="card-projects">
-                    {#each canRemix as project}
+                    {#each filteredProjects as project}
                         <ClickableProject
                             id={project.id}
                             title={project.title}
@@ -728,8 +768,7 @@
                         <!-- todo: should this really look the way it does? -->
                         <Button
                             label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
-                            on:click={() =>
-                                incrementPageAndAddToMenu(projectPageType)}
+                            on:click={() => {incrementPageAndAddToMenu(projectPageType); projectRemixSearchInputFnc()}}
                         />
                     {/if}
                 </div>
@@ -1461,7 +1500,12 @@
         overflow: auto;
         height: 100%;
     }
-
+    .card-page input {
+        box-sizing: border-box;
+        width: 90%;
+        margin: 5px;
+        font-size: 20px;
+    }
     .guidelines-link {
         background: transparent;
         border: 0;
@@ -1469,6 +1513,7 @@
         text-decoration: underline;
         cursor: pointer;
     }
+
     /* iframe {
         width: 100%;
         border: 0;
