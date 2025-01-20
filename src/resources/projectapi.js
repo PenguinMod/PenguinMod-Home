@@ -152,12 +152,39 @@ class ProjectApi {
      * @param {string} token token of user
      * @returns Array of projects
      */
-    static searchProjects(page, query, username, token) {
-        query = encodeURIComponent(query);
+    static searchProjects(page, searchQuery, username, token, allow_user=false) {
+        const query = searchQuery.split(":", 1)[0];
+        let api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${query}&username=${username}&token=${token}`;
+        switch (query) {
+            case "user":
+                if (allow_user) {
+                    const userQuery = searchQuery.split(":");
+                    searchType = "user";
+                    userQuery.shift();
+                    api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
+                    break;
+                }
+                // fallthrough
+            case "by":
+                const byQuery = searchQuery.split(":");
+                byQuery.shift();
+                api = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(byQuery.join())}`;
+                break;
+            case "featured":
+            case "newest":
+            case "views":
+            case "votes":
+            case "loves":
+                const actual_query = searchQuery.split(":");
+                actual_query.shift();
+                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}&username=${username}&token=${token}`;
+                break;
+            default:
+                break;
+        }
 
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${query}&username=${username}&token=${token}`;
-            fetch(url)
+            fetch(api)
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
@@ -168,6 +195,7 @@ class ProjectApi {
                     });
                 })
                 .catch((err) => {
+                    console.error(err);
                     reject(err);
                 });
         });

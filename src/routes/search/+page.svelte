@@ -15,6 +15,7 @@
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
+    import ProjectApi from "../../resources/projectApi.js";
 
     // Icons
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
@@ -27,50 +28,17 @@
     let searchType = "project";
 
     const fetchNewProjects = () => {
-        let api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(searchQuery)}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
-        const query = searchQuery.split(":", 1)[0];
-        switch (query) {
-            case "user":
-                const userQuery = searchQuery.split(":");
-                searchType = "user";
-                userQuery.shift();
-                api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
-                break;
-            case "by":
-                const byQuery = searchQuery.split(":");
-                searchType = "project";
-                byQuery.shift();
-                api = `${LINK.projects}api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(byQuery.join())}`;
-                break;
-            case "featured":
-            case "newest":
-            case "views":
-            case "votes":
-            case "loves":
-                const actual_query = searchQuery.split(":");
-                actual_query.shift();
-                api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
-                break;
-        }
-
-        fetch(api)
-            .then((response) => {
-                response
-                    .json()
-                    .then((result) => {
-                        projects.push(...result);
-                        projects = projects;
-                        if (projects.length <= 0) {
-                            projects = ["notfound"];
-                            pageIsLast = true;
-                        }
-                        if (result.length < 20) {
-                            pageIsLast = true;
-                        }
-                    })
-                    .catch(() => {
-                        requestFailed = true;
-                    });
+        ProjectApi.searchProjects(page, searchQuery, localStorage.getItem("username"), localStorage.getItem("token"), true)
+            .then((result) => {
+                projects.push(...result);
+                projects = projects;
+                if (projects.length <= 0) {
+                    projects = ["notfound"];
+                    pageIsLast = true;
+                }
+                if (result.length < 20) {
+                    pageIsLast = true;
+                }
             })
             .catch(() => {
                 requestFailed = true;

@@ -335,7 +335,6 @@
             // when WE get a post from PM
             window.addEventListener("message", (e) => {
                 if (e.origin !== importLocation) {
-                    // disable if running locally
                     return;
                 }
                 const data = e.data && e.data.p4;
@@ -489,21 +488,6 @@
 
     let otherProjects = [];
     let canRemix = [];
-    $: filteredProjects = (
-        (projectRemixSearchQuery ?? "") !== ""
-            ? canRemix.filter((project) =>
-                  [
-                      project.title,
-                      project.instructions,
-                      project.notes,
-                      project.id,
-                  ]
-                      .join("")
-                      .toLowerCase()
-                      .includes(projectRemixSearchQuery.toLowerCase())
-              )
-            : canRemix
-    ).sort((a, b) => a.lastUpdated - b.lastUpdated);
 
     let remixPageOpen = false;
     let updatePageOpen = false;
@@ -514,7 +498,6 @@
         //       just do one of them and then await it idk
         //       gonna do that later
         //       (aka in like 3 months when i finally look at this code again)
-
         if (pageType === "remix") {
             if ((projectRemixSearchQuery ?? "").trim() !== "") {
                 projectPageSearch += 1;
@@ -592,7 +575,6 @@
                 .catch((_err) => console.warn("that's not a project id"));
         } else {
             projectPageSearch = 0;
-
             ProjectApi.searchProjects(
                 0,
                 projectRemixSearchQuery.trim(),
@@ -902,7 +884,7 @@
                     </Button>
                 </div>
                 <div class="card-projects">
-                    {#each filteredProjects as project}
+                    {#each canRemix as project}
                         <ClickableProject
                             id={project.id}
                             title={project.title}
