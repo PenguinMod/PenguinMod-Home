@@ -1,8 +1,4 @@
-import {
-    PUBLIC_API_URL,
-    PUBLIC_STUDIO_URL,
-    PUBLIC_MAX_UPLOAD_SIZE,
-} from "$env/static/public";
+import { PUBLIC_API_URL, PUBLIC_STUDIO_URL, PUBLIC_MAX_UPLOAD_SIZE } from "$env/static/public";
 
 let OriginApiUrl = PUBLIC_API_URL;
 
@@ -105,11 +101,7 @@ class ProjectApi {
     }
     static getProfile(user, includeBio) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/profile?target=${user}${
-                includeBio ? "&bio=true" : ""
-            }&username=${localStorage.getItem(
-                "username"
-            )}&token=${localStorage.getItem("token")}`;
+            const url = `${OriginApiUrl}/api/v1/users/profile?target=${user}${includeBio ? '&bio=true' : ''}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -130,12 +122,12 @@ class ProjectApi {
             return ProjectApi.CachedDonators[user];
         }
         const badges = await ProjectApi.getUserBadges(user);
-        ProjectApi.CachedDonators[user] = badges.includes("donator");
-        return badges.includes("donator");
+        ProjectApi.CachedDonators[user] = badges.includes('donator');
+        return badges.includes('donator');
     }
     static getProjects(page, oldFirst) {
         return new Promise((resolve, reject) => {
-            const reverseParam = oldFirst ? "&reverse=true" : "";
+            const reverseParam = oldFirst ? '&reverse=true' : '';
             const url = `${OriginApiUrl}/api/v1/projects/getprojects?page=${page}${reverseParam}`;
             fetch(url)
                 .then((res) => {
@@ -182,7 +174,7 @@ class ProjectApi {
     }
 
     getRemovedProjects() {
-        throw new Error("Unapproved Projects can only be viewed in a client");
+        throw new Error("Unapproved Projects can only be viewed in a client")
     }
 
     /**
@@ -206,7 +198,7 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        });
+        })
     }
 
     /**
@@ -232,9 +224,9 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        });
+        })
     }
-
+    
     async getFrontPage() {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/projects/frontpage?username=${this.username}&token=${this.token}`; // so mods can see ALL!!!!!!!!!!!!!
@@ -251,7 +243,7 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        });
+        })
     }
 
     static getProjectMeta(id) {
@@ -270,7 +262,7 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        });
+        })
     }
 
     static getProjectThumbnail(id) {
@@ -287,10 +279,10 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        });
+        })
     }
 
-    static getProjectRemixes(id, page = 0) {
+    static getProjectRemixes(id, page=0) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/projects/getremixes?id=${id}&page=${page}`;
             fetch(url)
@@ -306,7 +298,7 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        });
+        })
     }
 
     static getProjectFile(id) {
@@ -328,15 +320,10 @@ class ProjectApi {
                     zip.file("project.json", JSON.stringify(json));
 
                     for (const asset of res.assets) {
-                        zip.file(
-                            asset.id,
-                            new Uint8Array(asset.buffer.data).buffer
-                        );
+                        zip.file(asset.id, new Uint8Array(asset.buffer.data).buffer);
                     }
 
-                    const arrayBuffer = zip.generateAsync({
-                        type: "arraybuffer",
-                    });
+                    const arrayBuffer = zip.generateAsync({ type: "arraybuffer" });
 
                     return arrayBuffer;
                 })
@@ -350,48 +337,39 @@ class ProjectApi {
     }
 
     async downloadHardRejectedProject(id) {
-        return new Promise(
-            ((resolve, reject) => {
-                const params = `project=${id}&username=${this.username}&token=${this.token}`;
-                const url = `${OriginApiUrl}/api/v1/projects/downloadHardReject?${params}`;
-                fetch(url)
-                    .then((res) => {
-                        if (!res.ok) {
-                            res.text().then(reject);
-                            return;
-                        }
-                        return res.json();
-                    })
-                    .then(
-                        ((res) => {
-                            const blob = new Uint8Array(res.project.data);
-                            const json = this.protobufToJson(blob);
+        return new Promise(((resolve, reject) => {
+            const params = `project=${id}&username=${this.username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/projects/downloadHardReject?${params}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    return res.json();
+                })
+                .then(((res) => {
+                    const blob = new Uint8Array(res.project.data);
+                    const json = this.protobufToJson(blob);
 
-                            let zip = new JSZip();
-                            zip.file("project.json", JSON.stringify(json));
+                    let zip = new JSZip();
+                    zip.file("project.json", JSON.stringify(json));
 
-                            for (const asset of res.assets) {
-                                zip.file(
-                                    asset.id,
-                                    new Uint8Array(asset.buffer.data).buffer
-                                );
-                            }
+                    for (const asset of res.assets) {
+                        zip.file(asset.id, new Uint8Array(asset.buffer.data).buffer);
+                    }
 
-                            const arrayBuffer = zip.generateAsync({
-                                type: "arraybuffer",
-                            });
+                    const arrayBuffer = zip.generateAsync({ type: "arraybuffer" });
 
-                            return arrayBuffer;
-                        }).bind(this)
-                    )
-                    .then((arrayBuffer) => {
-                        resolve(arrayBuffer);
-                    })
-                    .catch((err) => {
-                        reject(err);
-                    });
-            }).bind(this)
-        );
+                    return arrayBuffer;
+                }).bind(this))
+                .then((arrayBuffer) => {
+                    resolve(arrayBuffer);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        }).bind(this))
     }
 
     setToken(p) {
@@ -496,7 +474,7 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        });
+        })
     }
     getMessageCount() {
         return new Promise((resolve, reject) => {
@@ -565,13 +543,13 @@ class ProjectApi {
                 username: this.username,
                 token: this.token,
                 target: username,
-                toggle,
+                toggle
             };
             const url = `${OriginApiUrl}/api/v1/users/follow`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
+                method: "POST"
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -585,7 +563,7 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        });
+        })
     }
 
     readMessage(id) {
@@ -593,9 +571,9 @@ class ProjectApi {
             const data = {
                 username: this.username,
                 token: this.token,
-                messageID: id,
+                messageID: id
             };
-            if (typeof id !== "string") {
+            if (typeof id !== 'string') {
                 reject();
                 return;
             }
@@ -603,7 +581,7 @@ class ProjectApi {
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
+                method: "POST"
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -617,20 +595,20 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        });
+        })
     }
 
     markAllMessagesAsRead() {
         return new Promise((resolve, reject) => {
             const data = {
                 username: this.username,
-                token: this.token,
+                token: this.token
             };
             const url = `${OriginApiUrl}/api/v1/users/markAllMessagesAsRead`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
+                method: "POST"
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -644,7 +622,7 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        });
+        })
     }
 
     disputeMessage(id, text) {
@@ -653,13 +631,13 @@ class ProjectApi {
                 username: this.username,
                 token: this.token,
                 messageID: id,
-                dispute: text,
+                dispute: text
             };
             const url = `${OriginApiUrl}/api/v1/projects/dispute`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
+                method: "POST"
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -673,12 +651,11 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        });
+        })
     }
-
-    getReports(type, userOrId, page = 0) {
-        if (type !== "project" && type !== "user")
-            throw new Error("Invalid reporting type");
+    
+    getReports(type, userOrId, page=0) {
+        if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/reports/getReportsByTarget?target=${userOrId}&username=${this.username}&token=${this.token}&page=${page}`;
             fetch(url)
@@ -697,8 +674,7 @@ class ProjectApi {
         });
     }
     getTypeWithReports(type, page) {
-        if (type !== "project" && type !== "user")
-            throw new Error("Invalid reporting type");
+        if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/reports/getReports?username=${this.username}&token=${this.token}&type=${type}&page=${page}`;
             fetch(url)
@@ -721,13 +697,13 @@ class ProjectApi {
             const data = {
                 username: this.username,
                 token: this.token,
-                reportID: id,
+                reportID: id
             };
             const url = `${OriginApiUrl}/api/v1/reports/deleteReport`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
+                method: "POST"
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -747,13 +723,13 @@ class ProjectApi {
             const data = {
                 username: this.username,
                 token: this.token,
-                project: id,
+                project: id
             };
             const url = `${OriginApiUrl}/api/v1/projects/restore`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
+                method: "POST"
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -765,20 +741,20 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        });
+        })
     }
     deleteRejectedProject(id) {
         return new Promise((resolve, reject) => {
             const data = {
                 username: this.username,
                 token: this.token,
-                projectID: id,
+                projectID: id
             };
             const url = `${OriginApiUrl}/api/v1/projects/hardDeleteProject`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
+                method: "POST"
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -790,29 +766,27 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        });
+        })
     }
     getProfanityFilter() {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/misc/getProfanityList?username=${this.username}&token=${this.token}`;
             fetch(url)
                 .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve(json);
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
+                    res.json().then(json => {
+                        if (!res.ok) {
+                            reject(json.error);
+                            return;
+                        }
+                        resolve(json);
+                    }).catch(err => {
+                        reject(err);
+                    });
                 })
                 .catch((err) => {
                     reject(err);
                 });
-        });
+        })
     }
     setProfanityFilter(newData) {
         return new Promise((resolve, reject) => {
@@ -820,30 +794,28 @@ class ProjectApi {
             const data = {
                 username: this.username,
                 token: this.token,
-                json: newData,
+                json: newData
             };
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
+                method: "POST"
             })
                 .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
+                    res.json().then(json => {
+                        if (!res.ok) {
+                            reject(json.error);
+                            return;
+                        }
+                        resolve();
+                    }).catch(err => {
+                        reject(err);
+                    });
                 })
                 .catch((err) => {
                     reject(err);
                 });
-        });
+        })
     }
     setUserBadges(target, badges) {
         return new Promise((resolve, reject) => {
@@ -851,29 +823,25 @@ class ProjectApi {
                 username: this.username,
                 token: this.token,
                 badges,
-                target,
+                target
             };
             fetch(`${OriginApiUrl}/api/v1/users/setBadges`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
                 });
+            }).catch(err => {
+                reject(err);
+            });
         });
     }
     banUser(username, reason, time, toggle) {
@@ -889,24 +857,20 @@ class ProjectApi {
             fetch(`${OriginApiUrl}/api/v1/users/ban`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
                 });
+            }).catch(err => {
+                reject(err);
+            });
         });
     }
     reportContent(type, nameOrId, reason) {
@@ -915,35 +879,30 @@ class ProjectApi {
             token: this.token,
             report: reason,
             target: nameOrId,
-            type,
-        };
+            type
+        }
 
-        if (type !== "project" && type !== "user")
-            throw new Error("Invalid reporting type");
+        if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/reports/sendReport`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
-                body: JSON.stringify(body),
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                body: JSON.stringify(body)
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
                 });
+            }).catch(err => {
+                reject(err);
+            });
         });
     }
     assingUsersPermisions(username, admin, approver) {
@@ -953,31 +912,27 @@ class ProjectApi {
                 token: this.token,
                 target: username,
                 admin,
-                approver,
-            };
+                approver
+            }
             fetch(`${OriginApiUrl}/api/v1/users/assignPossition`, {
-                method: "POST",
+                method:"POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
-                body: JSON.stringify(body),
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                body:JSON.stringify(body)
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
                 });
+            }).catch(err => {
+                reject(err);
+            });
         });
     }
     setErrorAllGetProjects(enabled) {
@@ -985,31 +940,27 @@ class ProjectApi {
             const body = JSON.stringify({
                 username: this.username,
                 token: this.token,
-                toggle: enabled,
-            });
+                toggle: enabled
+            })
             fetch(`${OriginApiUrl}/api/v1/projects/toggleviewing`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
-                body,
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
                 });
+            }).catch(err => {
+                reject(err);
+            });
         });
     }
     setErrorAllUploadProjects(enabled) {
@@ -1017,67 +968,59 @@ class ProjectApi {
             const body = JSON.stringify({
                 username: this.username,
                 token: this.token,
-                toggle: enabled,
-            });
+                toggle: enabled
+            })
             fetch(`${OriginApiUrl}/api/v1/projects/toggleuploading`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
-                body,
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
                 });
+            }).catch(err => {
+                reject(err);
+            });
         });
     }
-
+    
     deleteProject(id, reason) {
         const body = JSON.stringify({
             projectID: id,
             username: this.username,
             token: this.token,
-            reason,
-        });
+            reason
+        })
 
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/hardDeleteProject`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
-                body,
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
-        });
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
     }
 
     rejectProject(id, reason) {
@@ -1091,25 +1034,21 @@ class ProjectApi {
             fetch(`${OriginApiUrl}/api/v1/projects/softreject`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
-        });
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
     }
 
     hardRejectProject(id, reason) {
@@ -1123,55 +1062,47 @@ class ProjectApi {
             fetch(`${OriginApiUrl}/api/v1/projects/hardreject`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
-        });
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
     }
 
     attemptRankUp() {
         const data = {
             token: this.token,
-            username: this.username,
+            username: this.username
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/users/requestrankup`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
-        });
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
     }
     setBio(text, adminForced, adminTarget) {
         const data = {
@@ -1181,95 +1112,78 @@ class ProjectApi {
             target: adminTarget,
         };
         return new Promise((resolve, reject) => {
-            fetch(
-                `${OriginApiUrl}/api/v1/users/${
-                    adminForced ? "setBioAdmin" : "setBio"
-                }`,
-                {
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data),
-                    method: "POST",
-                }
-            )
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+            fetch(`${OriginApiUrl}/api/v1/users/${adminForced ? 'setBioAdmin' : "setBio"}`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
-        });
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
     }
     setMyFeaturedProject(id, title) {
         const data = {
             username: this.username,
             token: this.token,
             project: id,
-            title,
+            title
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/users/setmyfeaturedproject`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
-        });
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
     }
     filloutSafetyDetails(birthday, country) {
         const data = {
             username: this.username,
             token: this.token,
             birthday,
-            country,
+            country
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/users/filloutSafetyDetails`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
-        });
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
     }
     respondToDispute(messageId, text) {
         const data = {
@@ -1282,25 +1196,21 @@ class ProjectApi {
             fetch(`${OriginApiUrl}/api/v1/projects/modresponse`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
-        });
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
     }
     sendModeratorMessage(target, text, disputable) {
         const data = {
@@ -1308,31 +1218,27 @@ class ProjectApi {
             username: this.username,
             target,
             message: text,
-            disputable,
+            disputable
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/modmessage`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
-        });
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
     }
     deleteModeratorMessage(messageID) {
         const data = {
@@ -1344,25 +1250,21 @@ class ProjectApi {
             fetch(`${OriginApiUrl}/api/v1/projects/deletemodmessage`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST",
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
-        });
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
     }
     addMessage(type, target, data) {
         const gdata = {
@@ -1371,32 +1273,28 @@ class ProjectApi {
             target,
             message: {
                 ...data,
-                type,
+                type
             },
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/users/addMessage`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(gdata),
-                method: "POST",
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
-        });
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
     }
     updateProject(id, data) {
         const username = this.username;
@@ -1406,6 +1304,7 @@ class ProjectApi {
         const notes = data.newMeta.notes;
 
         return new Promise(async (resolve, reject) => {
+
             if (!data.project) {
                 const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/updateProject`;
                 const request = new XMLHttpRequest();
@@ -1438,10 +1337,8 @@ class ProjectApi {
                 return;
             }
 
-            JSZip.loadAsync(data.project).then(async (zip) => {
-                const projectJSON = JSON.parse(
-                    await zip.file("project.json").async("text")
-                );
+            JSZip.loadAsync(data.project).then(async zip => {
+                const projectJSON = JSON.parse(await zip.file("project.json").async("text"))
 
                 const protobuf = this.jsonToProtobuf(projectJSON);
 
@@ -1451,7 +1348,7 @@ class ProjectApi {
                     if (relativePath === "project.json") return;
                     assets.push(file);
                 });
-
+                
                 const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/updateProject`;
                 const request = new XMLHttpRequest();
                 const formData = new FormData();
@@ -1477,11 +1374,7 @@ class ProjectApi {
 
                 for (let i = 0; i < assets.length; i++) {
                     // convert to blob
-                    formData.append(
-                        "assets",
-                        await assets[i].async("blob"),
-                        assets[i].name
-                    );
+                    formData.append("assets", await assets[i].async("blob"), assets[i].name);
                 }
 
                 formData.append("jsonFile", new Blob([protobuf]));
@@ -1511,7 +1404,7 @@ class ProjectApi {
             metaVm: "",
             metaAgent: "",
             fonts: json.customFonts,
-        };
+        }
 
         newjson.metaSemver = json.meta.semver;
         newjson.metaVm = json.meta.vm;
@@ -1544,39 +1437,32 @@ class ProjectApi {
                 videoState: json.targets[target].videoState,
                 textToSpeechLanguage: json.targets[target].textToSpeechLanguage,
                 visible: json.targets[target].visible,
-            };
+            }
 
             // loop over the variables
             for (const variable in json.targets[target].variables) {
                 newtarget.variables[variable] = {
                     name: json.targets[target].variables[variable][0],
-                    value: castToString(
-                        json.targets[target].variables[variable][1]
-                    ),
-                };
+                    value: castToString(json.targets[target].variables[variable][1])
+                }
             }
 
             // loop over the lists
             for (const list in json.targets[target].lists) {
                 newtarget.lists[list] = {
                     name: json.targets[target].lists[list][0],
-                    value: json.targets[target].lists[list][1].map((item) =>
-                        castToString(item)
-                    ),
-                };
+                    value: json.targets[target].lists[list][1].map((item) => castToString(item))
+                }
             }
 
             // loop over the broadcasts
             for (const broadcast in json.targets[target].broadcasts) {
-                newtarget.broadcasts[broadcast] =
-                    json.targets[target].broadcasts[broadcast];
+                newtarget.broadcasts[broadcast] = json.targets[target].broadcasts[broadcast];
             }
 
             // loop over the customVars
             for (const customVar in json.targets[target].customVars) {
-                newtarget.customVars.push(
-                    json.targets[target].customVars[customVar]
-                );
+                newtarget.customVars.push(json.targets[target].customVars[customVar]);
             }
 
             const blocks = json.targets[target].blocks;
@@ -1591,7 +1477,7 @@ class ProjectApi {
                             id: blocks[block][2],
                             second_num: blocks[block][3],
                             third_num: blocks[block][4],
-                        },
+                        }
                     };
                     continue;
                 }
@@ -1607,8 +1493,8 @@ class ProjectApi {
                     shadow: blocks[block].shadow,
                     topLevel: blocks[block].topLevel,
                     x: blocks[block].x,
-                    y: blocks[block].y,
-                };
+                    y: blocks[block].y
+                }
 
                 if (blocks[block].mutation) {
                     newtarget.blocks[block].mutation = {
@@ -1616,31 +1502,23 @@ class ProjectApi {
                         proccode: blocks[block].mutation.proccode,
                         argumentids: blocks[block].mutation.argumentids,
                         argumentnames: blocks[block].mutation.argumentnames,
-                        argumentdefaults:
-                            blocks[block].mutation.argumentdefaults,
-                        warp:
-                            String(blocks[block].mutation.warp) === "true"
-                                ? true
-                                : false,
+                        argumentdefaults: blocks[block].mutation.argumentdefaults,
+                        warp: String(blocks[block].mutation.warp) === "true" ? true : false,
                         _returns: blocks[block].mutation.returns,
                         edited: Boolean(blocks[block].mutation.edited),
                         optype: blocks[block].mutation.optype,
-                        color: blocks[block].mutation.color,
-                    };
+                        color: blocks[block].mutation.color
+                    }
                 }
 
                 // loop over the inputs
                 for (const input in blocks[block].inputs) {
-                    newtarget.blocks[block].inputs[input] = JSON.stringify(
-                        blocks[block].inputs[input]
-                    );
+                    newtarget.blocks[block].inputs[input] = JSON.stringify(blocks[block].inputs[input]);
                 }
 
                 // loop over the fields
                 for (const field in blocks[block].fields) {
-                    newtarget.blocks[block].fields[field] = JSON.stringify(
-                        blocks[block].fields[field]
-                    );
+                    newtarget.blocks[block].fields[field] = JSON.stringify(blocks[block].fields[field]);
                 }
             }
 
@@ -1648,21 +1526,13 @@ class ProjectApi {
             for (const comment in json.targets[target].comments) {
                 newtarget.comments[comment] = {
                     blockId: json.targets[target].comments[comment].blockId,
-                    x: Math.round(
-                        json.targets[target].comments[comment].x || 0
-                    ),
-                    y: Math.round(
-                        json.targets[target].comments[comment].y || 0
-                    ),
-                    width: Math.round(
-                        json.targets[target].comments[comment].width || 0
-                    ),
-                    height: Math.round(
-                        json.targets[target].comments[comment].height || 0
-                    ),
+                    x: Math.round(json.targets[target].comments[comment].x || 0),
+                    y: Math.round(json.targets[target].comments[comment].y || 0),
+                    width: Math.round(json.targets[target].comments[comment].width || 0),
+                    height: Math.round(json.targets[target].comments[comment].height || 0),
                     minimized: json.targets[target].comments[comment].minimized,
-                    text: json.targets[target].comments[comment].text,
-                };
+                    text: json.targets[target].comments[comment].text
+                }
             }
 
             // loop over the costumes
@@ -1670,16 +1540,12 @@ class ProjectApi {
                 newtarget.costumes[costume] = {
                     assetId: json.targets[target].costumes[costume].assetId,
                     name: json.targets[target].costumes[costume].name,
-                    bitmapResolution:
-                        json.targets[target].costumes[costume].bitmapResolution,
-                    rotationCenterX:
-                        json.targets[target].costumes[costume].rotationCenterX,
-                    rotationCenterY:
-                        json.targets[target].costumes[costume].rotationCenterY,
+                    bitmapResolution: json.targets[target].costumes[costume].bitmapResolution,
+                    rotationCenterX: json.targets[target].costumes[costume].rotationCenterX,
+                    rotationCenterY: json.targets[target].costumes[costume].rotationCenterY,
                     md5ext: json.targets[target].costumes[costume].md5ext,
-                    dataFormat:
-                        json.targets[target].costumes[costume].dataFormat,
-                };
+                    dataFormat: json.targets[target].costumes[costume].dataFormat,
+                }
             }
 
             // loop over the sounds
@@ -1690,8 +1556,8 @@ class ProjectApi {
                     dataFormat: json.targets[target].sounds[sound].dataFormat,
                     rate: json.targets[target].sounds[sound].rate,
                     sampleCount: json.targets[target].sounds[sound].sampleCount,
-                    md5ext: json.targets[target].sounds[sound].md5ext,
-                };
+                    md5ext: json.targets[target].sounds[sound].md5ext
+                }
             }
 
             newjson.targets.push(newtarget);
@@ -1722,14 +1588,13 @@ class ProjectApi {
             newjson.extensionData[extensionData] = {
                 data: castToString(json.extensionData[extensionData]),
                 // true if the extension data is not a string
-                parse: typeof json.extensionData[extensionData] !== "string",
-            };
+                parse: typeof json.extensionData[extensionData] !== "string"
+            }
         }
 
         // loop over the extensionURLs
         for (const extensionURL in json.extensionURLs) {
-            newjson.extensionURLs[extensionURL] =
-                json.extensionURLs[extensionURL];
+            newjson.extensionURLs[extensionURL] = json.extensionURLs[extensionURL];
         }
 
         const verify = project.verify(newjson);
@@ -1741,105 +1606,83 @@ class ProjectApi {
         return project.encode(project.create(newjson)).finish();
     }
     resolveProjectSizes(file, imageSize = 0) {
-        return JSZip.loadAsync(file).then(async (zip) => {
-            const projectJSON = JSON.parse(
-                await zip.file("project.json").async("text")
-            );
-            const projectSize = this.jsonToProtobuf(projectJSON).length;
-            const targets = projectJSON.targets;
-            projectJSON.targets = [];
-            const metaSize = this.jsonToProtobuf(projectJSON).length;
-            const assets = (
-                await Promise.all(
-                    zip
-                        .filter(
-                            (name, file) => !file.dir && name !== "project.json"
-                        )
-                        .map(async (file) => [
-                            await file.async("blob"),
-                            file.name,
-                        ])
-                )
-            ).reduce((c, v) => ((c[v[1]] = v[0]), c), {});
+        return JSZip.loadAsync(file)
+            .then(async zip => {
+                const projectJSON = JSON.parse(await zip.file("project.json").async("text"));
+                const projectSize = this.jsonToProtobuf(projectJSON).length;
+                const targets = projectJSON.targets;
+                projectJSON.targets = [];
+                const metaSize = this.jsonToProtobuf(projectJSON).length;
+                const assets = (await Promise.all(zip
+                    .filter((name, file) => 
+                            !file.dir && 
+                            name !== 'project.json')
+                    .map(async file => [await file.async('blob'), file.name])))
+                    .reduce((c,v) => (c[v[1]] = v[0], c), {});
 
-            const statTree = [];
-            for (const target of targets) {
-                projectJSON.targets[0] = target;
-                const costumes = target.costumes.map((asset) => [
-                    asset.name,
-                    assets[asset.md5ext],
-                ]);
-                const sounds = target.sounds.map((asset) => [
-                    asset.name,
-                    assets[asset.md5ext],
-                ]);
+                const statTree = [];
+                for (const target of targets) {
+                    projectJSON.targets[0] = target;
+                    const costumes = target.costumes
+                        .map(asset => [asset.name, assets[asset.md5ext]]);
+                    const sounds = target.sounds
+                        .map(asset => [asset.name, assets[asset.md5ext]]);
 
-                const codeSize =
-                    this.jsonToProtobuf(projectJSON).length - metaSize;
-                const costumeSize = costumes.reduce((c, v) => c + v[1].size, 0);
-                const soundSize = sounds.reduce((c, v) => c + v[1].size, 0);
-                const size = codeSize + costumeSize + soundSize;
-                statTree.push({
-                    name: `${target.name}: ${MB(size)}`,
-                    value: [
-                        `code: ${MB(codeSize)}`,
-                        {
-                            name: `costumes: ${MB(costumeSize)}`,
-                            value: costumes.map(
-                                ([name, asset]) => `${name}: ${MB(asset.size)}`
-                            ),
-                        },
-                        {
-                            name: `sounds: ${MB(soundSize)}`,
-                            value: sounds.map(
-                                ([name, asset]) => `${name}: ${MB(asset.size)}`
-                            ),
-                        },
-                    ],
-                });
-            }
+                    const codeSize = this.jsonToProtobuf(projectJSON).length - metaSize;
+                    const costumeSize = costumes.reduce((c,v) => c + v[1].size, 0);
+                    const soundSize = sounds.reduce((c,v) => c + v[1].size, 0);
+                    const size = codeSize
+                        + costumeSize
+                        + soundSize;
+                    statTree.push({
+                        name: `${target.name}: ${MB(size)}`,
+                        value: [
+                            `code: ${MB(codeSize)}`,
+                            {
+                                name: `costumes: ${MB(costumeSize)}`,
+                                value: costumes.map(([name, asset]) => `${name}: ${MB(asset.size)}`)
+                            },
+                            {
+                                name: `sounds: ${MB(soundSize)}`,
+                                value: sounds.map(([name, asset]) => `${name}: ${MB(asset.size)}`)
+                            }
+                        ]
+                    })
+                }
 
-            const size = Object.values(assets).reduce(
-                (c, v) => c + v.size,
-                projectSize + imageSize
-            );
-            return [
-                {
-                    name: `${MB(size)}/${PUBLIC_MAX_UPLOAD_SIZE}MB`,
-                    value: [
+                const size = Object.values(assets)
+                    .reduce((c,v) => c + v.size, projectSize + imageSize);
+                return [
+                    {
+                        name: `${MB(size)}/${PUBLIC_MAX_UPLOAD_SIZE}MB`,
+                        value: [
                         `thumbnail: ${MB(imageSize)}`,
                         {
                             name: `project: ${MB(size)}`,
-                            value: statTree,
-                        },
-                    ],
-                },
-                size > Number(PUBLIC_MAX_UPLOAD_SIZE) * 1024 * 1024,
-            ];
-        });
+                            value: statTree
+                        }
+                        ]
+                    }, 
+                    size > (Number(PUBLIC_MAX_UPLOAD_SIZE) * 1024 * 1024)
+                ];
+            });
     }
     handleProjectFile(file, imageSize = 0) {
-        return JSZip.loadAsync(file).then(async (zip) => {
-            const projectJSON = JSON.parse(
-                await zip.file("project.json").async("text")
-            );
-            const protobuf = new Blob([this.jsonToProtobuf(projectJSON)]);
-            const assets = await Promise.all(
-                zip
-                    .filter(
-                        (name, file) => !file.dir && name !== "project.json"
-                    )
-                    .map(async (file) => [await file.async("blob"), file.name])
-            );
-            const size = assets.reduce(
-                (c, v) => c + v[0].size,
-                protobuf.size + imageSize
-            );
-            if (size > Number(PUBLIC_MAX_UPLOAD_SIZE) * 1024 * 1024)
-                throw "ProjectToLarge";
-
-            return { protobuf, assets };
-        });
+        return JSZip.loadAsync(file)
+            .then(async zip => {
+                const projectJSON = JSON.parse(await zip.file("project.json").async("text"));
+                const protobuf = new Blob([this.jsonToProtobuf(projectJSON)]);
+                const assets = await Promise.all(zip
+                    .filter((name, file) => 
+                            !file.dir && 
+                            name !== 'project.json')
+                    .map(async file => [await file.async('blob'), file.name]));
+                const size = assets.reduce((c,v) => c + v[0].size, protobuf.size + imageSize);
+                if (size > (Number(PUBLIC_MAX_UPLOAD_SIZE) * 1024 * 1024)) 
+                    throw 'ProjectToLarge';
+    
+                return { protobuf, assets };
+            });
     }
 
     protobufToJson(buffer) {
@@ -1856,9 +1699,9 @@ class ProjectApi {
             meta: {
                 semver: json.metaSemver,
                 vm: json.metaVm,
-                agent: json.metaAgent || "",
+                agent: json.metaAgent || ""
             },
-            customFonts: json.fonts,
+            customFonts: json.fonts
         };
 
         for (const target of json.targets) {
@@ -1887,21 +1730,15 @@ class ProjectApi {
                 size: target.size,
                 direction: target.direction,
                 draggable: target.draggable,
-                rotationStyle: target.rotationStyle,
+                rotationStyle: target.rotationStyle
             };
 
             for (const variable in target.variables) {
-                newTarget.variables[variable] = [
-                    target.variables[variable].name,
-                    target.variables[variable].value,
-                ];
+                newTarget.variables[variable] = [target.variables[variable].name, target.variables[variable].value];
             }
 
             for (const list in target.lists) {
-                newTarget.lists[list] = [
-                    target.lists[list].name,
-                    target.lists[list].value,
-                ];
+                newTarget.lists[list] = [target.lists[list].name, target.lists[list].value];
             }
 
             for (const broadcast in target.broadcasts) {
@@ -1920,7 +1757,7 @@ class ProjectApi {
                         target.blocks[block].varReporterBlock.id,
                         target.blocks[block].varReporterBlock.second_num,
                         target.blocks[block].varReporterBlock.third_num,
-                    ];
+                    ]
                     continue;
                 }
 
@@ -1933,37 +1770,31 @@ class ProjectApi {
                     shadow: target.blocks[block].shadow,
                     topLevel: target.blocks[block].topLevel,
                     x: target.blocks[block].x,
-                    y: target.blocks[block].y,
-                };
+                    y: target.blocks[block].y
+                }
 
                 if (target.blocks[block].mutation) {
                     newTarget.blocks[block].mutation = {
                         tagName: target.blocks[block].mutation.tagName,
                         proccode: target.blocks[block].mutation.proccode,
                         argumentids: target.blocks[block].mutation.argumentids,
-                        argumentnames:
-                            target.blocks[block].mutation.argumentnames,
-                        argumentdefaults:
-                            target.blocks[block].mutation.argumentdefaults,
+                        argumentnames: target.blocks[block].mutation.argumentnames,
+                        argumentdefaults: target.blocks[block].mutation.argumentdefaults,
                         warp: target.blocks[block].mutation.warp,
                         returns: target.blocks[block].mutation._returns,
                         edited: target.blocks[block].mutation.edited,
                         optype: target.blocks[block].mutation.optype,
                         color: target.blocks[block].mutation.color,
-                        children: [],
-                    };
+                        children: []
+                    }
                 }
 
                 for (const input in target.blocks[block].inputs) {
-                    newTarget.blocks[block].inputs[input] = JSON.parse(
-                        target.blocks[block].inputs[input]
-                    );
+                    newTarget.blocks[block].inputs[input] = JSON.parse(target.blocks[block].inputs[input]);
                 }
 
                 for (const field in target.blocks[block].fields) {
-                    newTarget.blocks[block].fields[field] = JSON.parse(
-                        target.blocks[block].fields[field]
-                    );
+                    newTarget.blocks[block].fields[field] = JSON.parse(target.blocks[block].fields[field]);
                 }
             }
 
@@ -1997,13 +1828,11 @@ class ProjectApi {
                 visible: json.monitors[monitor].visible,
                 sliderMin: json.monitors[monitor].sliderMin,
                 sliderMax: json.monitors[monitor].sliderMax,
-                isDiscrete: json.monitors[monitor].isDiscrete,
-            };
+                isDiscrete: json.monitors[monitor].isDiscrete
+            }
 
             for (const param in json.monitors[monitor].params) {
-                newMonitor.params[param] = JSON.parse(
-                    json.monitors[monitor].params[param]
-                );
+                newMonitor.params[param] = JSON.parse(json.monitors[monitor].params[param]);
             }
 
             newJson.monitors.push(newMonitor);
@@ -2011,24 +1840,19 @@ class ProjectApi {
 
         for (const extensionData in json.antiSigmaExtensionData) {
             // "legacy" shit
-            newJson.extensionData[extensionData] =
-                json.extensionData[extensionData].data;
+            newJson.extensionData[extensionData] = json.extensionData[extensionData].data;
         }
 
         for (const extensionData in json.extensionData) {
             if (json.extensionData[extensionData].parse) {
-                newJson.extensionData[extensionData] = JSON.parse(
-                    json.extensionData[extensionData].data
-                );
+                newJson.extensionData[extensionData] = JSON.parse(json.extensionData[extensionData].data);
             } else {
-                newJson.extensionData[extensionData] =
-                    json.extensionData[extensionData].data;
+                newJson.extensionData[extensionData] = json.extensionData[extensionData].data;
             }
         }
 
         for (const extensionURL in json.extensionURLs) {
-            newJson.extensionURLs[extensionURL] =
-                json.extensionURLs[extensionURL];
+            newJson.extensionURLs[extensionURL] = json.extensionURLs[extensionURL];
         }
 
         return newJson;
@@ -2042,14 +1866,13 @@ class ProjectApi {
         const notes = data.notes;
         const remix = data.remix || 0;
 
+
         return new Promise(async (resolve, reject) => {
-            const { protobuf, assets } = await this.handleProjectFile(
-                data.project,
-                data.image.size
-            ).catch((err) => {
-                reject(err);
-                return { protobuf: null, assets: [] };
-            });
+            const { protobuf, assets } = await this.handleProjectFile(data.project, data.image.size)
+                .catch(err => {
+                    reject(err);
+                    return { protobuf: null, assets: [] };
+                });
             if (!protobuf) return;
 
             const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/uploadProject`;
@@ -2074,7 +1897,7 @@ class ProjectApi {
             formData.append("instructions", instructions);
             formData.append("notes", notes);
             formData.append("remix", remix);
-            assets.forEach((ent) => formData.append("assets", ...ent));
+            assets.forEach(ent => formData.append("assets", ...ent))
             formData.append("jsonFile", protobuf);
             formData.append("thumbnail", data.image);
 
@@ -2085,24 +1908,20 @@ class ProjectApi {
     approveProject(id, webhook) {
         const url = `${OriginApiUrl}/api/projects/approve?token=${this.token}&approver=${this.username}&webhook=${webhook}&id=${id}`;
         return new Promise((resolve, reject) => {
-            fetch(url)
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve(json.id);
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+            fetch(url).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve(json.id);
+                }).catch(err => {
                     reject(err);
-                });
-        });
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
     }
     featureProject(id, value) {
         const body = JSON.stringify({
@@ -2115,48 +1934,44 @@ class ProjectApi {
             fetch(`${OriginApiUrl}/api/v1/projects/manualfeature`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
-                body,
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
+                })
+            }).catch(err => {
+                reject(err);
+            })
         });
     }
 
     toggleVoteProject(id, type, toggle) {
         type = String(type).toLowerCase().trim();
         switch (type) {
-            case "feature":
-            case "features":
-            case "featured":
-            case "vote":
-            case "voted":
-                type = "vote";
+            case 'feature':
+            case 'features':
+            case 'featured':
+            case 'vote':
+            case 'voted':
+                type = 'vote';
                 break;
-            case "love":
-            case "loved":
-            case "like":
-            case "liked":
-            case "likes":
-                type = "love";
+            case 'love':
+            case 'loved':
+            case 'like':
+            case 'liked':
+            case 'likes':
+                type = 'love';
                 break;
             default:
-                type = "vote";
+                type = 'vote';
         }
         const url = `${OriginApiUrl}/api/v1/projects/interactions/${type}Toggle`;
         return new Promise((resolve, reject) => {
@@ -2167,106 +1982,87 @@ class ProjectApi {
                     projectId: id,
                     username: this.username,
                     token: this.token,
-                    toggle: toggle,
-                }),
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
+                    toggle: toggle
                 })
-                .catch((err) => {
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
-        });
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
     }
     getVoteStates(id) {
         const url = `${OriginApiUrl}/api/v1/projects/getuserstatewrapper?username=${this.username}&token=${this.token}&projectId=${id}`;
         return new Promise((resolve, reject) => {
-            fetch(url)
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve({
-                                loved: json.hasLoved,
-                                voted: json.hasVoted,
-                            });
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+            fetch(url).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve({loved: json.hasLoved, voted: json.hasVoted});
+                }).catch(err => {
                     reject(err);
-                });
-        });
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
     }
 
     setLastPolicyUpdate(policies) {
         const body = JSON.stringify({
             username: this.username,
             token: this.token,
-            types: policies,
+            types: policies
         });
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/misc/setLastPolicyUpdate`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
-                body,
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
+                })
+            }).catch(err => {
+                reject(err);
+            })
         });
     }
 
     getLastPolicyUpdate() {
-        const url = `${OriginApiUrl}/api/v1/misc/getLastPolicyUpdate`;
+        const url = `${OriginApiUrl}/api/v1/misc/getLastPolicyUpdate`
         return new Promise((resolve, reject) => {
-            fetch(url)
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve(json);
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+            fetch(url).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve(json);
+                }).catch(err => {
                     reject(err);
-                });
+                })
+            }).catch(err => {
+                reject(err);
+            })
         });
     }
 
@@ -2290,29 +2086,25 @@ class ProjectApi {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     username: this.username,
-                    token: this.token,
-                }),
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
+                    token: this.token
                 })
-                .catch((err) => {
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
+                })
+            }).catch(err => {
+                reject(err);
+            })
         });
     }
 
@@ -2323,33 +2115,29 @@ class ProjectApi {
             username: this.username,
             token: this.token,
             privateProfile,
-            privateToFollowing,
+            privateToFollowing
         });
 
         return new Promise((resolve, reject) => {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
-                body,
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
+                })
+            }).catch(err => {
+                reject(err);
+            })
         });
     }
 
@@ -2360,33 +2148,29 @@ class ProjectApi {
             username: this.username,
             token: this.token,
             target: username,
-            toggle,
+            toggle
         });
 
         return new Promise((resolve, reject) => {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
-                body,
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
+                })
+            }).catch(err => {
+                reject(err);
+            })
         });
     }
 
@@ -2404,78 +2188,66 @@ class ProjectApi {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
-                body,
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
+                })
+            }).catch(err => {
+                reject(err);
+            })
         });
     }
 
     getConnectedIPs(username) {
-        const url = `${OriginApiUrl}/api/v1/users/getAllIPs`;
+        const url = `${OriginApiUrl}/api/v1/users/getAllIPs`
 
         const query = `?username=${this.username}&token=${this.token}&target=${username}`;
 
         return new Promise((resolve, reject) => {
-            fetch(url + query)
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve(json.ips);
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+            fetch(url + query).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve(json.ips);
+                }).catch(err => {
                     reject(err);
-                });
+                })
+            }).catch(err => {
+                reject(err);
+            })
         });
     }
 
     getConnectedUsers(ip) {
-        const url = `${OriginApiUrl}/api/v1/users/getAllAccountsWithIP`;
+        const url = `${OriginApiUrl}/api/v1/users/getAllAccountsWithIP`
 
         const query = `?username=${this.username}&token=${this.token}&target=${ip}`;
 
         return new Promise((resolve, reject) => {
-            fetch(url + query)
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve(json.users);
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+            fetch(url + query).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve(json.users);
+                }).catch(err => {
                     reject(err);
-                });
+                })
+            }).catch(err => {
+                reject(err);
+            })
         });
     }
 
@@ -2486,33 +2258,29 @@ class ProjectApi {
             username: this.username,
             token: this.token,
             targetIP: ip,
-            toggle,
+            toggle
         });
 
         return new Promise((resolve, reject) => {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
-                body,
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
+                })
+            }).catch(err => {
+                reject(err);
+            })
         });
     }
 
@@ -2529,26 +2297,22 @@ class ProjectApi {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
-                body,
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
+                })
+            }).catch(err => {
+                reject(err);
+            })
         });
     }
     setUsernameOfUser(targetUsername, newName) {
@@ -2565,26 +2329,22 @@ class ProjectApi {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
-                body,
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
+                })
+            }).catch(err => {
+                reject(err);
+            })
         });
     }
     setPFP(file) {
@@ -2643,33 +2403,29 @@ class ProjectApi {
         const body = JSON.stringify({
             username: this.username,
             token: this.token,
-            email,
+            email
         });
 
         return new Promise((resolve, reject) => {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
-                body,
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
+                })
+            }).catch(err => {
+                reject(err);
+            })
         });
     }
 
@@ -2679,33 +2435,29 @@ class ProjectApi {
         const body = JSON.stringify({
             username: this.username,
             token: this.token,
-            method,
+            method
         });
 
         return new Promise((resolve, reject) => {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
-                body,
-            })
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
                     reject(err);
-                });
+                })
+            }).catch(err => {
+                reject(err);
+            })
         });
     }
 }
