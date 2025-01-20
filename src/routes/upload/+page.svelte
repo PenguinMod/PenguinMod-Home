@@ -492,7 +492,7 @@
               .toLowerCase()
               .includes(projectRemixSearchQuery.toLowerCase())
         )
-      : canRemix).sort(project => project.lastUpdated);
+      : canRemix).sort((a, b) => a.lastUpdated - b.lastUpdated);
 
   let remixPageOpen = false;
   let updatePageOpen = false;
