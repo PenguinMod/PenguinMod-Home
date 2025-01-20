@@ -1,43 +1,43 @@
 <script>
-    import { onMount } from 'svelte';
-    import Authentication from '../../resources/authentication.js';
-    import ProjectApi from '../../resources/projectapi.js';
-    import EmojiList from '../../resources/emojis.js';
+    import { onMount } from "svelte";
+    import Authentication from "../../resources/authentication.js";
+    import ProjectApi from "../../resources/projectapi.js";
+    import EmojiList from "../../resources/emojis.js";
     import {
         PUBLIC_STUDIO_URL,
         PUBLIC_MAX_UPLOAD_SIZE,
-    } from '$env/static/public';
+    } from "$env/static/public";
 
     const ProjectClient = new ProjectApi();
 
     // Static values
-    import LINK from '../../resources/urls.js';
+    import LINK from "../../resources/urls.js";
 
     // Components
-    import NavigationBar from '$lib/NavigationBar/NavigationBar.svelte';
-    import NavigationMargin from '$lib/NavigationBar/NavMargin.svelte';
-    import LoadingSpinner from '$lib/LoadingSpinner/Spinner.svelte';
-    import ClickableProject from '$lib/ClickableProject/Project.svelte';
-    import Button from '$lib/Button/Button.svelte';
-    import StatusAlert from '$lib/Alert/StatusAlert.svelte';
-    import Stats from '../../lib/statsComponent/stats.svelte';
+    import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
+    import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
+    import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
+    import ClickableProject from "$lib/ClickableProject/Project.svelte";
+    import Button from "$lib/Button/Button.svelte";
+    import StatusAlert from "$lib/Alert/StatusAlert.svelte";
+    import Stats from "../../lib/statsComponent/stats.svelte";
     // translations
-    import LocalizedText from '$lib/LocalizedText/Node.svelte';
-    import TranslationHandler from '../../resources/translations.js';
-    import Language from '../../resources/language.js';
+    import LocalizedText from "$lib/LocalizedText/Node.svelte";
+    import TranslationHandler from "../../resources/translations.js";
+    import Language from "../../resources/language.js";
     // Icons
-    import SearchSVG from '../../icons/Search/icon.svelte';
+    import SearchSVG from "../../icons/Search/icon.svelte";
 
-    let projectName = '';
-    let currentLang = 'en';
+    let projectName = "";
+    let currentLang = "en";
     onMount(() => {
         Language.forceUpdate();
     });
     Language.onChange((lang) => {
         currentLang = lang;
-        if (projectName === '') {
+        if (projectName === "") {
             projectName = TranslationHandler.text(
-                'uploading.project.title.default',
+                "uploading.project.title.default",
                 currentLang
             );
         }
@@ -62,7 +62,7 @@
                 if (toLarge)
                     alert(
                         TranslationHandler.text(
-                            'uploading.error.projecttoolarge',
+                            "uploading.error.projecttoolarge",
                             currentLang
                         )
                     );
@@ -77,7 +77,7 @@
 
     let remixedInURL = false;
 
-    let projectPageType = 'remix';
+    let projectPageType = "remix";
     let projectPage = 0,
         projectPageSearch = 0;
     let lastProjectPage = false;
@@ -94,136 +94,136 @@
         const combinedText = `${String(components.projectName.value)} ${String(components.projectInstructions.value)} ${String(components.projectNotes.value)}`;
         const normalizedText = combinedText
             .toLowerCase()
-            .replace(/[\s\-_\W]+/gi, '');
+            .replace(/[\s\-_\W]+/gi, "");
         recommendedTagList = [];
 
         const hashtags = combinedText.match(/#([\w-]+)/g) || [];
 
         // Frontpage-able tags:
         if (
-            normalizedText.includes('game') ||
-            normalizedText.includes('playable')
+            normalizedText.includes("game") ||
+            normalizedText.includes("playable")
         ) {
-            recommendedTagList.push('games');
+            recommendedTagList.push("games");
         }
         if (
-            normalizedText.includes('animation') ||
-            normalizedText.includes('animated') ||
-            normalizedText.includes('animate')
+            normalizedText.includes("animation") ||
+            normalizedText.includes("animated") ||
+            normalizedText.includes("animate")
         ) {
-            recommendedTagList.push('animation');
+            recommendedTagList.push("animation");
         }
         if (
-            normalizedText.includes('art') ||
-            normalizedText.includes('drawn') ||
-            normalizedText.includes('drawing') ||
-            normalizedText.includes('paint')
+            normalizedText.includes("art") ||
+            normalizedText.includes("drawn") ||
+            normalizedText.includes("drawing") ||
+            normalizedText.includes("paint")
         ) {
-            recommendedTagList.push('art');
+            recommendedTagList.push("art");
         }
         if (
-            normalizedText.includes('platform') ||
-            normalizedText.includes('jumping')
+            normalizedText.includes("platform") ||
+            normalizedText.includes("jumping")
         ) {
-            recommendedTagList.push('platformer');
+            recommendedTagList.push("platformer");
         }
         if (
-            normalizedText.includes('rpg') ||
-            normalizedText.includes('roguelike')
+            normalizedText.includes("rpg") ||
+            normalizedText.includes("roguelike")
         ) {
-            recommendedTagList.push('rpg');
+            recommendedTagList.push("rpg");
         }
         if (
-            normalizedText.includes('story') ||
-            normalizedText.includes('lore')
+            normalizedText.includes("story") ||
+            normalizedText.includes("lore")
         ) {
-            recommendedTagList.push('story');
+            recommendedTagList.push("story");
         }
         if (
-            normalizedText.includes('minigame') ||
-            normalizedText.includes('warioware')
+            normalizedText.includes("minigame") ||
+            normalizedText.includes("warioware")
         ) {
-            recommendedTagList.push('minigames');
+            recommendedTagList.push("minigames");
         }
         if (
-            normalizedText.includes('online') ||
-            normalizedText.includes('multiplayer') ||
-            normalizedText.includes('cloudlink')
+            normalizedText.includes("online") ||
+            normalizedText.includes("multiplayer") ||
+            normalizedText.includes("cloudlink")
         ) {
-            recommendedTagList.push('online');
+            recommendedTagList.push("online");
         }
         if (
-            normalizedText.includes('remade') ||
-            normalizedText.includes('remake') ||
-            normalizedText.includes('demake')
+            normalizedText.includes("remade") ||
+            normalizedText.includes("remake") ||
+            normalizedText.includes("demake")
         ) {
-            recommendedTagList.push('remake');
+            recommendedTagList.push("remake");
         }
         if (
-            normalizedText.includes('physics') ||
-            normalizedText.includes('box2d')
+            normalizedText.includes("physics") ||
+            normalizedText.includes("box2d")
         ) {
-            recommendedTagList.push('physics');
+            recommendedTagList.push("physics");
         }
-        if (normalizedText.includes('contest')) {
-            recommendedTagList.push('contest');
+        if (normalizedText.includes("contest")) {
+            recommendedTagList.push("contest");
         }
         if (
-            normalizedText.includes('horror') ||
-            normalizedText.includes('scary') ||
-            normalizedText.includes('spook') ||
-            normalizedText.includes('spoop') ||
-            normalizedText.includes('halloween')
+            normalizedText.includes("horror") ||
+            normalizedText.includes("scary") ||
+            normalizedText.includes("spook") ||
+            normalizedText.includes("spoop") ||
+            normalizedText.includes("halloween")
         ) {
-            recommendedTagList.push('horror');
+            recommendedTagList.push("horror");
         }
         if (
-            normalizedText.includes('tutorial') ||
-            normalizedText.includes('teach')
+            normalizedText.includes("tutorial") ||
+            normalizedText.includes("teach")
         ) {
-            recommendedTagList.push('tutorial');
+            recommendedTagList.push("tutorial");
         }
-        if (normalizedText.includes('3d')) {
-            recommendedTagList.push('3d');
+        if (normalizedText.includes("3d")) {
+            recommendedTagList.push("3d");
         }
-        if (normalizedText.includes('2d')) {
-            recommendedTagList.push('2d');
+        if (normalizedText.includes("2d")) {
+            recommendedTagList.push("2d");
         }
-        if (normalizedText.includes('dimension')) {
-            recommendedTagList.push('3d');
-            recommendedTagList.push('2d');
+        if (normalizedText.includes("dimension")) {
+            recommendedTagList.push("3d");
+            recommendedTagList.push("2d");
         }
 
         // Misc
         if (
-            normalizedText.includes('clicker') ||
-            normalizedText.includes('clicking')
+            normalizedText.includes("clicker") ||
+            normalizedText.includes("clicking")
         ) {
-            recommendedTagList.push('clicker');
+            recommendedTagList.push("clicker");
         }
         if (
-            normalizedText.includes('metroid') ||
-            normalizedText.includes('metroidvania')
+            normalizedText.includes("metroid") ||
+            normalizedText.includes("metroidvania")
         ) {
-            recommendedTagList.push('metroidvania');
+            recommendedTagList.push("metroidvania");
         }
         if (
-            normalizedText.includes('towerdefense') ||
-            normalizedText.includes('btd') ||
-            normalizedText.includes('bloonstd')
+            normalizedText.includes("towerdefense") ||
+            normalizedText.includes("btd") ||
+            normalizedText.includes("bloonstd")
         ) {
-            recommendedTagList.push('towerdefense');
+            recommendedTagList.push("towerdefense");
         }
         if (
-            normalizedText.includes('christmas') ||
-            normalizedText.includes('festive') ||
-            normalizedText.includes('xmas') ||
-            normalizedText.includes('presents')
+            normalizedText.includes("christmas") ||
+            normalizedText.includes("festive") ||
+            normalizedText.includes("xmas") ||
+            normalizedText.includes("presents")
         ) {
-            recommendedTagList.push('christmas');
+            recommendedTagList.push("christmas");
         }
-        if (normalizedText.includes('aprilfools')) {
-            recommendedTagList.push('aprilfools');
+        if (normalizedText.includes("aprilfools")) {
+            recommendedTagList.push("aprilfools");
         }
 
         // remove recommended tags present inside the text
@@ -239,7 +239,7 @@
     const clickOnRecommendedTag = (tagText) => {
         const originalText = String(components.projectNotes.value);
         if (
-            originalText.endsWith(' ') ||
+            originalText.endsWith(" ") ||
             originalText.length <= 0 ||
             originalText.match(/^[\s]+$/gi)
         ) {
@@ -254,15 +254,15 @@
         const num = Number(number);
         if (isNaN(num)) return 0;
         const str = String(num);
-        if (!str.includes('.')) return num;
-        const split = str.split('.');
+        if (!str.includes(".")) return num;
+        const split = str.split(".");
         if (split[1].length <= 2) return num;
-        const newNumber = split[0] + '.' + split[1].substring(0, 2);
+        const newNumber = split[0] + "." + split[1].substring(0, 2);
         return Number(newNumber);
     }
 
     function dataURLtoBlob(dataurl) {
-        var arr = dataurl.split(','),
+        var arr = dataurl.split(","),
             mime = arr[0].match(/:(.*?);/)[1],
             bstr = atob(arr[1]),
             n = bstr.length,
@@ -275,9 +275,9 @@
 
     onMount(async () => {
         const params = new URLSearchParams(location.search);
-        const projName = params.get('name');
-        const remixId = params.get('remix');
-        const importLocation = params.get('external');
+        const projName = params.get("name");
+        const remixId = params.get("remix");
+        const importLocation = params.get("external");
         if (projName) {
             projectName = projName;
         }
@@ -290,8 +290,8 @@
             });
         }
 
-        username = localStorage.getItem('username');
-        const token = localStorage.getItem('token');
+        username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
         if (!token || !username) {
             loggedIn = false;
         }
@@ -315,7 +315,7 @@
                 // exit if not found
                 loadingExternal = false;
                 console.warn(
-                    'External import stopped; parent window not found'
+                    "External import stopped; parent window not found"
                 );
                 return;
             }
@@ -326,14 +326,14 @@
                         {
                             p4: data,
                         },
-                        '*' // now really you should never do this but im lazy and this shit is refusing to work
+                        "*" // now really you should never do this but im lazy and this shit is refusing to work
                     );
                 } catch (e) {
-                    console.warn('Cannot post message', e);
+                    console.warn("Cannot post message", e);
                 }
             }
             // when WE get a post from PM
-            window.addEventListener('message', (e) => {
+            window.addEventListener("message", (e) => {
                 if (e.origin !== importLocation) {
                     // disable if running locally
                     return;
@@ -344,37 +344,37 @@
                 }
 
                 // userinfo: token, remixid
-                if (data.type === 'userinfo') {
+                if (data.type === "userinfo") {
                 }
                 // image: uri of thumbnail image
-                if (data.type === 'image') {
+                if (data.type === "image") {
                     projectImageURL = data.uri;
                     projectImage = dataURLtoBlob(data.uri);
                     updateSize();
                 }
                 // project: uri of project data
-                if (data.type === 'project') {
+                if (data.type === "project") {
                     projectData = dataURLtoBlob(data.uri);
                     updateSize();
                 }
 
                 // we done here
-                if (data.type === 'finished') {
+                if (data.type === "finished") {
                     loadingExternal = false;
                 }
                 // something bad happenedd!!!!!!!!!!!
-                if (data.type === 'error') {
+                if (data.type === "error") {
                     loadingExternal = false;
-                    alert('Failed to import the full project; ' + data.error);
+                    alert("Failed to import the full project; " + data.error);
                 }
             });
-            post({ type: 'validate' });
+            post({ type: "validate" });
         }
     });
 
     function filePicked(file) {
         return new Promise((resolve, reject) => {
-            if (!file) return reject('NoFile');
+            if (!file) return reject("NoFile");
             const fileReader = new FileReader();
             fileReader.onload = (e) => {
                 resolve(e.target.result);
@@ -396,11 +396,11 @@
         if (!file) return;
         projectData = file;
         projectInputName.innerText = TranslationHandler.text(
-            'uploading.project.ownfile.picked',
+            "uploading.project.ownfile.picked",
             currentLang
         )
-            .replace('$2', floatTo2Decimals(file.size / 1250000))
-            .replace('$1', file.name);
+            .replace("$2", floatTo2Decimals(file.size / 1250000))
+            .replace("$1", file.name);
         updateSize();
     }
 
@@ -410,7 +410,7 @@
         isBusyUploading = true;
 
         if (!projectImage) {
-            projectImage = await fetch('/empty-project.png').then((res) =>
+            projectImage = await fetch("/empty-project.png").then((res) =>
                 res.blob()
             );
         }
@@ -425,49 +425,49 @@
         })
             .then((projectId) => open(`${PUBLIC_STUDIO_URL}/#${projectId}`))
             .catch((err) => {
-                let message = '';
+                let message = "";
                 switch (err) {
-                    case 'Uploaded in the last 8 minutes':
+                    case "Uploaded in the last 8 minutes":
                         message = TranslationHandler.textSafe(
-                            'uploading.error.toomanyrequests',
+                            "uploading.error.toomanyrequests",
                             currentLang,
-                            'You can only upload projects every 8 minutes.'
+                            "You can only upload projects every 8 minutes."
                         );
                         break;
-                    case 'Uploading is disabled':
+                    case "Uploading is disabled":
                         message = TranslationHandler.textSafe(
-                            'uploading.error.publishdisabled',
+                            "uploading.error.publishdisabled",
                             currentLang,
-                            'We are undergoing maintenance, so you are not able to upload projects at this time.'
+                            "We are undergoing maintenance, so you are not able to upload projects at this time."
                         );
                         break;
-                    case 'Missing json file, thumbnail, or assets':
+                    case "Missing json file, thumbnail, or assets":
                         message = TranslationHandler.textSafe(
-                            'uploading.error.formaterror',
+                            "uploading.error.formaterror",
                             currentLang,
-                            'Some values are not right. Check that all required fields are filled.'
+                            "Some values are not right. Check that all required fields are filled."
                         );
                         break;
-                    case 'IllegalWordsUsed':
+                    case "IllegalWordsUsed":
                         message = TranslationHandler.textSafe(
-                            'uploading.error.illegalwordsused',
+                            "uploading.error.illegalwordsused",
                             currentLang,
                             "Words or phrases were used that are not allowed in PenguinMod. Please check through your project's details for any inappropriate words or phrases."
                         );
                         break;
                     default:
                         message = TranslationHandler.textSafe(
-                            'uploading.error.unknown',
+                            "uploading.error.unknown",
                             currentLang,
-                            'Unknown error. The file may be too large or something unexpected happened. Full error: $1'
-                        ).replace('$1', err);
+                            "Unknown error. The file may be too large or something unexpected happened. Full error: $1"
+                        ).replace("$1", err);
                         break;
                 }
-                if (String(err).startsWith('Extension not allowed:')) {
+                if (String(err).startsWith("Extension not allowed:")) {
                     message = TranslationHandler.textSafe(
-                        'uploading.error.cannotusethisextensionforthisrank',
+                        "uploading.error.cannotusethisextensionforthisrank",
                         currentLang,
-                        'You cannot upload this project yet as it contains custom extensions or certain blocked extensions. Upload a few other projects and wait a few days to rank up before you can post this project.'
+                        "You cannot upload this project yet as it contains custom extensions or certain blocked extensions. Upload a few other projects and wait a few days to rank up before you can post this project."
                     );
                 }
                 alert(message);
@@ -490,7 +490,7 @@
     let otherProjects = [];
     let canRemix = [];
     $: filteredProjects = (
-        (projectRemixSearchQuery ?? '') !== ''
+        (projectRemixSearchQuery ?? "") !== ""
             ? canRemix.filter((project) =>
                   [
                       project.title,
@@ -498,7 +498,7 @@
                       project.notes,
                       project.id,
                   ]
-                      .join('')
+                      .join("")
                       .toLowerCase()
                       .includes(projectRemixSearchQuery.toLowerCase())
               )
@@ -515,8 +515,8 @@
         //       gonna do that later
         //       (aka in like 3 months when i finally look at this code again)
 
-        if (pageType === 'remix') {
-            if ((projectRemixSearchQuery ?? '').trim() !== '') {
+        if (pageType === "remix") {
+            if ((projectRemixSearchQuery ?? "").trim() !== "") {
                 projectPageSearch += 1;
 
                 ProjectApi.searchProjects(
@@ -556,7 +556,7 @@
         projectPage = 0;
         projectPageSearch = 0;
         lastProjectPage = false;
-        projectPageType = 'remix';
+        projectPageType = "remix";
         remixPageOpen = true;
 
         ProjectApi.getProjects(projectPage).then((projects) => {
@@ -567,7 +567,7 @@
         otherProjects = [];
         projectPage = 0;
         lastProjectPage = false;
-        projectPageType = 'update';
+        projectPageType = "update";
         updatePageOpen = true;
         ProjectClient.getMyProjects().then((projects) => {
             otherProjects = projects;
@@ -617,7 +617,7 @@
     onMount(() => {
         _window = window;
         // when WE get a post from edit site
-        window.addEventListener('message', (e) => {
+        window.addEventListener("message", (e) => {
             if (!e.origin.startsWith(location.origin)) {
                 return;
             }
@@ -627,11 +627,11 @@
             }
 
             // send data
-            if (data.type === 'validate') {
+            if (data.type === "validate") {
                 e.source.postMessage(
                     {
                         p4: {
-                            type: 'image',
+                            type: "image",
                             uri: projectImage,
                         },
                     },
@@ -640,7 +640,7 @@
                 e.source.postMessage(
                     {
                         p4: {
-                            type: 'project',
+                            type: "project",
                             uri: projectData,
                             name: projectName,
                         },
@@ -650,7 +650,7 @@
                 e.source.postMessage(
                     {
                         p4: {
-                            type: 'metadata',
+                            type: "metadata",
                             meta: {
                                 title: components.projectName.value,
                                 instructions:
@@ -664,7 +664,7 @@
                 e.source.postMessage(
                     {
                         p4: {
-                            type: 'finished',
+                            type: "finished",
                         },
                     },
                     e.origin
@@ -689,28 +689,28 @@
     // EMOJIS eae
 
     const emojiPickerRandomEmojis = [
-        'angel',
-        'angry',
-        'annoyed',
-        'bigsad',
-        'disappointed',
-        'happy',
-        'idk',
-        'meh',
-        'salute',
-        'shocked',
-        'sobbing',
-        'worried',
-        'investigate',
-        'grimacing',
-        'confusedthinking',
-        'cool',
-        'tada',
+        "angel",
+        "angry",
+        "annoyed",
+        "bigsad",
+        "disappointed",
+        "happy",
+        "idk",
+        "meh",
+        "salute",
+        "shocked",
+        "sobbing",
+        "worried",
+        "investigate",
+        "grimacing",
+        "confusedthinking",
+        "cool",
+        "tada",
     ];
-    let emojiPickerRandomEmoji = '';
-    let emojiSearchQuery = '';
+    let emojiPickerRandomEmoji = "";
+    let emojiSearchQuery = "";
     let emojiSearchBar;
-    let projectRemixSearchQuery = '';
+    let projectRemixSearchQuery = "";
     let lastSelectedFormArea;
     const pickRandomEmojiPickerDisplay = () => {
         emojiPickerRandomEmoji =
@@ -722,18 +722,18 @@
 
     let emojiPickerListUpdate = 0;
     const allowEmojiDrop = (ev) => {
-        const data = ev.dataTransfer.getData('emoji');
-        if (data && typeof data === 'string') {
+        const data = ev.dataTransfer.getData("emoji");
+        if (data && typeof data === "string") {
             ev.preventDefault();
         }
     };
     const useEmojiDrag = (ev, name) => {
-        ev.dataTransfer.setData('emoji', name);
+        ev.dataTransfer.setData("emoji", name);
     };
     const handleEmojiDrop = (ev) => {
-        const data = ev.dataTransfer.getData('emoji');
-        if (data && typeof data === 'string') {
-            ev.dataTransfer.setData('emoji', '');
+        const data = ev.dataTransfer.getData("emoji");
+        if (data && typeof data === "string") {
+            ev.dataTransfer.setData("emoji", "");
             ev.preventDefault();
         } else {
             return;
@@ -756,13 +756,13 @@
 
     let emojiPickerOpened = false;
     onMount(() => {
-        components.projectName.addEventListener('click', (e) => {
+        components.projectName.addEventListener("click", (e) => {
             lastSelectedFormArea = e.target;
         });
-        components.projectInstructions.addEventListener('click', (e) => {
+        components.projectInstructions.addEventListener("click", (e) => {
             lastSelectedFormArea = e.target;
         });
-        components.projectNotes.addEventListener('click', (e) => {
+        components.projectNotes.addEventListener("click", (e) => {
             lastSelectedFormArea = e.target;
         });
         EmojiList.fetch().finally(() => {
@@ -800,7 +800,7 @@
             <LoadingSpinner />
             <p style="text-align: center;">
                 {@html TranslationHandler.text(
-                    'project.importing',
+                    "project.importing",
                     currentLang
                 )}
             </p>
@@ -830,7 +830,7 @@
                             showdate={true}
                             on:click={window.open(
                                 generateExportEditPageForId(project.id),
-                                '_blank'
+                                "_blank"
                             )}
                         />
                     {/each}
@@ -876,9 +876,9 @@
                     <input
                         type="text"
                         placeholder={TranslationHandler.textSafe(
-                            'navigation.search',
+                            "navigation.search",
                             currentLang,
-                            'Search for projects...'
+                            "Search for projects..."
                         )}
                         on:paste={() => {
                             projectRemixSearchInputFnc();
@@ -1068,7 +1068,7 @@
                             {#each EmojiList.emojis as emoji}
                                 {#if !emojiSearchQuery || String(emoji).includes(emojiSearchQuery
                                             .toLowerCase()
-                                            .replace(/[^a-z]+/gim, ''))}
+                                            .replace(/[^a-z]+/gim, ""))}
                                     <button
                                         class="emoji-picker-emoji"
                                         on:click={() =>
@@ -1101,7 +1101,7 @@
                     <input
                         type="text"
                         placeholder={TranslationHandler.text(
-                            'uploading.project.title.default',
+                            "uploading.project.title.default",
                             currentLang
                         )}
                         bind:this={components.projectName}
@@ -1119,7 +1119,7 @@
                     </p>
                     <textarea
                         placeholder={TranslationHandler.text(
-                            'uploading.project.instructions.default',
+                            "uploading.project.instructions.default",
                             currentLang
                         )}
                         bind:this={components.projectInstructions}
@@ -1136,7 +1136,7 @@
                     </p>
                     <textarea
                         placeholder={TranslationHandler.text(
-                            'uploading.project.notes.default',
+                            "uploading.project.notes.default",
                             currentLang
                         )}
                         bind:this={components.projectNotes}
@@ -1179,7 +1179,7 @@
                         <a
                             class="guidelines-link"
                             target="_blank"
-                            href={'/guidelines/uploading'}
+                            href={"/guidelines/uploading"}
                         >
                             <LocalizedText
                                 text="Project Uploading & Updating Guidelines"
@@ -1193,7 +1193,7 @@
                     <img
                         src={projectImage
                             ? projectImageURL
-                            : '/empty-project.png'}
+                            : "/empty-project.png"}
                         style="border-width:1px;border-style:solid;border-color:rgba(0, 0, 0, 0.1);width:100%;"
                         alt="Project Thumbnail"
                     />
@@ -1222,10 +1222,10 @@
                             <p>
                                 {String(
                                     TranslationHandler.text(
-                                        'uploading.remix.selected',
+                                        "uploading.remix.selected",
                                         currentLang
                                     )
-                                ).replace('$1', remixingProjectName)}
+                                ).replace("$1", remixingProjectName)}
                             </p>
                         {/if}
                         <div style="display:flex;flex-direction:row">
@@ -1332,7 +1332,7 @@
 
 <style>
     * {
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
 
     textarea {
@@ -1348,19 +1348,19 @@
         border-color: rgba(0, 162, 255, 0.35);
         outline: none;
     }
-    input[type='text'] {
+    input[type="text"] {
         width: 90%;
         border-radius: 6px;
         border-color: rgba(0, 162, 255, 0.15);
         border-width: 2px;
         border-style: dashed;
     }
-    input[type='text']:focus {
+    input[type="text"]:focus {
         border-color: rgba(0, 162, 255, 0.35);
         outline: none;
     }
 
-    :global(body.dark-mode) input[type='text'] {
+    :global(body.dark-mode) input[type="text"] {
         background-color: transparent;
         color: white;
     }
@@ -1429,7 +1429,7 @@
         justify-content: center;
         cursor: pointer;
     }
-    :global(html[dir='rtl']) .emoji-picker-button {
+    :global(html[dir="rtl"]) .emoji-picker-button {
         left: initial;
         right: -72px;
     }
@@ -1462,7 +1462,7 @@
         border: 2px solid rgba(0, 0, 0, 0.1);
         z-index: 50;
     }
-    :global(html[dir='rtl']) .emoji-picker-list {
+    :global(html[dir="rtl"]) .emoji-picker-list {
         right: initial;
         left: 8px;
     }
@@ -1470,7 +1470,7 @@
         border-color: rgba(255, 255, 255, 0.35);
         background: #111;
     }
-    .emoji-picker-list[data-opened='true'] {
+    .emoji-picker-list[data-opened="true"] {
         display: initial;
     }
     .emoji-picker-search-container {
@@ -1542,7 +1542,7 @@
         color: white;
         cursor: pointer;
     }
-    :global(html[dir='rtl']) .recommended-tag {
+    :global(html[dir="rtl"]) .recommended-tag {
         margin-right: initial;
         margin-left: 4px;
     }

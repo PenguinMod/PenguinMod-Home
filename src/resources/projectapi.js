@@ -2,15 +2,15 @@ import {
     PUBLIC_API_URL,
     PUBLIC_STUDIO_URL,
     PUBLIC_MAX_UPLOAD_SIZE,
-} from '$env/static/public';
+} from "$env/static/public";
 
 let OriginApiUrl = PUBLIC_API_URL;
 
-import JSZip from 'jszip';
-import protobuf from 'protobufjs';
-import jsonDescriptor from './protobuf-bundle.json';
+import JSZip from "jszip";
+import protobuf from "protobufjs";
+import jsonDescriptor from "./protobuf-bundle.json";
 let protobufRoot = protobuf.Root.fromJSON(jsonDescriptor);
-let project = protobufRoot.lookupType('project.Project');
+let project = protobufRoot.lookupType("project.Project");
 function MB(num) {
     const Kb = (num >> 10) & 0b1111111111;
     const Mb = (num >> 20) & 0b1111111111;
@@ -106,10 +106,10 @@ class ProjectApi {
     static getProfile(user, includeBio) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/users/profile?target=${user}${
-                includeBio ? '&bio=true' : ''
+                includeBio ? "&bio=true" : ""
             }&username=${localStorage.getItem(
-                'username'
-            )}&token=${localStorage.getItem('token')}`;
+                "username"
+            )}&token=${localStorage.getItem("token")}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -130,12 +130,12 @@ class ProjectApi {
             return ProjectApi.CachedDonators[user];
         }
         const badges = await ProjectApi.getUserBadges(user);
-        ProjectApi.CachedDonators[user] = badges.includes('donator');
-        return badges.includes('donator');
+        ProjectApi.CachedDonators[user] = badges.includes("donator");
+        return badges.includes("donator");
     }
     static getProjects(page, oldFirst) {
         return new Promise((resolve, reject) => {
-            const reverseParam = oldFirst ? '&reverse=true' : '';
+            const reverseParam = oldFirst ? "&reverse=true" : "";
             const url = `${OriginApiUrl}/api/v1/projects/getprojects?page=${page}${reverseParam}`;
             fetch(url)
                 .then((res) => {
@@ -182,7 +182,7 @@ class ProjectApi {
     }
 
     getRemovedProjects() {
-        throw new Error('Unapproved Projects can only be viewed in a client');
+        throw new Error("Unapproved Projects can only be viewed in a client");
     }
 
     /**
@@ -214,8 +214,8 @@ class ProjectApi {
      * @returns Array of projects
      */
     static getMyProjects(page) {
-        const username = localStorage.getItem('username');
-        const token = localStorage.getItem('token');
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
 
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/projects/getmyprojects?page=${page}&username=${username}&token=${token}`;
@@ -325,7 +325,7 @@ class ProjectApi {
                     const json = this.prototype.protobufToJson(blob);
 
                     let zip = new JSZip();
-                    zip.file('project.json', JSON.stringify(json));
+                    zip.file("project.json", JSON.stringify(json));
 
                     for (const asset of res.assets) {
                         zip.file(
@@ -335,7 +335,7 @@ class ProjectApi {
                     }
 
                     const arrayBuffer = zip.generateAsync({
-                        type: 'arraybuffer',
+                        type: "arraybuffer",
                     });
 
                     return arrayBuffer;
@@ -368,7 +368,7 @@ class ProjectApi {
                             const json = this.protobufToJson(blob);
 
                             let zip = new JSZip();
-                            zip.file('project.json', JSON.stringify(json));
+                            zip.file("project.json", JSON.stringify(json));
 
                             for (const asset of res.assets) {
                                 zip.file(
@@ -378,7 +378,7 @@ class ProjectApi {
                             }
 
                             const arrayBuffer = zip.generateAsync({
-                                type: 'arraybuffer',
+                                type: "arraybuffer",
                             });
 
                             return arrayBuffer;
@@ -569,9 +569,9 @@ class ProjectApi {
             };
             const url = `${OriginApiUrl}/api/v1/users/follow`;
             fetch(url, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -595,15 +595,15 @@ class ProjectApi {
                 token: this.token,
                 messageID: id,
             };
-            if (typeof id !== 'string') {
+            if (typeof id !== "string") {
                 reject();
                 return;
             }
             const url = `${OriginApiUrl}/api/v1/users/markMessageAsRead`;
             fetch(url, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -628,9 +628,9 @@ class ProjectApi {
             };
             const url = `${OriginApiUrl}/api/v1/users/markAllMessagesAsRead`;
             fetch(url, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -657,9 +657,9 @@ class ProjectApi {
             };
             const url = `${OriginApiUrl}/api/v1/projects/dispute`;
             fetch(url, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -677,8 +677,8 @@ class ProjectApi {
     }
 
     getReports(type, userOrId, page = 0) {
-        if (type !== 'project' && type !== 'user')
-            throw new Error('Invalid reporting type');
+        if (type !== "project" && type !== "user")
+            throw new Error("Invalid reporting type");
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/reports/getReportsByTarget?target=${userOrId}&username=${this.username}&token=${this.token}&page=${page}`;
             fetch(url)
@@ -697,8 +697,8 @@ class ProjectApi {
         });
     }
     getTypeWithReports(type, page) {
-        if (type !== 'project' && type !== 'user')
-            throw new Error('Invalid reporting type');
+        if (type !== "project" && type !== "user")
+            throw new Error("Invalid reporting type");
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/reports/getReports?username=${this.username}&token=${this.token}&type=${type}&page=${page}`;
             fetch(url)
@@ -725,9 +725,9 @@ class ProjectApi {
             };
             const url = `${OriginApiUrl}/api/v1/reports/deleteReport`;
             fetch(url, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -751,9 +751,9 @@ class ProjectApi {
             };
             const url = `${OriginApiUrl}/api/v1/projects/restore`;
             fetch(url, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -776,9 +776,9 @@ class ProjectApi {
             };
             const url = `${OriginApiUrl}/api/v1/projects/hardDeleteProject`;
             fetch(url, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -823,9 +823,9 @@ class ProjectApi {
                 json: newData,
             };
             fetch(url, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     res.json()
@@ -854,9 +854,9 @@ class ProjectApi {
                 target,
             };
             fetch(`${OriginApiUrl}/api/v1/users/setBadges`, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     res.json()
@@ -887,9 +887,9 @@ class ProjectApi {
                 time,
             };
             fetch(`${OriginApiUrl}/api/v1/users/ban`, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     res.json()
@@ -918,13 +918,13 @@ class ProjectApi {
             type,
         };
 
-        if (type !== 'project' && type !== 'user')
-            throw new Error('Invalid reporting type');
+        if (type !== "project" && type !== "user")
+            throw new Error("Invalid reporting type");
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/reports/sendReport`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(body),
             })
@@ -956,9 +956,9 @@ class ProjectApi {
                 approver,
             };
             fetch(`${OriginApiUrl}/api/v1/users/assignPossition`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(body),
             })
@@ -988,9 +988,9 @@ class ProjectApi {
                 toggle: enabled,
             });
             fetch(`${OriginApiUrl}/api/v1/projects/toggleviewing`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body,
             })
@@ -1020,9 +1020,9 @@ class ProjectApi {
                 toggle: enabled,
             });
             fetch(`${OriginApiUrl}/api/v1/projects/toggleuploading`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body,
             })
@@ -1055,9 +1055,9 @@ class ProjectApi {
 
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/hardDeleteProject`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body,
             })
@@ -1089,9 +1089,9 @@ class ProjectApi {
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/softreject`, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     res.json()
@@ -1121,9 +1121,9 @@ class ProjectApi {
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/hardreject`, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     res.json()
@@ -1151,9 +1151,9 @@ class ProjectApi {
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/users/requestrankup`, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     res.json()
@@ -1183,12 +1183,12 @@ class ProjectApi {
         return new Promise((resolve, reject) => {
             fetch(
                 `${OriginApiUrl}/api/v1/users/${
-                    adminForced ? 'setBioAdmin' : 'setBio'
+                    adminForced ? "setBioAdmin" : "setBio"
                 }`,
                 {
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data),
-                    method: 'POST',
+                    method: "POST",
                 }
             )
                 .then((res) => {
@@ -1218,9 +1218,9 @@ class ProjectApi {
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/users/setmyfeaturedproject`, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     res.json()
@@ -1249,9 +1249,9 @@ class ProjectApi {
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/users/filloutSafetyDetails`, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     res.json()
@@ -1280,9 +1280,9 @@ class ProjectApi {
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/modresponse`, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     res.json()
@@ -1312,9 +1312,9 @@ class ProjectApi {
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/modmessage`, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     res.json()
@@ -1342,9 +1342,9 @@ class ProjectApi {
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/deletemodmessage`, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     res.json()
@@ -1376,9 +1376,9 @@ class ProjectApi {
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/users/addMessage`, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(gdata),
-                method: 'POST',
+                method: "POST",
             })
                 .then((res) => {
                     res.json()
@@ -1411,7 +1411,7 @@ class ProjectApi {
                 const request = new XMLHttpRequest();
                 const formData = new FormData();
 
-                request.open('POST', API_ENDPOINT, true);
+                request.open("POST", API_ENDPOINT, true);
                 request.onload = () => {
                     const response = JSON.parse(request.response);
 
@@ -1423,15 +1423,15 @@ class ProjectApi {
                     resolve(response.id);
                 };
 
-                formData.append('username', username);
-                formData.append('token', token);
-                formData.append('title', title);
-                formData.append('instructions', instructions);
-                formData.append('notes', notes);
-                formData.append('projectID', id);
+                formData.append("username", username);
+                formData.append("token", token);
+                formData.append("title", title);
+                formData.append("instructions", instructions);
+                formData.append("notes", notes);
+                formData.append("projectID", id);
 
                 if (data.image) {
-                    formData.append('thumbnail', data.image);
+                    formData.append("thumbnail", data.image);
                 }
 
                 request.send(formData);
@@ -1440,7 +1440,7 @@ class ProjectApi {
 
             JSZip.loadAsync(data.project).then(async (zip) => {
                 const projectJSON = JSON.parse(
-                    await zip.file('project.json').async('text')
+                    await zip.file("project.json").async("text")
                 );
 
                 const protobuf = this.jsonToProtobuf(projectJSON);
@@ -1448,7 +1448,7 @@ class ProjectApi {
                 const assets = [];
                 zip.forEach((relativePath, file) => {
                     if (file.dir) return;
-                    if (relativePath === 'project.json') return;
+                    if (relativePath === "project.json") return;
                     assets.push(file);
                 });
 
@@ -1456,7 +1456,7 @@ class ProjectApi {
                 const request = new XMLHttpRequest();
                 const formData = new FormData();
 
-                request.open('POST', API_ENDPOINT, true);
+                request.open("POST", API_ENDPOINT, true);
                 request.onload = () => {
                     const response = JSON.parse(request.response);
 
@@ -1468,24 +1468,24 @@ class ProjectApi {
                     resolve(response.id);
                 };
 
-                formData.append('username', username);
-                formData.append('token', token);
-                formData.append('title', title);
-                formData.append('instructions', instructions);
-                formData.append('notes', notes);
-                formData.append('projectID', id);
+                formData.append("username", username);
+                formData.append("token", token);
+                formData.append("title", title);
+                formData.append("instructions", instructions);
+                formData.append("notes", notes);
+                formData.append("projectID", id);
 
                 for (let i = 0; i < assets.length; i++) {
                     // convert to blob
                     formData.append(
-                        'assets',
-                        await assets[i].async('blob'),
+                        "assets",
+                        await assets[i].async("blob"),
                         assets[i].name
                     );
                 }
 
-                formData.append('jsonFile', new Blob([protobuf]));
-                formData.append('thumbnail', data.image);
+                formData.append("jsonFile", new Blob([protobuf]));
+                formData.append("thumbnail", data.image);
 
                 request.send(formData);
             });
@@ -1494,7 +1494,7 @@ class ProjectApi {
 
     jsonToProtobuf(json) {
         function castToString(value) {
-            if (typeof value !== 'object') {
+            if (typeof value !== "object") {
                 return String(value);
             } else {
                 return JSON.stringify(value);
@@ -1507,9 +1507,9 @@ class ProjectApi {
             extensionData: {},
             extensions: json.extensions,
             extensionURLs: {},
-            metaSemver: '',
-            metaVm: '',
-            metaAgent: '',
+            metaSemver: "",
+            metaVm: "",
+            metaAgent: "",
             fonts: json.customFonts,
         };
 
@@ -1619,7 +1619,7 @@ class ProjectApi {
                         argumentdefaults:
                             blocks[block].mutation.argumentdefaults,
                         warp:
-                            String(blocks[block].mutation.warp) === 'true'
+                            String(blocks[block].mutation.warp) === "true"
                                 ? true
                                 : false,
                         _returns: blocks[block].mutation.returns,
@@ -1704,7 +1704,7 @@ class ProjectApi {
                 mode: json.monitors[monitor].mode,
                 opcode: json.monitors[monitor].opcode,
                 params: json.monitors[monitor].params,
-                spriteName: json.monitors[monitor].spriteName || '',
+                spriteName: json.monitors[monitor].spriteName || "",
                 value: String(json.monitors[monitor].value),
                 width: json.monitors[monitor].width,
                 height: json.monitors[monitor].height,
@@ -1722,7 +1722,7 @@ class ProjectApi {
             newjson.extensionData[extensionData] = {
                 data: castToString(json.extensionData[extensionData]),
                 // true if the extension data is not a string
-                parse: typeof json.extensionData[extensionData] !== 'string',
+                parse: typeof json.extensionData[extensionData] !== "string",
             };
         }
 
@@ -1743,7 +1743,7 @@ class ProjectApi {
     resolveProjectSizes(file, imageSize = 0) {
         return JSZip.loadAsync(file).then(async (zip) => {
             const projectJSON = JSON.parse(
-                await zip.file('project.json').async('text')
+                await zip.file("project.json").async("text")
             );
             const projectSize = this.jsonToProtobuf(projectJSON).length;
             const targets = projectJSON.targets;
@@ -1753,10 +1753,10 @@ class ProjectApi {
                 await Promise.all(
                     zip
                         .filter(
-                            (name, file) => !file.dir && name !== 'project.json'
+                            (name, file) => !file.dir && name !== "project.json"
                         )
                         .map(async (file) => [
-                            await file.async('blob'),
+                            await file.async("blob"),
                             file.name,
                         ])
                 )
@@ -1821,22 +1821,22 @@ class ProjectApi {
     handleProjectFile(file, imageSize = 0) {
         return JSZip.loadAsync(file).then(async (zip) => {
             const projectJSON = JSON.parse(
-                await zip.file('project.json').async('text')
+                await zip.file("project.json").async("text")
             );
             const protobuf = new Blob([this.jsonToProtobuf(projectJSON)]);
             const assets = await Promise.all(
                 zip
                     .filter(
-                        (name, file) => !file.dir && name !== 'project.json'
+                        (name, file) => !file.dir && name !== "project.json"
                     )
-                    .map(async (file) => [await file.async('blob'), file.name])
+                    .map(async (file) => [await file.async("blob"), file.name])
             );
             const size = assets.reduce(
                 (c, v) => c + v[0].size,
                 protobuf.size + imageSize
             );
             if (size > Number(PUBLIC_MAX_UPLOAD_SIZE) * 1024 * 1024)
-                throw 'ProjectToLarge';
+                throw "ProjectToLarge";
 
             return { protobuf, assets };
         });
@@ -1856,7 +1856,7 @@ class ProjectApi {
             meta: {
                 semver: json.metaSemver,
                 vm: json.metaVm,
-                agent: json.metaAgent || '',
+                agent: json.metaAgent || "",
             },
             customFonts: json.fonts,
         };
@@ -1988,7 +1988,7 @@ class ProjectApi {
                 mode: json.monitors[monitor].mode,
                 opcode: json.monitors[monitor].opcode,
                 params: {},
-                spriteName: json.monitors[monitor].spriteName || '',
+                spriteName: json.monitors[monitor].spriteName || "",
                 value: json.monitors[monitor].value,
                 width: json.monitors[monitor].width,
                 height: json.monitors[monitor].height,
@@ -2056,7 +2056,7 @@ class ProjectApi {
             const request = new XMLHttpRequest();
             const formData = new FormData();
 
-            request.open('POST', API_ENDPOINT, true);
+            request.open("POST", API_ENDPOINT, true);
             request.onload = () => {
                 const response = JSON.parse(request.response);
 
@@ -2068,15 +2068,15 @@ class ProjectApi {
                 resolve(response.id);
             };
 
-            formData.append('username', username);
-            formData.append('token', token);
-            formData.append('title', title);
-            formData.append('instructions', instructions);
-            formData.append('notes', notes);
-            formData.append('remix', remix);
-            assets.forEach((ent) => formData.append('assets', ...ent));
-            formData.append('jsonFile', protobuf);
-            formData.append('thumbnail', data.image);
+            formData.append("username", username);
+            formData.append("token", token);
+            formData.append("title", title);
+            formData.append("instructions", instructions);
+            formData.append("notes", notes);
+            formData.append("remix", remix);
+            assets.forEach((ent) => formData.append("assets", ...ent));
+            formData.append("jsonFile", protobuf);
+            formData.append("thumbnail", data.image);
 
             request.send(formData);
         });
@@ -2113,9 +2113,9 @@ class ProjectApi {
         });
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/manualfeature`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body,
             })
@@ -2141,28 +2141,28 @@ class ProjectApi {
     toggleVoteProject(id, type, toggle) {
         type = String(type).toLowerCase().trim();
         switch (type) {
-            case 'feature':
-            case 'features':
-            case 'featured':
-            case 'vote':
-            case 'voted':
-                type = 'vote';
+            case "feature":
+            case "features":
+            case "featured":
+            case "vote":
+            case "voted":
+                type = "vote";
                 break;
-            case 'love':
-            case 'loved':
-            case 'like':
-            case 'liked':
-            case 'likes':
-                type = 'love';
+            case "love":
+            case "loved":
+            case "like":
+            case "liked":
+            case "likes":
+                type = "love";
                 break;
             default:
-                type = 'vote';
+                type = "vote";
         }
         const url = `${OriginApiUrl}/api/v1/projects/interactions/${type}Toggle`;
         return new Promise((resolve, reject) => {
             fetch(url, {
-                headers: { 'Content-Type': 'application/json' },
-                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                method: "POST",
                 body: JSON.stringify({
                     projectId: id,
                     username: this.username,
@@ -2222,9 +2222,9 @@ class ProjectApi {
         });
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/misc/setLastPolicyUpdate`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body,
             })
@@ -2273,24 +2273,24 @@ class ProjectApi {
     markPolicyAsRead(policy) {
         let url;
         switch (policy) {
-            case 'TOS':
+            case "TOS":
                 url = `${OriginApiUrl}/api/v1/misc/markTOSAsRead`;
                 break;
-            case 'privacyPolicy':
+            case "privacyPolicy":
                 url = `${OriginApiUrl}/api/v1/misc/markPrivacyPolicyAsRead`;
                 break;
-            case 'guidelines':
+            case "guidelines":
                 url = `${OriginApiUrl}/api/v1/misc/markGuidelinesAsRead`;
                 break;
             default:
-                throw new Error('Invalid policy type');
+                throw new Error("Invalid policy type");
         }
 
         return new Promise((resolve, reject) => {
             fetch(url, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     username: this.username,
@@ -2328,9 +2328,9 @@ class ProjectApi {
 
         return new Promise((resolve, reject) => {
             fetch(url, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body,
             })
@@ -2365,9 +2365,9 @@ class ProjectApi {
 
         return new Promise((resolve, reject) => {
             fetch(url, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body,
             })
@@ -2402,9 +2402,9 @@ class ProjectApi {
 
         return new Promise((resolve, reject) => {
             fetch(url, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body,
             })
@@ -2491,9 +2491,9 @@ class ProjectApi {
 
         return new Promise((resolve, reject) => {
             fetch(url, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body,
             })
@@ -2527,9 +2527,9 @@ class ProjectApi {
 
         return new Promise((resolve, reject) => {
             fetch(url, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body,
             })
@@ -2563,9 +2563,9 @@ class ProjectApi {
 
         return new Promise((resolve, reject) => {
             fetch(url, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body,
             })
@@ -2593,7 +2593,7 @@ class ProjectApi {
             const request = new XMLHttpRequest();
             const formData = new FormData();
 
-            request.open('POST', API_ENDPOINT, true);
+            request.open("POST", API_ENDPOINT, true);
             request.onload = () => {
                 const response = JSON.parse(request.response);
 
@@ -2605,7 +2605,7 @@ class ProjectApi {
                 resolve();
             };
 
-            formData.append('picture', new Blob([file]));
+            formData.append("picture", new Blob([file]));
 
             request.send(formData);
         });
@@ -2616,7 +2616,7 @@ class ProjectApi {
             const request = new XMLHttpRequest();
             const formData = new FormData();
 
-            request.open('POST', API_ENDPOINT, true);
+            request.open("POST", API_ENDPOINT, true);
             request.onload = () => {
                 const response = JSON.parse(request.response);
 
@@ -2628,10 +2628,10 @@ class ProjectApi {
                 resolve();
             };
 
-            formData.append('username', this.username);
-            formData.append('token', this.token);
-            formData.append('target', target);
-            formData.append('picture', new Blob([file]));
+            formData.append("username", this.username);
+            formData.append("token", this.token);
+            formData.append("target", target);
+            formData.append("picture", new Blob([file]));
 
             request.send(formData);
         });
@@ -2648,9 +2648,9 @@ class ProjectApi {
 
         return new Promise((resolve, reject) => {
             fetch(url, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body,
             })
@@ -2684,9 +2684,9 @@ class ProjectApi {
 
         return new Promise((resolve, reject) => {
             fetch(url, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body,
             })
