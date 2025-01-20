@@ -213,7 +213,7 @@
         username = localStorage.getItem("username");
         const token = localStorage.getItem("token");
         if (!token || !username) {
-            loggedIn = true;//Delete
+            loggedIn = false;
         }
         Authentication.usernameFromCode(username, token)
             .then(() => {
@@ -222,7 +222,7 @@
                 loggedIn = true;
             })
             .catch(() => {
-                loggedIn = true;//Delete
+                loggedIn = false;
             });
 
         if (importLocation) {
@@ -395,7 +395,7 @@
     }
 
     Authentication.onLogout(() => {
-        loggedIn = true;//Delete
+        loggedIn = false;
     });
     Authentication.onAuthentication((_username, privateCode) => {
         loggedIn = true;
