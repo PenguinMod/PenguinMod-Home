@@ -419,6 +419,11 @@
     async function incrementPageAndAddToMenu(pageType) {
         projectPage += 1;
 
+        // todo: not this thats for sure
+        //       just do one of them and then await it idk
+        //       gonna do that later
+        //       (aka in like 3 months when i finally look at this code again)
+
         if (pageType === "remix") {
             ProjectApi.getProjects(projectPage).then((projectss) => {
                 canRemix.push(...projectss);
@@ -731,7 +736,7 @@
             </div>
         </div>
     {/if}
-    
+
     {#if remixPageOpen}
         <div class="front-card-page">
             <div class="card-page">
