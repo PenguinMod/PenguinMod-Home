@@ -213,7 +213,7 @@
         username = localStorage.getItem("username");
         const token = localStorage.getItem("token");
         if (!token || !username) {
-            loggedIn = false;
+            loggedIn = true;//Delete
         }
         Authentication.usernameFromCode(username, token)
             .then(() => {
@@ -222,7 +222,7 @@
                 loggedIn = true;
             })
             .catch(() => {
-                loggedIn = false;
+                loggedIn = true;//Delete
             });
 
         if (importLocation) {
@@ -395,7 +395,7 @@
     }
 
     Authentication.onLogout(() => {
-        loggedIn = false;
+        loggedIn = true;//Delete
     });
     Authentication.onAuthentication((_username, privateCode) => {
         loggedIn = true;
@@ -488,13 +488,14 @@
 
     function projectRemixSearchInputFnc() {
         if (/^[0-9]+$/.test(projectRemixSearchQuery)) { // probably searching an id
+            if (canRemix.some(i => i.id === projectRemixSearchQuery)) return;
+
             ProjectApi.getProjectMeta(projectRemixSearchQuery.trim())
-            .then((meta) => {
-                console.log(meta);
-                canRemix.push(meta);
-                canRemix = canRemix;
-            })
-            .catch((err) => console.warn("that's not a project id"));
+                .then((meta) => {
+                    canRemix.push(meta);
+                    canRemix = canRemix;
+                })
+                .catch((_err) => console.warn("that's not a project id"));
         }
     }
 
@@ -755,6 +756,7 @@
                             "uploading.project.title.default",
                             currentLang
                         ) + ' | ID'}
+                        on:paste={() => {console.log('hi'); projectRemixSearchInputFnc()}}
                         bind:value={projectRemixSearchQuery}
                     >
                 <div class="card-projects">
@@ -773,7 +775,10 @@
                         <!-- todo: should this really look the way it does? -->
                         <Button
                             label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
-                            on:click={() => {incrementPageAndAddToMenu(projectPageType); projectRemixSearchInputFnc()}}
+                            on:click={() => {
+                                incrementPageAndAddToMenu(projectPageType);
+                                projectRemixSearchInputFnc();
+                            }}
                         />
                     {/if}
                 </div>
@@ -1287,11 +1292,11 @@
         width: 56px;
         height: 56px;
         transform: scale(1);
-        transition-duration: 0.5s;
+        transition-duration: 0.4s;
     }
     .emoji-picker-button:hover img {
-        transform: scale(1.5);
-        transition-duration: 0.5s;
+        transform: scale(1.3);
+        transition-duration: 0.4s;
     }
     .emoji-picker-button:active img {
         filter: brightness(0.7);
