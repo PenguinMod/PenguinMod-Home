@@ -15,7 +15,7 @@
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
-    import ProjectApi from "../../resources/projectApi.js";
+    import ProjectApi from "../../resources/projectapi.js";
 
     // Icons
     import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
