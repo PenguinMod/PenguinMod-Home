@@ -23,7 +23,7 @@
         //     });
         // });
         currentStatus = {
-            loading: true,
+            loading: false,
             type: "warn",
             text: "The servers are currently down. We are working hard to bring them back up. Please be patient.",
         };
