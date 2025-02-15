@@ -440,5 +440,21 @@
     "vr.enteralt": "Vào chế độ VR",
     "vr.mode": "Chế độ VR",
     "uploading.filter.vr": "Dự án này làm cho người dùng Thực tế ảo(VR)",
-    "uploading.filter.3d": "Dự án này chứa nội dung 3D"
+    "uploading.filter.3d": "Dự án này chứa nội dung 3D",
+    "email.generic.noreply": "Không được Chuyển tiếp, chia sẽ, hoặc phản hồi email này. Phản hồi của bạn sẽ không được phản hồi.",
+    "email.generic.subtext": "Xin chào {{NAME}}!",
+    "email.failed.packed": "Chúng tôi không thể gửi cho bạn email được vì đang quá tải. Đợi chút.",
+    "email.failed.ratelimit": "Bạn đã yêu cầu gửi 1 email rồi. Đợi 1 chút trước khi gửi lại.",
+    "email.failed.ratelimit.alt": "Bạn đã yêu cầu gừi 1 email rồi. Hãy đợi thêm {{TIME}} Trước khi có thể gửi thêm 1 cái nữa.",
+    "email.forgotpassword.title": "Đặt lại mật khẩu cho PenguinMod",
+    "email.forgotpassword.message1": "Bạn nhân được email vì ai đó đã gửi yêu cầu đặt lại mật khẩu cho tài khoản Penguinmod này.",
+    "email.forgotpassword.note": "Nếu bạn không yêu cầu đặt lại mật khẩu, bạn có thể xóa email này hoặc bỏ qua.",
+    "email.forgotpassword.linkheader": "Đặt lại mật khẩu:",
+    "email.forgotpassword.link": "Đặt lại mật khẩu",
+    "email.verifyemail.title": "Xác thực email cho tài khoản PenguinMod",
+    "email.verifyemail.message1": "Bạn nhận được email này là vì ai đó đã đặt email của bạn làm email cho tài khoản \"{{NAME}}\" PenguinMod.",
+    "email.verifyemail.message2": "Mở link bên dưới sẽ đặt tài khoản email này vào trong tài khoản \"{{NAME}}\" PenguinMod.",
+    "email.verifyemail.note": "Nếu bạn không yêu cầu xác nhân email này, bạn có thể xóa email này hoặc bỏ qua.",
+    "email.verifyemail.linkheader": "Xác thực email này:",
+    "email.verifyemail.link": "Xác thực email này"
 }
