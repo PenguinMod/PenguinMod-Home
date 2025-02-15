@@ -472,5 +472,12 @@
     "email.verifyemail.message2": "Mở link bên dưới sẽ đặt tài khoản email này vào trong tài khoản \"{{NAME}}\" PenguinMod.",
     "email.verifyemail.note": "Nếu bạn không yêu cầu xác nhân email này, bạn có thể xóa email này hoặc bỏ qua.",
     "email.verifyemail.linkheader": "Xác thực email này:",
-    "email.verifyemail.link": "Xác thực email này"
+    "email.verifyemail.link": "Xác thực email này",
+    "email.failed.notfound": "Bạn không có email trong tài khoàn này.",
+    "email.failed.notverified": "Email của bạn chưa được xác thực.",
+    "email.failed.notverified.alt": "Email của bạn chưa được xác thực. Vào trong cài đặt để gửi Xác nhận tài khoản email.",
+    "email.failed.alreadyverified": "Bạn đã Xác thực email rồi.",
+    "email.failed.found": "Hiện tại bạn đang có email trong tài khoản của bạn.",
+    "email.failed.found.alt": "Hiện tại email này đã có trong tài khoản của bạn.",
+    "forgotpassword.fail.expired": "Bạn đã mất quá nhiều thời gian để đặt mật khẩu. Trang này bây giờ đã hêt hạn."
 }
