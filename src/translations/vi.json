@@ -517,4 +517,5 @@
     "account.fields.birthdate.placeholder.alt": "Chọn ngày mà bạn đẻ ra.",
     "birthday.requirement.faked.line1": "Bố mẹ/người giám hộ của bạn đã cho phép sử dụng PenguinMod chưa?",
     "birthday.requirement.faked.line2": "Có vẻ bạn đang bí mật tạo 1 tài khoản mà họ không hề hay biết.",
+    "account.fields.agreements.accurate.alt": "Tôi xác nhận rằng thông tin tôi đã cung cấp là chính xác."
 }
