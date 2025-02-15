@@ -489,7 +489,7 @@
     "email.failed.alreadyverified": "Bạn đã Xác thực email rồi.",
     "email.failed.found": "Hiện tại bạn đang có email trong tài khoản của bạn.",
     "email.failed.found.alt": "Hiện tại email này đã có trong tài khoản của bạn.",
-    "forgotpassword.fail.expired": "Bạn đã mất quá nhiều thời gian để đặt mật khẩu. Trang này bây giờ đã hêt hạn."
+    "forgotpassword.fail.expired": "Bạn đã mất quá nhiều thời gian để đặt mật khẩu. Trang này bây giờ đã hêt hạn.",
     "region.main.asia": "Châu Á",
     "region.main.africa": "Châu Phi",
     "region.main.unknown": "Không rõ",
