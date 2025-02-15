@@ -114,6 +114,7 @@
     "donate.served.projects": "<p>Chúng tôi duy trì </p><h1>$1</h1><p>Dự án</p>",
     "donate.served.size": "<p>Chúng tôi gửi </p><h1>$1 GB+</h1><p>Nội dung hàng tháng</p>",
     "donate.served.requests": "<p>Chúng tôi chịu tải </p><h1>$1</h1><p>Yêu cầu hàng tháng</p>",
+    "donate.parents": "Bạn có thể luôn luôn ủng hộ tới dự án mẹ của chúng tôi là Scratch hoặc Turbowarp để giúp chúng luôn luôn online.",
     "payment.paypal.card": "PayPal / Thẻ tín dụng",
     "payment.paypal": "PayPal",
     "payment.cashapp": "Cash App",
