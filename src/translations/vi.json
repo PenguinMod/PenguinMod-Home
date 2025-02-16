@@ -474,7 +474,7 @@
     "account.fields.username": "Username",
     "account.fields.username.placeholder": "Dùng 1 cái gì đó mang tính biểu tượng!",
     "account.fields.password": "Mật khẩu",
-    "account.fields.password.placeholder": "Ghi nhớ đo nha!",
+    "account.fields.password.placeholder": "Ghi lại đi!",
     "signup.confirm": "Tạo",
     "signup.confirm.legal": "By creating a PenguinMod account through any means provided on this page, you agree to abide by the [Terms of Service](/terms) and [Uploading Guidelines](/guidelines/uploading) and confirm that you have read the [Privacy Policy](/privacy) in its entirety.",
     "signup.linkto.signin": "Đã có tài khoản rồi á? Đăng nhập ở đây nè!",
