@@ -307,7 +307,7 @@
     "event.plural": "Các sự kiện",
     "event.nottranslated": "Eh! sự kiện này chưa được dịch sang ngôn ngữ của bạn, Xin lỗi nhé :(",
     "event.host": "Tổ chức bởi $1",
-    "event.collab": "This event is hosted in collaboration with: $1",
+    "event.collab": "Sự kiện này được tạo ra với sự hợp tác của: $1",
     "profile.badge.event": "Người chiến thắng sự kiện",
     "profile.badge.participant": "Event Participant",
     "uploading.error.cannotusethisextensionforthisrank": "You cannot upload this project yet as it contains custom extensions or certain blocked extensions. Upload a few other projects and wait a few days to rank up before you can post this project.",
