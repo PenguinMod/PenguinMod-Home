@@ -537,7 +537,7 @@
     "username.requirement.appropriate": "Username Không phù hợp ",
     "account.fields.username.inappropriate": "Username không phù hợp.",
     "navigation.signup": "Sign up",
-    "messages.alert.staff.tempbanned.title": "Your account has been temporarily banned from uploading projects and other features. You can continue to use the editor or view other people's projects though.",
+    "messages.alert.staff.tempbanned.title": "Tài khoản của bạn đã tạm thời bị cấm trong viếc đăng tải dự án và dùng 1 số chúc năng của website. Bạn vẫn có thể dùng editor và xem dự án của mọi người khác.",
     "generic.limited.action": "Your account is not allowed to do this action.",
     "generic.limited.actioncomplete": "Your account is not allowed to complete this action.",
     "generic.limited.view": "Your account is not allowed to view this.",
