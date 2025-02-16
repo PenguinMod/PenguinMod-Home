@@ -823,7 +823,7 @@
     "messages.deletemessage": "Delete message",
     "messages.deletemessage.confirm": "Are you sure you want to delete this message?",
     "messages.deletemessage.confirm.multiple": "Are you sure you want to delete {{COUNT}} messages?",
-    "account.settings.messages.title": "Messages",
+    "account.settings.messages.title": "Tin nhắn",
     "account.settings.messages.toggles.notifremix": "Get messages when my projects are remixed",
     "account.settings.messages.toggles.notiffollower": "Get messages when someone follows me",
     "account.settings.messages.toggles.notifmention": "Get messages when someone mentions me in a project",
