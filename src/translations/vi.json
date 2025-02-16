@@ -652,7 +652,7 @@
     "profile.donator.customizations.errorassets": "Failed to load profile customization assets: {{ERROR}}",
     "profile.donator.themetype.title": "Chọn 1 chủ đề:",
     "profile.donator.themetype.note1": "Chủ đề sáng sẽ không bật được nếu bạn đang bật chủ đề tối.",
-    "profile.donator.themetype.note2": "Be careful how you choose colors with Custom Themes, as Light Theme is togglable if you do not select the Custom Dark Theme option.",
+    "profile.donator.themetype.note2": "Hãy cẩn thận khi chọn màu với Chủ đề Tùy chỉnh, vì Chủ đề Sáng có thể được bật nếu bạn không chọn tùy chọn Chủ đề Tối Tùy chỉnh.",
     "profile.donator.themetype.default": "Mặc Định",
     "profile.donator.themetype.custom": "Tùy Chỉnh",
     "profile.donator.themetype.light": "Chủ đề Sáng",
