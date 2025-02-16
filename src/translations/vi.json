@@ -644,7 +644,7 @@
     "account.fields.agreements.personalinfo": "Tôi đồng ý cho phép PenguinMod thu thập và sử dụng quốc gia và ngày sinh của tôi (hoặc của con tôi nếu tôi đăng ký thay) theo [Chính sách quyền riêng tư](/privacy).",
     "account.fields.agreements.accurate": "Tôi xác nhận rằng thông tin tôi đã cung cấp là chính xác và tôi hiểu rằng ngày sinh và quốc gia của tôi không thể thay đổi sau khi tạo tài khoản nếu không liên hệ hỗ trợ.",
     "account.fields.agreements.accurate.alt": "Tôi xác nhận rằng thông tin tôi đã cung cấp là chính xác.",
-    "signup.confirm.legal.alt": "By creating a PenguinMod account through any means provided on this page, you agree to abide by the [Terms of Service](/terms) and [Uploading Guidelines](/guidelines/uploading) and confirm that you have read the [Privacy Policy](/privacy) in its entirety. If you are a parent or guardian creating an account for a child, you agree to these terms on their behalf. If you are legally an adult, you confirm that you are creating this account for yourself.",
+    "signup.confirm.legal.alt": "Bằng cách tạo tài khoản PenguinMod thông qua bất kỳ phương thức nào trên trang này, bạn đồng ý tuân theo [Điều khoản dịch vụ](/terms) và [Hướng dẫn tải lên](/guidelines/uploading) và xác nhận rằng bạn đã đọc toàn bộ [Chính sách quyền riêng tư](/privacy). Nếu bạn là phụ huynh hoặc người giám hộ tạo tài khoản cho trẻ em, bạn đồng ý với các điều khoản này thay cho trẻ. Nếu bạn đủ tuổi trưởng thành theo pháp luật, bạn xác nhận rằng mình đang tạo tài khoản này cho chính mình.",   
     "profile.donator.customizations.title": "Tùy chọn chỉnh sửa hồ sơ",
     "profile.donator.customizations.button": "Chỉnh sửa",
     "profile.donator.customizations.errorget": "Thất bại trong việc lấy tùy chỉnh : {{ERROR}}",
