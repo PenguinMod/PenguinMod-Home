@@ -14,6 +14,7 @@
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import ChecksBox from "$lib/ChecksBox/ChecksBox.svelte";
+    import Button from "$lib/Button/Button.svelte";
     import Captcha from "$lib/Captcha.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
@@ -793,6 +794,16 @@
                     lang={currentLang}
                 />
             </p>
+            <Button
+                label="<img src='/tryit.svg' width='32px' style='margin-right:8px;filter:contrast(0%) brightness(999%)'></img>"
+                link={LINK.editor}
+            >
+                <LocalizedText
+                    text="Editor"
+                    key="home.footer.sections.website.editor"
+                    lang={currentLang}
+                />
+            </Button>
         </main>
     {:else}
         <LoadingSpinner />
