@@ -46,6 +46,19 @@
         embed = $page.url.searchParams.get('embed') === "true";
     }
 
+    let apiOnlineChecking = true;
+    let apiOnlineResponding = false;
+    if (browser) {
+        onMount(() => {
+            const url = `${PUBLIC_API_URL}/api/v1`;
+            fetch(url).then(res => {
+                apiOnlineResponding = res.ok;
+            }).finally(() => {
+                apiOnlineChecking = false;
+            });
+        });
+    }
+
     let emailValid = 0;
     let usernameValid = false;
     let passwordValid = false;
@@ -451,320 +464,339 @@
         <NavigationMargin />
     {/if}
 
-    <main>
-        <div class="profile-section">
-            <img
-                src="/account/profile_sheet.png"
-                alt="Profiles"
-                title={TranslationHandler.textSafe(
-                    "signup.profilewheel",
-                    currentLang,
-                    "Feel free to draw your own profile picture to get ready for your new account!"
-                )}
-            />
-        </div>
-        <h1 style="margin-block:4px">PenguinMod</h1>
-        <p>
-            <LocalizedText
-                text="Create your personal account"
-                key="signup.title"
-                lang={currentLang}
-            />
-        </p>
-
-        <button class="gsi-material-button" on:click={googleOAuth}>
-            <div class="gsi-material-button-state"></div>
-            <div class="gsi-material-button-content-wrapper">
-                <div class="gsi-material-button-icon">
-                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: block;">
-                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
-                        <path fill="none" d="M0 0h48v48H0z"></path>
-                    </svg>
-                </div>
-                <span class="gsi-material-button-contents">
-                    <LocalizedText
-                        text="Sign up with Google"
-                        key="signup.oauth.google"
-                        lang={currentLang}
-                    />
-                </span>
-                <span style="display: none;">
-                    <LocalizedText
-                        text="Sign up with Google"
-                        key="signup.oauth.google"
-                        lang={currentLang}
-                    />
-                </span>
-            </div>
-        </button>
-
-        <button class="gsi-material-button" on:click={githubOAuth}>
-            <div class="gsi-material-button-state"></div>
-            <div class="gsi-material-button-content-wrapper">
-                <div class="gsi-material-button-icon">
-                    <img
-                        src="/github-mark/github-mark.svg"
-                        alt="github"
-                        class="invert-on-dark"
-                        style="display: block;width:20px;height:20px;"
-                    />
-                </div>
-                <span class="gsi-material-button-contents">
-                    <LocalizedText
-                        text="Sign up with GitHub"
-                        key="signup.oauth.github"
-                        lang={currentLang}
-                    />
-                </span>
-                <span style="display: none;">
-                    <LocalizedText
-                        text="Sign up with GitHub"
-                        key="signup.oauth.github"
-                        lang={currentLang}
-                    />
-                </span>
-            </div>
-        </button>
-
-        <button class="gsi-material-button" on:click={scratchOauth}>
-            <div class="gsi-material-button-state"></div>
-            <div class="gsi-material-button-content-wrapper">
-                <div class="gsi-material-button-icon">
-                    <img src="/Scratch_S.svg" alt="Scratch" style="display:block;width:20px;height:20px;">
-                </div>
-                <span class="gsi-material-button-contents">
-                    <LocalizedText
-                        text="Sign up with Scratch"
-                        key="signup.oauth.scratch"
-                        lang={currentLang}
-                    />
-                </span>
-                <span style="display: none;">
-                    <LocalizedText
-                        text="Sign up with Scratch"
-                        key="signup.oauth.scratch"
-                        lang={currentLang}
-                    />
-                </span>
-            </div>
-        </button>
-
-        <p class="or-line">
-            <LocalizedText
-                text="or"
-                key="account.methods.orline"
-                lang={currentLang}
-            />
-        </p>
-
-        <span class="input-title">
-            <LocalizedText
-                text="Username"
-                key="account.fields.username"
-                lang={currentLang}
-            />
-        </span>
-        <input
-            type="text"
-            placeholder={TranslationHandler.textSafe(
-                "account.fields.username.placeholder",
-                currentLang,
-                "Use something iconic!"
-            )}
-            data-valid={usernameValid}
-            maxlength="20"
-            on:input={usernameInputChanged}
-            on:focusin={() => focused = "username"}
-            on:focusout={() => focused = ""}
-        />
-        {#if focused === "username"}
-            <ChecksBox items={usernameRequirements} />
-        {/if}
-        
-        <span class="input-title">
-            <LocalizedText
-                text="Email (Optional)"
-                key="account.fields.email"
-                lang={currentLang}
-            />
-        </span>
-        <input
-            type="text"
-            placeholder={TranslationHandler.textSafe(
-                "account.fields.email.placeholder",
-                currentLang,
-                "Your email address"
-            )}
-            data-valid={emailValid}
-            class="email-input"
-            maxlength="254"
-            on:input={emailInputChanged}
-            on:focusin={() => focused = "email"}
-            on:focusout={() => focused = ""}
-        />
-
-        <span class="input-title">
-            <LocalizedText
-                text="Password"
-                key="account.fields.password"
-                lang={currentLang}
-            />
-        </span>
-        <div class="password-wrapper">
-            <input
-                type={showingPassword ? "text" : "password"}
-                placeholder={TranslationHandler.textSafe(
-                    "account.fields.password.placeholder",
-                    currentLang,
-                    "Remember to write it down!"
-                )}
-                data-valid={passwordValid}
-                maxlength="50"
-                on:input={passwordInputChanged}
-                on:focusin={() => focused = "password"}
-                on:focusout={() => focused = ""}
-            />
-            <button
-                class="password-show"
-                on:click={togglePasswordView}>
-                {#if showingPassword}
-                    <img
-                        src="/account/hidepassword.svg"
-                        alt="Hide Password"
-                        class="invert-on-dark"
-                    />
-                {:else}
-                    <img
-                        src="/account/showpassword.svg"
-                        alt="Show Password"
-                        class="invert-on-dark"
-                    />
-                {/if}
-            </button>
-        </div>
-        {#if focused === "password"}
-            <ChecksBox items={passwordRequirements} />
-        {/if}
-
-        <span class="input-title">
-            <LocalizedText
-                text="Country"
-                key="account.fields.country"
-                lang={currentLang}
-            />
-        </span>
-        <select
-            class="input-forced-class"
-            data-valid={countryValid}
-            on:input={countryInputChanged}
-        >
-            <option value="" selected disabled>
-                <LocalizedText
-                    text="Select the country your child lives in"
-                    key="account.fields.country.placeholder"
-                    lang={currentLang}
+    {#if !apiOnlineChecking && apiOnlineResponding}
+        <main>
+            <div class="profile-section">
+                <img
+                    src="/account/profile_sheet.png"
+                    alt="Profiles"
+                    title={TranslationHandler.textSafe(
+                        "signup.profilewheel",
+                        currentLang,
+                        "Feel free to draw your own profile picture to get ready for your new account!"
+                    )}
                 />
-            </option>
-            {#each CountryLookup.countryCodes as countryCode}
-                <option value={countryCode}>{CountryLookup.countryNames[countryCode]}</option>
-            {/each}
-        </select>
-        
-        <span class="input-title">
-            <LocalizedText
-                text="Your Child's Birthdate"
-                key="account.fields.birthdate"
-                lang={currentLang}
-            />
-        </span>
-        <input
-            type="date"
-            min="1900-01-01"
-            max={getMaxBirthdate()}
-            data-valid={birthdayValid}
-            on:input={birthdayInputChanged}
-        />
-        
-        <Captcha on:update={(event) => {
-            captcha_token = event.detail;
-        }} />
-
-        {#if birthdayFaked}
-            <p class="birthday-warning">
+            </div>
+            <h1 style="margin-block:4px">PenguinMod</h1>
+            <p>
                 <LocalizedText
-                    text="Did your parent/guardian give you permission to use PenguinMod?"
-                    key="birthday.requirement.faked.line1"
-                    lang={currentLang}
-                />
-                <br>
-                <LocalizedText
-                    text="That seems like you're trying to secretly make an account without them knowing."
-                    key="birthday.requirement.faked.line2"
+                    text="Create your personal account"
+                    key="signup.title"
                     lang={currentLang}
                 />
             </p>
-        {/if}
 
-        <label style="width:60%">
-            <input
-                type="checkbox"
-                bind:checked={consentedToDataUsage}
-                on:change={checkIfValid}
-            />
-            <span class="disable-markdown-margin">
-                {@html generateMarkdown(`${TranslationHandler.textSafe(
-                    "account.fields.agreements.personalinfo",
-                    currentLang,
-                    "I agree to allow PenguinMod to collect and use my country and date of birth (or my child's if I am registering on their behalf) in accordance with the [Privacy Policy](/privacy)."
-                )}`)}
-            </span>
-        </label>
-        <label style="width:60%">
-            <input
-                type="checkbox"
-                bind:checked={accurateDataAgreement}
-                on:change={checkIfValid}
-            />
-            <span class="disable-markdown-margin">
-                {@html generateMarkdown(`${TranslationHandler.textSafe(
-                    "account.fields.agreements.accurate",
-                    currentLang,
-                    "I confirm that the information I have provided is accurate, and I understand that my date of birth and country cannot be changed after account creation without contacting support."
-                )}`)}
-            </span>
-        </label>
+            <button class="gsi-material-button" on:click={googleOAuth}>
+                <div class="gsi-material-button-state"></div>
+                <div class="gsi-material-button-content-wrapper">
+                    <div class="gsi-material-button-icon">
+                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: block;">
+                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                            <path fill="none" d="M0 0h48v48H0z"></path>
+                        </svg>
+                    </div>
+                    <span class="gsi-material-button-contents">
+                        <LocalizedText
+                            text="Sign up with Google"
+                            key="signup.oauth.google"
+                            lang={currentLang}
+                        />
+                    </span>
+                    <span style="display: none;">
+                        <LocalizedText
+                            text="Sign up with Google"
+                            key="signup.oauth.google"
+                            lang={currentLang}
+                        />
+                    </span>
+                </div>
+            </button>
 
-        <p>
-            {@html generateMarkdown(`${TranslationHandler.textSafe(
-                "signup.confirm.legal.alt",
-                currentLang,
-                "By creating a PenguinMod account through any means provided on this page, you agree to abide by the [Terms of Service](/terms) and [Uploading Guidelines](/guidelines/uploading) and confirm that you have read the [Privacy Policy](/privacy) in its entirety. If you are a parent or guardian creating an account for a child, you agree to these terms on their behalf. If you are legally an adult, you confirm that you are creating this account for yourself."
-            )}`)}
-        </p>
+            <button class="gsi-material-button" on:click={githubOAuth}>
+                <div class="gsi-material-button-state"></div>
+                <div class="gsi-material-button-content-wrapper">
+                    <div class="gsi-material-button-icon">
+                        <img
+                            src="/github-mark/github-mark.svg"
+                            alt="github"
+                            class="invert-on-dark"
+                            style="display: block;width:20px;height:20px;"
+                        />
+                    </div>
+                    <span class="gsi-material-button-contents">
+                        <LocalizedText
+                            text="Sign up with GitHub"
+                            key="signup.oauth.github"
+                            lang={currentLang}
+                        />
+                    </span>
+                    <span style="display: none;">
+                        <LocalizedText
+                            text="Sign up with GitHub"
+                            key="signup.oauth.github"
+                            lang={currentLang}
+                        />
+                    </span>
+                </div>
+            </button>
 
-        <button type="submit" class="create-acc" data-canCreate={canCreateAccount} on:click={createAccountSafe}>
-            {#if creatingAccount}
-                <LoadingSpinner icon="/loading_white.png" />
-            {:else}
+            <button class="gsi-material-button" on:click={scratchOauth}>
+                <div class="gsi-material-button-state"></div>
+                <div class="gsi-material-button-content-wrapper">
+                    <div class="gsi-material-button-icon">
+                        <img src="/Scratch_S.svg" alt="Scratch" style="display:block;width:20px;height:20px;">
+                    </div>
+                    <span class="gsi-material-button-contents">
+                        <LocalizedText
+                            text="Sign up with Scratch"
+                            key="signup.oauth.scratch"
+                            lang={currentLang}
+                        />
+                    </span>
+                    <span style="display: none;">
+                        <LocalizedText
+                            text="Sign up with Scratch"
+                            key="signup.oauth.scratch"
+                            lang={currentLang}
+                        />
+                    </span>
+                </div>
+            </button>
+
+            <p class="or-line">
                 <LocalizedText
-                    text="Create"
-                    key="signup.confirm"
+                    text="or"
+                    key="account.methods.orline"
                     lang={currentLang}
                 />
-            {/if}
-        </button>
+            </p>
 
-        <a href="/signin?embed={embed}" style="margin-top: 8px">
-            <LocalizedText
-                text="Already have an account? Sign in here!"
-                key="signup.linkto.signin"
-                lang={currentLang}
+            <span class="input-title">
+                <LocalizedText
+                    text="Username"
+                    key="account.fields.username"
+                    lang={currentLang}
+                />
+            </span>
+            <input
+                type="text"
+                placeholder={TranslationHandler.textSafe(
+                    "account.fields.username.placeholder",
+                    currentLang,
+                    "Use something iconic!"
+                )}
+                data-valid={usernameValid}
+                maxlength="20"
+                on:input={usernameInputChanged}
+                on:focusin={() => focused = "username"}
+                on:focusout={() => focused = ""}
             />
-        </a>
-    </main>
+            {#if focused === "username"}
+                <ChecksBox items={usernameRequirements} />
+            {/if}
+                
+            <span class="input-title">
+                <LocalizedText
+                    text="Email (Optional)"
+                    key="account.fields.email"
+                    lang={currentLang}
+                />
+            </span>
+            <input
+                type="text"
+                placeholder={TranslationHandler.textSafe(
+                    "account.fields.email.placeholder",
+                    currentLang,
+                    "Your email address"
+                )}
+                data-valid={emailValid}
+                class="email-input"
+                maxlength="254"
+                on:input={emailInputChanged}
+                on:focusin={() => focused = "email"}
+                on:focusout={() => focused = ""}
+            />
+
+            <span class="input-title">
+                <LocalizedText
+                    text="Password"
+                    key="account.fields.password"
+                    lang={currentLang}
+                />
+            </span>
+            <div class="password-wrapper">
+                <input
+                    type={showingPassword ? "text" : "password"}
+                    placeholder={TranslationHandler.textSafe(
+                        "account.fields.password.placeholder",
+                        currentLang,
+                        "Remember to write it down!"
+                    )}
+                    data-valid={passwordValid}
+                    maxlength="50"
+                    on:input={passwordInputChanged}
+                    on:focusin={() => focused = "password"}
+                    on:focusout={() => focused = ""}
+                />
+                <button
+                    class="password-show"
+                    on:click={togglePasswordView}>
+                    {#if showingPassword}
+                        <img
+                            src="/account/hidepassword.svg"
+                            alt="Hide Password"
+                            class="invert-on-dark"
+                        />
+                    {:else}
+                        <img
+                            src="/account/showpassword.svg"
+                            alt="Show Password"
+                            class="invert-on-dark"
+                        />
+                    {/if}
+                </button>
+            </div>
+            {#if focused === "password"}
+                <ChecksBox items={passwordRequirements} />
+            {/if}
+
+            <span class="input-title">
+                <LocalizedText
+                    text="Country"
+                    key="account.fields.country"
+                    lang={currentLang}
+                />
+            </span>
+            <select
+                class="input-forced-class"
+                data-valid={countryValid}
+                on:input={countryInputChanged}
+            >
+                <option value="" selected disabled>
+                    <LocalizedText
+                        text="Select the country your child lives in"
+                        key="account.fields.country.placeholder"
+                        lang={currentLang}
+                    />
+                </option>
+                {#each CountryLookup.countryCodes as countryCode}
+                    <option value={countryCode}>{CountryLookup.countryNames[countryCode]}</option>
+                {/each}
+            </select>
+
+            <span class="input-title">
+                <LocalizedText
+                    text="Your Child's Birthdate"
+                    key="account.fields.birthdate"
+                    lang={currentLang}
+                />
+            </span>
+            <input
+                type="date"
+                min="1900-01-01"
+                max={getMaxBirthdate()}
+                data-valid={birthdayValid}
+                on:input={birthdayInputChanged}
+            />
+
+            <Captcha on:update={(event) => {
+                captcha_token = event.detail;
+            }} />
+
+            {#if birthdayFaked}
+                <p class="birthday-warning">
+                    <LocalizedText
+                        text="Did your parent/guardian give you permission to use PenguinMod?"
+                        key="birthday.requirement.faked.line1"
+                        lang={currentLang}
+                    />
+                    <br>
+                    <LocalizedText
+                        text="That seems like you're trying to secretly make an account without them knowing."
+                        key="birthday.requirement.faked.line2"
+                        lang={currentLang}
+                    />
+                </p>
+            {/if}
+
+            <label style="width:60%">
+                <input
+                    type="checkbox"
+                    bind:checked={consentedToDataUsage}
+                    on:change={checkIfValid}
+                />
+                <span class="disable-markdown-margin">
+                    {@html generateMarkdown(`${TranslationHandler.textSafe(
+                        "account.fields.agreements.personalinfo",
+                        currentLang,
+                        "I agree to allow PenguinMod to collect and use my country and date of birth (or my child's if I am registering on their behalf) in accordance with the [Privacy Policy](/privacy)."
+                    )}`)}
+                </span>
+            </label>
+            <label style="width:60%">
+                <input
+                    type="checkbox"
+                    bind:checked={accurateDataAgreement}
+                    on:change={checkIfValid}
+                />
+                <span class="disable-markdown-margin">
+                    {@html generateMarkdown(`${TranslationHandler.textSafe(
+                        "account.fields.agreements.accurate",
+                        currentLang,
+                        "I confirm that the information I have provided is accurate, and I understand that my date of birth and country cannot be changed after account creation without contacting support."
+                    )}`)}
+                </span>
+            </label>
+
+            <p>
+                {@html generateMarkdown(`${TranslationHandler.textSafe(
+                    "signup.confirm.legal.alt",
+                    currentLang,
+                    "By creating a PenguinMod account through any means provided on this page, you agree to abide by the [Terms of Service](/terms) and [Uploading Guidelines](/guidelines/uploading) and confirm that you have read the [Privacy Policy](/privacy) in its entirety. If you are a parent or guardian creating an account for a child, you agree to these terms on their behalf. If you are legally an adult, you confirm that you are creating this account for yourself."
+                )}`)}
+            </p>
+
+            <button type="submit" class="create-acc" data-canCreate={canCreateAccount} on:click={createAccountSafe}>
+                {#if creatingAccount}
+                    <LoadingSpinner icon="/loading_white.png" />
+                {:else}
+                    <LocalizedText
+                        text="Create"
+                        key="signup.confirm"
+                        lang={currentLang}
+                    />
+                {/if}
+            </button>
+
+            <a href="/signin?embed={embed}" style="margin-top: 8px">
+                <LocalizedText
+                    text="Already have an account? Sign in here!"
+                    key="signup.linkto.signin"
+                    lang={currentLang}
+                />
+            </a>
+        </main>
+    {:else if !apiOnlineChecking && !apiOnlineResponding}
+        <main>
+            <img
+                src="/penguins/server.svg"
+                alt="Server Penguin"
+                style="width: 15rem"
+            />
+            <p>
+                <LocalizedText
+                    text="Whoops! Our server's having some problems. Try again later."
+                    key="home.server.error"
+                    lang={currentLang}
+                />
+            </p>
+        </main>
+    {:else}
+        <LoadingSpinner />
+    {/if}
 
     <div class="footer-links">
         <a target="_blank" href={LINK.contact}>
