@@ -31,8 +31,8 @@
     import Language from "../../resources/language.js";
 
     // Icons
-    import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
-    import SearchSVG from "../../icons/Search/icon.svelte";
+    import PenguinConfusedSVG from "../../resources/icons/Penguin/confused.svelte";
+    import SearchSVG from "../../resources/icons/Search/icon.svelte";
 
     let loggedIn = null;
     let loggedInUser = "";

@@ -5,9 +5,9 @@
     import { onMount } from "svelte";
     import { browser } from '$app/environment';
     import MarkdownIt from "markdown-it";
-    import GuidelinePages from "../../../resources/markdown/guidelines/pages";
+    import DevPostsPages from "../../../resources/markdown/devposts/pages";
 
-    const markdownSource = GuidelinePages[data.slug] || "404 Page Not Found";
+    const markdownSource = DevPostsPages[data.slug] || "404 Page Not Found";
     if (markdownSource === '404 Page Not Found' && browser) {
         location.href = location.origin + '/error?error=404';
     }
@@ -41,17 +41,19 @@
 </script>
 
 <svelte:head>
-    <title>PenguinMod - Uploading Guidelines</title>
-    <meta name="title"                   content="PenguinMod - Uploading Guidelines" />
-    <meta property="og:title"            content="PenguinMod - Uploading Guidelines" />
-    <meta property="twitter:title"       content="PenguinMod - Uploading Guidelines">
-    <meta name="description"             content="PenguinMod's official rules on uploaded projects">
-    <meta property="twitter:description" content="PenguinMod's official rules on uploaded projects">
-    <meta property="og:url"              content="https://penguinmod.com/guidelines/uploading">
-    <meta property="twitter:url"         content="https://penguinmod.com/guidelines/uploading">
+    <title>PenguinMod - Developer Post</title>
+    <meta name="title"                   content="PenguinMod - Developer Post" />
+    <meta property="og:title"            content="PenguinMod - Developer Post" />
+    <meta property="twitter:title"       content="PenguinMod - Developer Post" />
 </svelte:head>
 
 <div class="container">
+    <img
+        src="/devposts/{data.slug}.webp"
+        alt={data.slug}
+        class="event-banner"
+    >
+
     {@html bodyHTML}
 </div>
 
@@ -59,6 +61,14 @@
     .container {
         margin: 0 20%;
         width: 60%;
+    }
+    
+    .event-banner {
+        width: 100%;
+        height: 320px;
+        object-fit: cover;
+        margin: 8px 0;
+        border-radius: 8px;
     }
     
     :global(h1),

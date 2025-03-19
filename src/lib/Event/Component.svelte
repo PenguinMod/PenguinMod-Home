@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import Language from "../../resources/language.js";
-    import EventPages from "../../events/pages.js";
+    import EventPages from "../../resources/markdown/events/pages.js";
 
     const isHavingEvent = false;
     const eventName = "Winter 2024 PenguinJam";

@@ -1,17 +1,17 @@
 <script>
-    import EventsPages from "../../resources/markdown/events/pages";
-    const pages = Object.keys(EventsPages);
+    import DevPostsPages from "../../resources/markdown/devposts/pages";
+    const pages = Object.keys(DevPostsPages);
     const amount = pages.length;
 </script>
 
-<h1>Events</h1>
+<h1>Dev Posts</h1>
 <br />
 <p class="lil-guy">
     <b>{amount} page{amount > 1 ? "s" : ""} found</b>
 </p>
 
 {#each pages as page}
-    <a href={`/events/${page}`}>{page}</a>
+    <a href={`/devposts/${page}`}>{page}</a>
 {/each}
 
 <div style="height: 32px;" />
