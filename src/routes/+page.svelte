@@ -457,7 +457,7 @@
     <p style="width: 100%; text-align: center;">
         <i>
             <LocalizedText
-                text="Scratch Note: Please don't mention PenguinMod on Scratch, we have different rules compared to Scratch! 😅"
+                text="Scratch Note: Please don't mention or refer to PenguinMod on scratch, Don't call us "Antarctic Bird Mod" either, we have different rules compared to Scratch! 😅"
                 key="home.scratchnote"
                 lang={currentLang}
             />
