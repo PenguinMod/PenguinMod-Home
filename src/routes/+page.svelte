@@ -458,7 +458,7 @@
         <strong>
             <LocalizedText
                 text="Scratch Note: Don't mention PenguinMod on Scratch. We have more lenient rules compared to Scratch."
-                key="home.scratchnote"
+                key="home.scratchnotenew"
                 lang={currentLang}
             />
         </strong>
