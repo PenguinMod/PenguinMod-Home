@@ -455,13 +455,13 @@
     {/if}
 
     <p style="width: 100%; text-align: center;">
-        <i>
+        <strong>
             <LocalizedText
-                text="Scratch Note: Please don't mention PenguinMod on Scratch, we have different rules compared to Scratch! 😅"
+                text="Scratch Note: Don't mention PenguinMod on Scratch. We have more lenient rules compared to Scratch."
                 key="home.scratchnote"
                 lang={currentLang}
             />
-        </i>
+        </strong>
     </p>
 
     <div class="section-categories">
