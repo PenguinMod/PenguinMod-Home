@@ -12,7 +12,6 @@
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
-    import Button from "$lib/Button/Button.svelte";
     import Captcha from "$lib/Captcha.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
@@ -415,26 +414,6 @@
                     lang={currentLang}
                 />
             </p>
-            {#if !embed}
-                <Button
-                    label="<img src='/tryit.svg' width='32px' style='margin-right:8px;filter:contrast(0%) brightness(999%)'></img>"
-                    link={LINK.editor}
-                >
-                    <LocalizedText
-                        text="Editor"
-                        key="home.footer.sections.website.editor"
-                        lang={currentLang}
-                    />
-                </Button>
-            {:else}
-                <a target="_blank" href={LINK.editor}>
-                    <LocalizedText
-                        text="Editor"
-                        key="home.footer.sections.website.editor"
-                        lang={currentLang}
-                    />
-                </a>
-            {/if}
         </main>
     {:else}
         <LoadingSpinner />
