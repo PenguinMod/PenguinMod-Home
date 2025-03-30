@@ -1,6 +1,6 @@
 import { PUBLIC_API_URL, PUBLIC_STUDIO_URL, PUBLIC_MAX_UPLOAD_SIZE } from "$env/static/public";
 
-let OriginApiUrl = PUBLIC_API_URL;
+let OriginApiUrl = "https://projects.penguinmod.com";
 
 import JSZip from "jszip";
 import protobuf from "protobufjs";
