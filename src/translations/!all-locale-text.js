@@ -14,8 +14,12 @@ const sameInAll = [
     "payment.stripe", // brand name
     "vr.title", // nearly every language is the same, since VR as an acronym seems to be more like a brand name
     "account.settings.parental.pin", // pin is an acronym, seems like most langs dont change that
+    "profile.badge.owner", // a brand name and an acronym
 ];
 const sameInLocale = {
+    "da": [
+        "generic.ok",
+    ],
     "es": [
         "generic.errortitle",
         "home.footer.sections.website.editor",
@@ -44,6 +48,13 @@ const sameInLocale = {
     ],
     "ru": [
         "region.sub.micronesia",
+    ],
+    "tr": [
+        "home.footer.sections.website",
+        "avatar.title",
+        "profile.badge.partner",
+        "account.settings.account.email",
+        "account.fields.email",
     ],
 };
 

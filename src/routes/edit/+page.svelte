@@ -3,6 +3,7 @@
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
     import EmojiList from "../../resources/emojis.js";
+    import { PUBLIC_STUDIO_URL, PUBLIC_MAX_UPLOAD_SIZE } from "$env/static/public";
 
     const ProjectClient = new ProjectApi();
 
@@ -15,12 +16,13 @@
     import Button from "$lib/Button/Button.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import StatusAlert from "$lib/Alert/StatusAlert.svelte";
+    import Stats from "../../lib/statsComponent/stats.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
     // Icons
-    import SearchSVG from "../../icons/Search/icon.svelte";
+    import SearchSVG from "../../resources/icons/Search/icon.svelte";
 
     let projectName = "";
     let currentLang = "en";
@@ -45,7 +47,18 @@
     let projectMetadata = {};
 
     let newProjectImage;
+    let newProjectURL;
     let newProjectData;
+    let projectSizes = { name: `0/${PUBLIC_MAX_UPLOAD_SIZE}MB`, value: [] };
+    function updateSize() {
+        if (newProjectData) 
+            ProjectClient.resolveProjectSizes(newProjectData, newProjectImage?.size ?? 0, true)
+                .then(([sizes, toLarge]) => {
+                    projectSizes = sizes;
+                    if (toLarge) 
+                        alert(TranslationHandler.text('uploading.error.projecttoolarge', currentLang));
+                });
+    }
 
     let projectInputName;
 
@@ -157,7 +170,15 @@
                 }
                 // image: uri of thumbnail image
                 if (data.type === "image") {
-                    newProjectImage = data.uri;
+                    newProjectURL = data.uri;
+
+                    var arr = data.uri.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+                    while(n--){
+                        u8arr[n] = bstr.charCodeAt(n);
+                    }
+
+                    newProjectImage = new Blob([u8arr], {type:mime});
                 }
                 // project: uri of project data
                 if (data.type === "project") {
@@ -211,33 +232,64 @@
         newMetadata.title = projectName;
         newMetadata.instructions = components.projectInstructions.value;
         newMetadata.notes = components.projectNotes.value;
+
         if (newProjectImage) {
-            data.image = new File([newProjectImage], "thumbnail")
-        } else {
-            data.image = new File([await fetch("/empty-project.png").then((r) => r.blob())], "thumbnail");
-        }
+            data.image = newProjectImage;
+        } // we're not going to send the image if it's not changed
+
         if (newProjectData) {
             data.project = newProjectData;
-        }
+        } // we're not going to send the project if it's not changed
 
         ProjectClient.updateProject(projectId, data)
             .then(kickOut)
             .catch((err) => {
-                const message = TranslationHandler.text(
-                    `uploading.error.${String(err).toLowerCase()}`,
-                    currentLang
-                );
-                if (!message)
-                    return alert(
-                        String(
-                            TranslationHandler.text(
-                                "uploading.error.unknown",
-                                currentLang
-                            )
-                        ).replace("$1", err)
+                let message = "";
+                switch (err) {
+                    case "Uploaded in the last 8 minutes":
+                        message = TranslationHandler.textSafe(
+                            "uploading.error.toomanyrequests",
+                            currentLang,
+                            "You can only upload projects every 8 minutes."
+                        );
+                        break;
+                    case "Uploading is disabled":
+                        message = TranslationHandler.textSafe(
+                            "uploading.error.publishdisabled",
+                            currentLang,
+                            "We are undergoing maintenance, so you are not able to upload projects at this time."
+                        );
+                        break;
+                    case "Missing json file, thumbnail, or assets":
+                        message = TranslationHandler.textSafe(
+                            "uploading.error.formaterror",
+                            currentLang,
+                            "Some values are not right. Check that all required fields are filled."
+                        );
+                        break;
+                    case "IllegalWordsUsed":
+                        message = TranslationHandler.textSafe(
+                            "uploading.error.illegalwordsused",
+                            currentLang,
+                            "Words or phrases were used that are not allowed in PenguinMod. Please check through your project's details for any inappropriate words or phrases."
+                        );
+                        break;
+                    default:
+                        message = TranslationHandler.textSafe(
+                            "uploading.error.unknown",
+                            currentLang,
+                            "Unknown error. The file may be too large or something unexpected happened. Full error: $1",
+                        ).replace("$1", err);
+                        break;
+                }
+                if (String(err).startsWith("Extension not allowed:")) {
+                    message = TranslationHandler.textSafe(
+                        "uploading.error.cannotusethisextensionforthisrank",
+                        currentLang,
+                        "You cannot upload this project yet as it contains custom extensions or certain blocked extensions. Upload a few other projects and wait a few days to rank up before you can post this project."
                     );
+                }
                 alert(message);
-                // alert(`Uh oh! An error occurred: ${err}`);
             })
             .finally(() => {
                 isBusyUploading = false;
@@ -261,15 +313,14 @@
 
     async function imageFilePicked(input) {
         input = input.target;
-        const imageUrl = await filePicked(input);
-        newProjectImage = imageUrl;
+        newProjectImage = input.files[0];
+        newProjectURL = await filePicked(input);
     }
     async function projectFilePicked(input) {
         input = input.target;
         const file = input.files[0];
         if (!file) return;
-        const projectUri = await filePicked(input);
-        newProjectData = projectUri;
+        newProjectData = file;
         projectInputName.innerText = TranslationHandler.text(
             "uploading.project.ownfile.picked",
             currentLang
@@ -419,11 +470,11 @@
                 <div class="card-projects">
                     <iframe
                         title="Guidelines Page"
-                        src="https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS"
+                        src="https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
                     />
                 </div>
                 <a
-                    href="https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS"
+                    href="https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
                     style="margin-top:6px;color:dodgerblue"
                     target="_blank"
                 >
@@ -658,7 +709,7 @@
                 <div style="width:50%;">
                     <img
                         src={newProjectImage
-                            ? newProjectImage
+                            ? newProjectURL
                             : projectId
                             ? `${LINK.projects}api/v1/projects/getproject?projectID=${projectId}&requestType=thumbnail`
                             : "/empty-project.png"}
@@ -679,6 +730,8 @@
                             lang={currentLang}
                         />
                     </label>
+                    <hr>
+                    <Stats stats_data={[projectSizes]} render={true}></Stats>
                 </div>
             </div>
             <div style="display:flex;flex-direction:row;margin-top:48px">

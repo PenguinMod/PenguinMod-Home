@@ -44,7 +44,7 @@ Language.onChange((lang) => {
 
     <main>
         <!-- UPDATE THIS WHEN MAKING CONTENT CHANGES -->
-        <p><i>Updated October 23rd, 2024 (Mountain Time)</i></p>
+        <p><i>Updated November 17th, 2024 (Mountain Time)</i></p>
 
         <!-- some things are intentionally not formatted as they are in the HTML file on the website -->
         <p>
@@ -85,10 +85,11 @@ Language.onChange((lang) => {
                 and diagnostic information such as cache hit ratios.
         </p>
         <p>
-            When using the website, your IP will be logged and stored to your account if you log in.
+            When using the website, your IP address will be logged and stored to your account if you log in.
             This is to help us identify users who may be spamming or attacking the site.
+            Project Moderators will be able to view and use this IP address for banning or blocking you from using the site if neccessary.
             <br>
-            Your IP will also be stored temporarily when viewing a project, along with information about the project you viewed being logged temporarily.
+            Your IP address will also be stored temporarily when viewing a project, along with information about the project you viewed being logged temporarily.
             <br>
             <br>
             This temporary amount of time will be around 1 week, and this applies to all "temporarily stored" content listed here.
@@ -135,14 +136,19 @@ Language.onChange((lang) => {
             </ul>
 
         <p>
-            Accounts created will have their IP and creation date stored with them.
+            Accounts created will have their IP address and creation date stored with them.
         </p>
         <p>
-            Any logins to an account using any login method will also have that IP and login date stored on the account.
+            Any logins to an account using any login method will also have that IP address and login date stored on the account.
             <br>
             PenguinMod may require an email to be attached to an account for certain features or account security.
             <br>
             This will be stored on the account if provided.
+        </p>
+        <p>
+            If you provide a date of birth or country to PenguinMod, it will be stored on your account.
+            <br>
+            Certain content may be blocked or inaccessible depending on what your date of birth or country is.
         </p>
 
         <p>
@@ -181,14 +187,14 @@ Language.onChange((lang) => {
             Information available only to Service Administrators include:
             <ul>
                 <li>the indiviudal users who liked, favorited or voted a project</li>
-                <li>the IP of users who viewed a project
+                <li>the IP addresses of users who viewed a project
                 <li>any above information users or Project Moderators can access</li>
                 <li>the uploader's <a href="https://google.com/">Google</a> account (if the account has it as a login method)</li>
                 <li>the uploader's <a href="https://github.com/">GitHub</a> account (if the account has it as a login method)</li>
                 <li>the uploader's <a href="https://scratch.mit.edu/">Scratch</a> account (if the account has it as a login method)</li>
             </ul>
         <p>
-            Your IP will temporarily be saved in the server when you view a project.
+            Your IP address will temporarily be saved in the server when you view a project.
             This is used to make sure you are not the same user reloading the page to gain multiple views.
         </p>
         <p>Account information may be logged or saved to the server when interacting with a project.</p>
@@ -221,7 +227,7 @@ Language.onChange((lang) => {
         <p>Your randomly generated or chosen username is stored in your browser's local storage. To mitigate the potential to track users with this feature, all randomly generated usernames are anonymized before the server receives them. However, usernames explicitly set by a user may be logged to help prevent abuse.</p>
         <p>If a user is logged into PenguinMod, their username used by Cloud Variables, other extensions, and the editor "username" block will be set to their PenguinMod account's username.</p>
         <p>Built-in Scratch extensions that require Wi-Fi (such as Translate, Text to Speech, LEGO, micro:bit, etc.) may connect to the Scratch API to implement these features. <a href="https://scratch.mit.edu/privacy_policy/">Refer to the Scratch privacy policy for more information</a>. The Translate extension may instead make requests to a TurboWarp API, which may then forward your request to the Scratch API and log the message being translated and the result for caching and performance.</p>
-        <p>In rare circumstances, connections that are appear to be spam may have their IP logged for up to 24 hours. This happens very infrequently and only in cases of extreme abuse.</p>
+        <p>In rare circumstances, connections that are appear to be spam may have their IP address logged for up to 24 hours. This happens very infrequently and only in cases of extreme abuse.</p>
         <p>
             Built-in PenguinMod and Custom extensions that require Wi-Fi or use Wi-Fi to get online data (HTTP, Website Requests, Sound Systems, CloudLink, HTML iframes, Storage, etc.) may connect to any user-specified API, which will grant the owner of the website being connected to:
         </p>

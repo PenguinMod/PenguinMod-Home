@@ -113,28 +113,10 @@
 
 	function logout() {
 		accountMenu.style.display = "none";
-		const username = localStorage.getItem("username")
-		const token = localStorage.getItem("token");
-		fetch(
-			`${LINK.projects}api/v1/users/logout`,
-			{
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					username: username,
-					token: token,
-				})
-			}
-		).then((res) => {
-			if (!res.ok) return;
-			localStorage.removeItem("username");
-			localStorage.removeItem("token");
-			Authentication.fireLogout();
-			loggedIn = false;
-			canRankUp = false;
-			messageCount = 0;
+		Authentication.logout().then(() => {
+		    loggedIn = false;
+		    canRankUp = false;
+		    messageCount = 0;
 		});
 	}
 	function login() {
@@ -342,6 +324,8 @@
 		style="padding:0.5rem"
 		classActor={"themeSwitcher"}
 		on:click={switchTheme}
+		title="navigation.theme"
+		lang={currentLang}
 	/>
 	<div class="only-non-launcher">
 		<BarPage link={LINK.editor}>
@@ -358,7 +342,7 @@
 		</BarPage>
 	</div>
 	<BarSearch placeholder={Translations.textSafe("navigation.search", currentLang, "Search for projects...")} />
-	<BarButton
+	<!-- <BarButton
 		highlighted="true"
 		link={LINK.discord}
 		noredirect="true"
@@ -374,7 +358,7 @@
 		<div class="discord-button-icon">
 			<img src="/discord_white.png" alt="Discord" />
 		</div>
-	</BarButton>
+	</BarButton> -->
 	<!-- <BarPage
 		link={LINK.discord}
 		label="<img src='/discord_white.png' width='25' alt='Discord'>"
@@ -385,6 +369,8 @@
 			link="/messages"
 			label={"<img src='/messagesstatic/messages.svg' width='25' alt='Messages'>"}
 			style="padding:0.5rem"
+			title="messages.title"
+			lang={currentLang}
 		>
 			{#if messageCount > 0}
 				<div class="message-badge">
@@ -400,11 +386,8 @@
 			link="/mystuff"
 			label="<img src='/messagesstatic/mystuff.svg' width='25' alt='My Stuff'>"
 			style="padding:0.5rem"
-		/>
-		<BarPage
-			link="/upload"
-			label="<img src='/messagesstatic/upload.svg' width='25' alt='Upload'>"
-			style="padding:0.5rem"
+			title="mystuff.title"
+			lang={currentLang}
 		/>
 	{/if}
 	{#if (isAdmin || isApprover) && loggedIn}
@@ -412,6 +395,7 @@
 			link="/panel"
 			label="<img src='/messagesstatic/panel.svg' width='25' alt='Panel'>"
 			style="padding:0.5rem"
+			title="Admin Panel"
 		/>
 	{/if}
 	{#if loggedIn === false}
@@ -453,6 +437,8 @@
 				: "")}
 		classActor={"languageButton"}
 		on:click={openLanguageMenu}
+		title="navigation.language"
+		lang={currentLang}
 	/>
 </div>
 
@@ -530,20 +516,6 @@
 	}
 	:global(body.launcher-mode) .logo-launcher-margin {
 		height: 90px;
-	}
-
-	.discord-button-icon {
-		display: none;
-	}
-	.discord-button-icon > img {
-		width: 2rem;
-		padding: 2px 0;
-	}
-	:global(body.launcher-mode) .discord-button-icon {
-		display: initial;
-	}
-	:global(body.launcher-mode) .discord-button-text {
-		display: none;
 	}
 
 	.languageSelect {

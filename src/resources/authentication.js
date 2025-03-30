@@ -3,14 +3,14 @@ import ProjectApi from "./projectapi";
 class Authentication {
     static eventListeners = [];
 
-    static createAccount(username, password, email = "", birthday, country) {
+    static createAccount(username, password, email = "", birthday, country, hCaptcha_token) {
         return new Promise((resolve, reject) => {
             fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/createAccount`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ username, password, email, birthday, country })
+                body: JSON.stringify({ username, password, email, birthday, country, captcha_token: hCaptcha_token })
             }).then(r => r.json().then(j => {
                 if (j.error) return reject(j.error);
 
@@ -20,14 +20,15 @@ class Authentication {
         });
     }
 
-    static verifyPassword(username, password) {
+    static verifyPassword(username, password, captcha_token) {
         const url = `${ProjectApi.OriginApiUrl}/api/v1/users/passwordlogin`;
 
         const body = {
             username,
-            password
-        }
-        
+            password,
+            captcha_token,
+        };
+
         return new Promise((resolve, reject) => {
             fetch(url, {
                 method: "POST",
@@ -36,6 +37,7 @@ class Authentication {
                 },
                 body: JSON.stringify(body)
             }).then(r => r.json().then(j => {
+                if (j.error === "InvalidCaptcha") return reject("InvalidCaptcha");
                 if (j.error) return resolve(false);
 
                 this.fireAuthenticated(username, j.token);
@@ -97,6 +99,30 @@ class Authentication {
             }
         })
     }
+    static logout() {
+        return new Promise((resolve, reject) => {
+            const username = localStorage.getItem("username")
+		    const token = localStorage.getItem("token");
+		    fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/logout`,
+		    	{
+		    		method: "POST",
+		    		headers: {
+		    			"Content-Type": "application/json",
+		    		},
+		    		body: JSON.stringify({
+		    			username: username,
+		    			token: token,
+		    		})
+		    	}
+		    ).then((res) => {
+		    	if (!res.ok) return reject("Not OK");
+                localStorage.removeItem("username");
+                localStorage.removeItem("token");
+                Authentication.fireLogout();
+                resolve();
+		    }).catch(reject);
+        });
+    }
     static fireLogout() {
         Authentication.eventListeners.forEach(thinkle => {
             if (thinkle.type === "LOGOUT") {
@@ -150,14 +176,14 @@ class Authentication {
         });
     }
 
-    static sendResetPasswordEmail(email) {
+    static sendResetPasswordEmail(email, captcha_token) {
         return new Promise((resolve, reject) => {
             fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/resetpassword/sendEmail`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ email })
+                body: JSON.stringify({ email, captcha_token })
             }).then(r => r.json().then(j => {
                 if (j.error) return reject(j.error);
                 resolve(j.token);

@@ -10,18 +10,23 @@
     };
 
     onMount(() => {
-        fetch(`${LINK.basicApi}status`).then((res) => {
-            if (!res.ok) return;
-            res.json().then((status) => {
-                // currently multiple updates are not supported
-                currentStatus = {
-                    type: "empty",
-                    text: "",
-                    ...status,
-                    loading: false,
-                };
-            });
-        });
+        // fetch(`${LINK.basicApi}status`).then((res) => {
+        //     if (!res.ok) return;
+        //     res.json().then((status) => {
+        //         // currently multiple updates are not supported
+        //         currentStatus = {
+        //             type: "empty",
+        //             text: "",
+        //             ...status,
+        //             loading: false,
+        //         };
+        //     });
+        // });
+        currentStatus = {
+            loading: false,
+            type: "warn",
+            text: "The servers are currently down. We are working hard to bring them back up. Please be patient.",
+        };
     });
 </script>
 

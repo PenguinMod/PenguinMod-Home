@@ -5,18 +5,18 @@
     import { PUBLIC_STUDIO_URL } from "$env/static/public";
 
     const getLoginDetails = async () => {
-        const username = localStorage.getItem("username")
+        const username = localStorage.getItem("username");
         const token = localStorage.getItem("token");
         if (!token || !username) {
             return { loggedIn: false };
         }
 
         try {
-            const { _username } = await Authentication.usernameFromCode(username, token);
+            const { username:_username } = await Authentication.usernameFromCode(username, token);
             if (!_username) return { loggedIn: false };
             return {
                 loggedIn: true,
-                username
+                username: _username
             };
         } catch (e) {
             console.warn(e);
@@ -26,7 +26,6 @@
 
     onMount(async () => {
         const loginDetails = await getLoginDetails();
-        console.log(loginDetails);
 
         const params = new URLSearchParams(location.search);
         const importLocation = params.get("external");

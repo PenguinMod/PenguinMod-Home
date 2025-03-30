@@ -1,11 +1,11 @@
 <script>
     import { onMount } from "svelte";
     import Language from "../../resources/language.js";
-    import EventPages from "../../events/pages.js";
+    import EventPages from "../../resources/markdown/events/pages.js";
 
     const isHavingEvent = false;
-    const eventName = "Example Event";
-    const eventPath = "example";
+    const eventName = "Winter 2024 PenguinJam";
+    const eventPath = "penguinjamwinter2024";
     
     let currentLang = "en";
     let pageLang = "en";
@@ -24,7 +24,7 @@
     <a href="/events/{eventPath}?l={pageLang}">
         <button title={eventName}>
             <img
-                src="/events/{pageLang}/{eventPath}.png"
+                src="/events/{pageLang}/{eventPath}.webp"
                 title={eventName}
                 alt={eventName}
             >

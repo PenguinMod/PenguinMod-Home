@@ -1,4 +1,4 @@
-import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+import { PUBLIC_API_URL, PUBLIC_STUDIO_URL, PUBLIC_MAX_UPLOAD_SIZE } from "$env/static/public";
 
 let OriginApiUrl = PUBLIC_API_URL;
 
@@ -7,6 +7,15 @@ import protobuf from "protobufjs";
 import jsonDescriptor from "./protobuf-bundle.json";
 let protobufRoot = protobuf.Root.fromJSON(jsonDescriptor);
 let project = protobufRoot.lookupType("project.Project");
+function MB(num) {
+    const Kb = (num >> 10) & 0b1111111111;
+    const Mb = (num >> 20) & 0b1111111111;
+    const Gb = (num >> 30) & 0b1111111111;
+    if (Gb) return `${(num / 1024 / 1024 / 1024).toFixed(2)}GB`;
+    if (Mb) return `${(num / 1024 / 1024).toFixed(2)}MB`;
+    if (Kb) return `${(num / 1024).toFixed(2)}KB`;
+    return `${num}B`;
+}
 
 class ProjectApi {
     constructor(token, username) {
@@ -137,9 +146,62 @@ class ProjectApi {
     }
 
     /**
-     * @deprecated Cannot be used statically anymore.
+     * @param {number} page page
+     * @param {string} query query for searching projects
+     * @param {string} username username of user
+     * @param {string} token token of user
+     * @returns Array of projects
      */
-    static getUnapprovedProjects() {
+    static searchProjects(page, searchQuery, username, token, allow_user=false) {
+        const query = searchQuery.split(":", 1)[0];
+        let api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${query}&username=${username}&token=${token}`;
+        switch (query) {
+            case "user":
+                if (allow_user) {
+                    const userQuery = searchQuery.split(":");
+                    searchType = "user";
+                    userQuery.shift();
+                    api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
+                    break;
+                }
+                // fallthrough
+            case "by":
+                const byQuery = searchQuery.split(":");
+                byQuery.shift();
+                api = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(byQuery.join())}`;
+                break;
+            case "featured":
+            case "newest":
+            case "views":
+            case "votes":
+            case "loves":
+                const actual_query = searchQuery.split(":");
+                actual_query.shift();
+                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}&username=${username}&token=${token}`;
+                break;
+            default:
+                break;
+        }
+
+        return new Promise((resolve, reject) => {
+            fetch(api)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((projectList) => {
+                        resolve(projectList);
+                    });
+                })
+                .catch((err) => {
+                    console.error(err);
+                    reject(err);
+                });
+        });
+    }
+
+    getRemovedProjects() {
         throw new Error("Unapproved Projects can only be viewed in a client")
     }
 
@@ -193,9 +255,9 @@ class ProjectApi {
         })
     }
     
-    static getFrontPage() {
+    async getFrontPage() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/frontpage`;
+            const url = `${OriginApiUrl}/api/v1/projects/frontpage?username=${this.username}&token=${this.token}`; // so mods can see ALL!!!!!!!!!!!!!
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -1178,6 +1240,60 @@ class ProjectApi {
             })
         })
     }
+    sendModeratorMessage(target, text, disputable) {
+        const data = {
+            token: this.token,
+            username: this.username,
+            target,
+            message: text,
+            disputable
+        };
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/v1/projects/modmessage`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+    deleteModeratorMessage(messageID) {
+        const data = {
+            username: this.username,
+            token: this.token,
+            messageID,
+        };
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/v1/projects/deletemodmessage`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
     addMessage(type, target, data) {
         const gdata = {
             token: this.token,
@@ -1216,6 +1332,39 @@ class ProjectApi {
         const notes = data.newMeta.notes;
 
         return new Promise(async (resolve, reject) => {
+
+            if (!data.project) {
+                const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/updateProject`;
+                const request = new XMLHttpRequest();
+                const formData = new FormData();
+
+                request.open("POST", API_ENDPOINT, true);
+                request.onload = () => {
+                    const response = JSON.parse(request.response);
+
+                    if (response.error) {
+                        reject(response.error);
+                        return;
+                    }
+
+                    resolve(response.id);
+                };
+
+                formData.append("username", username);
+                formData.append("token", token);
+                formData.append("title", title);
+                formData.append("instructions", instructions);
+                formData.append("notes", notes);
+                formData.append("projectID", id);
+
+                if (data.image) {
+                    formData.append("thumbnail", data.image);
+                }
+
+                request.send(formData);
+                return;
+            }
+
             JSZip.loadAsync(data.project).then(async zip => {
                 const projectJSON = JSON.parse(await zip.file("project.json").async("text"))
 
@@ -1227,7 +1376,6 @@ class ProjectApi {
                     if (relativePath === "project.json") return;
                     assets.push(file);
                 });
-
                 
                 const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/updateProject`;
                 const request = new XMLHttpRequest();
@@ -1291,7 +1439,6 @@ class ProjectApi {
         newjson.metaAgent = json.meta.agent;
 
         for (const target in json.targets) {
-
             let newtarget = {
                 id: json.targets[target].id,
                 isStage: json.targets[target].isStage,
@@ -1305,12 +1452,12 @@ class ProjectApi {
                 currentCostume: json.targets[target].currentCostume,
                 costumes: [],
                 sounds: [],
-                volume: json.targets[target].volume,
+                volume: Math.round(json.targets[target].volume || 0),
                 layerOrder: json.targets[target].layerOrder,
-                x: json.targets[target].x,
-                y: json.targets[target].y,
-                size: json.targets[target].size,
-                direction: json.targets[target].direction,
+                x: Math.round(json.targets[target].x || 0),
+                y: Math.round(json.targets[target].y || 0),
+                size: Math.round(json.targets[target].size || 0),
+                direction: Math.round(json.targets[target].direction || 0),
                 draggable: json.targets[target].draggable,
                 rotationStyle: json.targets[target].rotationStyle,
                 tempo: json.targets[target].tempo,
@@ -1332,7 +1479,7 @@ class ProjectApi {
             for (const list in json.targets[target].lists) {
                 newtarget.lists[list] = {
                     name: json.targets[target].lists[list][0],
-                    value: json.targets[target].lists[list][1]
+                    value: json.targets[target].lists[list][1].map((item) => castToString(item))
                 }
             }
 
@@ -1384,9 +1531,9 @@ class ProjectApi {
                         argumentids: blocks[block].mutation.argumentids,
                         argumentnames: blocks[block].mutation.argumentnames,
                         argumentdefaults: blocks[block].mutation.argumentdefaults,
-                        warp: blocks[block].mutation.warp == "true" ? true : false,
+                        warp: String(blocks[block].mutation.warp) === "true" ? true : false,
                         _returns: blocks[block].mutation.returns,
-                        edited: blocks[block].mutation.edited,
+                        edited: Boolean(blocks[block].mutation.edited),
                         optype: blocks[block].mutation.optype,
                         color: blocks[block].mutation.color
                     }
@@ -1407,10 +1554,10 @@ class ProjectApi {
             for (const comment in json.targets[target].comments) {
                 newtarget.comments[comment] = {
                     blockId: json.targets[target].comments[comment].blockId,
-                    x: json.targets[target].comments[comment].x,
-                    y: json.targets[target].comments[comment].y,
-                    width: json.targets[target].comments[comment].width,
-                    height: json.targets[target].comments[comment].height,
+                    x: Math.round(json.targets[target].comments[comment].x || 0),
+                    y: Math.round(json.targets[target].comments[comment].y || 0),
+                    width: Math.round(json.targets[target].comments[comment].width || 0),
+                    height: Math.round(json.targets[target].comments[comment].height || 0),
                     minimized: json.targets[target].comments[comment].minimized,
                     text: json.targets[target].comments[comment].text
                 }
@@ -1451,22 +1598,26 @@ class ProjectApi {
                 mode: json.monitors[monitor].mode,
                 opcode: json.monitors[monitor].opcode,
                 params: json.monitors[monitor].params,
-                spriteName: json.monitors[monitor].spriteName,
+                spriteName: json.monitors[monitor].spriteName || "",
                 value: String(json.monitors[monitor].value),
                 width: json.monitors[monitor].width,
                 height: json.monitors[monitor].height,
-                x: json.monitors[monitor].x,
-                y: json.monitors[monitor].y,
+                x: Math.round(json.monitors[monitor].x || 0),
+                y: Math.round(json.monitors[monitor].y || 0),
                 visible: json.monitors[monitor].visible,
-                sliderMin: json.monitors[monitor].sliderMin,
-                sliderMax: json.monitors[monitor].sliderMax,
+                sliderMin: Math.round(json.monitors[monitor].sliderMin || 0),
+                sliderMax: Math.round(json.monitors[monitor].sliderMax || 0),
                 isDiscrete: json.monitors[monitor].isDiscrete,
             });
         }
 
         // loop over the extensionData
         for (const extensionData in json.extensionData) {
-            newjson.extensionData[extensionData] = castToString(json.extensionData[extensionData]);
+            newjson.extensionData[extensionData] = {
+                data: castToString(json.extensionData[extensionData]),
+                // true if the extension data is not a string
+                parse: typeof json.extensionData[extensionData] !== "string"
+            }
         }
 
         // loop over the extensionURLs
@@ -1474,11 +1625,97 @@ class ProjectApi {
             newjson.extensionURLs[extensionURL] = json.extensionURLs[extensionURL];
         }
 
+        const verify = project.verify(newjson);
+        if (verify) {
+            alert(verify);
+            throw new Error(verify);
+        }
+
         return project.encode(project.create(newjson)).finish();
+    }
+    resolveProjectSizes(file, imageSize = 0) {
+        return JSZip.loadAsync(file)
+            .then(async zip => {
+                const projectJSON = JSON.parse(await zip.file("project.json").async("text"));
+                const projectSize = this.jsonToProtobuf(projectJSON).length;
+                const targets = projectJSON.targets;
+                projectJSON.targets = [];
+                const metaSize = this.jsonToProtobuf(projectJSON).length;
+                const assets = (await Promise.all(zip
+                    .filter((name, file) => 
+                            !file.dir && 
+                            name !== 'project.json')
+                    .map(async file => [await file.async('blob'), file.name])))
+                    .reduce((c,v) => (c[v[1]] = v[0], c), {});
+
+                const statTree = [];
+                for (const target of targets) {
+                    projectJSON.targets[0] = target;
+                    const costumes = target.costumes
+                        .map(asset => [asset.name, assets[asset.md5ext]]);
+                    const sounds = target.sounds
+                        .map(asset => [asset.name, assets[asset.md5ext]]);
+
+                    const codeSize = this.jsonToProtobuf(projectJSON).length - metaSize;
+                    const costumeSize = costumes.reduce((c,v) => c + v[1].size, 0);
+                    const soundSize = sounds.reduce((c,v) => c + v[1].size, 0);
+                    const size = codeSize
+                        + costumeSize
+                        + soundSize;
+                    statTree.push({
+                        name: `${target.name}: ${MB(size)}`,
+                        value: [
+                            `code: ${MB(codeSize)}`,
+                            {
+                                name: `costumes: ${MB(costumeSize)}`,
+                                value: costumes.map(([name, asset]) => `${name}: ${MB(asset.size)}`)
+                            },
+                            {
+                                name: `sounds: ${MB(soundSize)}`,
+                                value: sounds.map(([name, asset]) => `${name}: ${MB(asset.size)}`)
+                            }
+                        ]
+                    })
+                }
+
+                const size = Object.values(assets)
+                    .reduce((c,v) => c + v.size, projectSize + imageSize);
+                return [
+                    {
+                        name: `${MB(size)}/${PUBLIC_MAX_UPLOAD_SIZE}MB`,
+                        value: [
+                        `thumbnail: ${MB(imageSize)}`,
+                        {
+                            name: `project: ${MB(size)}`,
+                            value: statTree
+                        }
+                        ]
+                    }, 
+                    size > (Number(PUBLIC_MAX_UPLOAD_SIZE) * 1024 * 1024)
+                ];
+            });
+    }
+    handleProjectFile(file, imageSize = 0) {
+        return JSZip.loadAsync(file)
+            .then(async zip => {
+                const projectJSON = JSON.parse(await zip.file("project.json").async("text"));
+                const protobuf = new Blob([this.jsonToProtobuf(projectJSON)]);
+                const assets = await Promise.all(zip
+                    .filter((name, file) => 
+                            !file.dir && 
+                            name !== 'project.json')
+                    .map(async file => [await file.async('blob'), file.name]));
+                const size = assets.reduce((c,v) => c + v[0].size, protobuf.size + imageSize);
+                if (size > (Number(PUBLIC_MAX_UPLOAD_SIZE) * 1024 * 1024)) 
+                    throw 'ProjectToLarge';
+    
+                return { protobuf, assets };
+            });
     }
 
     protobufToJson(buffer) {
         const message = project.decode(buffer);
+
         const json = project.toObject(message);
 
         const newJson = {
@@ -1609,8 +1846,8 @@ class ProjectApi {
                 id: json.monitors[monitor].id,
                 mode: json.monitors[monitor].mode,
                 opcode: json.monitors[monitor].opcode,
-                params: json.monitors[monitor].params,
-                spriteName: json.monitors[monitor].spriteName || null,
+                params: {},
+                spriteName: json.monitors[monitor].spriteName || "",
                 value: json.monitors[monitor].value,
                 width: json.monitors[monitor].width,
                 height: json.monitors[monitor].height,
@@ -1622,11 +1859,24 @@ class ProjectApi {
                 isDiscrete: json.monitors[monitor].isDiscrete
             }
 
+            for (const param in json.monitors[monitor].params) {
+                newMonitor.params[param] = JSON.parse(json.monitors[monitor].params[param]);
+            }
+
             newJson.monitors.push(newMonitor);
         }
 
+        for (const extensionData in json.antiSigmaExtensionData) {
+            // "legacy" shit
+            newJson.extensionData[extensionData] = json.extensionData[extensionData].data;
+        }
+
         for (const extensionData in json.extensionData) {
-            newJson.extensionData[extensionData] = JSON.parse(json.extensionData[extensionData]);
+            if (json.extensionData[extensionData].parse) {
+                newJson.extensionData[extensionData] = JSON.parse(json.extensionData[extensionData].data);
+            } else {
+                newJson.extensionData[extensionData] = json.extensionData[extensionData].data;
+            }
         }
 
         for (const extensionURL in json.extensionURLs) {
@@ -1646,51 +1896,40 @@ class ProjectApi {
 
 
         return new Promise(async (resolve, reject) => {
-            JSZip.loadAsync(data.project).then(async zip => {
-                const projectJSON = JSON.parse(await zip.file("project.json").async("text"))
-
-                const protobuf = this.jsonToProtobuf(projectJSON);
-
-                const assets = [];
-                zip.forEach((relativePath, file) => {
-                    if (file.dir) return;
-                    if (relativePath === "project.json") return;
-                    assets.push(file);
+            const { protobuf, assets } = await this.handleProjectFile(data.project, data.image.size)
+                .catch(err => {
+                    reject(err);
+                    return { protobuf: null, assets: [] };
                 });
-                
-                const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/uploadProject`;
-                const request = new XMLHttpRequest();
-                const formData = new FormData();
+            if (!protobuf) return;
 
-                request.open("POST", API_ENDPOINT, true);
-                request.onload = () => {
-                    const response = JSON.parse(request.response);
+            const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/uploadProject`;
+            const request = new XMLHttpRequest();
+            const formData = new FormData();
 
-                    if (response.error) {
-                        reject(response.error);
-                        return;
-                    }
+            request.open("POST", API_ENDPOINT, true);
+            request.onload = () => {
+                const response = JSON.parse(request.response);
 
-                    resolve(response.id);
-                };
-
-                formData.append("username", username);
-                formData.append("token", token);
-                formData.append("title", title);
-                formData.append("instructions", instructions);
-                formData.append("notes", notes);
-                formData.append("remix", remix);
-
-                for (let i = 0; i < assets.length; i++) {
-                    // convert to blob
-                    formData.append("assets", await assets[i].async("blob"), assets[i].name);
+                if (response.error) {
+                    reject(response.error);
+                    return;
                 }
 
-                formData.append("jsonFile", new Blob([protobuf]));
-                formData.append("thumbnail", data.image);
+                resolve(response.id);
+            };
 
-                request.send(formData);
-            });
+            formData.append("username", username);
+            formData.append("token", token);
+            formData.append("title", title);
+            formData.append("instructions", instructions);
+            formData.append("notes", notes);
+            formData.append("remix", remix);
+            assets.forEach(ent => formData.append("assets", ...ent))
+            formData.append("jsonFile", protobuf);
+            formData.append("thumbnail", data.image);
+
+            request.send(formData);
         });
     }
 
@@ -1712,10 +1951,21 @@ class ProjectApi {
             })
         })
     }
-    featureProject(id, webhook) {
-        const url = `${OriginApiUrl}/api/projects/feature?token=${this.token}&approver=${this.username}&webhook=${webhook}&id=${id}`;
+    featureProject(id, value) {
+        const body = JSON.stringify({
+            username: this.username,
+            token: this.token,
+            projectID: id,
+            toggle: value,
+        });
         return new Promise((resolve, reject) => {
-            fetch(url).then(res => {
+            fetch(`${OriginApiUrl}/api/v1/projects/manualfeature`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
                 res.json().then(json => {
                     if (!res.ok) {
                         reject(json.error);
@@ -1728,7 +1978,7 @@ class ProjectApi {
             }).catch(err => {
                 reject(err);
             })
-        })
+        });
     }
 
     toggleVoteProject(id, type, toggle) {
@@ -2007,6 +2257,28 @@ class ProjectApi {
         });
     }
 
+    getConnectedUsers(ip) {
+        const url = `${OriginApiUrl}/api/v1/users/getAllAccountsWithIP`
+
+        const query = `?username=${this.username}&token=${this.token}&target=${ip}`;
+
+        return new Promise((resolve, reject) => {
+            fetch(url + query).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve(json.users);
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
+
     banIP(ip, toggle) {
         const url = `${OriginApiUrl}/api/v1/users/banip`;
 
@@ -2071,6 +2343,38 @@ class ProjectApi {
             })
         });
     }
+    setUsernameOfUser(targetUsername, newName) {
+        const url = `${OriginApiUrl}/api/v1/users/changeusernameadmin`;
+
+        const body = JSON.stringify({
+            username: this.username,
+            token: this.token,
+            target: targetUsername,
+            newUsername: newName,
+        });
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
     setPFP(file) {
         return new Promise((resolve, reject) => {
             const API_ENDPOINT = `${OriginApiUrl}/api/v1/users/setpfp?username=${this.username}&token=${this.token}`;
@@ -2089,6 +2393,32 @@ class ProjectApi {
                 resolve();
             };
 
+            formData.append("picture", new Blob([file]));
+
+            request.send(formData);
+        });
+    }
+    setPFPOfUser(target, file) {
+        return new Promise((resolve, reject) => {
+            const API_ENDPOINT = `${OriginApiUrl}/api/v1/users/setpfpadmin`;
+            const request = new XMLHttpRequest();
+            const formData = new FormData();
+
+            request.open("POST", API_ENDPOINT, true);
+            request.onload = () => {
+                const response = JSON.parse(request.response);
+
+                if (response.error) {
+                    reject(response.error);
+                    return;
+                }
+
+                resolve();
+            };
+
+            formData.append("username", this.username);
+            formData.append("token", this.token);
+            formData.append("target", target);
             formData.append("picture", new Blob([file]));
 
             request.send(formData);

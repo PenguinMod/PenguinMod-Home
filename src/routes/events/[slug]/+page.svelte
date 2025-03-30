@@ -9,7 +9,7 @@
 
     // import { onMount } from "svelte";
     import MarkdownIt from "markdown-it";
-    import EventPages from "../../../events/pages";
+    import EventPages from "../../../resources/markdown/events/pages";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../../resources/translations.js";
@@ -136,7 +136,7 @@
     {/if}
     
     {#if eventHost}
-        <p>
+        <p><i>
             {String(TranslationHandler.text(
                 "event.host",
                 currentLang
@@ -145,10 +145,10 @@
                 'en'
             ))
             .replace('$1', eventHost)}
-        </p>
+        </i></p>
     {/if}
     {#if eventCollaborator}
-        <p>
+        <p><i>
             {String(TranslationHandler.text(
                 "event.collab",
                 currentLang
@@ -157,11 +157,11 @@
                 'en'
             ))
             .replace('$1', eventCollaborator)}
-        </p>
+        </i></p>
     {/if}
 
     <img
-        src="/events/{language}/{eventPath}.png"
+        src="/events/{language}/{eventPath}.webp"
         alt={headerText}
         class="event-banner"
     >

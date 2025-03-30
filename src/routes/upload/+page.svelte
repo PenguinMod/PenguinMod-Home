@@ -3,7 +3,10 @@
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
     import EmojiList from "../../resources/emojis.js";
-    import { PUBLIC_STUDIO_URL } from "$env/static/public";
+    import {
+        PUBLIC_STUDIO_URL,
+        PUBLIC_MAX_UPLOAD_SIZE,
+    } from "$env/static/public";
 
     const ProjectClient = new ProjectApi();
 
@@ -17,12 +20,13 @@
     import ClickableProject from "$lib/ClickableProject/Project.svelte";
     import Button from "$lib/Button/Button.svelte";
     import StatusAlert from "$lib/Alert/StatusAlert.svelte";
+    import Stats from "../../lib/statsComponent/stats.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
     // Icons
-    import SearchSVG from "../../icons/Search/icon.svelte";
+    import SearchSVG from "../../resources/icons/Search/icon.svelte";
 
     let projectName = "";
     let currentLang = "en";
@@ -45,6 +49,25 @@
     let projectImage;
     let projectImageURL;
     let projectData;
+    let projectSizes = { name: `0/${PUBLIC_MAX_UPLOAD_SIZE}MB`, value: [] };
+    function updateSize() {
+        projectSizes[0] = `thumbnail: ${((projectImage?.size ?? 0) / 1024 / 1024).toFixed(2)}MB`;
+        if (projectData)
+            ProjectClient.resolveProjectSizes(
+                projectData,
+                projectImage?.size ?? 0,
+                true
+            ).then(([sizes, toLarge]) => {
+                projectSizes = sizes;
+                if (toLarge)
+                    alert(
+                        TranslationHandler.text(
+                            "uploading.error.projecttoolarge",
+                            currentLang
+                        )
+                    );
+            });
+    }
 
     let projectInputName;
     let remixingProjectName;
@@ -55,13 +78,176 @@
     let remixedInURL = false;
 
     let projectPageType = "remix";
-    let projectPage = 0;
+    let projectPage = 0,
+        projectPageSearch = 0;
     let lastProjectPage = false;
 
+    let recommendedTagList = [];
+    let recommendedTagUpdate = 0;
     const components = {
         projectName: null,
         projectInstructions: null,
         projectNotes: null,
+    };
+
+    const updateRecommendedTags = () => {
+        const combinedText = `${String(components.projectName.value)} ${String(components.projectInstructions.value)} ${String(components.projectNotes.value)}`;
+        const normalizedText = combinedText
+            .toLowerCase()
+            .replace(/[\s\-_\W]+/gi, "");
+        recommendedTagList = [];
+
+        const hashtags = combinedText.match(/#([\w-]+)/g) || [];
+
+        // Frontpage-able tags:
+        if (
+            normalizedText.includes("game") ||
+            normalizedText.includes("playable")
+        ) {
+            recommendedTagList.push("games");
+        }
+        if (
+            normalizedText.includes("animation") ||
+            normalizedText.includes("animated") ||
+            normalizedText.includes("animate")
+        ) {
+            recommendedTagList.push("animation");
+        }
+        if (
+            normalizedText.includes("art") ||
+            normalizedText.includes("drawn") ||
+            normalizedText.includes("drawing") ||
+            normalizedText.includes("paint")
+        ) {
+            recommendedTagList.push("art");
+        }
+        if (
+            normalizedText.includes("platform") ||
+            normalizedText.includes("jumping")
+        ) {
+            recommendedTagList.push("platformer");
+        }
+        if (
+            normalizedText.includes("rpg") ||
+            normalizedText.includes("roguelike")
+        ) {
+            recommendedTagList.push("rpg");
+        }
+        if (
+            normalizedText.includes("story") ||
+            normalizedText.includes("lore")
+        ) {
+            recommendedTagList.push("story");
+        }
+        if (
+            normalizedText.includes("minigame") ||
+            normalizedText.includes("warioware")
+        ) {
+            recommendedTagList.push("minigames");
+        }
+        if (
+            normalizedText.includes("online") ||
+            normalizedText.includes("multiplayer") ||
+            normalizedText.includes("cloudlink")
+        ) {
+            recommendedTagList.push("online");
+        }
+        if (
+            normalizedText.includes("remade") ||
+            normalizedText.includes("remake") ||
+            normalizedText.includes("demake")
+        ) {
+            recommendedTagList.push("remake");
+        }
+        if (
+            normalizedText.includes("physics") ||
+            normalizedText.includes("box2d")
+        ) {
+            recommendedTagList.push("physics");
+        }
+        if (normalizedText.includes("contest")) {
+            recommendedTagList.push("contest");
+        }
+        if (
+            normalizedText.includes("horror") ||
+            normalizedText.includes("scary") ||
+            normalizedText.includes("spook") ||
+            normalizedText.includes("spoop") ||
+            normalizedText.includes("halloween")
+        ) {
+            recommendedTagList.push("horror");
+        }
+        if (
+            normalizedText.includes("tutorial") ||
+            normalizedText.includes("teach")
+        ) {
+            recommendedTagList.push("tutorial");
+        }
+        if (normalizedText.includes("3d")) {
+            recommendedTagList.push("3d");
+        }
+        if (normalizedText.includes("2d")) {
+            recommendedTagList.push("2d");
+        }
+        if (normalizedText.includes("dimension")) {
+            recommendedTagList.push("3d");
+            recommendedTagList.push("2d");
+        }
+
+        // Misc
+        if (
+            normalizedText.includes("clicker") ||
+            normalizedText.includes("clicking")
+        ) {
+            recommendedTagList.push("clicker");
+        }
+        if (
+            normalizedText.includes("metroid") ||
+            normalizedText.includes("metroidvania")
+        ) {
+            recommendedTagList.push("metroidvania");
+        }
+        if (
+            normalizedText.includes("towerdefense") ||
+            normalizedText.includes("btd") ||
+            normalizedText.includes("bloonstd")
+        ) {
+            recommendedTagList.push("towerdefense");
+        }
+        if (
+            normalizedText.includes("christmas") ||
+            normalizedText.includes("festive") ||
+            normalizedText.includes("xmas") ||
+            normalizedText.includes("presents")
+        ) {
+            recommendedTagList.push("christmas");
+        }
+        if (normalizedText.includes("aprilfools")) {
+            recommendedTagList.push("aprilfools");
+        }
+
+        // remove recommended tags present inside the text
+        for (const hashtag of hashtags) {
+            recommendedTagList = recommendedTagList.filter(
+                (recommendedTag) => `#${recommendedTag}` !== hashtag
+            );
+        }
+        // remove duplicate tags
+        recommendedTagList = [...new Set(recommendedTagList)];
+        recommendedTagUpdate += 1;
+    };
+    const clickOnRecommendedTag = (tagText) => {
+        const originalText = String(components.projectNotes.value);
+        if (
+            originalText.endsWith(" ") ||
+            originalText.length <= 0 ||
+            originalText.match(/^[\s]+$/gi)
+        ) {
+            components.projectNotes.value += `#${tagText}`;
+        } else {
+            components.projectNotes.value += ` #${tagText}`;
+        }
+        updateRecommendedTags();
     };
 
     function floatTo2Decimals(number) {
@@ -76,12 +262,15 @@
     }
 
     function dataURLtoBlob(dataurl) {
-        var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-        while(n--){
+        var arr = dataurl.split(","),
+            mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]),
+            n = bstr.length,
+            u8arr = new Uint8Array(n);
+        while (n--) {
             u8arr[n] = bstr.charCodeAt(n);
         }
-        return new Blob([u8arr], {type:mime});
+        return new Blob([u8arr], { type: mime });
     }
 
     onMount(async () => {
@@ -145,7 +334,7 @@
             }
             // when WE get a post from PM
             window.addEventListener("message", (e) => {
-                if (e.origin !== importLocation) { // disable if running locally
+                if (e.origin !== importLocation) {
                     return;
                 }
                 const data = e.data && e.data.p4;
@@ -160,10 +349,12 @@
                 if (data.type === "image") {
                     projectImageURL = data.uri;
                     projectImage = dataURLtoBlob(data.uri);
+                    updateSize();
                 }
                 // project: uri of project data
                 if (data.type === "project") {
                     projectData = dataURLtoBlob(data.uri);
+                    updateSize();
                 }
 
                 // we done here
@@ -196,6 +387,7 @@
         input = input.target;
         projectImage = input.files[0];
         projectImageURL = await filePicked(projectImage);
+        updateSize();
     }
     async function projectFilePicked(input) {
         input = input.target;
@@ -208,6 +400,7 @@
         )
             .replace("$2", floatTo2Decimals(file.size / 1250000))
             .replace("$1", file.name);
+        updateSize();
     }
 
     let isBusyUploading = false;
@@ -216,7 +409,9 @@
         isBusyUploading = true;
 
         if (!projectImage) {
-            projectImage = await fetch("/empty-project.png").then(res => res.blob());
+            projectImage = await fetch("/empty-project.png").then((res) =>
+                res.blob()
+            );
         }
 
         ProjectClient.uploadProject({
@@ -227,23 +422,53 @@
             remix: remixProjectId,
             project: projectData,
         })
-        .then((projectId) => {
-            window.open(`${PUBLIC_STUDIO_URL}/#${projectId}`);
-        })
+            .then((projectId) => open(`${PUBLIC_STUDIO_URL}/#${projectId}`))
             .catch((err) => {
-                const message = TranslationHandler.text(
-                    `uploading.error.${String(err).toLowerCase()}`,
-                    currentLang
-                );
-                if (!message)
-                    return alert(
-                        String(
-                            TranslationHandler.text(
-                                "uploading.error.unknown",
-                                currentLang
-                            )
-                        ).replace("$1", err)
+                let message = "";
+                switch (err) {
+                    case "Uploaded in the last 8 minutes":
+                        message = TranslationHandler.textSafe(
+                            "uploading.error.toomanyrequests",
+                            currentLang,
+                            "You can only upload projects every 8 minutes."
+                        );
+                        break;
+                    case "Uploading is disabled":
+                        message = TranslationHandler.textSafe(
+                            "uploading.error.publishdisabled",
+                            currentLang,
+                            "We are undergoing maintenance, so you are not able to upload projects at this time."
+                        );
+                        break;
+                    case "Missing json file, thumbnail, or assets":
+                        message = TranslationHandler.textSafe(
+                            "uploading.error.formaterror",
+                            currentLang,
+                            "Some values are not right. Check that all required fields are filled."
+                        );
+                        break;
+                    case "IllegalWordsUsed":
+                        message = TranslationHandler.textSafe(
+                            "uploading.error.illegalwordsused",
+                            currentLang,
+                            "Words or phrases were used that are not allowed in PenguinMod. Please check through your project's details for any inappropriate words or phrases."
+                        );
+                        break;
+                    default:
+                        message = TranslationHandler.textSafe(
+                            "uploading.error.unknown",
+                            currentLang,
+                            "Unknown error. The file may be too large or something unexpected happened. Full error: $1"
+                        ).replace("$1", err);
+                        break;
+                }
+                if (String(err).startsWith("Extension not allowed:")) {
+                    message = TranslationHandler.textSafe(
+                        "uploading.error.cannotusethisextensionforthisrank",
+                        currentLang,
+                        "You cannot upload this project yet as it contains custom extensions or certain blocked extensions. Upload a few other projects and wait a few days to rank up before you can post this project."
                     );
+                }
                 alert(message);
             })
             .finally(() => {
@@ -261,34 +486,50 @@
         ProjectClient.setToken(privateCode);
     });
 
-    let canRemix = [];
     let otherProjects = [];
+    let canRemix = [];
 
     let remixPageOpen = false;
     let updatePageOpen = false;
     let guidelinePageOpen = false;
 
-    function incrementPageAndAddToMenu(pageType) {
-        projectPage += 1;
+    async function incrementPageAndAddToMenu(pageType) {
         // todo: not this thats for sure
         //       just do one of them and then await it idk
         //       gonna do that later
         //       (aka in like 3 months when i finally look at this code again)
         if (pageType === "remix") {
-            ProjectApi.getProjects(projectPage).then((projectss) => {
-                canRemix.push(...projectss);
-                canRemix = canRemix;
-                if (projectss.length <= 0) {
-                    lastProjectPage = true;
-                }
-            });
+            if ((projectRemixSearchQuery ?? "").trim() !== "") {
+                projectPageSearch += 1;
+
+                ProjectApi.searchProjects(
+                    projectPageSearch ?? 0,
+                    projectRemixSearchQuery.trim(),
+                    ProjectClient.username,
+                    ProjectClient.token
+                ).then((meta) => {
+                    let projectss = meta.filter(
+                        (p) => !canRemix.some((i) => i.id === p.id)
+                    );
+                    canRemix = [...projectss, ...canRemix];
+                    canRemix = canRemix;
+
+                    lastProjectPage = projectss.length <= 0;
+                });
+            } else {
+                projectPageSearch = 0;
+                projectPage += 1;
+                ProjectApi.getProjects(projectPage).then((projectss) => {
+                    canRemix.push(...projectss);
+                    canRemix = canRemix;
+                    lastProjectPage = projectss.length <= 0;
+                });
+            }
         } else {
             ProjectClient.getMyProjects(projectPage).then((projectss) => {
                 otherProjects.push(...projectss);
                 otherProjects = otherProjects;
-                if (projectss.length <= 0) {
-                    lastProjectPage = true;
-                }
+                lastProjectPage = projectss.length <= 0;
             });
         }
     }
@@ -296,9 +537,11 @@
     function openRemixMenu() {
         canRemix = [];
         projectPage = 0;
+        projectPageSearch = 0;
         lastProjectPage = false;
         projectPageType = "remix";
         remixPageOpen = true;
+
         ProjectApi.getProjects(projectPage).then((projects) => {
             canRemix = projects;
         });
@@ -318,6 +561,39 @@
     function generateExportEditPageForId(id) {
         const origin = String(_window.location.origin);
         return `${origin}/edit?id=${id}&external=${origin}`;
+    }
+
+    function projectRemixSearchInputFnc() {
+        if (/^[0-9]+$/.test(projectRemixSearchQuery)) {
+            if (canRemix.some((i) => i.id === projectRemixSearchQuery)) return;
+
+            ProjectApi.getProjectMeta(projectRemixSearchQuery.trim())
+                .then((meta) => {
+                    canRemix.push(meta);
+                    canRemix = canRemix;
+                })
+                .catch((_err) => console.warn("that's not a project id"));
+        } else {
+            projectPageSearch = 0;
+            ProjectApi.searchProjects(
+                0,
+                projectRemixSearchQuery.trim(),
+                ProjectClient.username,
+                ProjectClient.token
+            )
+                .then((meta) => {
+                    let filteredMeta = meta.filter(
+                        (p) => !canRemix.some((i) => i.id === p.id)
+                    );
+                    canRemix = [...filteredMeta, ...canRemix];
+                    canRemix = canRemix;
+
+                    if (filteredMeta.length <= 0) {
+                        lastProjectPage = true;
+                    }
+                })
+                .catch((error) => console.error(error));
+        }
     }
 
     onMount(() => {
@@ -381,8 +657,7 @@
 
     function selectToRemixProject(id, title) {
         remixProjectId = String(id);
-        if (isNaN(remixProjectId) || remixProjectId < 0)
-            remixProjectId = 0;
+        if (isNaN(remixProjectId) || remixProjectId < 0) remixProjectId = 0;
         remixingProjectName = title;
         remixPageOpen = false;
     }
@@ -396,47 +671,51 @@
     // EMOJIS eae
 
     const emojiPickerRandomEmojis = [
-        'angel',
-        'angry',
-        'annoyed',
-        'bigsad',
-        'disappointed',
-        'happy',
-        'idk',
-        'meh',
-        'salute',
-        'shocked',
-        'sobbing',
-        'worried',
-        'investigate',
-        'grimacing',
-        'confusedthinking',
-        'cool',
+        "angel",
+        "angry",
+        "annoyed",
+        "bigsad",
+        "disappointed",
+        "happy",
+        "idk",
+        "meh",
+        "salute",
+        "shocked",
+        "sobbing",
+        "worried",
+        "investigate",
+        "grimacing",
+        "confusedthinking",
+        "cool",
+        "tada",
     ];
-    let emojiPickerRandomEmoji = '';
-    let emojiSearchQuery = '';
+    let emojiPickerRandomEmoji = "";
+    let emojiSearchQuery = "";
     let emojiSearchBar;
+    let projectRemixSearchQuery = "";
     let lastSelectedFormArea;
     const pickRandomEmojiPickerDisplay = () => {
-        emojiPickerRandomEmoji = emojiPickerRandomEmojis
-            [Math.round(Math.random() * (emojiPickerRandomEmojis.length - 1))];
+        emojiPickerRandomEmoji =
+            emojiPickerRandomEmojis[
+                Math.round(Math.random() * (emojiPickerRandomEmojis.length - 1))
+            ];
     };
     pickRandomEmojiPickerDisplay();
 
     let emojiPickerListUpdate = 0;
     const allowEmojiDrop = (ev) => {
         const data = ev.dataTransfer.getData("emoji");
-        if (data && typeof data === 'string') {
+        if (data && typeof data === "string") {
             ev.preventDefault();
         }
-    }
+    };
     const useEmojiDrag = (ev, name) => {
         ev.dataTransfer.setData("emoji", name);
-    }
+    };
     const handleEmojiDrop = (ev) => {
         const data = ev.dataTransfer.getData("emoji");
-        if (data && typeof data === 'string') {
-            ev.dataTransfer.setData("emoji", '');
+        if (data && typeof data === "string") {
+            ev.dataTransfer.setData("emoji", "");
             ev.preventDefault();
         } else {
             return;
@@ -447,7 +726,7 @@
             emojiSearchQuery = emojiSearchBar.value;
         }
         emojiPickerListUpdate++;
-    }
+    };
     const placeEmojiInTextbox = (emoji) => {
         if (!lastSelectedFormArea) return;
         lastSelectedFormArea.value += `:${emoji}:`;
@@ -459,13 +738,13 @@
 
     let emojiPickerOpened = false;
     onMount(() => {
-        components.projectName.addEventListener('click', (e) => {
+        components.projectName.addEventListener("click", (e) => {
             lastSelectedFormArea = e.target;
         });
-        components.projectInstructions.addEventListener('click', (e) => {
+        components.projectInstructions.addEventListener("click", (e) => {
             lastSelectedFormArea = e.target;
         });
-        components.projectNotes.addEventListener('click', (e) => {
+        components.projectNotes.addEventListener("click", (e) => {
             lastSelectedFormArea = e.target;
         });
         EmojiList.fetch().finally(() => {
@@ -476,13 +755,19 @@
 
 <svelte:head>
     <title>PenguinMod - Upload</title>
-    <meta name="title"                   content="PenguinMod - Upload" />
-    <meta property="og:title"            content="PenguinMod - Upload" />
-    <meta property="twitter:title"       content="PenguinMod - Upload">
-    <meta name="description"             content="Upload your project to PenguinMod, for the whole world to see.">
-    <meta property="twitter:description" content="Upload your project to PenguinMod, for the whole world to see.">
-    <meta property="og:url"              content="https://penguinmod.com/upload">
-    <meta property="twitter:url"         content="https://penguinmod.com/upload">
+    <meta name="title" content="PenguinMod - Upload" />
+    <meta property="og:title" content="PenguinMod - Upload" />
+    <meta property="twitter:title" content="PenguinMod - Upload" />
+    <meta
+        name="description"
+        content="Upload your project to PenguinMod, for the whole world to see."
+    />
+    <meta
+        property="twitter:description"
+        content="Upload your project to PenguinMod, for the whole world to see."
+    />
+    <meta property="og:url" content="https://penguinmod.com/upload" />
+    <meta property="twitter:url" content="https://penguinmod.com/upload" />
 </svelte:head>
 
 <NavigationBar />
@@ -521,7 +806,7 @@
                         <ClickableProject
                             id={project.id}
                             title={project.title}
-                            author={username}
+                            author={project.author.username ?? username}
                             lastUpdate={project.lastUpdate}
                             featured={project.featured}
                             showdate={true}
@@ -569,24 +854,56 @@
                         />
                     </h1>
                 </div>
+                <div class="search-input">
+                    <input
+                        type="text"
+                        placeholder={TranslationHandler.textSafe(
+                            "navigation.search",
+                            currentLang,
+                            "Search for projects..."
+                        )}
+                        on:paste={() => {
+                            projectRemixSearchInputFnc();
+                        }}
+                        bind:value={projectRemixSearchQuery}
+                        on:input={() => {
+                            lastProjectPage = false;
+                        }}
+                    />
+                    <Button
+                        on:click={() => {
+                            projectRemixSearchInputFnc();
+                        }}
+                    >
+                        <SearchSVG
+                            width="22px"
+                            height="22px"
+                            color="#ffffff"
+                            scale="2px"
+                        />
+                    </Button>
+                </div>
                 <div class="card-projects">
                     {#each canRemix as project}
                         <ClickableProject
                             id={project.id}
                             title={project.title}
-                            author={project.author}
-                            date={project.date}
+                            author={project.author.username}
+                            lastUpdate={project.lastUpdate}
                             featured={project.featured}
                             showdate={true}
-                            on:click={() => {selectToRemixProject(project.id, project.title)}}
+                            on:click={() => {
+                                selectToRemixProject(project.id, project.title);
+                            }}
                         />
                     {/each}
                     {#if !lastProjectPage}
                         <!-- todo: should this really look the way it does? -->
                         <Button
                             label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
-                            on:click={() =>
-                                incrementPageAndAddToMenu(projectPageType)}
+                            on:click={() => {
+                                incrementPageAndAddToMenu(projectPageType);
+                            }}
                         />
                     {/if}
                 </div>
@@ -622,11 +939,11 @@
                 <div class="card-projects">
                     <iframe
                         title="Guidelines Page"
-                        src="https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS"
+                        src="https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
                     />
                 </div>
                 <a
-                    href="https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS"
+                    href="https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS"
                     style="margin-top:6px;color:dodgerblue"
                     target="_blank"
                 >
@@ -695,7 +1012,7 @@
                     on:dragstart={(ev) => {
                         useEmojiDrag(ev, emojiPickerRandomEmoji);
                     }}
-                >
+                />
             </button>
             <div class="emoji-picker-list" data-opened={emojiPickerOpened}>
                 <div class="emoji-picker-search-container">
@@ -715,7 +1032,7 @@
                         placeholder="..."
                         bind:value={emojiSearchQuery}
                         bind:this={emojiSearchBar}
-                    >
+                    />
                 </div>
                 <div class="emoji-picker-emoji-container">
                     {#key emojiPickerListUpdate}
@@ -731,24 +1048,20 @@
                             </p>
                         {:else}
                             {#each EmojiList.emojis as emoji}
-                                {#if
-                                    !emojiSearchQuery
-                                    || String(emoji).includes(
-                                        emojiSearchQuery
+                                {#if !emojiSearchQuery || String(emoji).includes(emojiSearchQuery
                                             .toLowerCase()
-                                            .replace(/[^a-z]+/gmi, '')
-                                    )
-                                }
+                                            .replace(/[^a-z]+/gim, ""))}
                                     <button
                                         class="emoji-picker-emoji"
-                                        on:click={() => placeEmojiInTextbox(emoji)}
+                                        on:click={() =>
+                                            placeEmojiInTextbox(emoji)}
                                     >
                                         <img
                                             src={`https://library.penguinmod.com/files/emojis/${emoji}.png`}
                                             alt={`:${emoji}:`}
                                             title={`:${emoji}:`}
                                             draggable="false"
-                                        >
+                                        />
                                     </button>
                                 {/if}
                             {/each}
@@ -774,6 +1087,7 @@
                             currentLang
                         )}
                         bind:this={components.projectName}
+                        on:input={updateRecommendedTags}
                         on:dragover={allowEmojiDrop}
                         on:drop={handleEmojiDrop}
                         value={projectName}
@@ -791,6 +1105,7 @@
                             currentLang
                         )}
                         bind:this={components.projectInstructions}
+                        on:input={updateRecommendedTags}
                         on:dragover={allowEmojiDrop}
                         on:drop={handleEmojiDrop}
                     />
@@ -807,9 +1122,21 @@
                             currentLang
                         )}
                         bind:this={components.projectNotes}
+                        on:input={updateRecommendedTags}
                         on:dragover={allowEmojiDrop}
                         on:drop={handleEmojiDrop}
                     />
+                    {#key recommendedTagUpdate}
+                        {#each recommendedTagList as recommendedTag}
+                            <button
+                                class="recommended-tag"
+                                on:click={() =>
+                                    clickOnRecommendedTag(recommendedTag)}
+                            >
+                                + #{recommendedTag}
+                            </button>
+                        {/each}
+                    {/key}
                     <input
                         id="FILERI"
                         type="file"
@@ -846,7 +1173,9 @@
                 </div>
                 <div style="width:50%;">
                     <img
-                        src={projectImage ? projectImageURL : "/empty-project.png"}
+                        src={projectImage
+                            ? projectImageURL
+                            : "/empty-project.png"}
                         style="border-width:1px;border-style:solid;border-color:rgba(0, 0, 0, 0.1);width:100%;"
                         alt="Project Thumbnail"
                     />
@@ -864,10 +1193,12 @@
                             lang={currentLang}
                         />
                     </label>
+                    <hr />
+                    <Stats stats_data={[projectSizes]} render={true}></Stats>
                 </div>
             </div>
             <div style="display:flex;flex-direction:row;margin-top:48px">
-                {#if loggedIn && projectData !== undefined}
+                {#if loggedIn && projectData}
                     <div>
                         {#if remixingProjectName}
                             <p>
@@ -893,7 +1224,10 @@
                                     </div>
                                 </div>
                             {:else}
-                                <Button icon="upload.svg" on:click={uploadProject}>
+                                <Button
+                                    icon="upload.svg"
+                                    on:click={uploadProject}
+                                >
                                     <LocalizedText
                                         text="Upload"
                                         key="uploading.type.upload"
@@ -1088,15 +1422,15 @@
         width: 56px;
         height: 56px;
         transform: scale(1);
-        transition-duration: 0.5s;
+        transition-duration: 0.3s;
     }
     .emoji-picker-button:hover img {
-        transform: scale(1.5);
-        transition-duration: 0.5s;
+        transform: scale(1.2);
+        transition-duration: 0.3s;
     }
     .emoji-picker-button:active img {
-        filter: brightness(0.7);
-        transition-duration: 0s;
+        filter: brightness(0.8);
+        transition-duration: 0.1s;
     }
     .emoji-picker-list {
         position: absolute;
@@ -1180,6 +1514,21 @@
         background: rgba(255, 255, 255, 0.15);
     }
 
+    .recommended-tag {
+        background: #00c3ff;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        border-radius: 4px;
+        padding: 2px 4px;
+        margin-right: 4px;
+        margin-bottom: 4px;
+        color: white;
+        cursor: pointer;
+    }
+    :global(html[dir="rtl"]) .recommended-tag {
+        margin-right: initial;
+        margin-left: 4px;
+    }
+
     .card {
         width: 60%;
         padding: 32px;
@@ -1215,6 +1564,7 @@
         width: 100%;
         border: 0px;
         padding: 0.25rem 0;
+        margin-bottom: 0.5rem;
         outline: 0;
         cursor: pointer;
         font-weight: bold;
@@ -1290,7 +1640,6 @@
         overflow: auto;
         height: 100%;
     }
-
     .guidelines-link {
         background: transparent;
         border: 0;
@@ -1298,6 +1647,20 @@
         text-decoration: underline;
         cursor: pointer;
     }
+    .search-input {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        width: 80%;
+    }
+    .search-input input {
+        box-sizing: border-box;
+        width: 100%;
+        margin: 5px;
+        font-size: 20px;
+        flex: 1;
+    }
+
     /* iframe {
         width: 100%;
         border: 0;

@@ -9,6 +9,7 @@
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
+    import Captcha from "$lib/Captcha.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import Language from "../../resources/language.js";
@@ -27,9 +28,10 @@
     let sendingEmail = false;
     let emailValid = false;
     let embed = false;
+    let captcha_token = false;
 
     async function sendEmail() {
-        await Authentication.sendResetPasswordEmail(email);
+        await Authentication.sendResetPasswordEmail(email, captcha_token);
         alert("Check your email.");
     }
     const sendEmailSafe = () => {
@@ -82,9 +84,17 @@
         ) ? true : false;
     };
 
-    function emailInputChanged(event) {
-        emailValid = validateEmail(event.target.value);
+    function emailInputChanged() {
+        email = event.target.value;
+        checkIfValid();
     }
+
+    function checkIfValid() {
+        emailValid = validateEmail(email);
+        canCreate = emailValid && captcha_token;
+    }
+
+    let canCreate = false;
 </script>
     
 <svelte:head>
@@ -139,7 +149,11 @@
             bind:value={email}
         />
 
-        <button class="send-email" data-canCreate={emailValid} on:click={sendEmailSafe}>
+        <Captcha on:update={(event) => {
+            captcha_token = event.detail;
+        }} />
+
+        <button class="send-email" data-canCreate={canCreate} on:click={sendEmailSafe}>
             {#if sendingEmail}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}

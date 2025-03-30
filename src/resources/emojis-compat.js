@@ -138,6 +138,7 @@ const emojiList = [
   "joe",
   "laughing",
   "lock",
+  "loud",
   "lostinconfusion",
   "lucky",
   "lying",
@@ -153,6 +154,7 @@ const emojiList = [
   "moneybag",
   "moon",
   "mushroom",
+  "muted",
   "nerd",
   "nervous",
   "nodhorizontal",
@@ -217,6 +219,7 @@ const emojiList = [
   "skull",
   "skullcowboy",
   "sleeping",
+  "sound",
   "smallcry",
   "smallpassiveaggressive",
   "smallsmile",
@@ -225,6 +228,7 @@ const emojiList = [
   "snoring",
   "sobbing",
   "speaking",
+  "speaker",
   "speech",
   "star",
   "stars",
@@ -236,6 +240,7 @@ const emojiList = [
   "sushi",
   "suspicious",
   "sweating",
+  "tada",
   "tasty",
   "tear",
   "tears",
@@ -273,7 +278,20 @@ const emojiList = [
   "xsimple",
   "yawn",
   "zipper",
-];
+  "chart",
+  "lowering_chart",
+  "risingchart",
+  "bell",
+  "no_bell",
+  "laptop",
+  "person_running",
+  "person_walking",
+  "arrow_left",
+  "arrow_up",
+  "arrow_down",
+  "arrow_right",
+  "penguin"
+].sort();
 
 export function mockRequest() {
     return emojiList;

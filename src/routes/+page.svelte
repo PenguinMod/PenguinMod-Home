@@ -11,6 +11,7 @@
 
     // Static values
     import LINK from "../resources/urls.js";
+    import LoadingTips from "$lib/LoadingSpinner/Tips.json";
 
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
@@ -29,7 +30,7 @@
     import Language from "../resources/language.js";
 
     // Icons
-    import PenguinConfusedSVG from "../icons/Penguin/confused.svelte";
+    import PenguinConfusedSVG from "../resources/icons/Penguin/confused.svelte";
 
     const isAprilFools = () => {
         const date = new Date(Date.now());
@@ -123,7 +124,7 @@
         'my g what are you doing, go back to 50%<',
         'dude, are how unlucky are you dear god',
         'dude just got owned by the js random number generater at a whoping $1% off from success'
-    ]
+    ];
     function formatNumber(num) {
         return Math.abs(num) >= 0.01 && num % 1 !== 0
             ? num.toFixed(2)
@@ -187,7 +188,7 @@
                 return TranslationHandler.text("feed.uploaded", currentLang)
                     .replace("$1", author)
                     .replace("$2", content.name);
-            case "remixed":
+            case "remix":
                 return TranslationHandler.text("feed.remixed", currentLang)
                     .replace("$1", author)
                     .replace("$2", content.name);
@@ -201,8 +202,8 @@
     const getFeedUrl = (type, author, content) => {
         switch (type) {
             case "upload":
-            case "remixed":
-                return `${PUBLIC_STUDIO_URL}/#{content.id}`;
+            case "remix":
+                return `${PUBLIC_STUDIO_URL}/#${content.id}`;
             case "posted":
                 return `/profile?user=${author}&post=${content.id}`;
             default:
@@ -211,7 +212,29 @@
     };
 
     let tagForProjects = "";
+    let loggedInAdminOrMod = false;
     onMount(async () => {
+        Language.forceUpdate();
+        const username = localStorage.getItem("username")
+        const token = localStorage.getItem("token")
+        if (!token || !username) {
+            loggedIn = false;
+            loggedInAdminOrMod = false;
+        } else {
+            const {isAdmin, isApprover} = Authentication.usernameFromCode(username, token)
+                .catch((err) => {
+                    loggedIn = false;
+                    loggedInAdminOrMod = false;
+                });
+
+            loggedInUsername = username;
+            ProjectClient.setUsername(username);
+            ProjectClient.setToken(token);
+            loggedIn = true;
+            loggedInAdminOrMod = isAdmin || isApprover;
+            getAndUpdateMyFeed();
+        }
+
         const projectId = Number(location.hash.replace("#", ""));
         if (!isNaN(projectId) && projectId != 0) {
             location.href = `${PUBLIC_STUDIO_URL}/#${projectId}`;
@@ -239,7 +262,7 @@
             });
         });
 
-        ProjectApi.getFrontPage()
+        ProjectClient.getFrontPage()
             .then(results => {
                 projects.today = results.latest;
                 projects.featured = results.featured;
@@ -257,25 +280,6 @@
 
     // login code below
     let loggedInUsername = "";
-    onMount(async () => {
-        const username = localStorage.getItem("username")
-        const token = localStorage.getItem("token")
-        if (!token || !username) {
-            loggedIn = false;
-            return;
-        }
-        Authentication.verifyToken(username, token)
-            .then(() => {
-                loggedInUsername = username;
-                ProjectClient.setUsername(username);
-                ProjectClient.setToken(token);
-                loggedIn = true;
-                getAndUpdateMyFeed();
-            })
-            .catch((err) => {
-                loggedIn = false;
-            });
-    });
 
     Authentication.onLogout(() => {
         loggedIn = false;
@@ -290,9 +294,6 @@
         return;
     });
 
-    onMount(() => {
-        Language.forceUpdate();
-    });
     Language.onChange((lang) => {
         currentLang = lang;
         langDecided = true;
@@ -331,19 +332,6 @@
         buttonHref={"/donate"}
     />
     <StatusAlert />
-    <Alert
-        onlyShowID={"youtube_secretrev:_0"}
-        text={`Join us ${unixToDisplayDate(1731283200000)} for something special! We will link a live-stream here soon.`}
-        imgSrc={"/alert_icon.svg"}
-        textBreakup={true}
-        textColor={"black"}
-        hasImage={true}
-        hasButton={true}
-        backColor="#30e360"
-        buttonText={"Visit YouTube"}
-        buttonHref={"https://www.youtube.com/@PenguinMod"}
-        buttonTooLight={true}
-    />
 
     {#if !loggedIn}
         <div class="section-info">
@@ -581,7 +569,7 @@
         {/if}
         {#if loggedIn && selectedFrontTabSelected === "feed"}
             <ContentCategory
-                header={TranslationHandler.text(
+                header={TranslationHandler.textSafe(
                     "home.sections.feed",
                     currentLang
                 )}
@@ -593,16 +581,17 @@
                                 <UserDisplay
                                     link={getFeedUrl(
                                         message.type,
-                                        message.data.username
-                                    )}
-                                    userLink={`/profile?user=${message.user.username}`}
-                                    text={getFeedText(
-                                        message.type,
-                                        message.user.username,
+                                        message.username,
                                         message.data
                                     )}
-                                    author={message.user.username}
-                                    image={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${message.user.username}`}
+                                    userLink={`/profile?user=${message.username}`}
+                                    text={getFeedText(
+                                        message.type,
+                                        message.username,
+                                        message.data
+                                    )}
+                                    author={message.username}
+                                    image={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${message.username}`}
                                 />
                             {/if}
                         {/each}
@@ -622,7 +611,7 @@
             </ContentCategory>
         {:else if !loggedIn || selectedFrontTabSelected === "commit"}
             <ContentCategory
-                header={TranslationHandler.text(
+                header={TranslationHandler.textSafe(
                     "home.sections.githubcommits",
                     currentLang
                 )}
@@ -670,7 +659,7 @@
             </ContentCategory>
         {:else if loggedIn && selectedFrontTabSelected === "new"}
             <ContentCategory
-                header={TranslationHandler.text(
+                header={TranslationHandler.textSafe(
                     "home.sections.whatsnew",
                     currentLang
                 )}
@@ -701,6 +690,50 @@
                     {/if}
                 </div>
             </ContentCategory>
+        {:else if loggedIn && selectedFrontTabSelected === "news"}
+            <ContentCategory
+                header={TranslationHandler.textSafe(
+                    "home.sections.informational",
+                    currentLang
+                )}
+            >
+                <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
+                <div class="category-news">
+                    <div class="category-news-content">
+                        <h2 style="margin-block:4px;">We're ranking PenguinJam projects!</h2>
+                        <div style="width:100%">
+                            <p>
+                                Thanks to everyone who participated in PenguinJam this year!
+                                <br />
+                                We're grading each project now. You'll likely receive your badges in January of 2025.
+                                <br />
+                                See you all next year!
+                            </p>
+                            <p>
+                                If your project <i>wasn't a game or didn't match the theme</i>, you won't be receiving <i>any</i> badge!
+                            </p>
+                            <img
+                                src="/events/news/penguinjamwinter2024.png"
+                                alt="PenguinJam Winter 2024"
+                                style="width:100%;"
+                            />
+                        </div>
+                    </div>
+                    <div class="category-footer">
+                        <p>
+                            {#if currentLang === "en"}
+                                {LoadingTips[Math.round(Math.random() * (LoadingTips.length - 1))]}
+                            {:else}
+                                <LocalizedText
+                                    text="PenguinNews is not translated in your language. Sorry! :("
+                                    key="home.sections.informational.notranslation"
+                                    lang={currentLang}
+                                />
+                            {/if}
+                        </p>
+                    </div>
+                </div>
+            </ContentCategory>
         {/if}
     </div>
     {#if loggedIn}
@@ -717,6 +750,19 @@
                     <LocalizedText
                         text="What's new?"
                         key="home.sections.whatsnew"
+                        lang={currentLang}
+                    />
+                </button>
+                <button
+                    class="section-toggle-button"
+                    data-active={selectedFrontTabSelected === "news"}
+                    on:click={() => {
+                        selectedFrontTabSelected = "news";
+                    }}
+                >
+                    <LocalizedText
+                        text="PenguinNews"
+                        key="home.sections.informational"
                         lang={currentLang}
                     />
                 </button>
@@ -854,6 +900,19 @@
                     {#each projects.voted as project}
                         <Project {...project} />
                     {/each}
+                {:else if projectsLoaded === true}
+                    <div
+                        style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                    >
+                        <PenguinConfusedSVG width="8rem" />
+                        <p>
+                            <LocalizedText
+                                text="Nothing found. You can help feature projects by clicking the yellow checkmark below them."
+                                key="home.none.featured"
+                                lang={currentLang}
+                            />
+                        </p>
+                    </div>
                 {:else if projectsFailed === true}
                     <div
                         style="display:flex;flex-direction:column;align-items: center;width: 100%;"
@@ -881,8 +940,8 @@
                 header={String(TranslationHandler.text(
                     "home.sections.sortedbytag",
                     currentLang
-                )).replace('$1', tagForProjects)}
-                seemore={`/search?q=%23${tagForProjects}`}
+                )).replace('$1', tagForProjects.slice(1))}
+                seemore={`/search?q=%23${tagForProjects.slice(1)}`}
                 style="width:65%;"
                 stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
             >
@@ -992,7 +1051,13 @@
                         lang={currentLang}
                     />
                 </p>
-                <a target="_blank" href={LINK.discord}>Discord</a>
+                <a target="_blank" href={"https://github.com/PenguinMod/PenguinMod-Home/issues"}>
+                    <LocalizedText
+                        text="Report an issue"
+                        key="home.footer.sections.info.reportissue"
+                        lang={currentLang}
+                    />
+                </a>
                 <a target="_blank" href={LINK.wiki}>
                     <LocalizedText
                         text="Wiki"
@@ -1000,6 +1065,7 @@
                         lang={currentLang}
                     />
                 </a>
+                <a target="_blank" href={`https://penguinmod.com/redirect?t=${encodeURIComponent(btoa(LINK.discord))}`}>Discord</a>
             </div>
             <div class="footer-section">
                 <p>
@@ -1186,6 +1252,7 @@
         margin: 0 4px;
         color: white;
         cursor: pointer;
+        white-space: nowrap;
     }
     .section-toggle-button[data-active="true"] {
         background: #003bdd;
@@ -1336,6 +1403,29 @@
         display: flex;
         align-items: center;
         flex-direction: column;
+    }
+    .category-news {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+    }
+    .category-news-content {
+        height: calc(312px - 28px);
+        overflow: auto;
+    }
+    .category-footer {
+        border-top: 1px solid rgba(0, 0, 0, 0.15);
+        margin: 0 0.35rem;
+        width: calc(100% - 0.35rem);
+    }
+    .category-footer p {
+        margin-block: 0;
+        margin-block-start: 8px;
+        width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
     }
 
     .update-image {

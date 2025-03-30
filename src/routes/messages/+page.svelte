@@ -15,6 +15,7 @@
     import Button from "$lib/Button/Button.svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import StatusAlert from "$lib/Alert/StatusAlert.svelte";
+    import ProfileBadge from "$lib/Badge.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import AutoLocalizedText from "$lib/AutoLocalizedText/Node.svelte";
@@ -22,12 +23,13 @@
     import Language from "../../resources/language.js";
 
     // Icons
-    import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
+    import PenguinConfusedSVG from "../../resources/icons/Penguin/confused.svelte";
 
     let messages = [];
     let error = null;
     let loggedIn = null;
     let page = 0;
+    let pageUpdateCount = 0;
     let pageIsLast = false;
     let canAutoTranslate = false;
     let autoTranslationCode = "en";
@@ -64,11 +66,12 @@
                 pageIsLast = true;
                 return;
             }
-            if (messagess.length < 12) {
+            if (messagess.length < 20) {
                 pageIsLast = true;
             }
-            //messages.push(...messagess);
-            messages = messagess;
+            messages.push(...messagess);
+            pageUpdateCount += 1;
+            // messages = messagess;
         });
     }
 
@@ -118,7 +121,7 @@
                 }
                 
                 messages = messagess;
-                if (messages.length < 12) {
+                if (messages.length < 20) {
                     pageIsLast = true;
                 }
             })
@@ -243,6 +246,7 @@
         readMessages = readMessages.concat(
             messages.map((message) => message.id)
         );
+        pageUpdateCount += 1;
     }
 
     function disputeMessage(id) {
@@ -259,6 +263,18 @@
         const text = disputeTexts[id];
         if (!text) return;
         ProjectClient.disputeMessage(id, text).then(location.reload);
+    }
+    
+    function unixToDisplayDate(unix) {
+       unix = Number(unix);
+        return `${new Date(unix).toLocaleString([], {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true
+        })}`;
     }
 
     Authentication.onLogout(() => {
@@ -333,503 +349,702 @@
                     />
                 </Button>
             </div>
-        {:else if messages[0] !== "notfound"}
-            <div style="margin-top: 16px; width: 100%;" />
-            {#if messages.length > 0}
-                <div class="action-bar">
-                    <Button on:click={() => markAllMessagesAsRead()}>
-                        <LocalizedText
-                            text="Mark all as read"
-                            key="messages.markallread"
-                            lang={currentLang}
-                        />
-                    </Button>
-                </div>
-                <div style="margin-top: 16px; width: 100%;" />
-            {/if}
-            {#each messages as message}
-                <button
-                    class="message"
-                    data-moderator={message.message.type === "modresponse"}
-                    data-read={message.read === true ||
-                        readMessages.includes(message.id)}
-                    on:click={() => markAsRead(message.id)}
-                >
-                    {#if message.message.type === "modresponse"}
-                        <h2>
-                            <LocalizedText
-                                text="Moderator Message"
-                                key="messages.moderatortitle"
-                                lang={currentLang}
-                            />
-                        </h2>
-                    {/if}
-                    <!-- switch case would be ideal, but we dont have that -->
-                    {#if message.message.type === "reject"}
-                        <p>
-                            <b>
-                                {String(
-                                    TranslationHandler.text(
-                                        "messages.alert.staff.removed.title",
-                                        currentLang
-                                    )
-                                ).replace("$1", message.message.project.title)}
-                            </b>
-                        </p>
-                        <p>{message.message.message}</p>
-                        {#if canAutoTranslate && !autoTranslations[message.id] && !autoTranslationCode.startsWith("en")}
-                            <br />
-                            <button
-                                class="fake-link"
-                                style="display:flex;align-items:center;"
-                                on:click={() =>
-                                    autoTranslate(message.id, message.reason)}
-                            >
-                                <img
-                                    src="/messagesstatic/translate.png"
-                                    alt="Translate"
-                                    width="30"
-                                    height="30"
-                                    style="margin-right:6px"
-                                />
-                                <LocalizedText
-                                    text="If the moderator is not speaking your language, you may click here for an auto-translation."
-                                    key="messages.alert.staff.translate1"
-                                    lang={currentLang}
-                                />
-                            </button>
-                            <p>
-                                <LocalizedText
-                                    text="Sorry for not having any human translation available! :("
-                                    key="messages.alert.staff.translate2"
-                                    lang={currentLang}
-                                />
-                            </p>
-                            <br />
-                        {/if}
-                        {#if autoTranslations[message.id]}
-                            <br />
-                            <p>{autoTranslations[message.id]}</p>
-                            <br />
-                        {/if}
-                        <p class="small">
-                            <b>
-                                {String(
-                                    TranslationHandler.text(
-                                        "messages.projectid",
-                                        currentLang
-                                    )
-                                ).replace("$1", message.message.project.id)}
-                            </b>
-                        </p>
-                        {#if message.message.hardReject === false}
-                            <h3>
-                                <a href="/edit?id={message.projectId}" style="display:flex;align-items:center;">
-                                    <img
-                                        src="/pencil.png"
-                                        alt="Edit"
-                                        width="16"
-                                        height="16"
-                                        style="margin-right:6px"
-                                    />
-                                    <LocalizedText
-                                        text="Edit Project"
-                                        key="project.menu.project.edit"
-                                        lang={currentLang}
-                                    />
-                                </a>
-                            </h3>
-                        {:else}
-                            <button
-                                class="fake-link"
-                                style="display:flex;align-items:center;"
-                                on:click={() =>
-                                    downloadRejectedProject(message.message.project.id)}
-                            >
-                                <img
-                                    src="/messagesstatic/download.png"
-                                    alt="Download"
-                                    width="16"
-                                    height="16"
-                                    style="margin-right:6px"
-                                />
-                                <LocalizedText
-                                    text="Download"
-                                    key="messages.download"
-                                    lang={currentLang}
-                                />
-                            </button>
-                        {/if}
-                    {:else if message.message.type === "removed"} 
-                        <p>
-                            <b>
-                                {String(
-                                    TranslationHandler.text(
-                                        "messages.alert.staff.removed.title",
-                                        currentLang
-                                    )
-                                ).replace("$1", message.message.title)}
-                            </b>
-                        </p>
-                        {message.message.message}
-                    {:else if message.message.type === "projectFeatured"}
-                        <p>
-                            <b>
-                                {String(
-                                    TranslationHandler.text(
-                                        "messages.alert.featured",
-                                        currentLang
-                                    )
-                                ).replace("$1", message.message.project.title)}
-                            </b> 🌟
-                        </p>
-                    {:else if message.message.type === "followerAdded"}
-                        <a href={`/profile?user=${message.message.user.username}`}>
-                            {String(
-                                TranslationHandler.text(
-                                    "messages.alert.followeradded",
-                                    currentLang
-                                )
-                            ).replace("$1", message.message.user.username)}
-                        </a>
-                    {:else if message.message.type === "newBadge"}
-                        <p>
-                            {String(
-                                TranslationHandler.text(
-                                    "messages.alert.badge",
-                                    currentLang
-                                )
-                            ).replace(
-                                "$1",
-                                TranslationHandler.text(
-                                    `profile.badge.${message.message.badge}`,
-                                    currentLang
-                                )
-                            )}
-                        </p>
-                    {:else if message.message.type === "remix"}
-                        <p>
-                            <a
-                                href={`${PUBLIC_STUDIO_URL}/#${message.message.newProject.id}`}
-                                target="_blank"
-                            >
-                                {String(
-                                    TranslationHandler.text(
-                                        "messages.alert.remix",
-                                        currentLang
-                                    )
-                                )
-                                    .replace("$1", "__${{{___1")
-                                    .replace("$2", "__${{{___2")
-                                    .replace("__${{{___1", message.message.oldProject.title)
-                                    .replace("__${{{___2", message.message.newProject.title)}
-                            </a>
-                        </p>
-                    {:else if message.message.type === "custom"}
-                        <p>
-                            {message.message.text}
-                        </p>
-                    {:else if message.message.type === "restored"}
-                        <p>
-                            {String(
-                                TranslationHandler.text(
-                                    "messages.alert.staff.restoredproject2.title",
-                                    currentLang
-                                )
-                            ).replace("$1", message.message.project.title)}
-                        </p>
-                        <p>
-                            <a
-                                href={`${PUBLIC_STUDIO_URL}/#${message.message.project.id}`}
-                                target="_blank"
-                            >
-                                <LocalizedText
-                                    text="Open in new tab"
-                                    key="uploading.guidelines.newtab"
-                                    lang={currentLang}
-                                />
-                            </a>
-                        </p>
-                    {:else if message.message.type === "ban"}
-                        <h3>
-                            <LocalizedText
-                                text="Your account has been banned from uploading projects and other features. You can continue to use the editor or view other people's projects though."
-                                key="messages.alert.staff.banned.title"
-                                lang={currentLang}
-                            />
-                        </h3>
-                        <p>
-                            <b>
-                                <LocalizedText
-                                    text="Reason:"
-                                    key="messages.alert.staff.reason"
-                                    lang={currentLang}
-                                />
-                            </b>
-                        </p>
-                        <p>{message.message.reason}</p>
-                        {#if canAutoTranslate && !autoTranslationCode.startsWith("en")}
-                            <br />
-                            <p style="display:flex;align-items:center;">
-                                <img
-                                    src="/messagesstatic/translate.png"
-                                    alt="Translate"
-                                    width="30"
-                                    height="30"
-                                    style="margin-right:6px"
-                                />
-                                <AutoLocalizedText text={message.message.reason} />
-                            </p>
-                            <br />
-                        {/if}
-                        {:else if message.message.type === "tempban"}
-                        <h3>
-                            <LocalizedText
-                                text="Your account has been banned from uploading projects and other features. You can continue to use the editor or view other people's projects though."
-                                key="messages.alert.staff.banned.title"
-                                lang={currentLang}
-                            />
-                        </h3>
-                        <p>
-                            <b>
-                                <LocalizedText
-                                    text="Reason:"
-                                    key="messages.alert.staff.reason"
-                                    lang={currentLang}
-                                />
-                            </b>
-                        </p>
-                        <p>{message.message.reason}</p>
-                        <p>
-                            <b>
-                                {
-                                    String(
-                                        TranslationHandler.text(
-                                            `account.settings.standing.dateunban`,
-                                            currentLang
-                                        ) || TranslationHandler.text(
-                                            `account.settings.standing.dateunban`,
-                                            'en'
-                                        ) || "Unban Date: {{DATE}}"
-                                    ).replace("{{DATE}}", new Date(message.message.time + Date.now()).toLocaleDateString(currentLang, {
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                        hour: 'numeric',
-                                    }))
-                                }
-                            </b>
-                        </p>
-                        {#if canAutoTranslate && !autoTranslationCode.startsWith("en")}
-                            <br />
-                            <p style="display:flex;align-items:center;">
-                                <img
-                                    src="/messagesstatic/translate.png"
-                                    alt="Translate"
-                                    width="30"
-                                    height="30"
-                                    style="margin-right:6px"
-                                />
-                                <AutoLocalizedText text={message.message.reason} />
-                            </p>
-                            <br />
-                        {/if}
-                    {:else if message.message.type === "unban"}
-                        <p>
-                            <LocalizedText
-                                text="Your account has been unbanned. You may upload projects again."
-                                key="messages.alert.staff.unbanned.title"
-                                lang={currentLang}
-                            />
-                        </p>
-                    {:else if message.message.type === "disputeResponse"}
-                        <h4>
-                            <LocalizedText
-                                text="Reply from a moderator:"
-                                key="messages.alert.staff.moderatorreply"
-                                lang={currentLang}
-                            />
-                        </h4>
-                        <p>
-                            {message.message.message}
-                            {#if canAutoTranslate && !autoTranslationCode.startsWith("en")}
-                                <br />
-                                <p style="display:flex;align-items:center;">
-                                    <img
-                                        src="/messagesstatic/translate.png"
-                                        alt="Translate"
-                                        width="30"
-                                        height="30"
-                                        style="margin-right:6px"
-                                    />
-                                    <AutoLocalizedText text={message.message.message} />
-                                </p>
-                                <br />
-                            {/if}
-                        </p>
-                        <p>
-                            <b>
-                                {String(
-                                    TranslationHandler.textSafe(
-                                        "messages.alert.staff.reply.original",
-                                        currentLang,
-                                        "Original Dispute:"
-                                    )
-                                )}
-                            </b>
-                        </p>
-                        <p>
-                            {message.dispute}
-                            {#if canAutoTranslate && !autoTranslationCode.startsWith("en")}
-                                <br />
-                                <p style="display:flex;align-items:center;">
-                                    <img
-                                        src="/messagesstatic/translate.png"
-                                        alt="Translate"
-                                        width="30"
-                                        height="30"
-                                        style="margin-right:6px"
-                                    />
-                                    <AutoLocalizedText text={message.dispute} />
-                                </p>
-                                <br />
-                            {/if}
-                        </p>
-                    {:else if message.message.type === "privacyPolicy"}
-                        <a
-                            href="/privacy"
-                        >
-                            {
-                                String(
-                                    TranslationHandler.text(
-                                        `messages.alert.privacy`,
-                                        currentLang
-                                    ) || TranslationHandler.text(
-                                        `messages.alert.privacy`,
-                                        'en'
-                                    )
-                                )
-                                .replace("{{PRIVACY_POLICY}}", TranslationHandler.text(
-                                    "home.footer.sections.info.privacy",
-                                    currentLang
-                                ))
-                            }
-                        </a>
-                    {:else if message.message.type === "guidelines"}
-                        <a href="/guidelines/uploading">
-                            {
-                                String(
-                                    TranslationHandler.text(
-                                        `messages.alert.uploadingguidelines`,
-                                        currentLang
-                                    ) || TranslationHandler.text(
-                                        `messages.alert.uploadingguidelines`,
-                                        'en'
-                                    )
-                                )
-                                .replace("{{UPLOADING_GUIDELINES}}", TranslationHandler.text(
-                                    "home.footer.sections.info.guidelines",
-                                    currentLang
-                                ))
-                            }
-                        </a>
-                    {:else if message.message.type === "TOS"}
-                        <a href="/terms">
-                            {
-                                String(
-                                    TranslationHandler.text(
-                                        `messages.alert.terms`,
-                                        currentLang
-                                    ) || TranslationHandler.text(
-                                        `messages.alert.terms`,
-                                        'en'
-                                    )
-                                )
-                                .replace("{{TERMS_OF_SERVICE}}", TranslationHandler.text(
-                                    "home.footer.sections.info.terms",
-                                    currentLang
-                                ))
-                            }
-                        </a>
-                    {:else}
-                        <!-- what is this? -->
-                        <p>
-                            Unknown Message;
-                            <LocalizedText
-                                text="An error occurred. Please try again later."
-                                key="generic.error"
-                                lang={currentLang}
-                            />
-                        </p>
-                    {/if}
-                    {#if message.disputable}
-                        <details>
-                            <summary>
-                                <b>
-                                    {#if message.type === "disputeResponse"}
-                                        <LocalizedText
-                                            text="Reply"
-                                            key="messages.alert.staff.reply"
-                                            lang={currentLang}
-                                        />
-                                    {:else}
-                                        <LocalizedText
-                                            text="If you feel this action was wrong, please reply here."
-                                            key="messages.alert.staff.dispute"
-                                            lang={currentLang}
-                                        />
-                                    {/if}
-                                </b>
-                            </summary>
-                            <div style="margin-top: 8px; width: 100%;" />
-                            <textarea bind:value={disputeTexts[message.id]} />
-                            <div style="margin-top: 8px; width: 100%;" />
-                            <div class="action-bar-full">
-                                <Button
-                                    on:click={() => disputeMessage(message.id)}
-                                >
-                                    <LocalizedText
-                                        text="Reply"
-                                        key="messages.alert.staff.reply"
-                                        lang={currentLang}
-                                    />
-                                </Button>
-                            </div>
-                        </details>
-                    {/if}
-                </button>
-            {:else}
-                <!-- messages.length === 0 -->
-                <LoadingSpinner />
-            {/each}
         {:else}
-            <div>
-                <PenguinConfusedSVG height="12rem" />
-                <p>
-                    <LocalizedText
-                        text="Nothing was found."
-                        key="generic.notfound"
-                        lang={currentLang}
-                    />
-                </p>
-            </div>
+            {#key pageUpdateCount}
+                {#if messages[0] !== "notfound"}
+                    <div style="margin-top: 16px; width: 100%;" />
+                    {#if messages.length > 0}
+                        <div class="action-bar">
+                            <Button on:click={() => markAllMessagesAsRead()}>
+                                <LocalizedText
+                                    text="Mark all as read"
+                                    key="messages.markallread"
+                                    lang={currentLang}
+                                />
+                            </Button>
+                        </div>
+                        <div style="margin-top: 16px; width: 100%;" />
+                    {/if}
+                    {#each messages as message}
+                        <button
+                            class="message"
+                            data-moderator={message.message.type === "modresponse"
+                                || message.message.type === "modMessage"
+                                || message.message.type === "reject"
+                                || message.message.type === "removed"
+                                || message.message.type === "restored"
+                                || message.message.type === "ban"
+                                || message.message.type === "tempban"
+                                || message.message.type === "unban"
+                                || message.message.type === "disputeResponse"}
+                            data-read={message.read === true ||
+                                readMessages.includes(message.id)}
+                            on:click={() => markAsRead(message.id)}
+                        >
+                            {#if message.message.type === "modresponse"
+                                || message.message.type === "modMessage"
+                                || message.message.type === "reject"
+                                || message.message.type === "removed"
+                                || message.message.type === "restored"
+                                || message.message.type === "ban"
+                                || message.message.type === "tempban"
+                                || message.message.type === "unban"
+                                || message.message.type === "disputeResponse"}
+                                <h2>
+                                    <LocalizedText
+                                        text="Moderator Message"
+                                        key="messages.moderatortitle"
+                                        lang={currentLang}
+                                    />
+                                </h2>
+                            {/if}
+                            <!-- switch case would be ideal, but we dont have that -->
+                            {#if message.message.type === "reject"}
+                                <p>
+                                    <b>
+                                        {String(
+                                            TranslationHandler.text(
+                                                "messages.alert.staff.removed.title",
+                                                currentLang
+                                            )
+                                        ).replace("$1", message.message.project.title)}
+                                    </b>
+                                </p>
+                                <p>{message.message.message}</p>
+                                {#if canAutoTranslate && !autoTranslations[message.id] && !autoTranslationCode.startsWith("en")}
+                                    <br />
+                                    <button
+                                        class="fake-link"
+                                        style="display:flex;align-items:center;"
+                                        on:click={() =>
+                                            autoTranslate(message.id, message.message.message)}
+                                    >
+                                        <img
+                                            src="/messagesstatic/translate.png"
+                                            alt="Translate"
+                                            width="30"
+                                            height="30"
+                                            style="margin-right:6px"
+                                        />
+                                        <LocalizedText
+                                            text="If the moderator is not speaking your language, you may click here for an auto-translation."
+                                            key="messages.alert.staff.translate1"
+                                            lang={currentLang}
+                                        />
+                                    </button>
+                                    <p>
+                                        <LocalizedText
+                                            text="Sorry for not having any human translation available! :("
+                                            key="messages.alert.staff.translate2"
+                                            lang={currentLang}
+                                        />
+                                    </p>
+                                    <br />
+                                {/if}
+                                {#if autoTranslations[message.id]}
+                                    <br />
+                                    <p>{autoTranslations[message.id]}</p>
+                                    <br />
+                                {/if}
+                                <p class="small">
+                                    <b>
+                                        {String(
+                                            TranslationHandler.text(
+                                                "messages.projectid",
+                                                currentLang
+                                            )
+                                        ).replace("$1", message.message.project.id)}
+                                    </b>
+                                </p>
+                                {#if message.message.hardReject === false}
+                                    <h3>
+                                        <a href="/edit?id={message.message.project.id}" style="display:flex;align-items:center;">
+                                            <img
+                                                src="/pencil.png"
+                                                alt="Edit"
+                                                width="16"
+                                                height="16"
+                                                style="margin-right:6px"
+                                            />
+                                            <LocalizedText
+                                                text="Edit Project"
+                                                key="project.menu.project.edit"
+                                                lang={currentLang}
+                                            />
+                                        </a>
+                                    </h3>
+                                {:else}
+                                    <button
+                                        class="fake-link"
+                                        style="display:flex;align-items:center;"
+                                        on:click={() =>
+                                            downloadRejectedProject(message.message.project.id)}
+                                    >
+                                        <img
+                                            src="/messagesstatic/download.png"
+                                            alt="Download"
+                                            width="16"
+                                            height="16"
+                                            style="margin-right:6px"
+                                        />
+                                        <LocalizedText
+                                            text="Download"
+                                            key="messages.download"
+                                            lang={currentLang}
+                                        />
+                                    </button>
+                                {/if}
+                            {:else if message.message.type === "removed"} 
+                                <p>
+                                    <b>
+                                        {String(
+                                            TranslationHandler.text(
+                                                "messages.alert.staff.removed.title",
+                                                currentLang
+                                            )
+                                        ).replace("$1", message.message.title)}
+                                    </b>
+                                </p>
+                                {message.message.message}
+                                {#if canAutoTranslate && !autoTranslations[message.id] && !autoTranslationCode.startsWith("en")}
+                                    <br />
+                                    <button
+                                        class="fake-link"
+                                        style="display:flex;align-items:center;"
+                                        on:click={() =>
+                                            autoTranslate(message.id, message.message.message)}
+                                    >
+                                        <img
+                                            src="/messagesstatic/translate.png"
+                                            alt="Translate"
+                                            width="30"
+                                            height="30"
+                                            style="margin-right:6px"
+                                        />
+                                        <LocalizedText
+                                            text="If the moderator is not speaking your language, you may click here for an auto-translation."
+                                            key="messages.alert.staff.translate1"
+                                            lang={currentLang}
+                                        />
+                                    </button>
+                                    <p>
+                                        <LocalizedText
+                                            text="Sorry for not having any human translation available! :("
+                                            key="messages.alert.staff.translate2"
+                                            lang={currentLang}
+                                        />
+                                    </p>
+                                    <br />
+                                {/if}
+                                {#if autoTranslations[message.id]}
+                                    <br />
+                                    <p>{autoTranslations[message.id]}</p>
+                                    <br />
+                                {/if}
+                            {:else if message.message.type === "modMessage"}
+                                {message.message.message}
+                                {#if canAutoTranslate && !autoTranslations[message.id] && !autoTranslationCode.startsWith("en")}
+                                    <br />
+                                    <button
+                                        class="fake-link"
+                                        style="display:flex;align-items:center;"
+                                        on:click={() =>
+                                            autoTranslate(message.id, message.message.message)}
+                                    >
+                                        <img
+                                            src="/messagesstatic/translate.png"
+                                            alt="Translate"
+                                            width="30"
+                                            height="30"
+                                            style="margin-right:6px"
+                                        />
+                                        <LocalizedText
+                                            text="If the moderator is not speaking your language, you may click here for an auto-translation."
+                                            key="messages.alert.staff.translate1"
+                                            lang={currentLang}
+                                        />
+                                    </button>
+                                    <p>
+                                        <LocalizedText
+                                            text="Sorry for not having any human translation available! :("
+                                            key="messages.alert.staff.translate2"
+                                            lang={currentLang}
+                                        />
+                                    </p>
+                                    <br />
+                                {/if}
+                                {#if autoTranslations[message.id]}
+                                    <br />
+                                    <p>{autoTranslations[message.id]}</p>
+                                    <br />
+                                {/if}
+                            {:else if message.message.type === "projectFeatured"}
+                                <p>
+                                    <b>
+                                        {String(
+                                            TranslationHandler.text(
+                                                "messages.alert.featured",
+                                                currentLang
+                                            )
+                                        ).replace("$1", message.message.project.title)}
+                                    </b> 🌟
+                                </p>
+                            {:else if message.message.type === "followerAdded"}
+                                <a href={`/profile?user=${message.message.user.username}`}>
+                                    {String(
+                                        TranslationHandler.text(
+                                            "messages.alert.followeradded",
+                                            currentLang
+                                        )
+                                    ).replace("$1", message.message.user.username)}
+                                </a>
+                            {:else if message.message.type === "newBadge"}
+                                <div style="display:flex; flex-direction:row; align-items:center;">
+                                    <p>
+                                        {String(
+                                            TranslationHandler.text(
+                                                "messages.alert.badge",
+                                                currentLang
+                                            )
+                                        ).replace(
+                                            "$1",
+                                            TranslationHandler.text(
+                                                `profile.badge.${message.message.badge}`,
+                                                currentLang
+                                            )
+                                        )}
+                                    </p>
+                                    <ProfileBadge badge={message.message.badge} {currentLang} />
+                                </div>
+                            {:else if message.message.type === "remix"}
+                                <p>
+                                    <a
+                                        href={`${PUBLIC_STUDIO_URL}/#${message.message.newProject.id}`}
+                                        target="_blank"
+                                    >
+                                        {String(
+                                            TranslationHandler.text(
+                                                "messages.alert.remix",
+                                                currentLang
+                                            )
+                                        )
+                                            .replace("$1", "__${{{___1")
+                                            .replace("$2", "__${{{___2")
+                                            .replace("__${{{___1", message.message.oldProject.title)
+                                            .replace("__${{{___2", message.message.newProject.title)}
+                                    </a>
+                                </p>
+                            {:else if message.message.type === "custom"}
+                                <p>
+                                    {message.message.text}
+                                </p>
+                                {#if canAutoTranslate && !autoTranslations[message.id] && !autoTranslationCode.startsWith("en")}
+                                    <br />
+                                    <button
+                                        class="fake-link"
+                                        style="display:flex;align-items:center;"
+                                        on:click={() =>
+                                            autoTranslate(message.id, message.message.text)}
+                                    >
+                                        <img
+                                            src="/messagesstatic/translate.png"
+                                            alt="Translate"
+                                            width="30"
+                                            height="30"
+                                            style="margin-right:6px"
+                                        />
+                                        <LocalizedText
+                                            text="If the moderator is not speaking your language, you may click here for an auto-translation."
+                                            key="messages.alert.staff.translate1"
+                                            lang={currentLang}
+                                        />
+                                    </button>
+                                    <p>
+                                        <LocalizedText
+                                            text="Sorry for not having any human translation available! :("
+                                            key="messages.alert.staff.translate2"
+                                            lang={currentLang}
+                                        />
+                                    </p>
+                                    <br />
+                                {/if}
+                                {#if autoTranslations[message.id]}
+                                    <br />
+                                    <p>{autoTranslations[message.id]}</p>
+                                    <br />
+                                {/if}
+                            {:else if message.message.type === "restored"}
+                                <p>
+                                    {String(
+                                        TranslationHandler.text(
+                                            "messages.alert.staff.restoredproject2.title",
+                                            currentLang
+                                        )
+                                    ).replace("$1", message.message.project.title)}
+                                </p>
+                                <p>
+                                    <a
+                                        href={`${PUBLIC_STUDIO_URL}/#${message.message.project.id}`}
+                                        target="_blank"
+                                    >
+                                        <LocalizedText
+                                            text="Open in new tab"
+                                            key="uploading.guidelines.newtab"
+                                            lang={currentLang}
+                                        />
+                                    </a>
+                                </p>
+                            {:else if message.message.type === "ban"}
+                                <h3>
+                                    <LocalizedText
+                                        text="Your account has been banned from uploading projects and other features. You can continue to use the editor or view other people's projects though."
+                                        key="messages.alert.staff.banned.title"
+                                        lang={currentLang}
+                                    />
+                                </h3>
+                                <p>
+                                    <b>
+                                        <LocalizedText
+                                            text="Reason:"
+                                            key="messages.alert.staff.reason"
+                                            lang={currentLang}
+                                        />
+                                    </b>
+                                </p>
+                                <p>{message.message.reason}</p>
+                                {#if canAutoTranslate && !autoTranslations[message.id] && !autoTranslationCode.startsWith("en")}
+                                    <br />
+                                    <button
+                                        class="fake-link"
+                                        style="display:flex;align-items:center;"
+                                        on:click={() =>
+                                            autoTranslate(message.id, message.message.reason)}
+                                    >
+                                        <img
+                                            src="/messagesstatic/translate.png"
+                                            alt="Translate"
+                                            width="30"
+                                            height="30"
+                                            style="margin-right:6px"
+                                        />
+                                        <LocalizedText
+                                            text="If the moderator is not speaking your language, you may click here for an auto-translation."
+                                            key="messages.alert.staff.translate1"
+                                            lang={currentLang}
+                                        />
+                                    </button>
+                                    <p>
+                                        <LocalizedText
+                                            text="Sorry for not having any human translation available! :("
+                                            key="messages.alert.staff.translate2"
+                                            lang={currentLang}
+                                        />
+                                    </p>
+                                    <br />
+                                {/if}
+                                {#if autoTranslations[message.id]}
+                                    <br />
+                                    <p>{autoTranslations[message.id]}</p>
+                                    <br />
+                                {/if}
+                            {:else if message.message.type === "tempban"}
+                                <h3>
+                                    <LocalizedText
+                                        text="Your account has been banned from uploading projects and other features. You can continue to use the editor or view other people's projects though."
+                                        key="messages.alert.staff.banned.title"
+                                        lang={currentLang}
+                                    />
+                                </h3>
+                                <p>
+                                    <b>
+                                        <LocalizedText
+                                            text="Reason:"
+                                            key="messages.alert.staff.reason"
+                                            lang={currentLang}
+                                        />
+                                    </b>
+                                </p>
+                                <p>{message.message.reason}</p>
+                                <p>
+                                    <b>
+                                        {
+                                            String(
+                                                TranslationHandler.text(
+                                                    `account.settings.standing.dateunban`,
+                                                    currentLang
+                                                ) || TranslationHandler.text(
+                                                    `account.settings.standing.dateunban`,
+                                                    'en'
+                                                ) || "Unban Date: {{DATE}}"
+                                            ).replace("{{DATE}}", new Date(message.message.time + Date.now()).toLocaleDateString(currentLang, {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric',
+                                                hour: 'numeric',
+                                            }))
+                                        }
+                                    </b>
+                                </p>
+                                {#if canAutoTranslate && !autoTranslations[message.id] && !autoTranslationCode.startsWith("en")}
+                                    <br />
+                                    <button
+                                        class="fake-link"
+                                        style="display:flex;align-items:center;"
+                                        on:click={() =>
+                                            autoTranslate(message.id, message.message.reason)}
+                                    >
+                                        <img
+                                            src="/messagesstatic/translate.png"
+                                            alt="Translate"
+                                            width="30"
+                                            height="30"
+                                            style="margin-right:6px"
+                                        />
+                                        <LocalizedText
+                                            text="If the moderator is not speaking your language, you may click here for an auto-translation."
+                                            key="messages.alert.staff.translate1"
+                                            lang={currentLang}
+                                        />
+                                    </button>
+                                    <p>
+                                        <LocalizedText
+                                            text="Sorry for not having any human translation available! :("
+                                            key="messages.alert.staff.translate2"
+                                            lang={currentLang}
+                                        />
+                                    </p>
+                                    <br />
+                                {/if}
+                                {#if autoTranslations[message.id]}
+                                    <br />
+                                    <p>{autoTranslations[message.id]}</p>
+                                    <br />
+                                {/if}
+                            {:else if message.message.type === "unban"}
+                                <p>
+                                    <LocalizedText
+                                        text="Your account has been unbanned. You may upload projects again."
+                                        key="messages.alert.staff.unbanned.title"
+                                        lang={currentLang}
+                                    />
+                                </p>
+                            {:else if message.message.type === "disputeResponse"}
+                                <h4>
+                                    <LocalizedText
+                                        text="Reply from a moderator:"
+                                        key="messages.alert.staff.moderatorreply"
+                                        lang={currentLang}
+                                    />
+                                </h4>
+                                <p>
+                                    {message.message.message}
+                                    {#if canAutoTranslate && !autoTranslations[message.id] && !autoTranslationCode.startsWith("en")}
+                                        <br />
+                                        <button
+                                            class="fake-link"
+                                            style="display:flex;align-items:center;"
+                                            on:click={() =>
+                                                autoTranslate(message.id, message.message.message)}
+                                        >
+                                            <img
+                                                src="/messagesstatic/translate.png"
+                                                alt="Translate"
+                                                width="30"
+                                                height="30"
+                                                style="margin-right:6px"
+                                            />
+                                            <LocalizedText
+                                                text="If the moderator is not speaking your language, you may click here for an auto-translation."
+                                                key="messages.alert.staff.translate1"
+                                                lang={currentLang}
+                                            />
+                                        </button>
+                                        <p>
+                                            <LocalizedText
+                                                text="Sorry for not having any human translation available! :("
+                                                key="messages.alert.staff.translate2"
+                                                lang={currentLang}
+                                            />
+                                        </p>
+                                        <br />
+                                    {/if}
+                                    {#if autoTranslations[message.id]}
+                                        <br />
+                                        <p>{autoTranslations[message.id]}</p>
+                                        <br />
+                                    {/if}
+                                </p>
+                                <!-- this is either not meant to show the user's dispute or it needs to be redone to show its specifically from the user -->
+                                <!-- <p>
+                                    <b>
+                                        {String(
+                                            TranslationHandler.textSafe(
+                                                "messages.alert.staff.reply.original",
+                                                currentLang,
+                                                "Original Dispute:"
+                                            )
+                                        )}
+                                    </b>
+                                </p>
+                                <p>
+                                    {message.dispute}
+                                    {#if canAutoTranslate && !autoTranslationCode.startsWith("en")}
+                                        <br />
+                                        <p style="display:flex;align-items:center;">
+                                            <img
+                                                src="/messagesstatic/translate.png"
+                                                alt="Translate"
+                                                width="30"
+                                                height="30"
+                                                style="margin-right:6px"
+                                            />
+                                            <AutoLocalizedText text={message.dispute} />
+                                        </p>
+                                        <br />
+                                    {/if}
+                                </p> -->
+                            {:else if message.message.type === "privacyPolicy"}
+                                <a
+                                    href="/privacy"
+                                >
+                                    {
+                                        String(
+                                            TranslationHandler.text(
+                                                `messages.alert.privacy`,
+                                                currentLang
+                                            ) || TranslationHandler.text(
+                                                `messages.alert.privacy`,
+                                                'en'
+                                            )
+                                        )
+                                        .replace("{{PRIVACY_POLICY}}", TranslationHandler.text(
+                                            "home.footer.sections.info.privacy",
+                                            currentLang
+                                        ))
+                                    }
+                                </a>
+                            {:else if message.message.type === "guidelines"}
+                                <a href="/guidelines/uploading">
+                                    {
+                                        String(
+                                            TranslationHandler.text(
+                                                `messages.alert.uploadingguidelines`,
+                                                currentLang
+                                            ) || TranslationHandler.text(
+                                                `messages.alert.uploadingguidelines`,
+                                                'en'
+                                            )
+                                        )
+                                        .replace("{{UPLOADING_GUIDELINES}}", TranslationHandler.text(
+                                            "home.footer.sections.info.guidelines",
+                                            currentLang
+                                        ))
+                                    }
+                                </a>
+                            {:else if message.message.type === "TOS"}
+                                <a href="/terms">
+                                    {
+                                        String(
+                                            TranslationHandler.text(
+                                                `messages.alert.terms`,
+                                                currentLang
+                                            ) || TranslationHandler.text(
+                                                `messages.alert.terms`,
+                                                'en'
+                                            )
+                                        )
+                                        .replace("{{TERMS_OF_SERVICE}}", TranslationHandler.text(
+                                            "home.footer.sections.info.terms",
+                                            currentLang
+                                        ))
+                                    }
+                                </a>
+                            {:else}
+                                <!-- what is this? -->
+                                <p>
+                                    Unknown Message;
+                                    <LocalizedText
+                                        text="An error occurred. Please try again later."
+                                        key="generic.error"
+                                        lang={currentLang}
+                                    />
+                                </p>
+                            {/if}
+                            {#if message.disputable}
+                                <details>
+                                    <summary>
+                                        <b>
+                                            {#if message.type === "disputeResponse" || message.message.type === "modMessage"}
+                                                <LocalizedText
+                                                    text="Reply"
+                                                    key="messages.alert.staff.reply"
+                                                    lang={currentLang}
+                                                />
+                                            {:else}
+                                                <LocalizedText
+                                                    text="If you feel this action was wrong, please reply here."
+                                                    key="messages.alert.staff.dispute"
+                                                    lang={currentLang}
+                                                />
+                                            {/if}
+                                        </b>
+                                    </summary>
+                                    <div style="margin-top: 8px; width: 100%;" />
+                                    <textarea bind:value={disputeTexts[message.id]} />
+                                    <div style="margin-top: 8px; width: 100%;" />
+                                    <div class="action-bar-full">
+                                        <Button
+                                            on:click={() => disputeMessage(message.id)}
+                                        >
+                                            <LocalizedText
+                                                text="Reply"
+                                                key="messages.alert.staff.reply"
+                                                lang={currentLang}
+                                            />
+                                        </Button>
+                                    </div>
+                                </details>
+                            {/if}
+                            {#if message.date}
+                                <p class="message-date">{unixToDisplayDate(message.date)}</p>
+                            {/if}
+                        </button>
+                    {:else}
+                        <!-- messages.length === 0 -->
+                        <LoadingSpinner />
+                    {/each}
+                {:else}
+                    <div>
+                        <PenguinConfusedSVG height="12rem" />
+                        <p>
+                            <LocalizedText
+                                text="Looks like your messages are all empty. You're all caught up!"
+                                key="messages.empty"
+                                lang={currentLang}
+                            />
+                        </p>
+                    </div>
+                {/if}
+            {/key}
         {/if}
     </div>
 
-    {#if messages[0] !== "notfound"}
-        {#if !pageIsLast && messages.length > 0}
-            <div style="height: 16px;" />
-            <div class="more-messages-wrapper">
-                <Button
-                    label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
-                    on:click={() => {
-                        page += 1;
-                        fetchNewMessages();
-                    }}
-                />
-            </div>
+    {#key pageUpdateCount}
+        {#if messages[0] !== "notfound"}
+            {#if !pageIsLast && messages.length > 0}
+                <div style="height: 16px;" />
+                <div class="more-messages-wrapper">
+                    <Button
+                        label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
+                        on:click={() => {
+                            page += 1;
+                            fetchNewMessages();
+                        }}
+                    />
+                </div>
+            {/if}
         {/if}
-    {/if}
+    {/key}
 
     <div style="height: 16px;" />
 </div>
@@ -943,6 +1158,15 @@
     }
     :global(html[dir="rtl"]) .message {
         text-align: right;
+    }
+    
+    .message-date {
+        float: right;
+        opacity: 0.5;
+        font-size: 11px;
+    }
+    :global(html[dir="rtl"]) .message-date {
+        float: left;
     }
 
     textarea {

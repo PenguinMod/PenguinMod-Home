@@ -245,7 +245,7 @@
                         'en'
                     ))
                     // we serve __ projects
-                    .replace('$1', (10000).toLocaleString())}
+                    .replace('$1', (5000).toLocaleString())}
                 </div>
                 <div class="detail-card" bind:this={forceHtmlClass2} style="background: darkviolet">
                     {@html String(TranslationHandler.text(
@@ -256,7 +256,7 @@
                         'en'
                     ))
                     // we send __ gb of stuff
-                    .replace('$1', (700).toLocaleString())}
+                    .replace('$1', (2000).toLocaleString())}
                 </div>
                 <div class="detail-card" bind:this={forceHtmlClass3} style="background: #ffb300">
                     {@html String(TranslationHandler.text(
@@ -267,7 +267,7 @@
                         'en'
                     ))
                     // we handle ___ reqs
-                    .replace('$1', (20000000).toLocaleString())}
+                    .replace('$1', (75000000).toLocaleString())}
                 </div>
             </div>
         </div>

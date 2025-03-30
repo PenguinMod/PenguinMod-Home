@@ -191,7 +191,7 @@
     "uploading.guidelines.button": "Richtlinien zum Hochladen & Akualisieren von Projekten",
     "uploading.guidelines.newtab": "In neuem Tab öffnen",
     "uploading.guidelines.darkmode": "Diese Seite ist nicht im Dunklen Modus, weil sie eine externe Website ist.",
-    "uploading.guidelines.nottranslated": "Diese Richtlinien könnten nicht übersetzt sein. Für eine übersetze Alternative, <a href=\"https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS\">sehe hier</a>.",
+    "uploading.guidelines.nottranslated": "Diese Richtlinien könnten nicht übersetzt sein. Für eine übersetze Alternative, <a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">sehe hier</a>.",
     "uploading.error.toomanyrequests": "Sie können Projekt nur jede 8 Minuten hochladen.",
     "uploading.error.missingprojectdata": "Gescheitert Projekt Daten zu senden. Ihr Projekt könnte zu groß sein.",
     "uploading.error.reauthenticate": "Sie wurden abgemeldet. Bitte melden Sie sich wieder an.",

@@ -1,16 +1,17 @@
 <script>
     import { onMount } from "svelte";
+    import { page } from "$app/stores";
     import MarkdownIt from "markdown-it";
 
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
-    import scratchblocks from "$lib/scratchblocks.js";
     import LINK from "../../resources/urls.js";
+    import scratchblocks from "$lib/scratchblocks.js";
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
     import EmojiList from "../../resources/emojis.js";
     const ProjectClient = new ProjectApi();
-
+    
     // Static values
     import ProfileBadges from "../../resources/badges.js";
 
@@ -23,16 +24,15 @@
     import Project from "$lib/Project/Project.svelte";
     import ClickableProject from "$lib/ClickableProject/Project.svelte";
     import StatusAlert from "$lib/Alert/StatusAlert.svelte";
+    import ProfileBadge from "$lib/Badge.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
 
     // Icons
-    import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
-    import SearchSVG from "../../icons/Search/icon.svelte";
-
-    import { page } from "$app/stores";
+    import PenguinConfusedSVG from "../../resources/icons/Penguin/confused.svelte";
+    import SearchSVG from "../../resources/icons/Search/icon.svelte";
 
     let loggedIn = null;
     let loggedInUser = "";
@@ -45,7 +45,6 @@
         featured: [],
     };
     let badges = [];
-    let focusedBadge = -1;
     let isDonator = false;
     let isFollowingUser = false;
     let followOnLoad = false;
@@ -79,7 +78,7 @@
         canSendSaveReq = false;
         profileEditingData.isBioInappropriate = false;
         profileEditingData.isBioEditLoading = true;
-        ProjectClient.setBio(profileEditingData.bio, user !== loggedInUser, user).then(() => {
+        ProjectClient.setBio(profileEditingData.bio, String(user).toLowerCase() !== String(loggedInUser).toLowerCase(), user).then(() => {
             fullProfile.bio = profileEditingData.bio;
             profileEditingData.isEditingBio = false;
             setTimeout(() => {
@@ -279,7 +278,7 @@
             }
         };
 
-        if (username && username === user) {
+        if (username && String(user).toLowerCase() === String(username).toLowerCase()) {
             ProjectApi.getMyProjects(0).then(then).catch(catch_func).finally(() => {
                     fetchedFullProfile = true;
                     setTimeout(() => {
@@ -297,7 +296,7 @@
 
         page.subscribe(v => {
             if (!v.url.searchParams.get("user") || !user) return;
-            if (v.url.searchParams.get("user") == user) return;
+            if (String(v.url.searchParams.get("user")).toLowerCase() === String(user).toLowerCase()) return;
             
             window.location.reload();
         });
@@ -856,9 +855,9 @@
                                 />
                                 <div class="user-after-image">
                                     {#if isDonator}
-                                        <h1 class="donator-color">{user}</h1>
+                                        <h1 class="donator-color">{fullProfile.real_username || user}</h1>
                                     {:else}
-                                        <h1>{user}</h1>
+                                        <h1>{fullProfile.real_username || user}</h1>
                                     {/if}
                                     
                                     {#if isProfilePrivate && !loggedInAdmin}
@@ -874,7 +873,7 @@
                                     {/if}
                                 </div>
                             </div>
-                            {#if !isProfilePrivate || loggedInUser === user || (isProfilePublicToFollowers && isFollowedByUser) || loggedInAdmin}
+                            {#if !isProfilePrivate || String(user).toLowerCase() === String(loggedInUser).toLowerCase() || (isProfilePublicToFollowers && isFollowedByUser) || loggedInAdmin}
                                 <div class="follower-section">
                                     <p class="follower-count">
                                         {TranslationHandler.text(
@@ -883,7 +882,7 @@
                                         ).replace("$1", followerCount - Number(followOnLoad) + Number(isFollowingUser))}
                                     </p>
                                     <div>
-                                        {#if !(loggedIn && user === loggedInUser)}
+                                        {#if !(loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase())}
                                             {#key isFollowingUser}
                                                 <button
                                                     class={`follower-button
@@ -914,7 +913,7 @@
                     </div>
                 </div>
             {/if}
-            {#if isProfilePrivate && loggedInUser !== user && !(isProfilePublicToFollowers && isFollowedByUser) && !loggedInAdmin}
+            {#if isProfilePrivate && String(user).toLowerCase() !== String(loggedInUser).toLowerCase() && !(isProfilePublicToFollowers && isFollowedByUser) && !loggedInAdmin}
                 <div class="section-private">
                     <img
                         src="/account/lock.svg"
@@ -1094,7 +1093,7 @@
                                     </button>
                                 {/if}
                             {:else}
-                                {#if loggedIn && (user === loggedInUser || loggedInAdmin)}
+                                {#if loggedIn && (String(user).toLowerCase() === String(loggedInUser).toLowerCase() || loggedInAdmin)}
                                     <button class="edit-link" on:click={() => {
                                         profileEditingData.bio = fullProfile.bio || '';
                                         profileEditingData.isEditingBio = true;
@@ -1139,7 +1138,7 @@
                                     {@html generateMarkdown(fullProfile.bio)}
                                 {:else}
                                     <p style="opacity:0.5">
-                                        {#if user === loggedInUser}
+                                        {#if String(user).toLowerCase() === String(loggedInUser).toLowerCase()}
                                             <LocalizedText
                                                 text="There's nothing here.. yet! Write some things you want to share here!"
                                                 key="profile.bio.none"
@@ -1164,7 +1163,7 @@
                                 key="profile.featured.title{fullProfile.myFeaturedProjectTitle || 1}"
                                 lang={currentLang}
                             />
-                            {#if loggedIn && user === loggedInUser && profileFeaturedProject && !profileEditingData.isEditingProject}
+                            {#if loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase() && profileFeaturedProject && !profileEditingData.isEditingProject}
                                 <button class="edit-link" on:click={() => {
                                     profileEditingData.project = profileFeaturedProject.id || 0;
                                     profileEditingData.projectTitle = fullProfile.myFeaturedProjectTitle || 1;
@@ -1252,7 +1251,7 @@
                                         lang={currentLang}
                                     />
                                 {/if}
-                                {#if loggedIn && user === loggedInUser && fullProfile.rank === 0}
+                                {#if loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase() && fullProfile.rank === 0}
                                     {#if fullProfile.canrankup !== true}
                                         <span style="opacity: 0.5;font-size:.7em;">
                                             <br>
@@ -1285,7 +1284,7 @@
                                 {/if}
                             </p>
                         </div>
-                        <div class="user-stat-box">
+                        <div class="user-stat-box" style="align-content: flex-start;">
                             <div class="user-stat-box-inner">
                                 <LocalizedText
                                     text="Badges"
@@ -1293,68 +1292,24 @@
                                     lang={currentLang}
                                 />
                             </div>
-                            <div class="user-box-maxwidth"></div>
                             <div class="user-badge-container">
-                            <div class="user-badges">
-                                {#each badges as badge, idx}
-                                    {#if ProfileBadges[badge]}
-                                        <button
-                                            on:click={() => {
-                                                focusedBadge = idx;
-                                            }}
-                                            on:focusout={() => {
-                                                focusedBadge = -1;
-                                            }}
-                                            title={TranslationHandler.text(
-                                                `profile.badge.${badge}`,
-                                                currentLang
-                                            ) || TranslationHandler.text(
-                                                `profile.badge.${badge}`,
-                                                'en'
-                                            )}
-                                        >
-                                            <img
-                                                src={`/badges/${ProfileBadges[badge]}.png`}
-                                                alt={TranslationHandler.text(
-                                                    `profile.badge.${badge}`,
-                                                    currentLang
-                                                ) || TranslationHandler.text(
-                                                    `profile.badge.${badge}`,
-                                                    'en'
-                                                )}
-                                                title={TranslationHandler.text(
-                                                    `profile.badge.${badge}`,
-                                                    currentLang
-                                                ) || TranslationHandler.text(
-                                                    `profile.badge.${badge}`,
-                                                    'en'
-                                                )}
+                                <div class="user-badges">
+                                    {#each badges as badge, idx}
+                                        {#if ProfileBadges[badge]}
+                                            <ProfileBadge {badge} {currentLang} />
+                                        {/if}
+                                    {:else}
+                                        <p style="font-size: initial; font-weight: normal; width: 100%; text-align: center;">
+                                            <LocalizedText
+                                                text="Nothing was found."
+                                                key="generic.notfound"
+                                                lang={currentLang}
                                             />
-                                            {#if focusedBadge === idx}
-                                                <div class="badge-info">
-                                                    {TranslationHandler.text(
-                                                        `profile.badge.${badge}`,
-                                                        currentLang
-                                                    ) || TranslationHandler.text(
-                                                        `profile.badge.${badge}`,
-                                                        'en'
-                                                    )}
-                                                </div>
-                                            {/if}
-                                        </button>
-                                    {/if}
-                                {:else}
-                                    <p style="font-size: initial; font-weight: normal; width: 100%; text-align: center;">
-                                        <LocalizedText
-                                            text="Nothing was found."
-                                            key="generic.notfound"
-                                            lang={currentLang}
-                                        />
-                                    </p>
-                                {/each}
+                                        </p>
+                                    {/each}
+                                </div>
                             </div>
                         </div>
-                    </div>
                     </div>
                 </div>
                 <ContentCategory
@@ -1364,7 +1319,7 @@
                     )}
                     style="width:calc(90% - 10px);"
                     stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
-                    seemore={`/search?q=user%3A${user}`}
+                    seemore={`/search?q=by%3A${user}`}
                 >
                     <div class="project-list">
                         {#if projects.all.length > 0}
@@ -1391,7 +1346,7 @@
                 </ContentCategory>
             </div>
             <div class="section-serious-actions">
-                {#if !(loggedIn && user === loggedInUser)}
+                {#if !(loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase())}
                     <div class="report-action">
                         <a
                             href={`/report?type=user&id=${user}`}
@@ -1869,10 +1824,6 @@
         margin-left: 4px;
     }
 
-    .user-box-maxwidth {
-        width: 100%;
-        height: 1px;
-    }
     :global(body.dark-mode) .section-user-stats {
         border-color: rgba(255, 255, 255, 0.3);
     }
@@ -2057,45 +2008,15 @@
 
     .user-badge-container {
         margin: 0px;
-        /* TODO: this is a bandaid fix, properly fix it later */
-        margin-top: -64px;
-        height: 32px;
-        width: 200px;
-        /* TODO: too many badges will overflow this box, fix this later */
+        margin-top: 4px;
+        width: 100%;
+        height: calc(100% - 46px);
+        overflow: auto;
     }
     .user-badges {
         display: flex;
         flex-flow: row;
         flex-wrap: wrap;
-    }
-    .user-badges button {
-        position: relative;
-        margin: 0 4px;
-        border: 0;
-        padding: 0;
-        width: 32px;
-        height: 32px;
-        background: transparent;
-        cursor: pointer;
-    }
-    .user-badges button img {
-        margin: 0;
-        border: 0;
-        padding: 0;
-        width: 32px;
-        height: 32px;
-    }
-
-    .badge-info {
-        position: absolute;
-        top: 36px;
-        left: 0;
-        padding: 8px 16px;
-        border-radius: 4px;
-        background: rgba(0, 0, 0, 0.5);
-        color: white;
-        transform-origin: center;
-        transform: translateX(calc(50% - 64px));
-        z-index: 5000;
+        justify-content: center;
     }
 </style>

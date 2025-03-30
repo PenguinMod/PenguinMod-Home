@@ -170,7 +170,7 @@
     "uploading.guidelines.button": "Panduan Pengunggahan & Pembaruan Proyek",
     "uploading.guidelines.newtab": "Buka di tab baru",
     "uploading.guidelines.darkmode": "Halaman ini tidak dalam Mode Gelap karena merupakan situs web eksternal.",
-    "uploading.guidelines.nottranslated": "Panduan ini mungkin tidak dapat diterjemahkan. Untuk alternatif terjemahan, <a href=\"https://jwklong.github.io/penguinmod.github.io/PenguinMod-Guidelines/PROJECTS\">lihat disini</a>.",
+    "uploading.guidelines.nottranslated": "Panduan ini mungkin tidak dapat diterjemahkan. Untuk alternatif terjemahan, <a href=\"https://studio.penguinmod.com/PenguinMod-Guidelines/PROJECTS\">lihat disini</a>.",
     "uploading.error.toomanyrequests": "Anda hanya dapat mengunggah proyek setiap 8 menit.",
     "uploading.error.missingprojectdata": "Gagal mengirim data proyek. Proyek Anda mungkin terlalu besar.",
     "uploading.error.reauthenticate": "Anda telah keluar. Silakan masuk kembali.",
