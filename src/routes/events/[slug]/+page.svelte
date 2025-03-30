@@ -9,7 +9,7 @@
 
     // import { onMount } from "svelte";
     import MarkdownIt from "markdown-it";
-    import EventPages from "../../../resources/markdown/events/pages";
+    import EventPages from "../../../events/pages";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../../resources/translations.js";

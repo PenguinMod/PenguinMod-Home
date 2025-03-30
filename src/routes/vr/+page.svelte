@@ -1,8 +1,8 @@
 <script>
     import { onMount } from "svelte";
     import { page } from '$app/stores';
-    import VRHandler from "../../resources/vr";
-    import VRPages from "../../resources/vr/menus/index.js";
+    import VRHandler from "../../vr";
+    import VRPages from "../../vr/menus/index.js";
 
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";

@@ -18,7 +18,7 @@
     import ProjectApi from "../../resources/projectapi.js";
 
     // Icons
-    import PenguinConfusedSVG from "../../resources/icons/Penguin/confused.svelte";
+    import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
 
     let searchQuery = "...";
     let projects = [];

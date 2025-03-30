@@ -5,7 +5,7 @@
     import { onMount } from "svelte";
     import { browser } from '$app/environment';
     import MarkdownIt from "markdown-it";
-    import GuidelinePages from "../../../resources/markdown/guidelines/pages";
+    import GuidelinePages from "../../../guidelines/pages";
 
     const markdownSource = GuidelinePages[data.slug] || "404 Page Not Found";
     if (markdownSource === '404 Page Not Found' && browser) {

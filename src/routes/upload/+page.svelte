@@ -26,7 +26,7 @@
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
     // Icons
-    import SearchSVG from "../../resources/icons/Search/icon.svelte";
+    import SearchSVG from "../../icons/Search/icon.svelte";
 
     let projectName = "";
     let currentLang = "en";
