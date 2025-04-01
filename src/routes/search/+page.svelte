@@ -30,6 +30,9 @@
     const fetchNewProjects = () => {
         ProjectApi.searchProjects(page, searchQuery, localStorage.getItem("username"), localStorage.getItem("token"), true)
             .then((result) => {
+                if (searchQuery.startsWith("user:")) {
+                    searchType = "user"
+                }
                 projects.push(...result);
                 projects = projects;
                 if (projects.length <= 0) {
