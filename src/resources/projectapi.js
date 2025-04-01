@@ -160,7 +160,7 @@ class ProjectApi {
                 if (allow_user) {
                     const userQuery = searchQuery.split(":");
                     userQuery.shift();
-                    api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
+                    api = `${OriginApiUrl}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
                     break;
                 }
                 // fallthrough
