@@ -159,7 +159,6 @@ class ProjectApi {
             case "user":
                 if (allow_user) {
                     const userQuery = searchQuery.split(":");
-                    searchType = "user";
                     userQuery.shift();
                     api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
                     break;
