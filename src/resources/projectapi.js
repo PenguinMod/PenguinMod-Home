@@ -11,9 +11,9 @@ function MB(num) {
     const Kb = num / 1000;
     const Mb = num / 1000000;
     const Gb = num / 1000000000;
-    if (Gb >= 0.01) return `${Gb.toFixed(2)}GB`;
-    if (Mb >= 0.01) return `${Mb.toFixed(2)}MB`;
-    if (Kb >= 0.01) return `${Kb.toFixed(2)}KB`;
+    if (Gb >= 1) return `${Gb.toFixed(2)}GB`;
+    if (Mb >= 1) return `${Mb.toFixed(2)}MB`;
+    if (Kb >= 1) return `${Kb.toFixed(2)}KB`;
     return `${num}B`;
 }
 
