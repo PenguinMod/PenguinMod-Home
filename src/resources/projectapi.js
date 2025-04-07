@@ -1678,7 +1678,7 @@ class ProjectApi {
                 }
 
                 const size = Object.values(assets)
-                    .reduce((c,v) => c + v.size, projectSize + imageSize);
+                    .reduce((c,v) => c + v.size, projectSize);
 
                 const max_size = PUBLIC_MAX_UPLOAD_SIZE * ((await this.isDonator()) ? 1.75 : 1);
 

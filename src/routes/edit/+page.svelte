@@ -203,6 +203,8 @@
             });
             post({ type: "validate" });
         }
+
+        projectSizes = { name: `0/${PUBLIC_MAX_UPLOAD_SIZE*(await ProjectClient.isDonator()?1.75:1)}MB`, value: [] };
     });
     
     let isBusyUploading = false;
