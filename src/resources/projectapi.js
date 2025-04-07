@@ -1,5 +1,5 @@
 import { PUBLIC_API_URL, PUBLIC_STUDIO_URL, PUBLIC_MAX_UPLOAD_SIZE } from "$env/static/public";
-
+ 
 let OriginApiUrl = PUBLIC_API_URL;
 
 import JSZip from "jszip";
@@ -8,12 +8,12 @@ import jsonDescriptor from "./protobuf-bundle.json";
 let protobufRoot = protobuf.Root.fromJSON(jsonDescriptor);
 let project = protobufRoot.lookupType("project.Project");
 function MB(num) {
-    const Kb = (num >> 10) & 0b1111111111;
-    const Mb = (num >> 20) & 0b1111111111;
-    const Gb = (num >> 30) & 0b1111111111;
-    if (Gb) return `${(num / 1024 / 1024 / 1024).toFixed(2)}GB`;
-    if (Mb) return `${(num / 1024 / 1024).toFixed(2)}MB`;
-    if (Kb) return `${(num / 1024).toFixed(2)}KB`;
+    const Kb = num / 1000;
+    const Mb = num / 1000000;
+    const Gb = num / 1000000000;
+    if (Gb >= 1) return `${Gb.toFixed(2)}GB`;
+    if (Mb >= 1) return `${Mb.toFixed(2)}MB`;
+    if (Kb >= 1) return `${Kb.toFixed(2)}KB`;
     return `${num}B`;
 }
 
