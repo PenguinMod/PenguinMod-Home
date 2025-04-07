@@ -49,7 +49,7 @@
     let newProjectImage;
     let newProjectURL;
     let newProjectData;
-    let projectSizes = { name: `0/${PUBLIC_MAX_UPLOAD_SIZE}MB`, value: [] };
+    let projectSizes = { name: `0/${PUBLIC_MAX_UPLOAD_SIZE*(ProjectClient.isDonator() ? 1.75 : 1)}MB`, value: [] };
     function updateSize() {
         if (newProjectData) 
             ProjectClient.resolveProjectSizes(newProjectData, newProjectImage?.size ?? 0, true)
