@@ -1680,7 +1680,7 @@ class ProjectApi {
                 const size = Object.values(assets)
                     .reduce((c,v) => c + v.size, projectSize + imageSize);
 
-                const max_size = PUBLIC_MAX_UPLOAD_SIZE * (isDonator() ? 1.75 : 1);
+                const max_size = PUBLIC_MAX_UPLOAD_SIZE * ((await this.isDonator()) ? 1.75 : 1);
 
                 return [
                     {
@@ -1708,7 +1708,7 @@ class ProjectApi {
                             name !== 'project.json')
                     .map(async file => [await file.async('blob'), file.name]));
                 const size = assets.reduce((c,v) => c + v[0].size, protobuf.size + imageSize);
-                if (size > (Number(PUBLIC_MAX_UPLOAD_SIZE) * (isDonator() ? 1.75 : 1) * 1024 * 1024)) 
+                if (size > (Number(PUBLIC_MAX_UPLOAD_SIZE) * ((await this.isDonator()) ? 1.75 : 1) * 1024 * 1024)) 
                     throw 'ProjectToLarge';
     
                 return { protobuf, assets };
