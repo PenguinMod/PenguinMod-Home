@@ -125,10 +125,10 @@ class ProjectApi {
         ProjectApi.CachedDonators[user] = badges.includes('donator');
         return badges.includes('donator');
     }
-    static getProjects(page, oldFirst) {
+    static getProjects(page, oldFirst=false, username="", token="") {
         return new Promise((resolve, reject) => {
             const reverseParam = oldFirst ? '&reverse=true' : '';
-            const url = `${OriginApiUrl}/api/v1/projects/getprojects?page=${page}${reverseParam}`;
+            const url = `${OriginApiUrl}/api/v1/projects/getprojects?page=${page}${reverseParam}&username=${username}&token=${token}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {

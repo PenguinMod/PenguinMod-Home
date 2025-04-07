@@ -519,7 +519,7 @@
             } else {
                 projectPageSearch = 0;
                 projectPage += 1;
-                ProjectApi.getProjects(projectPage).then((projectss) => {
+                ProjectApi.getProjects(projectPage, false, username, ProjectClient.token).then((projectss) => {
                     canRemix.push(...projectss);
                     canRemix = canRemix;
                     lastProjectPage = projectss.length <= 0;
@@ -542,7 +542,7 @@
         projectPageType = "remix";
         remixPageOpen = true;
 
-        ProjectApi.getProjects(projectPage).then((projects) => {
+        ProjectApi.getProjects(projectPage, false, ProjectClient.token).then((projects) => {
             canRemix = projects;
         });
     }
