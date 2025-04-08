@@ -208,8 +208,8 @@
     let fetchedFullProfile = false;
     onMount(async () => {
         const params = new URLSearchParams(location.search);
-        const query = params.get("user");
-        const idQuery = params.get("id");
+        const query = params.get("user") ?? "";
+        const idQuery = params.get("id") ?? "";
         user = query;
 
         if (idQuery) {
