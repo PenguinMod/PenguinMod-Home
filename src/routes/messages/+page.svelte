@@ -590,13 +590,16 @@
                                     </b> 🌟
                                 </p>
                             {:else if message.message.type === "followerAdded"}
-                                <a href={`/profile?user=${message.message.user.username}`}>
-                                    {String(
-                                        TranslationHandler.text(
-                                            "messages.alert.followeradded",
-                                            currentLang
-                                        )
-                                    ).replace("$1", message.message.user.username)}
+                                <a class="follower-added" href={`/profile?user=${message.message.user.username}`}>
+                                    <img src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${message.message.user.username}`} alt="" />
+                                    <span>
+                                        {String(
+                                            TranslationHandler.text(
+                                                "messages.alert.followeradded",
+                                                currentLang
+                                            )
+                                        ).replace("$1", message.message.user.username)}
+                                    </span>
                                 </a>
                             {:else if message.message.type === "newBadge"}
                                 <div style="display:flex; flex-direction:row; align-items:center;">
@@ -1200,5 +1203,30 @@
         margin: 0;
         cursor: pointer;
         font-size: 0.85rem;
+    }
+
+    .follower-added {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .follower-added img {
+        height: 32px;
+        aspect-ratio: 1;
+        box-sizing: border-box;
+        border: 1px solid black;
+        border-radius: 4px;
+    }
+    :global(body.dark-mode) .follower-added img {
+        border-color: white;
+    }
+
+    .follower-added span {
+        color: black;
+    }
+    :global(body.dark-mode) .follower-added span {
+        color: white;
     }
 </style>
