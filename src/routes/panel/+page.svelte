@@ -9,7 +9,7 @@
     import ProjectApi from "../../resources/projectapi.js";
     import * as FileSaver from "file-saver";
     import JSZip from "jszip";
-    import BlobAndDataUrl from "./blobanddataurl.js";
+    import BlobAndDataUrl from "../../resources/blobanddataurl.js";
     import FileTypes from "./filetypes.js";
     import Stats from "../../lib/statsComponent/stats.svelte";
 

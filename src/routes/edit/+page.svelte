@@ -23,6 +23,7 @@
     import Language from "../../resources/language.js";
     // Icons
     import SearchSVG from "../../resources/icons/Search/icon.svelte";
+    import BlobAndDataUrl from "../../resources/blobanddataurl.js";
 
     let projectName = "";
     let currentLang = "en";
@@ -182,13 +183,26 @@
                 }
                 // project: uri of project data
                 if (data.type === "project") {
-                    newProjectData = data.uri;
-                    projectInputName.innerText = String(
-                        TranslationHandler.text(
-                            "uploading.project.ownfile.imported",
-                            currentLang
-                        )
-                    ).replace("$1", data.name);
+                    newProjectData = BlobAndDataUrl.base64DataURLtoUint8Array(data.uri);
+                    if (projectInputName) {
+                        projectInputName.innerText = String(
+                            TranslationHandler.text(
+                                "uploading.project.ownfile.imported",
+                                currentLang
+                            )
+                        ).replace("$1", data.name);
+                    }
+
+                    /*input = input.target;
+                    const file = input.files[0];
+                    if (!file) return;
+                    newProjectData = file;
+                    projectInputName.innerText = TranslationHandler.text(
+                        "uploading.project.ownfile.picked",
+                        currentLang
+                    )
+                        .replace("$2", floatTo2Decimals(file.size / 1250000))
+                        .replace("$1", file.name);*/
                 }
 
                 // we done here

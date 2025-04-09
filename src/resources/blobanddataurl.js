@@ -1,5 +1,5 @@
-import MagicNumbers from './magicNumbers';
-import FileTypes from './filetypes';
+import MagicNumbers from '../routes/panel/magicNumbers';
+import FileTypes from '../routes/panel/filetypes';
 
 class BlobAndDataUrl {
     static fileTypeFromDataArray = MagicNumbers.detectFileType;
