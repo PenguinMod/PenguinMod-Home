@@ -180,10 +180,11 @@
                     }
 
                     newProjectImage = new Blob([u8arr], {type:mime});
+                    updateSize();
                 }
                 // project: uri of project data
                 if (data.type === "project") {
-                    newProjectData = BlobAndDataUrl.base64DataURLtoUint8Array(data.uri);
+                    newProjectData = data.uri;
                     if (projectInputName) {
                         projectInputName.innerText = String(
                             TranslationHandler.text(
@@ -192,6 +193,7 @@
                             )
                         ).replace("$1", data.name);
                     }
+                    updateSize();
 
                     /*input = input.target;
                     const file = input.files[0];
