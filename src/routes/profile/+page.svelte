@@ -255,7 +255,7 @@
                 }
                 if (profileFeatured) {
                     ProjectApi.getProjectMeta(profileFeatured).then(metadata => {
-                        console.log(metadata);
+                        //console.log(metadata);
                         profileFeaturedProject = metadata;
                     }).catch((err) => {
                         console.warn('Failed to load profile featured project;', err);
@@ -732,7 +732,7 @@
     }
 
     function unblock() {
-        ProjectClient.block(user, true)
+        ProjectClient.block(user, false)
         .then(() => {
             alert(TranslationHandler.textSafe(
                 "generic.ok",
@@ -960,6 +960,16 @@
                             lang={currentLang}
                         />
                     </p>
+                    <button
+                        class="unblock-button"
+                        on:click={unblock}
+                    >
+                        <LocalizedText
+                            text="Unblock"
+                            key="profile.unblock"
+                            lang={currentLang}
+                        />
+                    </button>
                 </div>
             {:else}
             {#if isProfilePrivate && String(user).toLowerCase() !== String(loggedInUser).toLowerCase() && !(isProfilePublicToFollowers && isFollowedByUser) && !loggedInAdmin}
@@ -1713,6 +1723,21 @@
     .block-icon {
         height: 16px;
         top: 0px!important;
+    }
+
+    .unblock-button {
+        min-width: 100px;
+        height: 35px;
+        font-size: medium;
+        font-weight: bold;
+        background-color: rgb(0, 195, 255);
+        color: white;
+        border-radius: 10px;
+        border-color: rgba(0, 0, 0, 0.25);
+        border-width: 1px;
+        border-style: solid;
+        text-align: center;
+        cursor: pointer;
     }
 
     .project-list {
