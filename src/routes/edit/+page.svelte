@@ -23,7 +23,6 @@
     import Language from "../../resources/language.js";
     // Icons
     import SearchSVG from "../../resources/icons/Search/icon.svelte";
-    import BlobAndDataUrl from "../../resources/blobanddataurl.js";
 
     let projectName = "";
     let currentLang = "en";
@@ -59,6 +58,17 @@
                     if (toLarge) 
                         alert(TranslationHandler.text('uploading.error.projecttoolarge', currentLang));
                 });
+    }
+    function dataURLtoBlob(dataurl) {
+        var arr = dataurl.split(","),
+            mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]),
+            n = bstr.length,
+            u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
     }
 
     let projectInputName;
@@ -184,7 +194,7 @@
                 }
                 // project: uri of project data
                 if (data.type === "project") {
-                    newProjectData = data.uri;
+                    newProjectData = (data.uri instanceof Blob) ? data.uri : dataURLtoBlob(data.uri);
                     if (projectInputName) {
                         projectInputName.innerText = String(
                             TranslationHandler.text(
