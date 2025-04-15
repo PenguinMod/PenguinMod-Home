@@ -154,7 +154,7 @@ class ProjectApi {
      */
     static searchProjects(page, searchQuery, username, token, allow_user=false) {
         const query = searchQuery.split(":", 1)[0];
-        let api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${query}&username=${username}&token=${token}`;
+        let api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(query)}&username=${username}&token=${token}`;
         switch (query) {
             case "user":
                 if (allow_user) {
@@ -2478,6 +2478,51 @@ class ProjectApi {
                         return;
                     }
                     resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
+
+    block(user, active) {
+        const url = `${OriginApiUrl}/api/v1/users/blockuser`;
+
+        const body = JSON.stringify({
+            username: this.username,
+            token: this.token,
+            target: user,
+            active,
+        });
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
+                res.json().then(() => {
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
+
+    checkIfBlocked(user) {
+        const url = `${OriginApiUrl}/api/v1/users/hasblocked?username=${this.username}&token=${this.token}&target=${user}`;
+
+        return new Promise((resolve, reject) => {
+            fetch(url).then(res => {
+                res.json().then(json => {
+                    resolve(json.has_blocked);
                 }).catch(err => {
                     reject(err);
                 })

@@ -380,6 +380,7 @@
                 loggedInUserId = id;
                 loggedInAdmin = isAdmin || isApprover;
                 const isFollowing = await ProjectClient.isFollowingUser(user);
+                checkIfBlocked();
                 followOnLoad = isFollowing;
                 loggedInChange();
             })
@@ -422,6 +423,13 @@
                 loggedInChange();
             });
     });
+
+    let isBlocked = false;
+
+    async function checkIfBlocked() {
+        const ret = await ProjectClient.checkIfBlocked(user);
+        isBlocked = ret;
+    }
 
     const rankUpAccount = () => {
         isAttemptingRankUp = true;
@@ -710,6 +718,30 @@
             });
         }
     };
+
+    function block() {
+        ProjectClient.block(user, true)
+        .then(() => {
+            alert(TranslationHandler.textSafe(
+                "profile.blockednote2",
+                currentLang,
+                "If you are blocking this user for harassment, please also report them."
+            ))
+            location.reload();
+        })
+    }
+
+    function unblock() {
+        ProjectClient.block(user, true)
+        .then(() => {
+            alert(TranslationHandler.textSafe(
+                "generic.ok",
+                currentLang,
+                "Ok"
+            ))
+            location.reload();
+        })
+    }
 </script>
 
 <svelte:head>
@@ -860,7 +892,7 @@
                                         <h1>{fullProfile.real_username || user}</h1>
                                     {/if}
                                     
-                                    {#if isProfilePrivate && !loggedInAdmin}
+                                    {#if isProfilePrivate && !loggedInAdmin && !isBlocked}
                                         <img
                                             src="/account/lock.svg"
                                             alt="Private"
@@ -873,7 +905,7 @@
                                     {/if}
                                 </div>
                             </div>
-                            {#if !isProfilePrivate || String(user).toLowerCase() === String(loggedInUser).toLowerCase() || (isProfilePublicToFollowers && isFollowedByUser) || loggedInAdmin}
+                            {#if !isBlocked && !isProfilePrivate || String(user).toLowerCase() === String(loggedInUser).toLowerCase() || (isProfilePublicToFollowers && isFollowedByUser) || loggedInAdmin}
                                 <div class="follower-section">
                                     <p class="follower-count">
                                         {TranslationHandler.text(
@@ -913,6 +945,23 @@
                     </div>
                 </div>
             {/if}
+            {#if isBlocked}
+                <div class="section-private">
+                    <img
+                        src="/account/status_warn.svg"
+                        alt="Blocked"
+                        title="Blocked"
+                    />
+
+                    <p>
+                        <LocalizedText
+                            text="You have this user currently blocked."
+                            key="profile.blockednote"
+                            lang={currentLang}
+                        />
+                    </p>
+                </div>
+            {:else}
             {#if isProfilePrivate && String(user).toLowerCase() !== String(loggedInUser).toLowerCase() && !(isProfilePublicToFollowers && isFollowedByUser) && !loggedInAdmin}
                 <div class="section-private">
                     <img
@@ -1252,7 +1301,7 @@
                                     />
                                 {/if}
                                 {#if loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase() && fullProfile.rank === 0}
-                                    {#if fullProfile.canrankup !== true}
+                                    {#if !fullProfile.canrankup}
                                         <span style="opacity: 0.5;font-size:.7em;">
                                             <br>
                                             <LocalizedText
@@ -1348,6 +1397,25 @@
             <div class="section-serious-actions">
                 {#if !(loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase())}
                     <div class="report-action">
+                        <button
+                            on:click={block}
+                            target="_blank"
+                            class="block-button"
+                            style="color: red !important;"
+                        >
+                            <img
+                                class="block-icon"
+                                src="/notallowed.png"
+                                alt="Block"
+                                style="position:relative;top:4px"
+                            />
+                            <LocalizedText
+                                text="Block"
+                                key="profile.block"
+                                lang={currentLang}
+                            />
+                        </button>
+                        <div style="width:30px;"/>
                         <a
                             href={`/report?type=user&id=${user}`}
                             target="_blank"
@@ -1368,6 +1436,7 @@
                     </div>
                 {/if}
             </div>
+            {/if}
             {/if}
         </div>
         {:else}
@@ -1625,11 +1694,25 @@
     }
     .report-action {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
     }
     .report-action img {
         margin: 0 4px;
+    }
+    .block-button {
+        background: none!important;
+        border: none;
+        padding: 0!important;
+        text-decoration: underline;
+        cursor: pointer;
+        font-size: medium;
+        display: flex;
+        flex-direction: row;
+    }
+    .block-icon {
+        height: 16px;
+        top: 0px!important;
     }
 
     .project-list {
@@ -1728,6 +1811,8 @@
     }
     .report-icon {
         height: 16px;
+        position: relative;
+        bottom: 2px!important;
     }
 
     .section-user-header {
