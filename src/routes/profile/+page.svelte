@@ -425,10 +425,12 @@
     });
 
     let isBlocked = false;
+    let showAnyways = false;
 
     async function checkIfBlocked() {
         const ret = await ProjectClient.checkIfBlocked(user);
         isBlocked = ret;
+        showAnyways = !ret;
     }
 
     const rankUpAccount = () => {
@@ -742,6 +744,11 @@
             location.reload();
         })
     }
+
+    function setShowAnyways() {
+        console.log("hiii");
+        showAnyways = true;
+    }
 </script>
 
 <svelte:head>
@@ -892,7 +899,7 @@
                                         <h1>{fullProfile.real_username || user}</h1>
                                     {/if}
                                     
-                                    {#if isProfilePrivate && !loggedInAdmin && !isBlocked}
+                                    {#if isProfilePrivate && !loggedInAdmin && (!isBlocked || showAnyways)}
                                         <img
                                             src="/account/lock.svg"
                                             alt="Private"
@@ -905,7 +912,7 @@
                                     {/if}
                                 </div>
                             </div>
-                            {#if !isBlocked && !isProfilePrivate || String(user).toLowerCase() === String(loggedInUser).toLowerCase() || (isProfilePublicToFollowers && isFollowedByUser) || loggedInAdmin}
+                            {#if (!isBlocked || showAnyways) && !isProfilePrivate || String(user).toLowerCase() === String(loggedInUser).toLowerCase() || (isProfilePublicToFollowers && isFollowedByUser) || loggedInAdmin}
                                 <div class="follower-section">
                                     <p class="follower-count">
                                         {TranslationHandler.text(
@@ -945,7 +952,7 @@
                     </div>
                 </div>
             {/if}
-            {#if isBlocked}
+            {#if isBlocked && !showAnyways}
                 <div class="section-private">
                     <img
                         src="/account/status_warn.svg"
@@ -960,16 +967,31 @@
                             lang={currentLang}
                         />
                     </p>
-                    <button
-                        class="unblock-button"
-                        on:click={unblock}
+                    <div
+                        class="button-container"
                     >
-                        <LocalizedText
-                            text="Unblock"
-                            key="profile.unblock"
-                            lang={currentLang}
-                        />
-                    </button>
+                        <button
+                            class="unblock-button"
+                            on:click={unblock}
+                        >
+                            <LocalizedText
+                                text="Unblock"
+                                key="profile.unblock"
+                                lang={currentLang}
+                            />
+                        </button>
+
+                        <button
+                            class="show-anyways"
+                            on:click={setShowAnyways}
+                        >
+                            <LocalizedText
+                                text="Continue"
+                                key="account.settings.continue"
+                                lang={currentLang}
+                            />
+                        </button>
+                    </div>
                 </div>
             {:else}
             {#if isProfilePrivate && String(user).toLowerCase() !== String(loggedInUser).toLowerCase() && !(isProfilePublicToFollowers && isFollowedByUser) && !loggedInAdmin}
@@ -1407,24 +1429,26 @@
             <div class="section-serious-actions">
                 {#if !(loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase())}
                     <div class="report-action">
-                        <button
-                            on:click={block}
-                            target="_blank"
-                            class="block-button"
-                            style="color: red !important;"
-                        >
-                            <img
-                                class="block-icon"
-                                src="/notallowed.png"
-                                alt="Block"
-                                style="position:relative;top:4px"
-                            />
-                            <LocalizedText
-                                text="Block"
-                                key="profile.block"
-                                lang={currentLang}
-                            />
-                        </button>
+                        {#if !(isBlocked && setShowAnyways)}
+                            <button
+                                on:click={block}
+                                target="_blank"
+                                class="block-button"
+                                style="color: red !important;"
+                            >
+                                <img
+                                    class="block-icon"
+                                    src="/notallowed.png"
+                                    alt="Block"
+                                    style="position:relative;top:4px"
+                                />
+                                <LocalizedText
+                                    text="Block"
+                                    key="profile.block"
+                                    lang={currentLang}
+                                />
+                            </button>
+                        {/if}
                         <div style="width:30px;"/>
                         <a
                             href={`/report?type=user&id=${user}`}
@@ -1738,6 +1762,25 @@
         border-style: solid;
         text-align: center;
         cursor: pointer;
+    }
+    .show-anyways {
+        min-width: 100px;
+        height: 35px;
+        font-size: medium;  
+        font-weight: bold;
+        background-color: rgb(243, 199, 199);
+        color: rgb(60, 60, 60);
+        border-radius: 10px;
+        border-color: rgba(0, 0, 0, 0.25);
+        border-width: 1px;
+        border-style: solid;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    :global(body.dark-mode) .show-anyways {
+        background-color: rgb(54, 40, 38);
+        color: rgb(194, 194, 194);
     }
 
     .project-list {
