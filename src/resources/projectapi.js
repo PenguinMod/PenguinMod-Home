@@ -1,5 +1,6 @@
 import { PUBLIC_API_URL, PUBLIC_STUDIO_URL, PUBLIC_MAX_UPLOAD_SIZE } from "$env/static/public";
 import pmp_protobuf from "pmp-protobuf";
+import JSZip from "jszip";
 
 let OriginApiUrl = PUBLIC_API_URL;
 
