@@ -26,9 +26,10 @@
     let page = 0;
     let pageIsLast = false;
     let searchType = "project";
+    let reverse = false;
 
     const fetchNewProjects = () => {
-        ProjectApi.searchProjects(page, searchQuery, localStorage.getItem("username"), localStorage.getItem("token"), true)
+        ProjectApi.searchProjects(page, searchQuery, localStorage.getItem("username"), localStorage.getItem("token"), true, reverse)
             .then((result) => {
                 if (searchQuery.startsWith("user:")) {
                     searchType = "user"
@@ -52,6 +53,8 @@
         const params = new URLSearchParams(location.search);
         const query = params.get("q");
         searchQuery = query ? query : "";
+        const rev = params.get("reverse");
+        reverse = rev ? rev : false;
 
         fetchNewProjects();
     });

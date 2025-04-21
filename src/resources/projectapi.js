@@ -149,9 +149,9 @@ class ProjectApi {
      * @param {string} token token of user
      * @returns Array of projects
      */
-    static searchProjects(page, searchQuery, username, token, allow_user=false) {
+    static searchProjects(page, searchQuery, username, token, allow_user=false, reverse=false) {
         const query = searchQuery.split(":", 1)[0];
-        let api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(query)}&username=${username}&token=${token}`;
+        let api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(query)}&username=${username}&token=${token}&reverse=${reverse}`;
         switch (query) {
             case "user":
                 if (allow_user) {
@@ -173,7 +173,7 @@ class ProjectApi {
             case "loves":
                 const actual_query = searchQuery.split(":");
                 actual_query.shift();
-                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}&username=${username}&token=${token}`;
+                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}&username=${username}&token=${token}&reverse=${reverse}`;
                 break;
             default:
                 break;
