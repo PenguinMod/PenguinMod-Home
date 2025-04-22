@@ -1,7 +1,7 @@
 # PenguinJam 2025 Mùa xuân
 
 <!-- Try not to touch the ```host or ```collab sections, they are direct user links -->
-<!-- You should translate ```warning sections though. -->J
+<!-- You should translate ```warning sections though. -->
 <!-- ok sir  -->
 
 ```host
