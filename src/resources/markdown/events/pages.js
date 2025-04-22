@@ -15,6 +15,7 @@ import PenguinJamSpring2025Ja from "./ja/penguinjamspring2025.md?raw";
 import PenguinJamSpring2025Pl from "./pl/penguinjamspring2025.md?raw";
 import PenguinJamSpring2025Tr from "./tr/penguinjamspring2025.md?raw";
 import PenguinJamSpring2025Uk from "./uk/penguinjamspring2025.md?raw";
+import PenguinJamSpring2025Vi from "./vi/PenguinJamSpring2025.md?raw";
 
 export default {
     "example": {
@@ -36,5 +37,6 @@ export default {
         "pl": PenguinJamSpring2025Pl,
         "tr": PenguinJamSpring2025Tr,
         "uk": PenguinJamSpring2025Uk,
+        "vi": PenguinJamSpring2025Vi,
     },
 };
