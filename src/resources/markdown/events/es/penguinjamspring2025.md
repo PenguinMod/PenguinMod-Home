@@ -15,8 +15,6 @@ PenguinJam es una Game Jam, que comienza el ***25 de abril a las 2:00 PM (Hora d
 
 Ve a la sección "¿Qué es un Game Jam?" si no sabes qué es un Game Jam.
 
-Envía tus proyectos a PenguinJam **utilizando la etiqueta [#pjamspring25](/search?q=%pjamspring25) en el título o en las notas.**
-
 ## ¿Cuál es el tema?
 ¡El tema aún no se ha revelado! Vuelve cuando empiece la Game Jam.
 
@@ -47,7 +45,7 @@ El tema será desvelado el ***25 de abril a las 2:00 PM (Hora del Este)***.
 ***Los proyectos que no se ajusten a este tema no recibirán ninguna recompensa.***
 
 ### Presentar un proyecto
-Tienes que subir tu proyecto relacionado con el tema a PenguinMod **utilizando la etiqueta #pjamspring25 en el título o en las notas.**
+Tienes que subir tu proyecto relacionado con el tema a PenguinMod.
 
 ¡Asegúrate de subir tus proyectos antes del ***4 de mayo a las 2:00 PM (Hora del Este)***! No los subas después de esa fecha.
 

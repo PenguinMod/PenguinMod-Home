@@ -15,8 +15,6 @@ PenguinJam, bir Game Jam’dir ve ***25 Nisan saat 21:00’de (Türkiye Saatiyle
 
 Eğer "Game Jam nedir?" diye merak ediyorsan, aşağıdaki "Game Jam Nedir?" bölümüne göz atabilirsin.
 
-Projeni **[#pjamspring25](/search?q=%pjamspring25) etiketini başlıkta veya notlarda kullanarak** gönder.
-
 ## Tema nedir?
 Tema henüz açıklanmadı. Lütfen Game Jam başladığında geri gel
 
@@ -47,7 +45,7 @@ Tema, ***25 Nisan saat 21:00’de (Türkiye Saatiyle)*** açıklanacak.
 ***Bu temaya uymayan projeler ödül kazanamayacak.***
 
 ### Bir proje gönder
-Temayla ilgili projeni PenguinMod’a **başlıkta veya notlarda #pjamspring25 etiketiyle** yüklemen gerekiyor.
+Temayla ilgili projeni PenguinMod’a yüklemen gerekiyor.
 
 Projeni mutlaka ***4 Mayıs saat 21:00’e (Türkiye Saatiyle)*** kadar yükle! Bu saatten sonra yükleme yapma.
 
