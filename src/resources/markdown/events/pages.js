@@ -8,6 +8,13 @@ import PenguinJamWinter2024Fr from "./fr/penguinjamwinter2024.md?raw";
 import PenguinJamWinter2024Tr from "./tr/penguinjamwinter2024.md?raw";
 import PenguinJamWinter2024Ru from "./ru/penguinjamwinter2024.md?raw";
 import PenguinJamWinter2024Ja from "./ja/penguinjamwinter2024.md?raw";
+// PenguinJamSpring2025
+import PenguinJamSpring2025En from "./en/penguinjamspring2025.md?raw";
+import PenguinJamSpring2025Es from "./es/penguinjamspring2025.md?raw";
+import PenguinJamSpring2025Ja from "./ja/penguinjamspring2025.md?raw";
+import PenguinJamSpring2025Pl from "./pl/penguinjamspring2025.md?raw";
+import PenguinJamSpring2025Tr from "./tr/penguinjamspring2025.md?raw";
+import PenguinJamSpring2025Uk from "./uk/penguinjamspring2025.md?raw";
 
 export default {
     "example": {
@@ -21,5 +28,13 @@ export default {
         "tr": PenguinJamWinter2024Tr,
         "ru": PenguinJamWinter2024Ru,
         "ja": PenguinJamWinter2024Ja,
+    },
+    "penguinjamspring2025": {
+        "en": PenguinJamSpring2025En,
+        "es": PenguinJamSpring2025Es,
+        "ja": PenguinJamSpring2025Ja,
+        "pl": PenguinJamSpring2025Pl,
+        "tr": PenguinJamSpring2025Tr,
+        "uk": PenguinJamSpring2025Uk,
     },
 };

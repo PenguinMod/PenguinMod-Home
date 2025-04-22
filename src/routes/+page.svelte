@@ -700,21 +700,19 @@
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">We're ranking PenguinJam projects!</h2>
+                        <h2 style="margin-block:4px;">PenguinJam Spring is getting ready!</h2>
                         <div style="width:100%">
                             <p>
-                                Thanks to everyone who participated in PenguinJam this year!
+                                Our servers are finally back online, and we're ready to let your creativity brew in PenguinJam Spring this year!
                                 <br />
-                                We're grading each project now. You'll likely receive your badges in January of 2025.
-                                <br />
-                                See you all next year!
+                                Check out the event page for more information on the event:
                             </p>
-                            <p>
-                                If your project <i>wasn't a game or didn't match the theme</i>, you won't be receiving <i>any</i> badge!
+                            <p style="margin-block-start:4px;">
+                                <a href="https://penguinmod.com/events/penguinjamspring2025">PenguinJam Spring 2025</a>
                             </p>
                             <img
-                                src="/events/news/penguinjamwinter2024.png"
-                                alt="PenguinJam Winter 2024"
+                                src="/events/news/penguinjamspring2025.png"
+                                alt="PenguinJam Spring 2025"
                                 style="width:100%;"
                             />
                         </div>
