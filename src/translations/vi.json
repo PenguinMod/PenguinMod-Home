@@ -167,7 +167,7 @@
     "project.elements.audio": "Chứa tiếng ồn",
     "project.elements.sensitive": "Chứa nội dung nhạy cảm",
     "project.elements.unknown": "Giới hạn không rõ",
-    "uploading.title": "Tải lên, vui lòng đợi...<br>(Bạn có thể cần đồi tab và trở lại)",
+    "uploading.title": "Tải lên",
     "uploading.project.title": "Tiêu đề dự án",
     "uploading.project.title.default": "Dự án",
     "uploading.project.instructions": "Hướng dẫn",

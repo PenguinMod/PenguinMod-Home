@@ -3,6 +3,7 @@
 <!-- Try not to touch the ```host or ```collab sections, they are direct user links -->
 <!-- You should translate ```warning sections though. -->J
 <!-- ok sir  -->
+
 ```Chủ chì
 PenguinMod Team
 ```
@@ -33,54 +34,54 @@ Tham gia nếu bạn muốn nhận những huy hiệu này :
 </div>
 <br></br>
 
-## What is a Game Jam?
-How our PenguinJam will work is:
+## GameJam là gì?
+PenguinJam của chúng tôi hoạt động kiểu:
 
-### We will reveal a theme
-You need to create a PenguinMod project based on a provided theme.
+### Chúng tôi sẽ công bố 1 chủ đề
+Bạn cần tạo 1 dự án Penguinmod dựa trên chủ đề đã cho.
 
-You can interpret the theme in any way, and implement it into your published game. **It should be a big part of your game's design.**
+Bạn có thể diễn giải chủ đề theo bất kỳ cách nào và tích hợp nó vào trò chơi của mình. **Chủ đề nên là phần quan trọng trong thiết kế trò chơi của bạn**.
 
-The theme will be revealed on ***April 25th at 2:00 PM (Eastern Time)***.
+Chủ đề sẽ được công bố vào ngày **1:00 sáng ngày 26 tháng 4 (giờ Việt Nam - ICT)**.ICT
 
-***Projects that do not fit this theme will not receive any rewards.***
+***Dự án mà không đúng chủ đề sẽ không nhận được phần thưởng của sự kiện***
 
-### Submit a project
-You need to upload your theme-related project to PenguinMod.
+### Gửi dự án
+Bạn cần tải lên dự án có liên quan đến chủ đề lên PenguinMod.
 
-Make sure to upload your projects by ***May 4th at 2:00 PM (Eastern Time)***! Do not upload them any later than that.
+Đảm bảo rằng bạn gửi dự án trước ***May 4th at 2:00 PM (Eastern Time)***! Do not upload them any later than that.
 
-### Judging projects
-Staff members and developers will go through all of the valid published projects. We will be reviewing the projects based on the following criteria:
-- Presentation: The quality of costumes and sounds.
-- Originality: How new is the concept of the game?
-- Entertainment: How fun and/or interesting the game is to play.
-- Incorporation: How well does the game implement the theme?
+### Chấm điểm dự án
+Các thành viên trong đội ngũ và nhà phát triển sẽ xem xét tất cả các dự án hợp lệ đã được xuất bản. Chúng tôi sẽ đánh giá các dự án dựa trên các tiêu chí sau:
+- Trình bày: Chất lượng tạo hình và âm thanh.
+- Tính sáng tạo: Ý tưởng của trò chơi có mới mẻ không?
+- Giải trí: Trò chơi có thú vị và/hoặc hấp dẫn không.
+- Mức độ tích hợp: Trò chơi tích hợp chủ đề tốt đến mức nào?
 
-*Note: These criteria are not final; if you have something special to bring to the table then we might give you a higher score.*
+*Lưu ý: Những tiêu chí này không hoàn toàn cố định; nếu bạn có điều gì đặc biệt, bạn có thể nhận được điểm cao hơn..*
 
-### We will give out rewards
-We will choose the top 5 games to be our winners, and they will receive badges displayed on the website profile!
+### Chúng tôi sẽ trao phần thưởng
+Chúng tối sẽ chọn ra 5 trò chơi để trở thành người chiến thắng, và họ sẽ nhận được huy hiệu được hiển thị trên trang web!
 
-Badges will be awarded over time. **Do not pressure the team into giving your badge ASAP. Please acknowledge that we may and will be busy with other things.**
+Huy hiệu sẽ được trao theo thời gian. **Đừng gây áp lực cho nhóm để nhận huy hiệu ngay lập tức. Vui lòng thông cảm vì chúng tôi có thể đang bận các công việc khác.**
 
 <img src="https://penguinmod.com/badges/participant.png" width="48"></img>
-Event Participant will be awarded to everyone (or mostly everyone, we likely won’t count low quality projects.)
+Người tham gia sự kiện sẽ được trao cho tất cả mọi người (hoặc hầu hết, chúng tôi có thể không tính các dự án chất lượng thấp).
 
 <img src="https://penguinmod.com/badges/eventwinner.png" width="48"></img>
-Event Winner will be awarded to the creators of the Top 5 Projects.
+Người chiến thắng sự kiện sẽ được trao cho những người tạo ra 5 dự án hàng đầu.
 
 <img src="https://penguinmod.com/badges/penguinjambronze.png" width="48"></img>
-PenguinJam: Bronze will be awarded to the creator of the third place project.
+PenguinJam: Đồng sẽ được trao cho người tạo ra dự án đạt hạng ba.
 
 <img src="https://penguinmod.com/badges/penguinjamsilver.png" width="48"></img>
-PenguinJam: Silver will be awarded to the creator of the second place project.
+PenguinJam: Bạc sẽ được trao cho người tạo ra dự án đạt hạng nhì.
 
 <img src="https://penguinmod.com/badges/penguinjamgold.png" width="48"></img>
-PenguinJam: Gold will be awarded to the creator of the first place project.
+PenguinJam: Vàng sẽ được trao cho người tạo ra dự án đạt hạng nhất.
 
 <img src="https://penguinmod.com/badges/penguinjamobsidian.png" width="48"></img>
-PenguinJam: Obsidian will be awarded to creators that placed Top 3 in a previous PenguinJam, and then placed Top 3 in this PenguinJam.
+PenguinJam: Obsidian sẽ được trao cho những người đã lọt vào Top 3 ở một kỳ PenguinJam trước đó, và tiếp tục lọt Top 3 trong PenguinJam lần này.
 
 <img src="https://penguinmod.com/badges/penguinjamplatinum.png" width="48"></img>
-PenguinJam: Platinum will be awarded to creators that placed Top 3 in 2 previous PenguinJams, and then placed Top 3 in this PenguinJam.
+PenguinJam: Bạch kim sẽ được trao cho những người đã lọt Top 3 trong hai kỳ PenguinJam trước đó, và tiếp tục lọt Top 3 trong PenguinJam lần này.
