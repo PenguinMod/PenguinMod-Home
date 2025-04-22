@@ -4,7 +4,7 @@
 <!-- You should translate ```warning sections though. -->J
 <!-- ok sir  -->
 
-```Chủ chì
+```host
 PenguinMod Team
 ```
 
