@@ -13,14 +13,14 @@ Chào mừng khi qquay trở lại PenguinJam, chúng tôi vui mừng khì có b
 Đây sẽ là một sự kiện lặp lại, xuất hiện theo định kỳ. Nếu bạn bỏ lỡ cơ hội lần này, hãy quay lại vào lần sau để tham gia nhé!
 
 ## PenguinJam là gì?
-PenguinJam là 1 cuộc thi Game Jam, bắt đầu vào *** 1:00 sáng ngày 26 tháng 4 (giờ Việt Nam - ICT)***.
+PenguinJam là 1 cuộc thi Game Jam, bắt đầu vào ***1:00 sáng ngày 26 tháng 4 (giờ Việt Nam - ICT)***.
 
 Lướt xuống phần "Game Jam là cái gì?" Nếu bạn không biết Game Jam là gì.
 
 ## Chủ đề là gì?
 Chủ để chưa được công bố! Quay lại đây khi GameJam bắt đầu.
 
-Chủ đề sẽ được công bố vào ngày **1:00 sáng ngày 26 tháng 4 (giờ Việt Nam - ICT)**.ICT
+Chủ đề sẽ được công bố vào ngày **1:00 sáng ngày 26 tháng 4 (giờ Việt Nam - ICT)**
 
 Tham gia nếu bạn muốn nhận những huy hiệu này :
 <div style="display:flex;flex-direction:row">
