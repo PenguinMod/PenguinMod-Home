@@ -9,7 +9,7 @@ import PenguinJamWinter2024Tr from "./tr/penguinjamwinter2024.md?raw";
 import PenguinJamWinter2024Ru from "./ru/penguinjamwinter2024.md?raw";
 import PenguinJamWinter2024Ja from "./ja/penguinjamwinter2024.md?raw";
 // PenguinJamSpring2025
-import PenguinJamSpring2025En from "./en/penguinjamspring2025.md?raw";
+import PenguinJamSpring2025En from "./en/penguinjamspring2025mb.md?raw";
 import PenguinJamSpring2025Es from "./es/penguinjamspring2025.md?raw";
 import PenguinJamSpring2025Ja from "./ja/penguinjamspring2025.md?raw";
 import PenguinJamSpring2025Pl from "./pl/penguinjamspring2025.md?raw";
