@@ -11,14 +11,18 @@ Welcome to another PenguinJam! We’re glad to have you back.
 This will be a reoccurring event that will appear every now and then. If you miss your chance this time, come back in the future to join another!
 
 ## What is PenguinJam?
-PenguinJam is a Game Jam, starting ***April 25th at 2:00 PM (Eastern Time)***.
+PenguinJam is a Game Jam, starting ***April 25th at 2:00 PM (Eastern Time)*** and ending ***May 4th at 2:00 PM (Eastern Time)***.
 
 Scroll to the "What is a Game Jam?" section if you don't know what a Game Jam is.
 
-## What is the theme?
-The theme has not been revealed yet! Come back here when the Game Jam starts.
+Submit projects to PenguinJam by **using the tag [#pjamspring25](/search?q=%pjamspring25) in the title or notes.**
 
-The theme will be revealed on ***April 25th at 2:00 PM (Eastern Time)***.
+## What is the theme?
+The theme is: **Hidden!**
+
+Some examples to get you started: a game where you need to hide from a monster, or a game where you need to solve a mystery? Get creative!
+
+Create and upload projects based on this theme before ***May 4th at 2:00 PM (Eastern Time)***!
 
 Participate if you want to try to earn one of these badges:
 <div style="display:flex;flex-direction:row">
@@ -40,21 +44,19 @@ You need to create a PenguinMod project based on a provided theme.
 
 You can interpret the theme in any way, and implement it into your published game. **It should be a big part of your game's design.**
 
-The theme will be revealed on ***April 25th at 2:00 PM (Eastern Time)***.
-
 ***Projects that do not fit this theme will not receive any rewards.***
 
 ### Submit a project
-You need to upload your theme-related project to PenguinMod.
+You need to upload your theme-related project to PenguinMod **using the tag #pjamspring25 in the title or notes.**
 
 Make sure to upload your projects by ***May 4th at 2:00 PM (Eastern Time)***! Do not upload them any later than that.
 
 ### Judging projects
 Staff members and developers will go through all of the valid published projects. We will be reviewing the projects based on the following criteria:
-- Presentation: The quality of costumes and sounds.
-- Originality: How new is the concept of the game?
-- Entertainment: How fun and/or interesting the game is to play.
-- Incorporation: How well does the game implement the theme?
+Presentation: The quality of costumes and sounds.
+Originality: How new is the concept of the game?
+Entertainment: How fun and/or interesting the game is to play.
+Incorporation: How well does the game implement the theme?
 
 *Note: These criteria are not final; if you have something special to bring to the table then we might give you a higher score.*
 

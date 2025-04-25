@@ -11,14 +11,18 @@ PenguinMod Team
 Esto será un evento recurrente que aparecerá de vez en cuando. Si pierdes tu oportunidad esta vez, ¡vuelve en el futuro para participar en otra!
 
 ## ¿Que es PenguinJam?
-PenguinJam es una Game Jam, que comienza el ***25 de abril a las 2:00 PM (Hora del Este)***.
+PenguinJam es una Game Jam, que comienza el ***25 de abril a las 2:00 PM (Hora del Este)*** y termina el ***4 de mayo a las 2:00 PM (Hora del Este)***.
 
 Ve a la sección "¿Qué es un Game Jam?" si no sabes qué es un Game Jam.
 
-## ¿Cuál es el tema?
-¡El tema aún no se ha revelado! Vuelve cuando empiece la Game Jam.
+Envía tus proyectos a PenguinJam **utilizando la etiqueta [#pjamspring25](/search?q=%pjamspring25) en el título o en las notas.**
 
-El tema será desvelado el ***25 de abril a las 2:00 PM (Hora del Este)***.
+## ¿Cuál es el tema?
+El tema es: **¡Escondido!**
+
+Algunos ejemplos para empezar: ¿un juego en el que hay que esconderse de un monstruo, o un juego en el que hay que resolver un misterio? Sé creativo.
+
+¡Crea y sube proyectos basados en este tema antes del ***4 de mayo a las 2:00 PM (Hora del Este)***!
 
 Participa si quieres intentar ganar una de estas insignias:
 <div style="display:flex;flex-direction:row">
@@ -45,17 +49,16 @@ El tema será desvelado el ***25 de abril a las 2:00 PM (Hora del Este)***.
 ***Los proyectos que no se ajusten a este tema no recibirán ninguna recompensa.***
 
 ### Presentar un proyecto
-Tienes que subir tu proyecto relacionado con el tema a PenguinMod.
+Tienes que subir tu proyecto relacionado con el tema a PenguinMod **utilizando la etiqueta #pjamspring25 en el título o en las notas.**
 
 ¡Asegúrate de subir tus proyectos antes del ***4 de mayo a las 2:00 PM (Hora del Este)***! No los subas después de esa fecha.
 
 ### Evaluación de proyectos
 Los miembros del staff y los desarrolladores revisarán todos los proyectos válidos publicados. Revisaremos los proyectos en función de los siguientes criterios:
-- Presentación: La calidad de los disfraces y los sonidos.
-- Originalidad: ¿Es nuevo el concepto del juego?
-- Entretenimiento: Cómo de divertido y/o interesante es el juego.
-- Incorporación: ¿En qué medida implementa el juego el tema?
-
+Presentación: La calidad de los disfraces y los sonidos.
+Originalidad: ¿Es nuevo el concepto del juego?
+Entretenimiento: Cómo de divertido y/o interesante es el juego.
+Incorporación: ¿En qué medida implementa el juego el tema?
 *Nota: Estos criterios no son definitivos; si tienes algo especial que aportar, puede que te demos una puntuación más alta.*
 
 ### Daremos recompensas
