@@ -15,7 +15,7 @@ PenguinJam, bir Game Jam’dir ve ***25 Nisan saat 21:00’de (Türkiye Saatiyle
 
 Eğer "Game Jam nedir?" diye merak ediyorsan, aşağıdaki "Game Jam Nedir?" bölümüne göz atabilirsin.
 
-Projeni **[#pjamspring25](/search?q=%pjamspring25) etiketini başlıkta veya notlarda kullanarak** gönder.
+Projeni **[#pjamspring25](/search?q=%23pjamspring25) etiketini başlıkta veya notlarda kullanarak** gönder.
 
 ## Tema nedir?
 Tema: **Gizli!**

@@ -16,7 +16,7 @@ PenguinJam to impreza dla graczy, rozpoczynająca się ***25 kwietnia o godzinie
 
 Przewiń do sekcji „Co to jest Game Jam?” sekcji, jeśli nie wiesz, czym jest “Game Jam”.
 
-Przesyłaj projekty do PenguinJam, **używając tagu [#pjamspring25](/search?q=%pjamspring25) w tytule lub uwagach.**
+Przesyłaj projekty do PenguinJam, **używając tagu [#pjamspring25](/search?q=%23pjamspring25) w tytule lub uwagach.**
 
 ## Jaki jest temat?
 Temat jest: **Ukryty!**

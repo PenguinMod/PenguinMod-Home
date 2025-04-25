@@ -15,7 +15,7 @@ PenguinJam is a Game Jam, starting ***April 25th at 2:00 PM (Eastern Time)*** an
 
 Scroll to the "What is a Game Jam?" section if you don't know what a Game Jam is.
 
-Submit projects to PenguinJam by **using the tag [#pjamspring25](/search?q=%pjamspring25) in the title or notes.**
+Submit projects to PenguinJam by **using the tag [#pjamspring25](/search?q=%23pjamspring25) in the title or notes.**
 
 ## What is the theme?
 The theme is: **Hidden!**

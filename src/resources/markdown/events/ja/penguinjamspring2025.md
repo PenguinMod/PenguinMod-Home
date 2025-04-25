@@ -16,7 +16,7 @@ PenguinJam はゲームジャムで、***4月25日午前4時（日本標準時�
 
 ゲームジャムが何かわからない場合は、「ゲームジャムとは？」の項目までスクロールしてください。
 
-**タイトルまたはメモに[#pjamspring25](/search?q=%pjamspring25)というタグを使って、**PenguinJamにプロジェクトを提出してください。
+**タイトルまたはメモに[#pjamspring25](/search?q=%23pjamspring25)というタグを使って、**PenguinJamにプロジェクトを提出してください。
 
 ## テーマは何ですか？
 PenguinJamのテーマは **Hidden!**
