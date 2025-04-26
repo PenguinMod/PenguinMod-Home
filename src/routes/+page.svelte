@@ -299,7 +299,7 @@
         langDecided = true;
     });
 
-    let selectedFrontTabSelected = "new";
+    let selectedFrontTabSelected = "feed";
 </script>
 
 <svelte:head>
