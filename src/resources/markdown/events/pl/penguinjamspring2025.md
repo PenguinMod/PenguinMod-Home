@@ -6,6 +6,7 @@
 Zespół PenguinMod
 ```
 
+
 Zapraszamy na kolejne wydarzenie PenguinJam! Cieszymy się, że wróciłeś.
 
 Będzie to wydarzenie cykliczne, które będzie się pojawiać co jakiś czas. Jeśli tym razem przegapisz swoją szansę, wróć w przyszłości, aby dołączyć do kolejnego PenguinJam!
@@ -15,10 +16,14 @@ PenguinJam to impreza dla graczy, rozpoczynająca się ***25 kwietnia o godzinie
 
 Przewiń do sekcji „Co to jest Game Jam?” sekcji, jeśli nie wiesz, czym jest “Game Jam”.
 
-## Jaki jest temat?
-Temat jeszcze nie ujawniony! Wróć tu, kiedy rozpocznie się Game Jam.
+Przesyłaj projekty do PenguinJam, **używając tagu [#pjamspring25](/search?q=%23pjamspring25) w tytule lub uwagach.**
 
-Temat zostanie ujawniony ***25 kwietnia o godzinie 14:00 (czasu wschodniego)***.
+## Jaki jest temat?
+Temat jest: **Ukryty!**
+
+Oto kilka przykładów na dobry początek: gra, w której musisz ukryć się przed potworem, czy gra, w której musisz rozwiązać zagadkę? bądź kreatywny
+
+Utwórz i prześlij projekty na ten temat przed ***4. maja, godz. 14:00 (czasu wschodniego)***!
 
 Weź udział, jeśli chcesz zdobyć jedną z tych odznak:
 <div style="display:flex;flex-direction:row">
@@ -45,17 +50,16 @@ Temat zostanie ujawniony ***25 kwietnia o 14:00 (czasu wschodniego)***.
 ***Projekty, które nie pasują do tego tematu, nie otrzymają żadnych nagród.***
 
 ### Prześlij nam projekt
-Musisz przesłać swój projekt związany z motywem do PenguinMod.
+Musisz przesłać swój projekt związany z motywem do PenguinMod **używając tagu #pjamspring25 w tytule lub uwagach.**
 
 Pamiętaj, aby przesłać swoje projekty do ***4 maja do godziny 14:00 (czasu wschodniego)***! Nie przesyłaj ich później.
 
 ### Ocenianie projektów
 Pracownicy i programiści przejrzą wszystkie ważne opublikowane projekty. Projekty będziemy oceniać według następujących kryteriów:
-- Prezentacja: Jakość kostiumów i dźwięków.
-- Oryginalność: Jak nowa jest koncepcja gry?
-- Rozrywka: jak zabawna i/lub interesująca jest gra.
-- Integracja: Jak dobrze gra implementuje temat?
-
+Prezentacja: Jakość kostiumów i dźwięków.
+Oryginalność: Jak nowa jest koncepcja gry?
+Rozrywka: jak zabawna i/lub interesująca jest gra.
+Integracja: Jak dobrze gra implementuje temat?
 *Uwaga: powyższe kryteria nie są ostateczne; jeśli masz coś specjalnego do zaoferowania, możemy przyznać Ci wyższy wynik.*
 
 ### Będziemy rozdawać nagrody

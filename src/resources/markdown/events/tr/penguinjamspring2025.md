@@ -15,10 +15,14 @@ PenguinJam, bir Game Jam’dir ve ***25 Nisan saat 21:00’de (Türkiye Saatiyle
 
 Eğer "Game Jam nedir?" diye merak ediyorsan, aşağıdaki "Game Jam Nedir?" bölümüne göz atabilirsin.
 
-## Tema nedir?
-Tema henüz açıklanmadı. Lütfen Game Jam başladığında geri gel
+Projeni **[#pjamspring25](/search?q=%23pjamspring25) etiketini başlıkta veya notlarda kullanarak** gönder.
 
-Tema ***25 Nisan saat 21:00’de (Türkiye Saatiyle)*** açıklanacaktır.
+## Tema nedir?
+Tema: **Gizli!**
+
+Başlamak için bazı örnekler: Bir canavardan saklanman gereken bir oyun, ya da bir gizemi çözmen gereken bir oyun? Hayal gücünü kullan!
+
+Bu temaya dayalı projeni oluştur ve ***4 Mayıs saat 21:00’e (Türkiye Saatiyle)*** kadar yükle!
 
 Bu rozetlerden birini kazanmayı denemek istiyorsan katıl:
 <div style="display:flex;flex-direction:row">
@@ -45,16 +49,16 @@ Tema, ***25 Nisan saat 21:00’de (Türkiye Saatiyle)*** açıklanacak.
 ***Bu temaya uymayan projeler ödül kazanamayacak.***
 
 ### Bir proje gönder
-Temayla ilgili projeni PenguinMod’a yüklemen gerekiyor.
+Temayla ilgili projeni PenguinMod’a **başlıkta veya notlarda #pjamspring25 etiketiyle** yüklemen gerekiyor.
 
 Projeni mutlaka ***4 Mayıs saat 21:00’e (Türkiye Saatiyle)*** kadar yükle! Bu saatten sonra yükleme yapma.
 
 ### Projeleri değerlendirme
 Ekip üyeleri ve geliştiriciler, kurallara uygun olarak yayınlanan tüm projeleri inceleyecek. Projeleri aşağıdaki kriterlere göre değerlendireceğiz:
-- Sunum: Kostüm ve seslerin kalitesi.
-- Özgünlük: Oyunun fikri ne kadar yeni?
-- Eğlence: Oyun oynaması ne kadar eğlenceli ve/veya ilgi çekici?
-- Uyum: Oyun temayı ne kadar iyi yansıtıyor?
+Sunum: Kostüm ve seslerin kalitesi.
+Özgünlük: Oyunun fikri ne kadar yeni?
+Eğlence: Oyun oynaması ne kadar eğlenceli ve/veya ilgi çekici?
+Uyum: Oyun temayı ne kadar iyi yansıtıyor?
 
 *Not: Bu kriterler kesin değildir; eğer masaya özel bir şey koyarsan, sana daha yüksek puan verebiliriz.*
 
