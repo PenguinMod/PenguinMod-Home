@@ -722,27 +722,29 @@
     };
 
     function block() {
-        ProjectClient.block(user, true)
-        .then(() => {
-            alert(TranslationHandler.textSafe(
+        const doBlock = confirm(`${TranslationHandler.textSafe(
+                "profile.block.confirm",
+                currentLang,
+                "Are you sure you want to block {{USERNAME}}?"
+            ).replace("{{USERNAME}}", user)}\n${TranslationHandler.textSafe(
                 "profile.blockednote2",
                 currentLang,
                 "If you are blocking this user for harassment, please also report them."
-            ))
-            location.reload();
-        })
+            )}`);
+        if (doBlock) {
+            ProjectClient.block(user, true).then(() => location.reload());
+        }
     }
 
     function unblock() {
-        ProjectClient.block(user, false)
-        .then(() => {
-            alert(TranslationHandler.textSafe(
-                "generic.ok",
+        const doUnblock = confirm(`${TranslationHandler.textSafe(
+                "profile.block.confirm.remove",
                 currentLang,
-                "Ok"
-            ))
-            location.reload();
-        })
+                "Are you sure you want to unblock {{USERNAME}}?"
+            ).replace("{{USERNAME}}", user)}`);
+        if (doUnblock) {
+            ProjectClient.block(user, false).then(() => location.reload());
+        }
     }
 
     function setShowAnyways() {
@@ -960,10 +962,17 @@
                         title="Blocked"
                     />
 
-                    <p>
+                    <p style="margin-block-end: 4px">
                         <LocalizedText
                             text="You have this user currently blocked."
                             key="profile.blockednote"
+                            lang={currentLang}
+                        />
+                    </p>
+                    <p style="margin-block-start: 4px">
+                        <LocalizedText
+                            text="If you are blocking this user for harassment, please also report them."
+                            key="profile.blockednote2"
                             lang={currentLang}
                         />
                     </p>
@@ -992,6 +1001,25 @@
                             />
                         </button>
                     </div>
+                    <div style="height:16px" />
+                    <a
+                        href={`/report?type=user&id=${user}`}
+                        target="_blank"
+                        class="report-link"
+                        style="color: red !important;"
+                    >
+                        <img
+                            class="report-icon"
+                            src="/report_flag.png"
+                            style="margin: 0 4px"
+                            alt="Report"
+                        />
+                        <LocalizedText
+                            text="Report"
+                            key="report.title"
+                            lang={currentLang}
+                        />
+                    </a>
                 </div>
             {:else}
             {#if isProfilePrivate && String(user).toLowerCase() !== String(loggedInUser).toLowerCase() && !(isProfilePublicToFollowers && isFollowedByUser) && !loggedInAdmin}
@@ -1880,7 +1908,7 @@
     .report-icon {
         height: 16px;
         position: relative;
-        bottom: 2px!important;
+        bottom: 2px !important;
     }
 
     .section-user-header {

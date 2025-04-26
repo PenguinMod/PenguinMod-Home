@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import { page } from '$app/stores';
     import { browser } from "$app/environment";
+    import MarkdownIt from "markdown-it";
     
     import { PUBLIC_API_URL } from "$env/static/public";
     
@@ -28,6 +29,18 @@
     Language.onChange((lang) => {
         currentLang = lang;
     });
+    
+    const env = {};
+    const md = new MarkdownIt({
+        html: false,
+        linkify: false,
+        breaks: true,
+    });
+    const generateMarkdown = (mdtext) => {
+        const tokens = md.parse(mdtext, env);
+        const bodyHTML = md.renderer.render(tokens, md.options, env);
+        return bodyHTML;
+    };
 
     let username = "";
     let password = "";
@@ -199,12 +212,10 @@
 
     {#if !apiOnlineChecking && apiOnlineResponding}
         <main>
-            <div class="profile-section">
-                <img
-                    src="/account/profile_sheet.png"
-                    alt="Profiles"
-                />
-            </div>
+            <img
+                src="/penguins/signin.svg"
+                alt="Profiles"
+            />
             <h1 style="margin-block:4px">PenguinMod</h1>
             <p>
                 <LocalizedText
@@ -213,6 +224,19 @@
                     lang={currentLang}
                 />
             </p>
+            
+            <div class="old-accounts-warning">
+                {@html generateMarkdown(`${TranslationHandler.textSafe(
+                    "login.linkto.oldaccounts2025.line1",
+                    currentLang,
+                    "Due to server issues, accounts & projects created from November 2024 to January 2025 have been deleted."
+                )}
+                ${TranslationHandler.textSafe(
+                    "login.linkto.oldaccounts2025.line2",
+                    currentLang,
+                    "Check the post [here](https://penguinmod.com/devposts/3-18-2025-shutdown-incident) for more information."
+                )}`)}
+            </div>
         
             <button class="gsi-material-button" on:click={googleOAuth}>
                 <div class="gsi-material-button-state"></div>
@@ -381,7 +405,11 @@
                 />
             </a>
         
-            or
+            <LocalizedText
+                text="or"
+                key="account.methods.orline"
+                lang={currentLang}
+            />
         
             <a href="/signup?embed={embed}" style="margin: 8px">
                 <LocalizedText
@@ -463,6 +491,9 @@
             />
         </a>
     </div>
+    
+    <!-- the magical div of scroll -->
+    <div style="height:32px" />
 </div>
     
 <style>
@@ -619,43 +650,12 @@
         height: 18px;
     }
 
-    @keyframes profile-scroll {
-        0%, 10% {
-            transform: translateX(0);
-        }
-        15%, 25% {
-            transform: translateX(-96px);
-        }
-        30%, 40% {
-            transform: translateX(-192px);
-        }
-        45%, 55% {
-            transform: translateX(-288px);
-        }
-        60%, 70% {
-            transform: translateX(-384px);
-        }
-        75%, 85% {
-            transform: translateX(-480px);
-        }
-        90%, 100% {
-            transform: translateX(-480px);
-        }
-    }
-    .profile-section {
-        width: 96px;
-        height: 96px;
+    .old-accounts-warning {
+        background: rgba(255, 196, 0, 0.212);
+        border: 1px solid rgb(143, 95, 32);
         border-radius: 4px;
-        overflow: hidden;
-        position: relative;
-    }
-    .profile-section img {
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 96px;
-        animation: profile-scroll 10s linear infinite;
-        animation-delay: 3s;
+        padding: 0 8px;
+        margin-bottom: 8px;
     }
 
     /* google stuff */
