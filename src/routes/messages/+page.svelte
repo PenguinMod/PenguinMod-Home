@@ -113,7 +113,7 @@
         messages = [];
         ProjectClient.getMyMessages(0)
             .then((messagess) => {
-                messagess = messagess.concat(updateGuidelinesMessages());
+                messagess = [].concat(updateGuidelinesMessages(), messagess);
 
                 if (messagess.length <= 0) {
                     messages = ["notfound"];
