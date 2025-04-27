@@ -129,7 +129,7 @@ Examples of loud or disruptive sounds are impact sounds, short distorted police 
 If any audio clips in your project are past the top of the audio preview in the Sounds tab,
 moderators are allowed to mute/remove the offending audio or remove your project entirely.
 
-Disruptive/unpleasant audio is also not allowed for a long period of time. This refers to distorted sounds, high-pitched sounds and screaming.
+Disruptive/unpleasant audio is also not allowed for a long period of time. This refers to distorted or high-pitched sounds.
 A high-pitched sound would be something like ear-ringing.
 
 This rule also applies if you are using multiple audio clips to play loud/unpleasant audio.
