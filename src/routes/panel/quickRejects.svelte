@@ -33,6 +33,8 @@
     Breaks or disables aspects of the site</button>
     <button on:click={() => event("Your project was removed because it contains sensitive information of either you or another person. We remove these types of projects to protect the people included, so please be careful with what information you share in your project.")}>
     Sensitive Information</button>
+    <button on:click={() => event("Your project was removed as it promotes political ideologies, parties, candidates, or causes. PenguinMod is not a platform for primarily political projects or messages. Please read the uploading guidelines for more information.")}>
+    Promoting Political Ideologies</button>
     <details><summary>Unsafe platforms / words</summary>
         <button on:click={() => event("Your project was removed because it links to a platform that is not safe for PenguinMod to share. Please link to another source or remove inappropriate links.")}>
         Misuse of an external platform</button>

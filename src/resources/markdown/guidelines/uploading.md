@@ -123,12 +123,18 @@ This means you can't make projects that:
 Your account may be banned or deleted for breaking these rules and your project may be removed.
 
 # Limits on Audio/Sound
+If you are using a loud or disruptive sound for a short period of time, this will not apply. Try to keep loud audio under one second, and disruptive audio under three seconds.
+Examples of loud or disruptive sounds are impact sounds, short distorted police chatter, or gun shots which start with loud "BANG!" effects.
+
 If any audio clips in your project are past the top of the audio preview in the Sounds tab,
 moderators are allowed to mute/remove the offending audio or remove your project entirely.
 
-This also applies if you are using multiple audio clips to play loud/unpleasant audio.
+Disruptive/unpleasant audio is also not allowed for a long period of time. This refers to distorted sounds, high-pitched sounds and screaming.
+A high-pitched sound would be something like ear-ringing.
 
-If you intend to include loud audio in the project, you must display a warning screen that the user must interact with to continue.
+This rule also applies if you are using multiple audio clips to play loud/unpleasant audio.
+
+If you intend to include loud/disruptive audio for long periods of time in the project, you must display a warning screen that the user must interact with to continue.
 Stating loud sounds are in the project using the title, instructions or notes is not sufficent.
 
 # Be respectful to others
@@ -237,13 +243,19 @@ You may receive heavy punishment including an account ban if these rules are bro
 You cannot display or encourage others to take drugs (medical, illegal, etc.), drink alcohol, or vape.
 Displaying drugs (medical, illegal, etc.) in any context is not allowed. This also includes the act of dealing/providing drugs.
 
-You cannot display or include content that violates local, national, or international laws,
-or do/encourage anything that violates those laws.
+Do not use PenguinMod to break laws in your country, region, or area.
 
 You cannot encourage others to use real-life guns or explosives.
 You also cannot:
 - Encourage or make reference to shooting living things in real life
 - Encourage or make reference to shooting buildings in real life
+
+# Political content
+Please note PenguinMod is not a platform for primarily political projects or messages.
+
+Projects that primarily exist to promote political ideologies, parties, candidates, or causes are not allowed on PenguinMod.
+
+Usage of political themes for educational purposes or the setting of a story is allowed.
 
 # Use other platforms sparingly
 If you are linking to a seperate Discord or site anywhere on your project (including iframes),
@@ -257,14 +269,19 @@ Ideally, external links should follow all rules here wherever they can.
 # Money
 You cannot sell products for real money inside your project to prevent any misleading messages or scam products.
 
-However, you are allowed to use external platforms such as **Patreon** or **Shopify** for monetization.
-When linking to external platforms, please ensure that the content and activities on these platforms align with our guidelines.
+However, you are allowed to use the external platforms here for monetization:
+- Patreon
+- Ko-fi
+- GitHub Sponsors
+
+When linking to these external platforms, please ensure that the content and activities on these platforms align with our guidelines.
 
 Please note that any monetization efforts should be transparent and respectful.
 Avoid using deceptive practices or misleading users around your products.
+If you do not abide by these rules, your account can still be punished even if you are using an allowed platform.
 
 If you need any extra details for your specific use of these platforms, please talk to us [using any of these contact methods here.](https://studio.penguinmod.com/contact.html)
-If you would like to use other platforms not mentioned here, please reach out to us for approval.
+If you would like to use other platforms not mentioned here, please reach out to us for approval. Do note it is very unlikely we will allow more platforms.
 
 # Copyright
 You are responsible for making sure you have the necessary rights, licenses, or permission for any user-generated content you submit to PenguinMod.

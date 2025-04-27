@@ -33,13 +33,8 @@ These accounts are exempt from *most* punishment as they are used by developers 
 - PenguinMod
 - PenguinBot
 - PenguinJam
-- test
-- goobilygabbler12
 - JeremyGamer13
-- Jeremy
-- jeremygamer131
 - ianyourgod
-- ian
 
 Specifically, unless you see one of these accounts uploading NSFW, gore, or anything of the sort, don't do anything to them.
 
@@ -76,6 +71,9 @@ Projects with just C2A do not need to be removed unless you know or are informed
 - 12hr temp ban (1st), 24hr temp ban (2nd) 48hrs after that (3rd+)
 - If it's been a month or so, you should just ignore any previous offenses of this rule and start from first offense
 ## "Chatroom" Projects or Projects based around online chatting + Projects with an online chat feature + Limits on Audio/Sound + Money + Copyright
+Concise (but opinion-based) ruling on Loud Audio:
+- You cannot play Loud (above editor boundary) or Distorted (really high pitched & loud, crunchy) audio for prolonged periods of time (3-5+ seconds).
+
 Non-PM related Copyright is not enforced at the moment. We will let you know if it ever does.
 - Remove the project (soft-delete) and use the quick reject for these.
 - No user punishment until they've uploaded two of these.
@@ -106,9 +104,10 @@ Games including content like this (ex: some war games, psychological horror) is 
 - Encouraging suicide/self-harm, or sending death threats is an account ban.
 - Actually encouraging shootings or terrorism is an account deletion.
 - User punishment otherwise is a 24hr temp-ban (1st), 72hr temp ban (2nd), and account ban (3rd)
-## Keeping yourself safe
+## Keeping yourself safe + Political content
 This includes user mentions, such as their profile/posts.
 - Either censor or remove (soft-delete) the project, using the quick reject for this.
+- Political content should be removed using a soft-delete.
 - Nothing (1st-2nd), 1hr temp ban (3rd), 4hr temp ban (4th), account ban (5th)
 ## Keeping others safe
 Sharing other's personal information is addressed in the Be respectful to others section.

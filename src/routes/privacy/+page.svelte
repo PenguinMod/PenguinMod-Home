@@ -44,7 +44,7 @@ Language.onChange((lang) => {
 
     <main>
         <!-- UPDATE THIS WHEN MAKING CONTENT CHANGES -->
-        <p><i>Updated November 17th, 2024 (Mountain Time)</i></p>
+        <p><i>Updated April 26th, 2025 (Mountain Time)</i></p>
 
         <!-- some things are intentionally not formatted as they are in the HTML file on the website -->
         <p>
@@ -221,6 +221,11 @@ Language.onChange((lang) => {
         <p>Information about accounts, projects, or other content on the platform may be sent to the third-party site <a href="https://discord.com/">"Discord"</a>
         for any reason that deems it neccessary.
         </p>
+        <p>
+            We may disclose your information to law enforcement agencies, government authorities,
+            or other third parties if we believe it is necessary to comply with legal obligations or ensure the safety of our users, developers and staff.
+            Requests for PenguinMod user information are expected to be sent to us using one of our contact methods.
+        </p>
         
         <h2>Other services</h2>
         <p>When using cloud variables, the project ID and your username may be logged for up to 14 days.</p>
@@ -336,6 +341,17 @@ Language.onChange((lang) => {
 
         <p>Email us at <a href="mailto:penguinmodhelp@gmail.com">penguinmodhelp@gmail.com</a></p>
         <p>Join <a href="https://discord.gg/NZ9MBMYTZh">our Discord Server</a></p>
+        
+        <div style="width: 100%; height: 32px;"></div>
+
+        <p>
+            <a href="/terms">Terms of Service</a>
+        </p>
+        <p>
+            <a href="{PUBLIC_STUDIO_URL}/contact.html">Contact Us</a>
+        </p>
+        
+        <div style="width: 100%; height: 32px;"></div>
     </main>
 </div>
 
