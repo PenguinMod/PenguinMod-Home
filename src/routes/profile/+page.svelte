@@ -1,12 +1,14 @@
 <script>
     import { onMount } from "svelte";
     import { page } from "$app/stores";
+    import { browser } from "$app/environment";
     import MarkdownIt from "markdown-it";
 
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
     import LINK from "../../resources/urls.js";
     import scratchblocks from "$lib/scratchblocks.js";
+    import DonatorCustomization from "../../resources/donatorcustomization.js";
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
     import EmojiList from "../../resources/emojis.js";
@@ -54,6 +56,8 @@
     let fullProfile = {};
     let isRankingUpMenu = false;
     let isAttemptingRankUp = false;
+    let isCustomizationMode = false;
+    let isSettingCustomizations = false;
     let profileFeaturedProject = null;
     
     let isProfilePrivate = false;
@@ -205,6 +209,74 @@
         });
     };
     
+    // customizations
+    let canApplyCustomizations = false;
+    let donatorHeadLoadedItems = 0;
+    const donatorLoadedFonts = [];
+    const donatorProfileCustomizations = {
+        usesCustomFont: true,
+        customFont: "Helvetica Neue",
+        targetTheme: "default",
+        backgroundColor: "#ff0000",
+        usesCustomDonatorColor: false,
+        donatorColor: "#a237db",
+        usesSectionBackgrounds: false,
+        usesSectionNameColors: false,
+    };
+    const loadDonatorCustomFont = (fontFace, fontPacket) => {
+        if (!browser) return;
+        if (donatorLoadedFonts.includes(fontPacket)) return;
+
+        fontPacket.name = fontFace;
+        if (fontPacket.type === "file") {
+            const url = fontPacket.url;
+            const element = document.createElement("style");
+            element.innerHTML = `@font-face {
+    font-family: "${fontFace}";
+    src: url(${url});
+}`;
+            document.head.appendChild(element);
+        }
+
+        donatorLoadedFonts.push(fontPacket);
+        donatorHeadLoadedItems++;
+        console.log("loading", fontFace, fontPacket);
+    };
+    const openDonatorCustomizationsMenu = () => {
+        if (isCustomizationMode) return;
+
+        // load all fonts
+        for (const fontFace in DonatorCustomization.DownloadOnlyFonts) {
+            const fontPacket = DonatorCustomization.DownloadOnlyFonts[fontFace];
+            loadDonatorCustomFont(fontFace, fontPacket);
+        }
+
+        isCustomizationMode = true;
+    };
+    const loadDonatorCustomizations = async () => {
+        canApplyCustomizations = true;
+    };
+    const applyDonatorCustomizations = async () => {
+        // TODO: this
+        // should serialize all the json into one string and save it, ideally in a module
+    };
+    const applyDonatorCustomizationsButton = () => {
+        if (isSettingCustomizations) return;
+        isSettingCustomizations = true;
+        applyDonatorCustomizations()
+            .then(() => {
+                isCustomizationMode = false;
+            })
+            .catch((err) => {
+                // TODO: Translations.
+                console.error(err);
+                alert(`Failed to set customizations: ${err}`);
+            })
+            .finally(() => {
+                isSettingCustomizations = false;
+            });
+    };
+    
     let fetchedFullProfile = false;
     onMount(async () => {
         const params = new URLSearchParams(location.search);
@@ -245,6 +317,10 @@
                 badges = fullProfile.badges;
                 isDonator = fullProfile.donator;
                 followerCount = fullProfile.followers;
+                
+                if (isDonator) {
+                    loadDonatorCustomizations();
+                }
 
                 isProfilePrivate = fullProfile.privateProfile;
                 isProfilePublicToFollowers = fullProfile.canFollowingSeeProfile;
@@ -654,7 +730,7 @@
     } catch {
         // iOS users will experience weird gaps and or urls with hashtags leading to 2 different places
         regexRules.project = /#([\w-]+)/g;
-        regexRules.user = /@([\w-]+)/g,
+        regexRules.user = /@([\w-]+)/g;
         console.warn('Browser does not support lookbehind assertion in regex');
     }
 
@@ -762,6 +838,16 @@
     <meta property="twitter:description" content="View {user ? user : "this user"}'s profile on PenguinMod.">
     <meta property="og:url"              content="https://penguinmod.com/profile">
     <meta property="twitter:url"         content="https://penguinmod.com/profile">
+
+    {#if browser && isDonator && canApplyCustomizations && donatorProfileCustomizations.usesCustomFont}
+        {#key donatorHeadLoadedItems}
+            {#each donatorLoadedFonts as fontPacket}
+                {#if fontPacket.type === "css"}
+                    <link href={fontPacket.url} rel="stylesheet">
+                {/if}
+            {/each}
+        {/key}
+    {/if}
 </svelte:head>
 
 <NavigationBar />
@@ -872,7 +958,12 @@
     </div>
 {/if}
 
-<div class="main">
+<div class="fixed-background" style={canApplyCustomizations && donatorProfileCustomizations.targetTheme === "dark" || donatorProfileCustomizations.targetTheme === "custom" || donatorProfileCustomizations.targetTheme === "customdark" ?
+`background-color: ${donatorProfileCustomizations.targetTheme === "dark" ? "#111" : donatorProfileCustomizations.backgroundColor}`
+: ""} />
+<div
+    class={`main${canApplyCustomizations && donatorProfileCustomizations.targetTheme === "dark" || donatorProfileCustomizations.targetTheme === "customdark" ? " dark-mode-forced" : ""}`}
+>
     <NavigationMargin />
 
     <StatusAlert />
@@ -882,25 +973,44 @@
             !wasNotFound
             || isForceView
         }
-        <div class="background">
+        <div
+            class={canApplyCustomizations && donatorProfileCustomizations.usesCustomFont ? "background-custom-font" : "background"}
+            style={canApplyCustomizations && donatorProfileCustomizations.usesCustomFont ? `--custom-font: "${donatorProfileCustomizations.customFont}"` : ""}
+        >
             {#if user}
                 <div class="section-user">
                     <div class="section-user-header">
                         <div class="subuser-section">
                             <div class="user-username">
                                 <img
-                                    style="border-color:{isDonator ? "#a237db" : "#efefef"}"
+                                    style="border-color:{isDonator ?
+                                        (donatorProfileCustomizations.usesCustomDonatorColor ? donatorProfileCustomizations.donatorColor : "#a237db")
+                                        : "#efefef"}"
                                     src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${user}`}
                                     alt="Profile"
                                     class="profile-picture"
                                 />
                                 <div class="user-after-image">
                                     {#if isDonator}
-                                        <h1 class="donator-color">{fullProfile.real_username || user}</h1>
+                                        <h1
+                                            class="donator-color"
+                                            style={donatorProfileCustomizations.usesCustomDonatorColor ? `color: ${donatorProfileCustomizations.donatorColor} !important` : ""}
+                                        >
+                                            {fullProfile.real_username || user}
+                                        </h1>
                                     {:else}
                                         <h1>{fullProfile.real_username || user}</h1>
                                     {/if}
                                     
+                                    {#if isDonator || (isDonator && loggedInUser !== user && loggedInAdmin)}
+                                        <button class="edit-link-donator" on:click={openDonatorCustomizationsMenu}>
+                                            <img
+                                                src="/paint.svg"
+                                                alt="Customize"
+                                                style="height:3em"
+                                            />
+                                        </button>
+                                    {/if}
                                     {#if isProfilePrivate && !loggedInAdmin && (!isBlocked || showAnyways)}
                                         <img
                                             src="/account/lock.svg"
@@ -1053,6 +1163,106 @@
                 </div>
             {:else}
             <div class="section-projects">
+                {#if isCustomizationMode}
+                    <div class="section-customization-mode">
+                        <h1 style="margin-block:8px;">
+                            <LocalizedText
+                                text="Profile Customizations"
+                                key="profile.donator.customizations.title"
+                                lang={currentLang}
+                            />
+                        </h1>
+                        <label>
+                            <LocalizedText
+                                text="Name color:"
+                                key="profile.donator.color.name"
+                                lang={currentLang}
+                            />
+                            <input type="checkbox" bind:value={donatorProfileCustomizations.usesCustomDonatorColor} />
+                            <input type="color" bind:value={donatorProfileCustomizations.donatorColor} />
+                        </label>
+                        <!-- TODO: Translations. -->
+                        <p>Use a theme:</p>
+                        <label>
+                            <input
+                                type="radio"
+                                name="donator_customization_theme"
+                                value="default"
+                                bind:group={donatorProfileCustomizations.targetTheme}
+                            />
+                            Default
+                        </label>
+                        <!-- TODO: Dark Theme types dont apply to ContentCategories -->
+                        <label>
+                            <input
+                                type="radio"
+                                name="donator_customization_theme"
+                                value="dark"
+                                bind:group={donatorProfileCustomizations.targetTheme}
+                            />
+                            Dark Theme
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="donator_customization_theme"
+                                value="custom"
+                                bind:group={donatorProfileCustomizations.targetTheme}
+                            />
+                            Custom
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="donator_customization_theme"
+                                value="customdark"
+                                bind:group={donatorProfileCustomizations.targetTheme}
+                            />
+                            Custom, based on Dark Theme
+                        </label>
+                        <p>
+                            Light Theme is not togglable if you select a dark theme.
+                            <br>
+                            Be careful how you choose colors with Custom Themes, as Light Theme is togglable if you do not select the Custom Dark Theme option.
+                        </p>
+                        {#if donatorProfileCustomizations.targetTheme === "custom" || donatorProfileCustomizations.targetTheme === "customdark"}
+                            <label>
+                                <LocalizedText
+                                    text="Background color:"
+                                    key="profile.donator.color.background"
+                                    lang={currentLang}
+                                />
+                                <input type="color" bind:value={donatorProfileCustomizations.backgroundColor} />
+                            </label>
+                            <!-- TODO: Add an option to put backgrounds on the sections, and use a custom color for it -->
+                            <!-- TODO: Possibly option to use a project as a background image? -->
+                        {/if}
+                        <p>
+                            <LocalizedText
+                                text="Select a font"
+                                key="profile.donator.font.name"
+                                lang={currentLang}
+                            />
+                        </p>
+                        <select bind:value={donatorProfileCustomizations.customFont}>
+                            {#each Object.keys(DonatorCustomization.FontSelection) as fontName}
+                                <option
+                                    value={DonatorCustomization.FontSelection[fontName]}
+                                    style={`font-family: "${DonatorCustomization.FontSelection[fontName]}" !important`}
+                                >
+                                    {fontName}
+                                </option>
+                            {/each}
+                        </select>
+                        <Button on:click={applyDonatorCustomizationsButton}>
+                            <LocalizedText
+                                text="Update"
+                                key="account.settings.update"
+                                lang={currentLang}
+                            />
+                        </Button>
+                    </div>
+                {/if}
                 <div class="user-ordering-stats" style="width:90%">
                     <div class="section-user-stats">
                         {#if profileEditingData.isEditingBio}
@@ -1549,11 +1759,25 @@
         left: 0px;
         width: 100%;
         min-width: 1000px;
+        height: 100%;
     }
+    .fixed-background {
+        z-index: -10000;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .background-custom-font,
     .background {
         margin: auto;
         width: 80%;
         max-width: 1920px;
+    }
+    .background-custom-font,
+    .background-custom-font * {
+        font-family: var(--custom-font) !important;
     }
 
     .user-stat-box {
@@ -1572,10 +1796,12 @@
         text-align: center;
         width: 50%;
     }
+    .main.dark-mode-forced .user-stat-box-inner,
     :global(body.dark-mode) .user-stat-box-inner {
         border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     }
 
+    .main.dark-mode-forced,
     :global(body.dark-mode) .main {
         color: white;
     }
@@ -1599,6 +1825,7 @@
         left: initial;
         right: -72px;
     }
+    .main.dark-mode-forced .emoji-picker-button,
     :global(body.dark-mode) .emoji-picker-button {
         border-color: rgba(255, 255, 255, 0.35);
     }
@@ -1632,6 +1859,7 @@
         left: initial;
         right: calc(100% + 8px);
     }
+    .main.dark-mode-forced .emoji-picker-list,
     :global(body.dark-mode) .emoji-picker-list {
         border-color: rgba(255, 255, 255, 0.35);
         background: #111;
@@ -1668,6 +1896,7 @@
         background: rgba(0, 0, 0, 0.1);
         border-radius: 8px;
     }
+    .main.dark-mode-forced .emoji-picker-search-container input,
     :global(body.dark-mode) .emoji-picker-search-container input {
         background: rgba(255, 255, 255, 0.1);
         color: white;
@@ -1679,6 +1908,7 @@
         align-items: center;
         justify-content: center;
     }
+    .main.dark-mode-forced .emoji-picker-search-icon,
     :global(body.dark-mode) .emoji-picker-search-icon {
         filter: invert(1);
     }
@@ -1708,6 +1938,7 @@
         background: rgba(0, 0, 0, 0.15);
         border-radius: 4px;
     }
+    .main.dark-mode-forced .emoji-picker-emoji:hover,
     :global(body.dark-mode) .emoji-picker-emoji:hover {
         background: rgba(255, 255, 255, 0.15);
     }
@@ -1724,6 +1955,7 @@
     .section-private > img {
         height: 96px;
     }
+    .main.dark-mode-forced img[src="/account/lock.svg"],
     :global(body.dark-mode) img[src="/account/lock.svg"] {
         filter: invert(1);
     }
@@ -1861,6 +2093,7 @@
         flex-direction: column;
         align-items: center;
     }
+    .main.dark-mode-forced .scratch-modal-content,
     :global(body.dark-mode) .scratch-modal-content {
         background: #111;
     }
@@ -1880,6 +2113,7 @@
     .donator-color {
         color: #a237db;
     }
+    .main.dark-mode-forced .donator-color,
     :global(body.dark-mode) .donator-color {
         color: #c65cff;
     }
@@ -1920,6 +2154,7 @@
         flex-direction: column;
         justify-content: center;
     }
+    .section-customization-mode,
     .section-user-stats {
         height: 295px;
         width: 32%;
@@ -1929,6 +2164,11 @@
         border-style: solid;
         padding: 6px;
         position: relative;
+    }
+    .section-customization-mode {
+        width: calc(90% - 16px) !important;
+        margin-bottom: 4px;
+        overflow: auto;
     }
     .profile-bio {
         width: calc(100% - 6px);
@@ -1940,6 +2180,7 @@
         height: 1px;
         background: rgba(0, 0, 0, 0.15);
     }
+    .main.dark-mode-forced .profile-bio-line,
     :global(body.dark-mode) .profile-bio-line {
         background: rgba(255, 255, 255, 0.3);
     }
@@ -1962,6 +2203,9 @@
         .section-user-stats {
             width: 100%;
             margin-bottom: 4px;
+        }
+        .section-customization-mode {
+            width: 90% !important;
         }
     }
 
@@ -1997,6 +2241,7 @@
         color: #575e75;
         text-decoration: none;
     }
+    .main.dark-mode-forced .profile-project-date,
     :global(body.dark-mode) .profile-project-date {
         color: #9ba0b1;
     }
@@ -2005,6 +2250,13 @@
         margin-left: 4px;
     }
 
+    .user-box-maxwidth {
+        width: 100%;
+        height: 1px;
+    }
+    .main.dark-mode-forced .section-customization-mode,
+    .main.dark-mode-forced .section-user-stats,
+    :global(body.dark-mode) .section-customization-mode,
     :global(body.dark-mode) .section-user-stats {
         border-color: rgba(255, 255, 255, 0.3);
     }
@@ -2018,12 +2270,35 @@
         border-bottom: 1.5px solid dodgerblue;
         cursor: pointer;
     }
+    .edit-link-donator {
+        background: transparent;
+        border: 0;
+        padding: 0;
+        margin: 0 4px;
+        color: #a237db;
+        border-bottom: 1.5px solid #a237db;
+        cursor: pointer;
+    }
+    .edit-link-donator > img {
+        filter: invert(62%) sepia(91%) saturate(7449%) hue-rotate(268deg) brightness(91%) contrast(89%);
+        margin: 0 !important;
+        transform: none !important;
+    }
     .edit-done {
         background: transparent;
         border: 0;
         padding: 0;
         margin: 0 4px;
         cursor: pointer;
+    }
+    
+    .main.dark-mode-forced .edit-link-donator,
+    :global(body.dark-mode) .edit-link-donator {
+        color: #c65cff;
+    }
+    .main.dark-mode-forced .edit-link-donator > img,
+    :global(body.dark-mode) .edit-link-donator > img {
+        filter: invert(43%) sepia(90%) saturate(2833%) hue-rotate(247deg) brightness(107%) contrast(102%);
     }
 
     .profile-bio-textarea {
@@ -2036,11 +2311,13 @@
         outline: none;
         border-color: black;
     }
+    .main.dark-mode-forced .profile-bio-textarea,
     :global(body.dark-mode) .profile-bio-textarea {
         border-color: rgba(255, 255, 255, 0.3);
         background: none;
         color: white;
     }
+    .main.dark-mode-forced .profile-bio-textarea:focus,
     :global(body.dark-mode) .profile-bio-textarea:focus {
         outline: none;
         border-color: white;
@@ -2088,6 +2365,7 @@
         margin-right: initial;
         margin-left: 4px;
     }
+    .main.dark-mode-forced .profile-bio-sidenotes,
     :global(body.dark-mode) .profile-bio-sidenotes {
         background: #111;
         border-color: rgba(255, 255, 255, 0.3);
@@ -2156,6 +2434,7 @@
     .follower-button-following {
         background-color: rgb(163, 163, 163);
     }
+    .main.dark-mode-forced .follower-button,
     :global(body.dark-mode) .follower-button {
         border-color: rgba(255, 255, 255, 0.25);
     }
