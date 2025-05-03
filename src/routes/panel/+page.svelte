@@ -144,6 +144,17 @@
                 alert(err);
             });
     };
+    const setAccountCreation = (allowAccountCreation) => {
+        if (!confirm("Are you sure?")) return;
+        ProjectClient.setErrorAccountCreation(allowAccountCreation)
+            .then(() => {
+                alert("done");
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(err);
+            });
+    };
 
     let projectListStyle = '';
     const refreshProjectMenu = () => {
@@ -1716,18 +1727,24 @@
             <br/>
 
             <p>Global Server Toggles: (applies to all users)</p>
-            <Button on:click={() => setGetProjects(false)} color="red"
-                >Disable Getting Projects</Button
-            >
-            <Button on:click={() => setGetProjects(true)} color="remix"
-                >Enable Getting Projects</Button
-            >
-            <Button on:click={() => setUploadProjects(false)} color="red"
-                >Disable Uploading Projects</Button
-            >
-            <Button on:click={() => setUploadProjects(true)} color="remix"
-                >Enable Uploading Projects</Button
-            >
+            <Button on:click={() => setGetProjects(false)} color="red">
+                Disable Getting Projects
+            </Button>
+            <Button on:click={() => setGetProjects(true)} color="remix">
+                Enable Getting Projects
+            </Button>
+            <Button on:click={() => setUploadProjects(false)} color="red">
+                Disable Uploading Projects
+            </Button>
+            <Button on:click={() => setUploadProjects(true)} color="remix">
+                Enable Uploading Projects
+            </Button>
+            <Button on:click={() => setAccountCreation(false)} color="red">
+                Disable Account Creation
+            </Button>
+            <Button on:click={() => setAccountCreation(true)} color="remix">
+                Enable Account Creation
+            </Button>
 
             <br />
             <br />

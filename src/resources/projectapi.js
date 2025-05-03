@@ -951,6 +951,7 @@ class ProjectApi {
             });
         });
     }
+
     setErrorAllGetProjects(enabled) {
         return new Promise((resolve, reject) => {
             const body = JSON.stringify({
@@ -987,6 +988,34 @@ class ProjectApi {
                 toggle: enabled
             })
             fetch(`${OriginApiUrl}/api/v1/projects/toggleuploading`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                });
+            }).catch(err => {
+                reject(err);
+            });
+        });
+    }
+    setErrorAccountCreation(enabled) {
+        return new Promise((resolve, reject) => {
+            const body = JSON.stringify({
+                username: this.username,
+                token: this.token,
+                toggle: enabled
+            })
+            fetch(`${OriginApiUrl}/api/v1/projects/toggleaccountcreation`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
