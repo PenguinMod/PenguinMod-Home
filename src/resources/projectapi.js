@@ -860,6 +860,34 @@ class ProjectApi {
             });
         });
     }
+    setUsersBadges(targets, badges, optIsRemoving) {
+        return new Promise((resolve, reject) => {
+            const data = {
+                username: this.username,
+                token: this.token,
+                targets,
+                badges,
+                removing: optIsRemoving
+            };
+            fetch(`${OriginApiUrl}/api/v1/users/setbadgesmultiple`, {
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+                method: "POST"
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                });
+            }).catch(err => {
+                reject(err);
+            });
+        });
+    }
     banUser(username, reason, time, toggle) {
         return new Promise((resolve, reject) => {
             const data = {

@@ -774,33 +774,66 @@
             });
     };
 
-    let areBadgesLoadedForVisibility = false;
-    let currentUserBadges = {};
-    let userBadgesUsername = "";
+    const userBadgeInfo = {
+        isEditingMulti: false,
+
+        targetUsername: "", // single
+        areBadgesLoaded: false, // single
+        currentUserBadges: {}, // single
+
+        targetUsernamesBox: "", // multi
+        isRemovingBadges: false, // multi
+        targetFilterBadges: {}, // multi
+    };
     const loadUserBadges = async () => {
-        areBadgesLoadedForVisibility = false;
-        if (!userBadgesUsername) return;
-        const realBadges = await ProjectApi.getUserBadges(userBadgesUsername);
-        currentUserBadges = {};
+        userBadgeInfo.areBadgesLoaded = false;
+        if (!userBadgeInfo.targetUsername) return;
+        const realBadges = await ProjectApi.getUserBadges(userBadgeInfo.targetUsername);
+        userBadgeInfo.currentUserBadges = {};
         for (const badgeName in ProfileBadges) {
-            currentUserBadges[badgeName] = false;
+            userBadgeInfo.currentUserBadges[badgeName] = false;
         }
         for (const badgeName of realBadges) {
-            currentUserBadges[badgeName] = true;
+            userBadgeInfo.currentUserBadges[badgeName] = true;
         }
-        areBadgesLoadedForVisibility = true;
+        userBadgeInfo.areBadgesLoaded = true;
     };
     const applyUserBadges = () => {
-        if (!confirm("Apply badges to this user?")) return;
+        const targetUsers = userBadgeInfo.targetUsernamesBox.split("\n").map(username => username.replace(/[\r\s]/g, ""));
+        const affectedUsers = !userBadgeInfo.isEditingMulti ? 1 : targetUsers.length;
+        if (userBadgeInfo.isEditingMulti) {
+            if (!confirm(`Edit badges for ${affectedUsers} users?`)) return;
+        } else {
+            if (!confirm("Apply badges to this user?")) return;
+        }
         
-        const newBadges = []
-        for (const badgeName in currentUserBadges) {
-            if (currentUserBadges[badgeName] === true) {
+        if (userBadgeInfo.isEditingMulti) {
+            const newBadges = [];
+            for (const badgeName in userBadgeInfo.targetFilterBadges) {
+                if (userBadgeInfo.targetFilterBadges[badgeName] === true) {
+                    newBadges.push(badgeName);
+                }
+            }
+
+            console.log(targetUsers, newBadges, userBadgeInfo.isRemovingBadges);
+            ProjectClient.setUsersBadges(targetUsers, newBadges, userBadgeInfo.isRemovingBadges)
+                .then(() => {
+                    alert("Badges are set!");
+                })
+                .catch((err) => {
+                    alert(`An error occurred: ${err}`);
+                });
+            return;
+        }
+
+        const newBadges = [];
+        for (const badgeName in userBadgeInfo.currentUserBadges) {
+            if (userBadgeInfo.currentUserBadges[badgeName] === true) {
                 newBadges.push(badgeName);
             }
         }
 
-        ProjectClient.setUserBadges(userBadgesUsername, newBadges)
+        ProjectClient.setUserBadges(userBadgeInfo.targetUsername, newBadges)
             .then(() => {
                 alert("Badges are set!");
             })
@@ -808,6 +841,7 @@
                 alert(`An error occurred: ${err}`);
             });
     };
+
     const setUsersPerms = () => {
         const verbAdmin = userSelectionData.admin
             ? `grant ${userSelectionData.username} admin?`
@@ -1648,37 +1682,88 @@
 
             <div class="card">
                 <h2 style="margin-block-start:0">Badges</h2>
-                <p>Type username:</p>
-                <input
-                    type="text"
-                    size="50"
-                    placeholder="PenguinMod username..."
-                    on:change={() => {
-                        areBadgesLoadedForVisibility = false;
-                    }}
-                    bind:value={userBadgesUsername}
-                />
-                <div class="user-action-row">
-                    <Button on:click={loadUserBadges}>Load Badges</Button>
-                </div>
-                <br />
-                <br />
-                {#if areBadgesLoadedForVisibility}
-                    <p>Click a badge to toggle if it is given to a user</p>
-                    <p>
-                        Dark gray badges are not added to the user or will be
-                        removed from the user
-                    </p>
+
+                <button on:click={() => {
+                    userBadgeInfo.isEditingMulti = false;
+                }}>Specific User</button>
+                <button on:click={() => {
+                    userBadgeInfo.isEditingMulti = true;
+                }}>Multiple Users</button>
+
+                {#if !userBadgeInfo.isEditingMulti}
+                    <p>Type username:</p>
+                    <input
+                        type="text"
+                        size="50"
+                        placeholder="PenguinMod username..."
+                        on:change={() => {
+                            userBadgeInfo.areBadgesLoaded = false;
+                        }}
+                        bind:value={userBadgeInfo.targetUsername}
+                    />
+                    <div class="user-action-row">
+                        <Button on:click={loadUserBadges}>Load Badges</Button>
+                    </div>
+                    <br />
+                    <br />
+                    {#if userBadgeInfo.areBadgesLoaded}
+                        <p>Click a badge to toggle if it is given to a user</p>
+                        <p>
+                            Dark gray badges are not added to the user or will be
+                            removed from the user
+                        </p>
+                        <br />
+                        <div class="user-badges-list">
+                            {#each Object.keys(ProfileBadges) as badgeName}
+                                <button
+                                    class="user-badge-button"
+                                    on:click={() => {
+                                        userBadgeInfo.currentUserBadges[badgeName] =
+                                            !userBadgeInfo.currentUserBadges[badgeName];
+                                    }}
+                                    data-active={userBadgeInfo.currentUserBadges[badgeName]}
+                                >
+                                    <img
+                                        src={`/badges/${ProfileBadges[badgeName]}.png`}
+                                        alt={badgeName}
+                                    />
+                                    {badgeName}
+                                </button>
+                            {/each}
+                        </div>
+                    {:else}
+                        <p>Badges have not been loaded.</p>
+                    {/if}
+                {:else}
+                    <p>Type usernames:</p>
+                    <textarea
+                        style="width: 80%;height:120px"
+                        placeholder="Paste PenguinMod usernames, seperated by new lines. Excess spaces will be trimmed."
+                        bind:value={userBadgeInfo.targetUsernamesBox}
+                    />
+                    
+                    <br />
+                    <label>
+                        <input type="checkbox" bind:checked={userBadgeInfo.isRemovingBadges} />
+                        Remove Badges from Users
+                    </label>
+                    <br />
+                    
+                    {#if userBadgeInfo.isRemovingBadges}
+                        <p>Selected badges will be removed from each user.</p>
+                    {:else}
+                        <p>Selected badges will be added to each user.</p>
+                    {/if}
                     <br />
                     <div class="user-badges-list">
                         {#each Object.keys(ProfileBadges) as badgeName}
                             <button
                                 class="user-badge-button"
                                 on:click={() => {
-                                    currentUserBadges[badgeName] =
-                                        !currentUserBadges[badgeName];
+                                    userBadgeInfo.targetFilterBadges[badgeName] =
+                                        !userBadgeInfo.targetFilterBadges[badgeName];
                                 }}
-                                data-active={currentUserBadges[badgeName]}
+                                data-active={userBadgeInfo.targetFilterBadges[badgeName]}
                             >
                                 <img
                                     src={`/badges/${ProfileBadges[badgeName]}.png`}
@@ -1688,8 +1773,6 @@
                             </button>
                         {/each}
                     </div>
-                {:else}
-                    <p>Badges have not been loaded.</p>
                 {/if}
                 <br />
                 <div style="width:100%;height:32px;" />
