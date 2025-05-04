@@ -799,7 +799,7 @@
         userBadgeInfo.areBadgesLoaded = true;
     };
     const applyUserBadges = () => {
-        const targetUsers = userBadgeInfo.targetUsernamesBox.split("\n").map(username => username.replace(/[\r\s]/g, ""));
+        const targetUsers = userBadgeInfo.targetUsernamesBox.split("\n").map(username => username.replace(/[\r\s]/g, "").toLowerCase());
         const affectedUsers = !userBadgeInfo.isEditingMulti ? 1 : targetUsers.length;
         if (userBadgeInfo.isEditingMulti) {
             if (!confirm(`Edit badges for ${affectedUsers} users?`)) return;
