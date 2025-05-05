@@ -927,6 +927,17 @@
             });
     }
 
+    function getAlts() {
+        ProjectClient.getAlts(ipBanData.input)
+            .then((users) => {
+                ipBanData.connectedIPs = users;
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to get connected users; ${err}`);
+            });
+    }
+
     function _parseIPs(ips) {
         return ips.map((ip) => {
             return `IP: ${ip.ip}, banned: ${ip.banned}, last login: ${unixToDisplayDate(ip.lastLogin)}`;
@@ -1677,6 +1688,7 @@
                     <Button on:click={getConnectedUsers}>Get Connected Users</Button>
                     <Button color="red" on:click={() => banIP(true)}>Ban IP</Button>
                     <Button on:click={() => banIP(false)}>Unban IP</Button>
+                    <Button on:click={getAlts}>Get alt accounts</Button>
                 </div>
             </div>
 

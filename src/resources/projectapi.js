@@ -1943,6 +1943,28 @@ class ProjectApi {
         });
     }
 
+    getAlts(target_username) {
+        const url = `${OriginApiUrl}/api/v1/users/getAlts`
+
+        const query = `?username=${this.username}&token=${this.token}&target=${target_username}`;
+
+        return new Promise((resolve, reject) => {
+            fetch(url + query).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve(json.alts);
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
+
     banIP(ip, toggle) {
         const url = `${OriginApiUrl}/api/v1/users/banip`;
 
