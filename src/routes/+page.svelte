@@ -700,15 +700,12 @@
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">PenguinJam Spring is getting ready!</h2>
+                        <h2 style="margin-block:4px;">PenguinJam Spring is being ranked!</h2>
                         <div style="width:100%">
                             <p>
-                                Our servers are finally back online, and we're ready to let your creativity brew in PenguinJam Spring this year!
+                                We're ranking your PenguinJam Spring projects!
                                 <br />
-                                Check out the event page for more information on the event:
-                            </p>
-                            <p style="margin-block-start:4px;">
-                                <a href="https://penguinmod.com/events/penguinjamspring2025">PenguinJam Spring 2025</a>
+                                Thanks to everyone who participated! We know many of you didn't have time this spring, but we'll try to do an event in the summer for you too!
                             </p>
                             <img
                                 src="/events/news/penguinjamspring2025.png"
