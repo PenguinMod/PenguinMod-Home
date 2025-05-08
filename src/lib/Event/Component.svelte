@@ -3,7 +3,7 @@
     import Language from "../../resources/language.js";
     import EventPages from "../../resources/markdown/events/pages.js";
 
-    const isHavingEvent = true;
+    const isHavingEvent = false;
     const eventName = "Spring 2025 PenguinJam";
     const eventPath = "penguinjamspring2025";
     
