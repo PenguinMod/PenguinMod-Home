@@ -609,7 +609,7 @@
                     {/if}
                 </div>
             </ContentCategory>
-        {:else if !loggedIn || selectedFrontTabSelected === "commit"}
+        {:else if loggedIn && selectedFrontTabSelected === "commit"}
             <ContentCategory
                 header={TranslationHandler.textSafe(
                     "home.sections.githubcommits",
@@ -690,7 +690,7 @@
                     {/if}
                 </div>
             </ContentCategory>
-        {:else if loggedIn && selectedFrontTabSelected === "news"}
+        {:else if !loggedIn || selectedFrontTabSelected === "news"}
             <ContentCategory
                 header={TranslationHandler.textSafe(
                     "home.sections.informational",
@@ -700,12 +700,15 @@
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">PenguinJam Spring is being ranked!</h2>
+                        <h2 style="margin-block:4px;">PenguinJam Spring has ended!</h2>
                         <div style="width:100%">
                             <p>
-                                We're ranking your PenguinJam Spring projects!
+                                We've ranked all 36 entries! See the project below to see all of the projects.
                                 <br />
                                 Thanks to everyone who participated! We know many of you didn't have time this spring, but we'll try to do an event in the summer for you too!
+                            </p>
+                            <p style="margin-block-start:4px;">
+                                <a href="https://projects.penguinmod.com/2188411314">PenguinJam Spring 2025 Official Rankings</a>
                             </p>
                             <img
                                 src="/events/news/penguinjamspring2025.png"
