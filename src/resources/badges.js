@@ -6,7 +6,6 @@ export default {
 
     // admin
     admin: "admin",
-    discordadmin: "discord_mod",
     
     // "official" stuff
     verifiedofficial: "verifiedofficial",
