@@ -821,7 +821,7 @@
                     {#if !lastProjectPage}
                         <!-- todo: should this really look the way it does? -->
                         <Button
-                            label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
+                            label="<img alt='More' src='/dropdown-caret-hd.png' width='20'></img>"
                             on:click={() =>
                                 incrementPageAndAddToMenu(projectPageType)}
                         />
@@ -902,7 +902,7 @@
                     {#if !lastProjectPage}
                         <!-- todo: should this really look the way it does? -->
                         <Button
-                            label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
+                            label="<img alt='More' src='/dropdown-caret-hd.png' width='20'></img>"
                             on:click={() => {
                                 incrementPageAndAddToMenu(projectPageType);
                             }}

@@ -1038,7 +1038,7 @@
                 <div style="height: 16px;" />
                 <div class="more-messages-wrapper">
                     <Button
-                        label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
+                        label="<img alt='More' src='/dropdown-caret-hd.png' width='20'></img>"
                         on:click={() => {
                             page += 1;
                             fetchNewMessages();
