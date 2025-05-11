@@ -904,7 +904,7 @@
                         <Button
                             label="<img alt='More' src='/dropdown-caret-hd.png' width='20'></img>"
                             on:click={() => {
-                                incrementPageAndAddToMenu(projectPageType);
+                                incrementPageAndAddToMenu(projectPageType); 
                             }}
                         />
                     {/if}
