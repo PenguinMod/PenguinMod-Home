@@ -28,15 +28,27 @@ The bullet points will contain the punishments for the amount of times a rule wa
 
 Multiple rules are also included in other rules as they may have the same punishments or notes as another rule.
 
-# Test Accounts
-These accounts are exempt from *most* punishment as they are used by developers or automatically used for testing:
-- PenguinMod
-- PenguinBot
-- PenguinJam
-- JeremyGamer13
-- ianyourgod
+# Punishment reasons + Moderator Messages
+These are rules for how you should write both punishment reasons and moderator messages.
+These still apply in the section for "How you should use Moderator Messages."
 
-Specifically, unless you see one of these accounts uploading NSFW, gore, or anything of the sort, don't do anything to them.
+When you are talking to users, please use English with minimal spelling mistakes or weird grammar (acronyms, onomatopoeias, etc) to make sure the messages can be translated properly across most languages. ***Avoid*** using weird formatting (markdown), hyperlinks (URLs), or unnecessary symbols in your messages as well.
+Do ***NOT*** ban a user with something like "you know why" or "check (url here) for info."
+
+Avoid including identifying information in your messages, including usernames like "moderator John here," or "Best regards, - John." It's possible that bad actors can use these names to tell which moderators they should mess with, or just give you a bad reputation in general.
+
+Avoid sounding condesending or forceful when it's not necessary, like a small rule offense.
+Profanity (curse/swear words) or inappropriate messages ***will not be tolerated.***
+
+When discussing things like gore, violent content, or sexual content, avoid giving specific details on what the content is.
+It's appropriate to say things like:
+- "the content is too violent"
+- "the content depicts or encourages suicide"
+- "the content is too sexual for PenguinMod"
+
+but *do not* give details like:
+- "the characters are being stabbed with extremely gory blood and their lungs are flying out of their body"
+- "the two characters are having sexual intercourse"
 
 # How you should use Moderator Messages
 You are only allowed to use the messaging system for the following purposes:
@@ -48,13 +60,17 @@ You are only allowed to use the messaging system for the following purposes:
 
 Any inappropriate usage of the messaging system is not allowed, if you are not sure if a usage is not allowed then feel free to ask.
 
-When you are talking to users, please use English with minimal spelling mistakes or weird grammar (acronyms, onomatopoeias, etc) to make sure the messages can be translated properly across most languages. ***Avoid*** using weird formatting (markdown), hyperlinks (URLs), or unnecessary symbols in your messages as well.
+Do ***NOT*** mention/use any other platforms within your mod messages. Having conversations go off-site can be inappropriate or legally questionable in some cases, regardless of context. Examples that break this rule are "can we continue this over discord" or "check/use this url." An exception to this rule is restating original messages that already talked about the platform. An example of the exception would be if they messaged you "why cant i show that *twitter* link," and you restate the question like, "you cant show that *twitter* link because it contains sexual content."
 
-Avoid sounding condesending or forceful when it's not necessary, like a small rule offense.
+# Test Accounts
+These accounts are exempt from *most* punishment as they are used by developers or automatically used for testing:
+- PenguinMod
+- PenguinBot
+- PenguinJam
+- JeremyGamer13
+- ianyourgod
 
-Do ***NOT*** ban a user with something like "you know why" or "check (url here) for info."
-
-Profanity (curse/swear words) or inappropriate messages ***will not be tolerated.***
+Specifically, unless you see one of these accounts uploading NSFW, gore, or anything of the sort, don't do anything to them.
 
 # What punishments do I give for violating the Uploading Guidelines?
 ## Base requirements for a project + Projects that display websites (iframes) + PenguinMod Mods / Forks
@@ -104,7 +120,7 @@ Games including content like this (ex: some war games, psychological horror) is 
 - Encouraging suicide/self-harm, or sending death threats is an account ban.
 - Actually encouraging shootings or terrorism is an account deletion.
 - User punishment otherwise is a 24hr temp-ban (1st), 72hr temp ban (2nd), and account ban (3rd)
-## Keeping yourself safe + Political content
+## Sensitive/Personal information + Political content
 This includes user mentions, such as their profile/posts.
 - Either censor or remove (soft-delete) the project, using the quick reject for this.
 - Political content should be removed using a soft-delete.

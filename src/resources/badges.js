@@ -15,12 +15,12 @@ export default {
     // event
     // penguinjam
     studiojam: "studiopenguinjamwinner",
+    // penguinjamdiamond: "penguinjamdiamond", // no translation
     penguinjamplatinum: "penguinjamplatinum",
     penguinjamobsidian: "penguinjamobsidian",
     penguinjamgold: "penguinjamgold",
     penguinjamsilver: "penguinjamsilver",
     penguinjambronze: "penguinjambronze",
-    // penguinjamdiamond: "penguinjamdiamond", // no translation
     // generic
     event: "eventwinner",
     participant: "participant",

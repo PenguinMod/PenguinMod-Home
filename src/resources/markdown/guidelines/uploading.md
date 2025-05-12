@@ -166,14 +166,15 @@ You cannot make reference to:
 - Suicide
 - Self-harm
 - Terrorism
-- Death Threats
+- Death Threats towards real people, places, organizations or groups
 
 Any content that promotes or encourages suicide, self-harm or creating/sending death threats will not be tolerated, and your account will be banned.
+Terrorism in the form of mass-shootings or bombings is not allowed even if it is not towards real people, places, organizations or groups.
 
 Content related to, glorifying, or referencing mass shootings, bombings, or any form of violent extremism will be removed.
 Repeated violation will cause your account to be banned.
 
-# Keeping yourself safe
+# Sensitive/Personal information
 You should not include personal info about yourself in your project.
 This means you should not share:
 - Your real name
