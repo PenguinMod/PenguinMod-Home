@@ -32,7 +32,11 @@
 
     async function sendEmail() {
         await Authentication.sendResetPasswordEmail(email, captcha_token);
-        alert("Check your email.");
+        alert(TranslationHandler.textSafe(
+            "login.confirm.email.title",
+            currentLang,
+            "Check your email!"
+        ));
     }
     const sendEmailSafe = () => {
         if (!emailValid) {

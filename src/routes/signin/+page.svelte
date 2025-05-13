@@ -115,10 +115,10 @@
             }
         }, (err) => {
             wrongInfo = true;
-            alert('error:', err);
+            alert("error:", err);
         })
         .catch((err) => {
-            alert('error:', err);
+            alert("error:", err);
         })
         .finally(() => {
             loggingIn = false;

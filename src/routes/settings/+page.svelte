@@ -172,7 +172,11 @@
 
     async function verifyEmail() {
         await Authentication.verifyEmail(loggedInUsername, token);
-        alert("check your email");
+        alert(TranslationHandler.textSafe(
+            "login.confirm.email.title",
+            currentLang,
+            "Check your email!"
+        ));
     }
 
     function updatePrivateProfile() {

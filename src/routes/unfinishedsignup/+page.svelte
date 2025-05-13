@@ -74,15 +74,23 @@
         if (!canFinishSignup) {
             // TODO: Translate the error messages.
             if (apiProcessFailReason) {
-                alert('Failed to update account:', apiProcessFailReason);
+                alert("Failed to update account:", apiProcessFailReason);
                 return;
             }
 
             if (!consentedToDataUsage || !accurateDataAgreement) {
-                return alert("Not all agreements have been checked.");
+                return alert(TranslationHandler.textSafe(
+                    "agreement.requirement.all",
+                    currentLang,
+                    "Not all agreements have been checked."
+                ));
             }
 
-            alert("Not all fields have been filled out.");
+            alert(TranslationHandler.textSafe(
+                "generic.requirement.notmet",
+                currentLang,
+                "Not all fields have been filled out."
+            ));
             return;
         }
 

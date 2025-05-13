@@ -98,7 +98,7 @@
     const createAccountSafe = () => {
         if (!canCreateAccount) {
             if (apiCreateRejectReason) {
-                alert('Failed to create account:', apiCreateRejectReason);
+                alert("Failed to create account:", apiCreateRejectReason);
                 return;
             }
             if (emailValid === 1) {
@@ -111,11 +111,19 @@
             }
 
             if (!consentedToDataUsage || !accurateDataAgreement) {
-                return alert("Not all agreements have been checked.");
+                return alert(TranslationHandler.textSafe(
+                    "agreement.requirement.all",
+                    currentLang,
+                    "Not all agreements have been checked."
+                ));
             }
 
             if (!captcha_token) {
-                return alert("Please complete the captcha");
+                return alert(TranslationHandler.textSafe(
+                    "login.error.captcha.complete",
+                    currentLang,
+                    "Please complete the captcha."
+                ));
             }
 
             alert(TranslationHandler.textSafe(
