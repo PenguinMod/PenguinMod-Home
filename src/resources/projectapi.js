@@ -1832,6 +1832,37 @@ class ProjectApi {
             })
         });
     }
+    updatePrivateFollowing(profileHideFollowing) {
+        const url = `${OriginApiUrl}/api/v1/users/privateFollowSettings`;
+
+        const body = JSON.stringify({
+            username: this.username,
+            token: this.token,
+            profileHideFollowing,
+        });
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
 
     ipBanUser(username, toggle) {
         const url = `${OriginApiUrl}/api/v1/users/banuserip`;
