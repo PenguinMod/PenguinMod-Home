@@ -104,7 +104,6 @@
     let projects = {
         today: [],
         featured: [],
-        liked: [],
         voted: [],
         viewed: [],
         tagged: [],
@@ -266,7 +265,6 @@
             .then(results => {
                 projects.today = results.latest;
                 projects.featured = results.featured;
-                projects.liked = results.liked;
                 projects.voted = results.voted;
                 projects.viewed = results.viewed;
                 projects.tagged = results.tagged;
@@ -826,42 +824,6 @@
                             />
                         </p>
                     </div>
-                {:else if projectsFailed === true}
-                    <div
-                        style="display:flex;flex-direction:column;align-items: center;width: 100%;"
-                    >
-                        <img
-                            src="/penguins/server.svg"
-                            alt="Server Penguin"
-                            style="width: 15rem"
-                        />
-                        <p>
-                            <LocalizedText
-                                text="Whoops! Our server's having some problems. Try again later."
-                                key="home.server.error"
-                                lang={currentLang}
-                            />
-                        </p>
-                    </div>
-                {:else}
-                    <LoadingSpinner />
-                {/if}
-            </div>
-        </ContentCategory>
-        <ContentCategory
-            header={TranslationHandler.text(
-                "home.sections.mostliked",
-                currentLang
-            )}
-            seemore={`/search?q=sort%3Alikes%20featured%3Aexclude`}
-            style="width:65%;"
-            stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
-        >
-            <div class="project-list">
-                {#if projects.liked.length > 0}
-                    {#each projects.liked as project}
-                        <Project {...project} />
-                    {/each}
                 {:else if projectsFailed === true}
                     <div
                         style="display:flex;flex-direction:column;align-items: center;width: 100%;"
