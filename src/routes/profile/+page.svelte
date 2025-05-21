@@ -85,7 +85,7 @@
                 renderScratchBlocks();
             }, 0);
         }).catch(err => {
-            if (err === 'InappropriateWordsUsed') {
+            if (err === 'IllegalWordsUsed') {
                 profileEditingData.isBioInappropriate = true;
             }
             console.log(err)
