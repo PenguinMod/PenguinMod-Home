@@ -828,8 +828,8 @@
                         {#each projectTitles as title}
                             <option value="{title}">
                                 <LocalizedText
-                                    text="{projectTitleStrings[title - 1]}"
-                                    key="profile.featured.title{title}"
+                                    text="{projectTitleStrings[Math.max(1, title - 1)]}"
+                                    key="profile.featured.title{Math.max(0, title)}"
                                     lang={currentLang}
                                 />
                             </option>
@@ -1269,7 +1269,7 @@
                         <h2 style="margin-block:4px">
                             <LocalizedText
                                 text={projectTitleStrings[(fullProfile.myFeaturedProjectTitle || 1) - 1] || projectTitleStrings[0]}
-                                key="profile.featured.title{fullProfile.myFeaturedProjectTitle || 1}"
+                                key="profile.featured.title{Math.max(1, fullProfile.myFeaturedProjectTitle || 1)}"
                                 lang={currentLang}
                             />
                             {#if loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase() && profileFeaturedProject && !profileEditingData.isEditingProject}
