@@ -900,10 +900,9 @@
         </ContentCategory>
         <ContentCategory
             header={TranslationHandler.text(
-                "home.sections.mostvoted",
-                currentLang,
+                "home.sections.suggestedforyou",
+                currentLang
             )}
-            seemore={`/search?q=sort%3Avotes%20featured%3Aexclude`}
             style="width:65%;"
             stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
         >
@@ -919,8 +918,8 @@
                         <PenguinConfusedSVG width="8rem" />
                         <p>
                             <LocalizedText
-                                text="Nothing found. You can help feature projects by clicking the yellow checkmark below them."
-                                key="home.none.featured"
+                                text="Nothing found. You can fill this section by checking out other people's projects and liking them."
+                                key="home.none.fyp"
                                 lang={currentLang}
                             />
                         </p>
