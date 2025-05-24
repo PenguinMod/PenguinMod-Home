@@ -1638,7 +1638,7 @@
                     bind:value={userSelectionData.newUsername}
                 />
                 <br> -->
-                <!-- <label>
+                <label>
                     New Profile Picture:
                     <input
                         type="file"
@@ -1647,8 +1647,8 @@
                 </label>
                 <br />
                 <br />
-                <Button color="purple" on:click={renameUser}>Rename User</Button>
-                <Button color="purple" on:click={changePfpUser}>Change User's Profile Picture</Button> -->
+                <!--<Button color="purple" on:click={renameUser}>Rename User</Button>-->
+                <Button color="purple" on:click={changePfpUser}>Change User's Profile Picture</Button>
                 <br>
                 <br>
                 <label>
