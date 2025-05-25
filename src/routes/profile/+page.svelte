@@ -43,6 +43,7 @@
     const projects = {
         all: [],
         featured: [],
+        liked: []
     };
     let badges = [];
     let isDonator = false;
@@ -1434,6 +1435,39 @@
                         {#if projects.all.length > 0}
                             {#if projects.all[0] !== "none"}
                                 {#each projects.all as project}
+                                    <Project {...project} />
+                                {/each}
+                            {:else}
+                                <div class="none-found">
+                                    <PenguinConfusedSVG height="10rem" />
+                                    <p>
+                                        <LocalizedText
+                                            text="Nothing was found. Did you misspell something or does the user not exist?"
+                                            key="generic.notfound"
+                                            lang={currentLang}
+                                        />
+                                    </p>
+                                </div>
+                            {/if}
+                        {:else}
+                            <LoadingSpinner />
+                        {/if}
+                    </div>
+                </ContentCategory>
+                <ContentCategory
+                    header={TranslationHandler.textSafe(
+                        "profile.projects.liked",
+                        currentLang,
+                        "Liked projects"
+                    )}
+                    style="width:calc(90% - 10px);"
+                    stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
+                    seemore={`/search?q=by%3A${user}`}
+                >
+                    <div class="project-list">
+                        {#if projects.liked.length > 0}
+                            {#if projects.liked[0] !== "none"}
+                                {#each projects.liked as project}
                                     <Project {...project} />
                                 {/each}
                             {:else}

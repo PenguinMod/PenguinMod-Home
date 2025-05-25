@@ -39,6 +39,7 @@
         settings: { // change to match what the api internally calls these props - mmmmmm no
             private: false,
             privateToNonFollowers: false,
+            showLiked: true,
             showCubesOnProfile: false,
         },
     };
@@ -668,6 +669,20 @@
                                     lang={currentLang}
                                 />
                             </i>
+                        </p>
+                        <br>
+                        <p>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    bind:checked={accountInformation.settings.showLiked}
+                                >
+                                <LocalizedText
+                                    text="Show my liked projects on my profile"
+                                    key="account.settings.showliked"
+                                    lang={currentLang}
+                                />
+                            </label>
                         </p>
                         <!-- <br>
                         <p>
