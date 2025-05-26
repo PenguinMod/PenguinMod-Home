@@ -207,7 +207,6 @@ You cannot use PenguinMod as a platform for online dating, or creating/sharing r
 You cannot show real people, or characters that represent people doing:
 - Dating
 - Kissing
-- Hugging
 - Similar romantic behavior
 
 You should not call other users "boyfriend" or "girlfriend" on PenguinMod as other users can be of any age, and we need to keep everyone safe.
