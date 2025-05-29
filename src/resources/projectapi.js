@@ -312,7 +312,7 @@ class ProjectApi {
 
     static getProjectRemixes(id, page=0) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getremixes?id=${id}&page=${page}`;
+            const url = `${OriginApiUrl}/api/v1/projects/getremixes?projectID=${id}&page=${page}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
