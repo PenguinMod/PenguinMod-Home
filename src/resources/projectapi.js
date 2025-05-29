@@ -166,6 +166,10 @@ class ProjectApi {
                 byQuery.shift();
                 api = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(byQuery.join())}`;
                 break;
+            case "remixes":
+                const projectID = searchQuery.split(":");
+                projectID.shift();
+                return ProjectApi.getProjectRemixes(projectID, page);
             case "featured":
             case "newest":
             case "views":
