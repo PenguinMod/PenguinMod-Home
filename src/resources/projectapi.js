@@ -320,7 +320,7 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((projectList) => {
-                        resolve(projectList.projects);
+                        resolve(projectList);
                     });
                 })
                 .catch((err) => {
