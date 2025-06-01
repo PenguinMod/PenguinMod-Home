@@ -278,6 +278,9 @@
             if (err === 'NotFound' || err === 'UserNotFound') {
                 wasNotFound = true;
             }
+            if (err === 'PrivateProfile') {
+                isProfilePrivate = true;
+            }
         };
 
         if (username && String(user).toLowerCase() === String(username).toLowerCase()) {
@@ -877,7 +880,7 @@
 
     <StatusAlert />
 
-    {#if (projects.all.length > 0 && fetchedFullProfile) || wasNotFound || isForceView}
+    {#if (projects.all.length > 0 && fetchedFullProfile) || isProfilePrivate || wasNotFound || isForceView}
         {#if
             !wasNotFound
             || isForceView
