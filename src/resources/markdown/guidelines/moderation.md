@@ -62,6 +62,14 @@ Any inappropriate usage of the messaging system is not allowed, if you are not s
 
 Do ***NOT*** mention/use any other platforms within your mod messages. Having conversations go off-site can be inappropriate or legally questionable in some cases, regardless of context. Examples that break this rule are "can we continue this over discord" or "check/use this url." An exception to this rule is restating original messages that already talked about the platform. An example of the exception would be if they messaged you "why cant i show that *twitter* link," and you restate the question like, "you cant show that *twitter* link because it contains sexual content."
 
+# Stance on sharing moderation actions
+Moderators themselves should not make any moderation actions public.
+Do not share to others why a user was banned, why a project was removed, etc.
+The only case this is allowed is if the user you are mentioning it to already has knowledge about the moderation action, and it can't be a case where they "might know" or you only have a theory that they know.
+
+Users can share their moderation actions anywhere, and as stated above you can message them about these actions if they are asking why they got moderated.
+However, you shouldn't allow a moderation message for something inappropriate to be shared again.
+
 # Test Accounts
 These accounts are exempt from *most* punishment as they are used by developers or automatically used for testing:
 - PenguinMod
@@ -125,7 +133,8 @@ This includes user mentions, such as their profile/posts.
 - Either censor or remove (soft-delete) the project, using the quick reject for this.
 - Political content should be removed using a soft-delete.
 - Nothing (1st-2nd), 1hr temp ban (3rd), 4hr temp ban (4th), account ban (5th)
-## Keeping others safe
+## Keeping others safe + Relationships/Online dating
+This includes user mentions, such as their profile/posts.
 Sharing other's personal information is addressed in the Be respectful to others section.
 - Dangerous material such as viruses/malware is a hard delete.
 - Remove the project (soft-delete) and use the quick reject for this.

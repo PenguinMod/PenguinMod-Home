@@ -166,6 +166,10 @@ class ProjectApi {
                 byQuery.shift();
                 api = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(byQuery.join())}`;
                 break;
+            case "remixes":
+                const projectID = searchQuery.split(":");
+                projectID.shift();
+                return ProjectApi.getProjectRemixes(projectID, page);
             case "featured":
             case "newest":
             case "views":
@@ -308,7 +312,7 @@ class ProjectApi {
 
     static getProjectRemixes(id, page=0) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getremixes?id=${id}&page=${page}`;
+            const url = `${OriginApiUrl}/api/v1/projects/getremixes?projectID=${id}&page=${page}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -316,7 +320,7 @@ class ProjectApi {
                         return;
                     }
                     res.json().then((projectList) => {
-                        resolve(projectList.projects);
+                        resolve(projectList);
                     });
                 })
                 .catch((err) => {

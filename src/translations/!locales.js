@@ -27,8 +27,10 @@ import sk from '../translations/sk.json';
 import uk from '../translations/uk.json';
 import ja from '../translations/ja.json';
 import fa from '../translations/fa.json';
-import uwu from '../translations/uwu.json';
+
+// joke languages
 import test from '../translations/test.json';
+import enReversed from '../translations/en-reversed.json';
 
 // to add a language, the first part is the language code (ex: "es-419") or top level (ex: "en-US" goes to "en")
 // the second part is the import name above that had no symbols
@@ -38,6 +40,7 @@ const languages = {
     "es": es,                      // Espanol (Spain)
     "es-419": es419,               // Espanol (Latin American)
     "pt-br": ptBr,                 // Portuguese (Brasil)
+    // "id": id,                   // Bahasa Indonesia: has no translator anymore, and theres too much untranslated text now
     "cs": cs,                      // Czech
     "hr": hr,                      // Croatian
     "vi": vi,                      // Viatnamese
@@ -58,11 +61,9 @@ const languages = {
     "he": he,                      // Hebrew
     "fa": fa,                      // Persian
     
-    // "id": id,                   // Bahasa Indonesia: has no translator anymore, and theres too much untranslated text now
-    
-    // uncomment joke languages when we have >30 regular langs to hide them
-    // "uwu": uwu,
-    // "test": test,
+    // only visible if in the jokeLanguages array
+    "test": test,                  // Test
+    "en-reversed": enReversed,     // English Reversed
 };
 // add languages that are RTL here
 const rtlLanguages = [
@@ -74,9 +75,15 @@ const autoLocale = {
     "nn": "no",
     "nb": "no",
 };
+// only appear when ?jokelang=true
+const jokeLanguages = [
+    "test",                        // Test
+    "en-reversed"                  // English Reversed
+];
 
 export default {
     languages,
     rtlLanguages,
+    jokeLanguages,
     autoLocale,
 };

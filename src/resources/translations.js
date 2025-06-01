@@ -7,6 +7,7 @@ import { getLocaleFinishedPercentage } from "../translations/!all-locale-text";
 
 const languages = Locales.languages;
 const rtlLanguages = Locales.rtlLanguages;
+const jokeLanguages = Locales.jokeLanguages;
 
 class TranslationHandler {
     static text(key, lang) {
@@ -47,6 +48,10 @@ class TranslationHandler {
     static get rtlLanguages() {
         return rtlLanguages;
     }
+    static get jokeLanguages() {
+        return jokeLanguages;
+    }
 }
+
 
 export default TranslationHandler;
