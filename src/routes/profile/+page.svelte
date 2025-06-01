@@ -1425,7 +1425,7 @@
                     header={TranslationHandler.text(
                         "profile.projects.all",
                         currentLang
-                    )}
+                    ) + ` (${projects.all.length + 1}+)`}
                     style="width:calc(90% - 10px);"
                     stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
                     seemore={`/search?q=by%3A${user}`}
