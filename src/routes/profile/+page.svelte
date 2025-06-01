@@ -249,6 +249,8 @@
                 isProfilePrivate = fullProfile.privateProfile;
                 isProfilePublicToFollowers = fullProfile.canFollowingSeeProfile;
 
+                isFollowedByUser = fullProfile.isFollowing;
+
                 let profileFeatured = fullProfile.myFeaturedProject;
                 if (profileFeatured === -1) {
                     profileFeatured = 0
@@ -300,8 +302,6 @@
             
             window.location.reload();
         });
-
-        isFollowedByUser = await ProjectClient.isFollowing(user, username);
     });
 
     let currentLang = "en";
