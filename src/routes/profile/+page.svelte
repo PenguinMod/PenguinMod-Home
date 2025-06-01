@@ -160,76 +160,13 @@
         "My Animation",
     ];
 
-    const loggedInChange = async () => {
-        if (!loggedIn) {
-            isFollowingUser = false;
-            return;
-        }
-        const isFollowing = await ProjectClient.isFollowingUser(user);
-        isFollowingUser = isFollowing;
-    };
-    
-    function unixToDisplayDate(unix) {
-       unix = Number(unix);
-        return `${new Date(unix).toLocaleString([], {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true
-        })}`;
-    }
-    const xmlEscape = function (unsafe) {
-        return unsafe.replace(/[<>&'"]/g, c => {
-            switch (c) {
-            case '<': return '&lt;';
-            case '>': return '&gt;';
-            case '&': return '&amp;';
-            case '\'': return '&apos;';
-            case '"': return '&quot;';
-            }
-        });
-    };
-    const formatProjectTitle = (_title) => {
-        const title = xmlEscape(String(_title));
-        const emojiRegex = /:(\w+):/g;
-        return title.replace(emojiRegex, (match) => {
-            const emojiName = match.replace(/\:/gmi, "");
-            return `<img
-                src="https://library.penguinmod.com/files/emojis/${emojiName}.png"
-                alt=":${emojiName}:"
-                title=":${emojiName}:"
-                style="width:1.2rem;vertical-align: middle;"
-            >`;
-        });
-    };
-    
     let fetchedFullProfile = false;
-    onMount(async () => {
-        const params = new URLSearchParams(location.search);
-        const query = params.get("user") ?? "";
-        const idQuery = params.get("id") ?? "";
-        user = query;
-
-        if (idQuery) {
-            // set user to the result of fetching the username by id
-            const username = await new Promise((resolve) => {
-                ProjectApi.getUsernameById(idQuery)
-                    .then((username) => {
-                        resolve(username)
-                    })
-                    .catch(() => {
-                        resolve();
-                    });
-            });
-            if (username) {
-                user = username;
-            }
-        }
-
+    const fetchProfile = () => {
         const username = localStorage.getItem("username");
 
+        projects.all = [];
+        projects.featured = [];
+        fetchedFullProfile = false;
         const then = (projs) => {
             projects.all = projs;
             projects.featured = projs.filter((p) => p.featured);
@@ -285,19 +222,87 @@
         };
 
         if (username && String(user).toLowerCase() === String(username).toLowerCase()) {
-            ProjectApi.getMyProjects(0).then(then).catch(catch_func).finally(() => {
-                    fetchedFullProfile = true;
-                    setTimeout(() => {
-                        renderScratchBlocks();
-                    }, 0);
-                });
+            ProjectClient.getMyProjects(0).then(then).catch(catch_func).finally(() => {
+                fetchedFullProfile = true;
+                setTimeout(() => {
+                    renderScratchBlocks();
+                }, 0);
+            });
         } else {
-            ProjectApi.getUserProjects(user, 0).then(then).catch(catch_func).finally(() => {
-                    fetchedFullProfile = true;
-                    setTimeout(() => {
-                        renderScratchBlocks();
-                    }, 0);
-                });
+            ProjectClient.getUserProjects(user, 0).then(then).catch(catch_func).finally(() => {
+                fetchedFullProfile = true;
+                setTimeout(() => {
+                    renderScratchBlocks();
+                }, 0);
+            });
+        }
+    };
+    const loggedInChange = async () => {
+        if (!loggedIn) {
+            isFollowingUser = false;
+            return;
+        }
+        const isFollowing = await ProjectClient.isFollowingUser(user);
+        isFollowingUser = isFollowing;
+        fetchProfile();
+    };
+    
+    function unixToDisplayDate(unix) {
+       unix = Number(unix);
+        return `${new Date(unix).toLocaleString([], {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true
+        })}`;
+    }
+    const xmlEscape = function (unsafe) {
+        return unsafe.replace(/[<>&'"]/g, c => {
+            switch (c) {
+            case '<': return '&lt;';
+            case '>': return '&gt;';
+            case '&': return '&amp;';
+            case '\'': return '&apos;';
+            case '"': return '&quot;';
+            }
+        });
+    };
+    const formatProjectTitle = (_title) => {
+        const title = xmlEscape(String(_title));
+        const emojiRegex = /:(\w+):/g;
+        return title.replace(emojiRegex, (match) => {
+            const emojiName = match.replace(/\:/gmi, "");
+            return `<img
+                src="https://library.penguinmod.com/files/emojis/${emojiName}.png"
+                alt=":${emojiName}:"
+                title=":${emojiName}:"
+                style="width:1.2rem;vertical-align: middle;"
+            >`;
+        });
+    };
+    
+    onMount(async () => {
+        const params = new URLSearchParams(location.search);
+        const query = params.get("user") ?? "";
+        const idQuery = params.get("id") ?? "";
+        user = query;
+
+        if (idQuery) {
+            // set user to the result of fetching the username by id
+            const username = await new Promise((resolve) => {
+                ProjectApi.getUsernameById(idQuery)
+                    .then((username) => {
+                        resolve(username)
+                    })
+                    .catch(() => {
+                        resolve();
+                    });
+            });
+            if (username) {
+                user = username;
+            }
         }
 
         page.subscribe(v => {

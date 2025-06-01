@@ -228,32 +228,6 @@ class ProjectApi {
                 });
         })
     }
-
-    /**
-     * @param {number} page page
-     * @returns Array of projects
-     */
-    static getMyProjects(page) {
-        const username = localStorage.getItem("username");
-        const token = localStorage.getItem("token");
-
-        return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getmyprojects?page=${page}&username=${username}&token=${token}`;
-            fetch(url)
-                .then((res) => {
-                    if (!res.ok) {
-                        res.text().then(reject);
-                        return;
-                    }
-                    res.json().then((projectList) => {
-                        resolve(projectList);
-                    });
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        })
-    }
     
     async getFrontPage() {
         return new Promise((resolve, reject) => {
@@ -452,12 +426,32 @@ class ProjectApi {
                         res.text().then(reject);
                         return;
                     }
-                    res.json().then(resolve);
+                    res.json().then((projectList) => {
+                        resolve(projectList);
+                    });
                 })
                 .catch((err) => {
                     reject(err);
                 });
         });
+    }
+    getUserProjects(user, page) {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${user}&username=${this.username}&token=${this.token}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((projectList) => {
+                        resolve(projectList);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
     }
     getMyFeed(page) {
         return new Promise((resolve, reject) => {
