@@ -280,6 +280,7 @@
             }
             if (err === 'PrivateProfile') {
                 isProfilePrivate = true;
+                then([]);
             }
         };
 
