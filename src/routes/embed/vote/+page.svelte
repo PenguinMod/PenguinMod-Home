@@ -155,7 +155,6 @@
 
     // used for algorithm
     function registerView() {
-        alert('reg');
         ProjectClient.registerView(projectId);
     }
 </script>
