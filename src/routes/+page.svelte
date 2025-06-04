@@ -107,6 +107,7 @@
         voted: [],
         viewed: [],
         tagged: [],
+        suggested: null,
     };
 
     const ratings = [
@@ -268,6 +269,8 @@
                 projects.voted = results.voted;
                 projects.viewed = results.viewed;
                 projects.tagged = results.tagged;
+                if (results.suggested)
+                    projects.suggested = results.suggested;
                 tagForProjects = results.selectedTag;
                 projectsLoaded = true;
             })
@@ -895,6 +898,56 @@
                 {/if}
             </div>
         </ContentCategory>
+        {#if projects.suggested !== null}
+            <ContentCategory
+                header={TranslationHandler.text(
+                    "home.sections.suggestedforyou",
+                    currentLang
+                )}
+                style="width:65%;"
+                stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
+            >
+                <div class="project-list">
+                    {#if projects.suggested.length > 0}
+                        {#each projects.suggested as project}
+                            <Project {...project} />
+                        {/each}
+                    {:else if projectsLoaded === true}
+                        <div
+                            style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                        >
+                            <PenguinConfusedSVG width="8rem" />
+                            <p>
+                                <LocalizedText
+                                    text="Nothing found. You can fill this section by checking out other people's projects and liking them."
+                                    key="home.none.fyp"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        </div>
+                    {:else if projectsFailed === true}
+                        <div
+                            style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                        >
+                            <img
+                                src="/penguins/server.svg"
+                                alt="Server Penguin"
+                                style="width: 15rem"
+                            />
+                            <p>
+                                <LocalizedText
+                                    text="Whoops! Our server's having some problems. Try again later."
+                                    key="home.server.error"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        </div>
+                    {:else}
+                        <LoadingSpinner />
+                    {/if}
+                </div>
+            </ContentCategory>
+        {/if}
         {#if projects.tagged.length > 7}
             <ContentCategory
                 header={String(TranslationHandler.text(
