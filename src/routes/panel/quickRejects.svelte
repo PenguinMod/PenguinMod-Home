@@ -15,7 +15,7 @@
         <button on:click={() => event("Your project was removed because it appears to be the same as a previously uploaded project. Please use the “Update” button instead.")}>
         Duplicate Project / Spam Uploading</button>
         <button on:click={() => event("Your project was removed because it only works outside of PenguinMod. Please upload it to the correct site instead. Projects must be functional on PenguinMod.")}>
-        Doesn’t Work on PenguinMod</button>
+        Doesn't Work on PenguinMod</button>
         <button on:click={() => event("Your project was removed because its main purpose was to display a different website through an iframe. Projects should not just act as browsers.")}>
         Iframe-Browser Project</button>
         <button on:click={() => event("Your project was removed because it appears to be reuploaded from Scratch without clear permission from the original creator. Reuploads must include proof of permission in the notes.")}>
@@ -25,7 +25,7 @@
     </details>
 
     <details><summary>Credit & Ownership</summary>
-        <button on:click={() => event("Your project was removed because it uses someone else’s work without giving them proper credit in the notes. “Credit to all” is not enough—please list names specifically if possible.")}>
+        <button on:click={() => event("Your project was removed because it uses someone else's work without giving them proper credit in the notes. “Credit to all” is not enough—please list names specifically if possible.")}>
         Missing Credit</button>
     </details>
 
@@ -47,15 +47,15 @@
     <details><summary>Audio & Visual Content</summary>
         <button on:click={() => event("Your project was removed because it contained loud or disruptive audio without a warning screen. Please keep loud sounds under one second or add a clear warning that requires interaction.")}>
         Loud or Disruptive Audio</button>
-        <button data-serious on:click={() => event("Your project was removed due to excessive or realistic depictions of blood or gore. Your account will be banned as this is a serious offense.")}>
-        Excessive or Realistic Gore</button>
     </details>
 
     <details><summary>Sensitive & Inappropriate Content</summary>
         <button data-serious on:click={() => event("Your project was removed because it included or referenced sexual content, which is not allowed on PenguinMod.")}>
         Sexual Content or References</button>
-        <button data-serious on:click={() => event("Your project was removed because it contained disturbing or fetish-related content. These types of projects are not permitted.")}>
-        Disturbing Themes (e.g. fetishes)</button>
+        <button data-serious on:click={() => event("Your project was removed due to excessive or realistic depictions of blood or gore. Your account will be banned as this is a serious offense.")}>
+        Excessive or Realistic Gore</button>
+        <button data-serious on:click={() => event("Your project was removed because it contained disturbing content not appropriate for PenguinMod. These types of projects are not permitted.")}>
+        Disturbing/Fetish Themes</button>
         <button on:click={() => event("Your project was removed because it contained romantic or dating-related content, which is not allowed for safety reasons. Read the uploading guidelines for more information.")}>
         Online Dating / Romantic Content</button>
         <button on:click={() => event("Your project was removed because it showed or encouraged drug use, alcohol, or vaping. This content is not allowed even in a comedic or fictional context.")}>
@@ -63,7 +63,7 @@
     </details>
 
     <details><summary>Privacy & Security</summary>
-        <button on:click={() => event("Your project was removed because it shared personal information like your name, age, or location. Please don’t share this to help keep you safe.")}>
+        <button on:click={() => event("Your project was removed because it shared personal information like your name, age, or location. Please don't share this to help keep you safe.")}>
         Personal Information (Yourself)</button>
         <button on:click={() => event("Your project was removed for sharing private or personal information about someone else. This is a serious violation and could result in a ban.")}>
         Personal Information (Others)</button>
@@ -87,13 +87,13 @@
         References an Unsafe External Platform</button>
         <button on:click={() => event("Your project was removed because you are attempting to sell products through it without using one of the services specified in the Uploading Guidelines. We fully respect that you are trying to profit, but we want to be sure our users are not being scammed and receive the promised product.")}>
         Attempts to Sell an Untrusted Product</button>
-        <button on:click={() => event("Your project was removed because it was primarily political in nature. PenguinMod is not a platform for political advocacy.")}>
+        <button on:click={() => event("Your project was removed as it promotes political ideologies, parties, candidates, or causes. PenguinMod is not a platform for primarily political projects or messages. Please read the uploading guidelines for more information.")}>
         Political Project</button>
         <button on:click={() => event("Your project was removed because it included profanity in its title, instructions, notes, or thumbnail. Please keep explicit language out of those areas.")}>
         Profanity in Title/Notes</button>
-        <button on:click={() => event("Your project was removed for using content you don’t appear to have rights to (e.g., music, logos, or code). Please only use content you have permission for.")}>
+        <button on:click={() => event("Your project was removed for using content you don't appear to have rights to (e.g., music, logos, or code). Please only use content you have permission for.")}>
         Copyright Violation</button>
-        <button on:click={() => event("Your project was removed for encouraging others to break PenguinMod rules or exploit the system. This can lead to a permanent ban.")}>
+        <button on:click={() => event("Your project was removed for encouraging others to break PenguinMod rules or exploit the system. Your account may be punished.")}>
         Encouraging Rule-Breaking or Exploits</button>
         <button on:click={() => event("Your project was removed because it contains or enables downloading of stolen copyrighted or paid content. This is a serious offense and you may get your account banned or limited.")}>
         Pirating Paid Music, Video or Other Media</button>
