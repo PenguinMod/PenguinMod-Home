@@ -1,0 +1,20 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="15.89412"
+    height="15.89412" viewBox="-2,-2,20,20">
+    <g transform="translate(-232.05294,-172.05294)">
+        <g data-paper-data="{&quot;isPaintingLayer&quot;:true}" stroke-linecap="butt" stroke-linejoin="miter"
+            stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal">
+            <path
+                d="M232.80294,180c0,-3.97483 3.22223,-7.19706 7.19706,-7.19706c3.97483,0 7.19706,3.22223 7.19706,7.19706c0,3.97483 -3.22223,7.19706 -7.19706,7.19706c-3.97483,0 -7.19706,-3.22223 -7.19706,-7.19706z"
+                fill="none" fill-rule="evenodd" stroke="white" stroke-width="1.5" />
+            <path
+                d="M237.08478,178.21688c0,-0.41421 0.33579,-0.75 0.75,-0.75c0.41421,0 0.75,0.33579 0.75,0.75c0,0.41421 -0.33579,0.75 -0.75,0.75c-0.41421,0 -0.75,-0.33579 -0.75,-0.75z"
+                fill="white" fill-rule="nonzero" stroke="white" stroke-width="0.5" />
+            <path
+                d="M241.41522,178.21688c0,-0.41421 0.33579,-0.75 0.75,-0.75c0.41421,0 0.75,0.33579 0.75,0.75c0,0.41421 -0.33579,0.75 -0.75,0.75c-0.41421,0 -0.75,-0.33579 -0.75,-0.75z"
+                fill="white" fill-rule="nonzero" stroke="white" stroke-width="0.5" />
+            <path
+                d="M236.07461,181.52292c0,-0.00043 3.92539,0.00434 3.92539,0.00434c0,0 3.92539,-0.00477 3.92539,-0.00434c0,2.11928 -1.75746,3.83729 -3.92539,3.83729c-2.16793,0 -3.92539,-1.71801 -3.92539,-3.83729z"
+                fill="none" fill-rule="nonzero" stroke="white" stroke-width="1.2" style="transform: translateY(362px) scaleY(-0.98)" />
+        </g>
+    </g>
+</svg><!--rotationCenter:7.947057591364199:7.947057591364143-->

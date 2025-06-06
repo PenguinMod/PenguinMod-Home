@@ -21,6 +21,8 @@
     let userVoted = false;
     let userLikedOnLoad = false;
     let userVotedOnLoad = false;
+    let userSuggestedMore = false;
+    let userSuggestedLess = false;
 
     let loaded = false;
     let loggedIn = true;
@@ -77,6 +79,44 @@
         ProjectClient.toggleVoteProject(projectId, "love", !userLiked)
             .catch((err) => alert(String(err)));
         userLiked = !userLiked;
+    }
+    
+    function suggest(more) {
+        if (more && userSuggestedMore) return;
+        if (!more && userSuggestedLess) return;
+
+        if (loggedIn === false) {
+            Authentication.authenticate().then(() => {
+                const username = localStorage.getItem("username");
+                const token = localStorage.getItem("token");
+                Authentication.usernameFromCode(username, token)
+                    .then(({isAdmin, isApprover}) => {
+                        loggedIn = true;
+                        loggedInAdmin = isAdmin || isApprover;
+                        ProjectClient.setUsername(username);
+                        ProjectClient.setToken(token);
+                        registerView();
+                        suggest(more);
+                        return;
+                    })
+                    .catch(() => {
+                        loggedIn = false;
+                    });
+            });
+            return;
+        }
+
+        if (more) {
+            userSuggestedMore = true;
+            ProjectClient.showMeMore(projectId).catch(() => {
+                userSuggestedMore = false;
+            });
+        } else {
+            userSuggestedLess = true;
+            ProjectClient.showMeLess(projectId).catch(() => {
+                userSuggestedMore = false;
+            });
+        }
     }
 
     function updateVoteStates() {
@@ -198,6 +238,32 @@
             </button>
             <p>{views}</p>
         </div>
+        <div>
+            <p>
+                <button class="suggest-option" on:click={() => suggest(true)}>
+                    <img
+                        src="/vote/suggest.svg"
+                        alt="Suggest more of this"
+                        title="Suggest more of this"
+                        height="48"
+                        draggable="false"
+                        data-activated={userSuggestedMore}
+                    />
+                </button>
+            </p>
+            <p>
+                <button class="suggest-option" on:click={() => suggest(false)}>
+                    <img
+                        src="/vote/suggestless.svg"
+                        alt="Suggest less of this"
+                        title="Suggest less of this"
+                        height="48"
+                        draggable="false"
+                        data-activated={userSuggestedLess}
+                    />
+                </button>
+            </p>
+        </div>
         {#if loggedInAdmin}
             <div>
                 <p>
@@ -206,6 +272,7 @@
                             src="/notallowed.png"
                             alt="Reject Project"
                             title="Reject Project"
+                            draggable="false"
                             height="32"
                         >
                     </a>
@@ -217,6 +284,7 @@
                             src="/pencil.png"
                             alt="Edit Project"
                             title="Edit Project"
+                            draggable="false"
                             height="32"
                         >
                     </a>
@@ -317,4 +385,14 @@
     .feature {
         background: rgba(255, 229, 107, 0.25);
     } */
+
+    .suggest-option img {
+        filter: brightness(0.35);
+    }
+    :global(body.dark-mode) .suggest-option img {
+        filter: initial;
+    }
+    .suggest-option img[data-activated="true"] {
+        opacity: 0.5;
+    }
 </style>
