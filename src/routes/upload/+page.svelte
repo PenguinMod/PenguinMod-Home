@@ -82,6 +82,13 @@
         projectPageSearch = 0;
     let lastProjectPage = false;
 
+    let tagsAreTooMany = false;
+    const tagsCalculateTooMany = () => {
+        const combinedText = `${String(components.projectName.value)} ${String(components.projectInstructions.value)} ${String(components.projectNotes.value)}`;
+        const hashtags = combinedText.match(/#([\w-]+)/g) || [];
+        tagsAreTooMany = hashtags.length > 6;
+    };
+
     let recommendedTagList = [];
     let recommendedTagUpdate = 0;
     const components = {
@@ -250,6 +257,11 @@
         updateRecommendedTags();
     };
 
+    const updateDescription = () => {
+        updateRecommendedTags();
+        tagsCalculateTooMany();
+    };
+
     function floatTo2Decimals(number) {
         const num = Number(number);
         if (isNaN(num)) return 0;
@@ -409,6 +421,14 @@
     async function uploadProject() {
         if (isBusyUploading) return;
         isBusyUploading = true;
+
+        if (tagsAreTooMany) {
+            // TODO: Translation
+            const message = "You can only use up to 6 hashtags in your project's information.";
+            alert(message);
+            isBusyUploading = false;
+            return;
+        }
 
         if (!projectImage) {
             projectImage = await fetch("/empty-project.png").then((res) =>
@@ -1089,7 +1109,7 @@
                             currentLang
                         )}
                         bind:this={components.projectName}
-                        on:input={updateRecommendedTags}
+                        on:input={updateDescription}
                         on:dragover={allowEmojiDrop}
                         on:drop={handleEmojiDrop}
                         value={projectName}
@@ -1107,7 +1127,7 @@
                             currentLang
                         )}
                         bind:this={components.projectInstructions}
-                        on:input={updateRecommendedTags}
+                        on:input={updateDescription}
                         on:dragover={allowEmojiDrop}
                         on:drop={handleEmojiDrop}
                     />
@@ -1124,7 +1144,7 @@
                             currentLang
                         )}
                         bind:this={components.projectNotes}
-                        on:input={updateRecommendedTags}
+                        on:input={updateDescription}
                         on:dragover={allowEmojiDrop}
                         on:drop={handleEmojiDrop}
                     />
