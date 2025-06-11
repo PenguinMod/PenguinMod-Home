@@ -679,19 +679,21 @@
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">PenguinJam Spring has ended!</h2>
+                        <h2 style="margin-block:4px;">PenguinJam Super is starting up!</h2>
                         <div style="width:100%">
                             <p>
-                                We've ranked all 36 entries! See the project below to see all of the projects.
+                                Get ready this summer, PenguinJam Super is starting!
                                 <br />
-                                Thanks to everyone who participated! We know many of you didn't have time this spring, but we'll try to do an event in the summer for you too!
+                                On June 12th at 12:00 PM EST, we'll reveal the theme you need to make projects around.
+                                <br />
+                                See the event page for more details!
                             </p>
                             <p style="margin-block-start:4px;">
-                                <a href="https://projects.penguinmod.com/2188411314">PenguinJam Spring 2025 Official Rankings</a>
+                                <a href="https://penguinmod.com/events/penguinjamsuper2025">PenguinJam Super 2025</a>
                             </p>
                             <img
-                                src="/events/news/penguinjamspring2025.png"
-                                alt="PenguinJam Spring 2025"
+                                src="/events/news/penguinjamsuper2025.png"
+                                alt="PenguinJam Super 2025"
                                 style="width:100%;"
                             />
                         </div>
