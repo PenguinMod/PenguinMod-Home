@@ -10,8 +10,9 @@ Suit up for another PenguinJam!
 
 This time, you’ll choose a side. Will you defend justice or plunge the world into chaos?
 When uploading your project, use the following tag:
-[#pjamhero](/search?q=%23pjamhero) - Superheroes
-[#pjamvillain](/search?q=%23pjamvillain) - Supervillains
+- [#pjamhero](/search?q=%23pjamhero) - Superheroes
+- [#pjamvillain](/search?q=%23pjamvillain) - Supervillains
+
 (Note: only use one tag, or you will be considered teamless and your score will not count toward a team’s total score!)
 
 When the theme is revealed on June 12 @ 12 PM EST, create a game for both you and your team’s glory!
