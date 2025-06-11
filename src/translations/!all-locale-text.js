@@ -50,6 +50,7 @@ const sameInLocale = {
         "uploading.type.remix",
         "uploading.remix.selected",
         "account.settings.cookies.title",
+        "profile.badge.moderator",
     ],
     "es": [
         "generic.errortitle",
