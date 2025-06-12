@@ -6,6 +6,12 @@
 PenguinMod Team
 ```
 
+# The Theme is: Consuming Power!
+Upload your project before June 22nd @ 12 PM EST
+Remember to include your team’s tag in the notes and credits!
+- [#pjamhero](/search?q=%23pjamhero) - Superheroes
+- [#pjamvillain](/search?q=%23pjamvillain) - Supervillains
+
 Suit up for another PenguinJam!
 
 This time, you’ll choose a side. Will you defend justice or plunge the world into chaos?
@@ -15,7 +21,7 @@ When uploading your project, use the following tag:
 
 (Note: only use one tag, or you will be considered teamless and your score will not count toward a team’s total score!)
 
-When the theme is revealed on June 12 @ 12 PM EST, create a game for both you and your team’s glory!
+Create a game for both you and your team’s glory!
 
 As always, the top 5 projects will earn special rewards. At the end of the jam, each team’s project scores will be combined, and the side with the highest total score will unlock a special badge displayed on your profile.
 
@@ -25,11 +31,6 @@ PenguinJam is a Game Jam, starting ***June 12th at 12:00 PM Eastern Standard Tim
 Scroll to the "What is a Game Jam?" section if you don't know what a Game Jam is.
 
 Submit projects to PenguinJam by **using the tag [#pjamhero](/search?q=%23pjamhero) or [#pjamvillain](/search?q=%23pjamvillain) in the title or notes.**
-
-## What is the theme?
-*The theme has not been revealed yet! Come back here when the Game Jam starts.*
-
-The theme will be revealed on ***June 12th at 12:00 PM Eastern Standard Time***.
 
 Participate if you want to try to earn one of these badges:
 <div style="display:flex;flex-direction:row">
@@ -50,8 +51,6 @@ How our PenguinJam will work is:
 You need to create a PenguinMod project based on a provided theme. 
 
 You can interpret the theme in any way, and implement it into your published game. **It should be a big part of your game's design.**
-
-The theme will be revealed on ***June 12th at 12:00 PM Eastern Standard Time***.
 
 ***Projects that do not fit this theme will not receive any rewards.***
 

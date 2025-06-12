@@ -2,6 +2,12 @@
 ## Süper Kahramanlar vs. Süper Kötüler
 ## 12 Haziran 19:00 - 22 Haziran 19:00 (Türkiye Saati)
 
+# Tema: Tüketilen Güç!
+Projenizi 22 Haziran saat 12'den önce yükleyin
+Takımınızın etiketini notlara ve teşekkürlere eklemeyi unutmayın!
+- [#pjamhero](/search?q=%23pjamhero) - Süper Kahramanlar
+- [#pjamvillain](/search?q=%23pjamvillain) - Süper Kötüler
+
 Bir diğer PenguinJam için hazır ol!
 
 Bu kez bir taraf seçeceksiniz. Adaleti mi savunacaksınız yoksa dünyayı kaosa mı sürükleyeceksiniz?
@@ -11,21 +17,16 @@ Projenizi yüklerken aşağıdaki etiketi kullanın:
 
 (Not: sadece bir etiket kullanın, aksi takdirde takımsız sayılırsınız ve puanınız takımın toplam puanına dahil edilmez!)
 
-Tema 12 Haziran saat 12'de EST'de açıklandığında, hem kendinizin hem de ekibinizin zaferi için bir oyun yaratın!
+Hem kendinizin hem de ekibinizin zaferi için bir oyun yaratın!
 
 Her zaman olduğu gibi, en iyi 5 proje özel ödüller kazanacak. Yarışmanın sonunda, her takımın proje puanları birleştirilecek ve en yüksek toplam puana sahip olan taraf, profilinizde görüntülenen özel bir rozetin kilidini açacaktır.
 
 ## PenguenJam nedir?
-PenguinJam, ***12 Haziran 19:00'da (Türkiye Saati)*** başlayacak olan bir Game Jam'dir.
+PenguinJam, ***12 Haziran 19:00'da (Türkiye Saati)*** başlamış olan bir Game Jam'dir.
 
 Game Jam'in ne olduğunu bilmiyorsanız "Game Jam nedir?" bölümüne ilerleyin.
 
 Başlıkta veya notlarda [#pjamhero](/search?q=%23pjamhero) veya [#pjamvillain](/search?q=%23pjamvillain) etiketini kullanarak projeleri PenguenJam'e gönderin.**
-
-## Tema nedir?
-*Tema henüz açıklanmadı! Game Jam başladığında buraya tekrar gelin.
-
-Tema ***12 Haziran 19:00'da (Türkiye Saati)*** açıklanacaktır.
 
 Bu rozetlerden birini kazanmak istiyorsanız katılın:
 <div style="display:flex;flex-direction:row">
@@ -45,9 +46,7 @@ PenguenJam'ımız nasıl çalışacak:
 ### Bir tema ortaya çıkaracağız.
 Verilen temaya dayalı bir PenguinMod projesi oluşturmanız gerekiyor.
 
-Temayı herhangi bir şekilde yorumlayabilir ve yayınlanmış oyununuza uygulayabilirsiniz. **Bu, oyununuzun tasarımının büyük bir parçası olmalıdır.
-
-***Tema 12 Haziran 19:00'da (Türkiye Saati) açıklanacaktır***.
+Temayı herhangi bir şekilde yorumlayabilir ve yayınlanmış oyununuza uygulayabilirsiniz. **Oyununuzun tasarımının büyük bir parçası olmalıdır.**
 
 ***Bu temaya uymayan projeler herhangi bir ödül almayacaktır.***
 
@@ -58,13 +57,12 @@ Projelerinizi ***22 Haziran 19:00'e (Türkiye Saati)*** kadar yüklediğinizden 
 
 ***Her iki etiket altındaki projeler herhangi bir ödül almayacaktır.***
 
-### Projelerin değerlendirmesi
-
+### Projelerin değerlendirilmesi
 Personel üyeleri ve geliştiriciler, yayınlanan tüm geçerli projeleri gözden geçireceklerdir. Projeleri aşağıdaki kriterlere göre inceleyeceğiz:
 - Sunum: Kostümlerin ve seslerin kalitesi.
 - Özgünlük: Oyunun konsepti ne kadar yeni?
 - Eğlence: Oyunun ne kadar eğlenceli ve/veya ilginç olduğu.
-- Birleştirme: Oyun temayı ve doğaüstünü ne kadar iyi uyguluyor?
+- Birleştirme: Oyun, temayı ve doğaüstünü ne kadar iyi uyguluyor?
 
 *Not: Bu kriterler nihai değildir; projeler özellikle listelenen kriterlere göre değerlendirilmeyebilir.*
 

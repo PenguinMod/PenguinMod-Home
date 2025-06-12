@@ -2,6 +2,12 @@
 ## Superhéroes vs. Supervillanos
 ## 12 de junio @ 12 PM EST - 22 de junio @ 12 PM EST
 
+# El Tema es: ¡Consumir Energía!
+Sube tu proyecto antes del 22 de junio a las 12 PM EST
+¡Recuerda incluir la etiqueta de tu equipo en las notas y créditos!
+- [#pjamhero](/search?q=%23pjamhero) - Superhéroes
+- [#pjamvillain](/search?q=%23pjamvillain) - Supervillanos
+
 ¡Vístete para otra PenguinJam!
 
 Esta vez, elegirías un lado. ¿Defenderás la justicia o hundirás al mundo en el caos?
@@ -11,7 +17,7 @@ Cuando subas tu proyecto, utiliza las siguientes etiquetas:
 
 (Nota: ¡utiliza sólo una etiqueta, o se te considerará sin equipo y tu puntuación no contará para la puntuación total del equipo!)
 
-Cuando se revele el tema el 12 de junio a las 12 PM EST, ¡crea un juego para tu gloria y la de tu equipo!
+¡Crea un juego para tu gloria y la de tu equipo!
 
 Como siempre, los 5 mejores proyectos obtendrán recompensas especiales. Al final de la jam, se combinarán las puntuaciones de los proyectos de cada equipo, y el equipo con la puntuación total más alta desbloqueará una insignia especial que se mostrará en su perfil.
 
@@ -21,11 +27,6 @@ PenguinJam es una Game Jam, empezando ***12 de junio a las 12 PM EST***.
 Ve a la sección "¿Qué es una Game Jam?" si no sabes que es una Game Jam.
 
 Envíe tus proyectos a PenguinJam **usando las etiquetas [#pjamhero](/search?q=%23pjamhero) o [#pjamvillain](/search?q=%23pjamvillain) en el título o notas.**
-
-## ¿Que es un tema?
-*El tema no ha sido revelado aún. Vuelve cuando la Game Jam empiece.*
-
-El tema será revelado el ***12 de junio a las 12 PM EST***
 
 Participa si quieres ganar cualquiera de estas insignias:
 <div style="display:flex;flex-direction:row">
@@ -46,8 +47,6 @@ Como nuestra PenguinJam funciona:
 Tienes que crear un proyecto PenguinMod basado en un tema.
 
 Puedes hacer un juego que se relacione con el tema de cualquier manera. **Debe ser una parte importante del diseño de tu juego.**
-
-El tema será revelado el ***12 de junio a las 12 PM EST***
 
 ***Los proyectos que no se ajusten a este tema no recibirán ninguna recompensa.***
 
