@@ -279,6 +279,7 @@
                 alt=":${emojiName}:"
                 title=":${emojiName}:"
                 style="width:1.2rem;vertical-align: middle;"
+                loading="lazy"
             >`;
         });
     };
@@ -697,6 +698,7 @@
                     alt="${emojiName}"
                     title=":${emojiName}:"
                     class="profile-bio-emoji"
+                    loading="lazy"
                 />`;
             });
             textChanged = true;
@@ -1078,6 +1080,7 @@
                                         src={`https://library.penguinmod.com/files/emojis/${emojiPickerRandomEmoji}.png`}
                                         alt="Emoji"
                                         title="Pick an emoji"
+                                        loading="lazy"
                                         on:dragstart={(ev) => {
                                             useEmojiDrag(ev, emojiPickerRandomEmoji);
                                         }}
@@ -1115,7 +1118,7 @@
                                                         lang={currentLang}
                                                     />
                                                 </p>
-                                            {:else}
+                                            {:else if emojiPickerOpened}
                                                 {#each EmojiList.emojis as emoji}
                                                     {#if
                                                         !emojiSearchQuery
@@ -1134,6 +1137,7 @@
                                                                 alt={`:${emoji}:`}
                                                                 title={`:${emoji}:`}
                                                                 draggable="false"
+                                                                loading="lazy"
                                                             >
                                                         </button>
                                                     {/if}

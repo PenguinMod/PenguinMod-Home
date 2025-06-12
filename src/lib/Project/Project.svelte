@@ -43,6 +43,7 @@
                 alt=":${emojiName}:"
                 title=":${emojiName}:"
                 style="width:1.2rem;vertical-align: middle;"
+                loading="lazy"
             >`;
         });
     };

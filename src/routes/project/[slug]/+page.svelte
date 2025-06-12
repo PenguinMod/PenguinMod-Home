@@ -33,6 +33,7 @@
                 alt=":${emojiName}:"
                 title=":${emojiName}:"
                 style="width:1em;vertical-align: middle;"
+                loading="lazy"
             >`;
         });
     };
@@ -162,6 +163,7 @@
                     alt="${emojiName}"
                     title=":${emojiName}:"
                     class="profile-bio-emoji"
+                    loading="lazy"
                 />`;
             });
             textChanged = true;

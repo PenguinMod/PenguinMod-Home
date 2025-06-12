@@ -598,6 +598,7 @@
                     src={`https://library.penguinmod.com/files/emojis/${emojiPickerRandomEmoji}.png`}
                     alt="Emoji"
                     title="Pick an emoji"
+                    loading="lazy"
                     on:dragstart={(ev) => {
                         useEmojiDrag(ev, emojiPickerRandomEmoji);
                     }}
@@ -635,7 +636,7 @@
                                     lang={currentLang}
                                 />
                             </p>
-                        {:else}
+                        {:else if emojiPickerOpened}
                             {#each EmojiList.emojis as emoji}
                                 {#if
                                     !emojiSearchQuery
@@ -653,6 +654,7 @@
                                             src={`https://library.penguinmod.com/files/emojis/${emoji}.png`}
                                             alt={`:${emoji}:`}
                                             title={`:${emoji}:`}
+                                            loading="lazy"
                                             draggable="false"
                                         >
                                     </button>
