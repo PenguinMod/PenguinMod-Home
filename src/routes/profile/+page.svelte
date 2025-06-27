@@ -1454,7 +1454,15 @@
                         {#if projects.all.length > 0}
                             {#if projects.all[0] !== "none"}
                                 {#each projects.all as project}
-                                    <Project {...project} />
+                                    <Project
+                                        {...project}
+                                        {...(loggedIn && user === loggedInUser ? {
+                                            author: {
+                                                username: loggedInUser,
+                                                id: loggedInUserId
+                                            }
+                                        } : {})}
+                                    />
                                 {/each}
                             {:else}
                                 <div class="none-found">
