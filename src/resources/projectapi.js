@@ -151,25 +151,25 @@ class ProjectApi {
      */
     static searchProjects(page, searchQuery, username, token, allow_user=false, reverse=false) {
         const query = searchQuery.split(":", 1)[0];
-        let api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(query)}&username=${username}&token=${token}&reverse=${reverse}`;
+        let api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(query)}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
         switch (query) {
             case "user":
                 if (allow_user) {
                     const userQuery = searchQuery.split(":");
                     userQuery.shift();
-                    api = `${OriginApiUrl}/api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
+                    api = `${OriginApiUrl}/api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
                     break;
                 }
                 // fallthrough
             case "by":
                 const byQuery = searchQuery.split(":");
                 byQuery.shift();
-                api = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(byQuery.join())}`;
+                api = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(byQuery.join())}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
                 break;
             case "remixes":
                 const projectID = searchQuery.split(":");
                 projectID.shift();
-                return ProjectApi.getProjectRemixes(projectID, page);
+                return ProjectApi.getProjectRemixes(projectID, page, username, token);
             case "featured":
             case "newest":
             case "views":
@@ -177,7 +177,7 @@ class ProjectApi {
             case "loves":
                 const actual_query = searchQuery.split(":");
                 actual_query.shift();
-                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}&username=${username}&token=${token}&reverse=${reverse}`;
+                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
                 break;
             default:
                 break;
@@ -284,9 +284,9 @@ class ProjectApi {
         })
     }
 
-    static getProjectRemixes(id, page=0) {
+    static getProjectRemixes(id, page=0, username, token) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getremixes?projectID=${id}&page=${page}`;
+            const url = `${OriginApiUrl}/api/v1/projects/getremixes?projectID=${id}&page=${page}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
