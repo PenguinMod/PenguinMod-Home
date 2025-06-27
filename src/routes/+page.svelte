@@ -679,17 +679,14 @@
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">PenguinJam Super has begun!</h2>
+                        <h2 style="margin-block:4px;">PenguinJam Super has ended!</h2>
                         <div style="width:100%">
                             <p>
-                                Make a project around the theme "Consuming Power," then choose a team to upload for,
-                                are you helping the Superheroes or the Supervillains?
+                                The battle has been fought! We will see which team won soon.
                                 <br />
+                                Remember, projects that used both tags or didn't follow the theme will be ignored.
                                 <br />
-                                See the event page for more details on how to make & submit projects for PenguinJam!
-                            </p>
-                            <p style="margin-block-start:4px;">
-                                <a href="https://penguinmod.com/events/penguinjamsuper2025">PenguinJam Super 2025</a>
+                                This section will be updated once the rankings project has been released.
                             </p>
                             <img
                                 src="/events/news/penguinjamsuper2025.png"
