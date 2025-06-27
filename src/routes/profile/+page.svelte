@@ -221,7 +221,7 @@
             }
         };
 
-        if (username && String(user).toLowerCase() === String(username).toLowerCase()) {
+        if ((loggedIn && username) && String(user).toLowerCase() === String(username).toLowerCase()) {
             ProjectClient.getMyProjects(0).then(then).catch(catch_func).finally(() => {
                 fetchedFullProfile = true;
                 setTimeout(() => {
@@ -240,10 +240,20 @@
     const loggedInChange = async () => {
         if (!loggedIn) {
             isFollowingUser = false;
-            return;
+        } else {
+            try {
+                const isFollowing = await ProjectClient.isFollowingUser(user);
+                isFollowingUser = isFollowing;
+                followOnLoad = isFollowing;
+            } catch (err) {
+                console.warn("Couldnt see is following", err);
+            }
+            try {
+                checkIfBlocked();
+            } catch (err) {
+                console.warn("Couldnt check if blocked", err);
+            }
         }
-        const isFollowing = await ProjectClient.isFollowingUser(user);
-        isFollowingUser = isFollowing;
         fetchProfile();
     };
     
@@ -389,9 +399,6 @@
                 loggedInUser = username;
                 loggedInUserId = id;
                 loggedInAdmin = isAdmin || isApprover;
-                const isFollowing = await ProjectClient.isFollowingUser(user);
-                checkIfBlocked();
-                followOnLoad = isFollowing;
                 loggedInChange();
             })
             .catch(() => {
