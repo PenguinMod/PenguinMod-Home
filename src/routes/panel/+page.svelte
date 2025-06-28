@@ -263,7 +263,7 @@
         if (name) {
             selectedProjectName = name;
         } else {
-            ProjectClient.getProjectMeta(id).then(v => {
+            ProjectApi.getProjectMeta(id).then(v => {
                 selectedProjectName = v.title;
             });
         }
