@@ -249,6 +249,12 @@
             });
         }
     }
+    function deleteThumbnail(id) {
+        id ??= Number(projectIdSelection.value);
+        if (isNaN(id)) return;
+        if (!confirm("Are you sure you want to remove this project's thumbnail?")) return;
+        ProjectClient.removeProjectThumbnail(id);
+    }
     let selectedProjectName = "";
     let lastSelectedProjectId = 0;
     function selectProject(id, name) {
@@ -256,6 +262,10 @@
         lastSelectedProjectId = id;
         if (name) {
             selectedProjectName = name;
+        } else {
+            ProjectClient.getProjectMeta(id).then(v => {
+                selectedProjectName = v.title;
+            });
         }
     }
 
@@ -1327,6 +1337,13 @@
                         value="0"
                     />
                 </p>
+                <p>
+                    <Button
+                        label="Select"
+                        color="orange"
+                        on:click={() => selectProject(projectIdSelection.value)}
+                    />
+                </p>
                 {#if selectedProjectName}
                     <a
                         target="_blank"
@@ -1381,6 +1398,12 @@
                         label="Unfeature"
                         color="red"
                         on:click={() => featureProject(false)}
+                    />
+                    <div style="width:24px" />
+                    <Button
+                        label="Remove Thumbnail"
+                        color="red"
+                        on:click={() => deleteThumbnail()}
                     />
                 </div>
                 <div style="height:24px" />

@@ -1093,6 +1093,35 @@ class ProjectApi {
             })
         })
     }
+    
+    removeProjectThumbnail(id) {
+        const body = JSON.stringify({
+            projectID: id,
+            token: this.token
+        })
+
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/v1/projects/deletethumb`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
 
     rejectProject(id, reason) {
         const data = {
