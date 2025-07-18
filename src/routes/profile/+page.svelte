@@ -85,7 +85,7 @@
                 renderScratchBlocks();
             }, 0);
         }).catch(err => {
-            if (err === 'InappropriateWordsUsed') {
+            if (err === 'IllegalWordsUsed') {
                 profileEditingData.isBioInappropriate = true;
             }
             console.log(err)
@@ -160,13 +160,101 @@
         "My Animation",
     ];
 
+    let fetchedFullProfile = false;
+    const fetchProfile = () => {
+        const username = localStorage.getItem("username");
+
+        projects.all = [];
+        projects.featured = [];
+        fetchedFullProfile = false;
+        const then = (projs) => {
+            projects.all = projs;
+            projects.featured = projs.filter((p) => p.featured);
+            if (projects.all.length <= 0) {
+                projects.all = ["none"];
+            }
+            if (projects.featured.length <= 0) {
+                projects.featured = ["none"];
+            }
+            wasNotFound = false;
+            ProjectApi.getProfile(user, true).then((proffile) => {
+                fullProfile = proffile;
+                badges = fullProfile.badges;
+                isDonator = fullProfile.donator;
+                followerCount = fullProfile.followers;
+
+                isProfilePrivate = fullProfile.privateProfile;
+                isProfilePublicToFollowers = fullProfile.canFollowingSeeProfile;
+
+                isFollowedByUser = fullProfile.isFollowing;
+
+                let profileFeatured = fullProfile.myFeaturedProject;
+                if (profileFeatured === -1) {
+                    profileFeatured = 0
+                }
+                if (profileFeatured) {
+                    ProjectApi.getProjectMeta(profileFeatured).then(metadata => {
+                        //console.log(metadata);
+                        profileFeaturedProject = metadata;
+                    }).catch((err) => {
+                        console.warn('Failed to load profile featured project;', err);
+                        profileFeaturedProject = 'none';
+                    });
+                } else if (!profileFeatured && !projects.all[0]) {
+                    profileFeaturedProject = 'none';
+                } else if (!profileFeatured && projects.all[0]) {
+                    profileFeaturedProject = projects.all[0];
+                }
+            });
+        };
+
+        const catch_func = (err) => {
+            console.log(err);
+            err = JSON.parse(err);
+            err = err.error;
+            if (err === 'NotFound' || err === 'UserNotFound') {
+                wasNotFound = true;
+            }
+            if (err === 'PrivateProfile') {
+                isProfilePrivate = true;
+                then([]);
+            }
+        };
+
+        if ((loggedIn && username) && String(user).toLowerCase() === String(username).toLowerCase()) {
+            ProjectClient.getMyProjects(0).then(then).catch(catch_func).finally(() => {
+                fetchedFullProfile = true;
+                setTimeout(() => {
+                    renderScratchBlocks();
+                }, 0);
+            });
+        } else {
+            ProjectClient.getUserProjects(user, 0).then(then).catch(catch_func).finally(() => {
+                fetchedFullProfile = true;
+                setTimeout(() => {
+                    renderScratchBlocks();
+                }, 0);
+            });
+        }
+    };
     const loggedInChange = async () => {
         if (!loggedIn) {
             isFollowingUser = false;
-            return;
+        } else {
+            try {
+                const isFollowing = await ProjectClient.isFollowingUser(user);
+                isFollowingUser = isFollowing;
+                followOnLoad = isFollowing;
+            } catch (err) {
+                console.warn("Couldnt see is following", err);
+            }
+            try {
+                checkIfBlocked();
+            } catch (err) {
+                console.warn("Couldnt check if blocked", err);
+            }
         }
-        const isFollowing = await ProjectClient.isFollowingUser(user);
-        isFollowingUser = isFollowing;
+        fetchProfile();
     };
     
     function unixToDisplayDate(unix) {
@@ -201,11 +289,11 @@
                 alt=":${emojiName}:"
                 title=":${emojiName}:"
                 style="width:1.2rem;vertical-align: middle;"
+                loading="lazy"
             >`;
         });
     };
     
-    let fetchedFullProfile = false;
     onMount(async () => {
         const params = new URLSearchParams(location.search);
         const query = params.get("user") ?? "";
@@ -228,80 +316,12 @@
             }
         }
 
-        const username = localStorage.getItem("username");
-
-        const then = (projs) => {
-            projects.all = projs;
-            projects.featured = projs.filter((p) => p.featured);
-            if (projects.all.length <= 0) {
-                projects.all = ["none"];
-            }
-            if (projects.featured.length <= 0) {
-                projects.featured = ["none"];
-            }
-            wasNotFound = false;
-            ProjectApi.getProfile(user, true).then((proffile) => {
-                fullProfile = proffile;
-                badges = fullProfile.badges;
-                isDonator = fullProfile.donator;
-                followerCount = fullProfile.followers;
-
-                isProfilePrivate = fullProfile.privateProfile;
-                isProfilePublicToFollowers = fullProfile.canFollowingSeeProfile;
-
-                let profileFeatured = fullProfile.myFeaturedProject;
-                if (profileFeatured === -1) {
-                    profileFeatured = 0
-                }
-                if (profileFeatured) {
-                    ProjectApi.getProjectMeta(profileFeatured).then(metadata => {
-                        //console.log(metadata);
-                        profileFeaturedProject = metadata;
-                    }).catch((err) => {
-                        console.warn('Failed to load profile featured project;', err);
-                        profileFeaturedProject = 'none';
-                    });
-                } else if (!profileFeatured && !projects.all[0]) {
-                    profileFeaturedProject = 'none';
-                } else if (!profileFeatured && projects.all[0]) {
-                    profileFeaturedProject = projects.all[0];
-                }
-            });
-        };
-
-        const catch_func = (err) => {
-            console.log(err);
-            err = JSON.parse(err);
-            err = err.error;
-            if (err === 'NotFound' || err === 'UserNotFound') {
-                wasNotFound = true;
-            }
-        };
-
-        if (username && String(user).toLowerCase() === String(username).toLowerCase()) {
-            ProjectApi.getMyProjects(0).then(then).catch(catch_func).finally(() => {
-                    fetchedFullProfile = true;
-                    setTimeout(() => {
-                        renderScratchBlocks();
-                    }, 0);
-                });
-        } else {
-            ProjectApi.getUserProjects(user, 0).then(then).catch(catch_func).finally(() => {
-                    fetchedFullProfile = true;
-                    setTimeout(() => {
-                        renderScratchBlocks();
-                    }, 0);
-                });
-        }
-
         page.subscribe(v => {
             if (!v.url.searchParams.get("user") || !user) return;
             if (String(v.url.searchParams.get("user")).toLowerCase() === String(user).toLowerCase()) return;
             
             window.location.reload();
         });
-
-        isFollowedByUser = await ProjectClient.isFollowing(user, username);
     });
 
     let currentLang = "en";
@@ -379,9 +399,6 @@
                 loggedInUser = username;
                 loggedInUserId = id;
                 loggedInAdmin = isAdmin || isApprover;
-                const isFollowing = await ProjectClient.isFollowingUser(user);
-                checkIfBlocked();
-                followOnLoad = isFollowing;
                 loggedInChange();
             })
             .catch(() => {
@@ -688,6 +705,7 @@
                     alt="${emojiName}"
                     title=":${emojiName}:"
                     class="profile-bio-emoji"
+                    loading="lazy"
                 />`;
             });
             textChanged = true;
@@ -828,8 +846,8 @@
                         {#each projectTitles as title}
                             <option value="{title}">
                                 <LocalizedText
-                                    text="{projectTitleStrings[title - 1]}"
-                                    key="profile.featured.title{title}"
+                                    text="{projectTitleStrings[Math.max(1, title - 1)]}"
+                                    key="profile.featured.title{Math.max(0, title)}"
                                     lang={currentLang}
                                 />
                             </option>
@@ -877,7 +895,7 @@
 
     <StatusAlert />
 
-    {#if (projects.all.length > 0 && fetchedFullProfile) || wasNotFound || isForceView}
+    {#if (projects.all.length > 0 && fetchedFullProfile) || isProfilePrivate || wasNotFound || isForceView}
         {#if
             !wasNotFound
             || isForceView
@@ -1069,6 +1087,7 @@
                                         src={`https://library.penguinmod.com/files/emojis/${emojiPickerRandomEmoji}.png`}
                                         alt="Emoji"
                                         title="Pick an emoji"
+                                        loading="lazy"
                                         on:dragstart={(ev) => {
                                             useEmojiDrag(ev, emojiPickerRandomEmoji);
                                         }}
@@ -1106,7 +1125,7 @@
                                                         lang={currentLang}
                                                     />
                                                 </p>
-                                            {:else}
+                                            {:else if emojiPickerOpened}
                                                 {#each EmojiList.emojis as emoji}
                                                     {#if
                                                         !emojiSearchQuery
@@ -1125,6 +1144,7 @@
                                                                 alt={`:${emoji}:`}
                                                                 title={`:${emoji}:`}
                                                                 draggable="false"
+                                                                loading="lazy"
                                                             >
                                                         </button>
                                                     {/if}
@@ -1269,7 +1289,7 @@
                         <h2 style="margin-block:4px">
                             <LocalizedText
                                 text={projectTitleStrings[(fullProfile.myFeaturedProjectTitle || 1) - 1] || projectTitleStrings[0]}
-                                key="profile.featured.title{fullProfile.myFeaturedProjectTitle || 1}"
+                                key="profile.featured.title{Math.max(1, fullProfile.myFeaturedProjectTitle || 1)}"
                                 lang={currentLang}
                             />
                             {#if loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase() && profileFeaturedProject && !profileEditingData.isEditingProject}
@@ -1434,7 +1454,15 @@
                         {#if projects.all.length > 0}
                             {#if projects.all[0] !== "none"}
                                 {#each projects.all as project}
-                                    <Project {...project} />
+                                    <Project
+                                        {...project}
+                                        {...(loggedIn && user === loggedInUser ? {
+                                            author: {
+                                                username: loggedInUser,
+                                                id: loggedInUserId
+                                            }
+                                        } : {})}
+                                    />
                                 {/each}
                             {:else}
                                 <div class="none-found">

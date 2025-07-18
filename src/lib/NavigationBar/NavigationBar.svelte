@@ -153,8 +153,18 @@
 
 	// language picker
 	const availableLanguages = Translations.languages;
-	const languageKeys = Object.keys(availableLanguages)
-		.sort((a, b) => a.localeCompare(b));
+	let languageKeys = Object.keys(availableLanguages)
+		.sort((a, b) => a.localeCompare(b))
+        .filter(lang => !Translations.jokeLanguages.includes(lang));
+    onMount(() => {
+        const showJokes = $page.url.searchParams.get("jokelang") === "true";
+        if (showJokes) {
+            for (const languageCode of Translations.jokeLanguages) {
+                languageKeys.push(languageCode);
+            }
+            languageKeys = languageKeys;
+        }
+    });
 	function openLanguageMenu(event) {
 		event = event.detail;
 		languageMenu.style.display = "";

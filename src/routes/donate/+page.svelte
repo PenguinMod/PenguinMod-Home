@@ -245,7 +245,7 @@
                         'en'
                     ))
                     // we serve __ projects
-                    .replace('$1', (5000).toLocaleString())}
+                    .replace('$1', (10000).toLocaleString())}
                 </div>
                 <div class="detail-card" bind:this={forceHtmlClass2} style="background: darkviolet">
                     {@html String(TranslationHandler.text(

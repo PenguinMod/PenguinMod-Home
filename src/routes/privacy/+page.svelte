@@ -44,7 +44,7 @@ Language.onChange((lang) => {
 
     <main>
         <!-- UPDATE THIS WHEN MAKING CONTENT CHANGES -->
-        <p><i>Updated April 26th, 2025 (Mountain Time)</i></p>
+        <p><i>Updated May 24th, 2025 (Mountain Time)</i></p>
 
         <!-- some things are intentionally not formatted as they are in the HTML file on the website -->
         <p>
@@ -94,6 +94,9 @@ Language.onChange((lang) => {
             <br>
             This temporary amount of time will be around 1 week, and this applies to all "temporarily stored" content listed here.
         </p>
+        <p>
+            PenguinMod Project Moderators and Service Administrators can identify accounts that share the same IP address as another account.
+        </p>
 
         <h2>How We Use Your Date of Birth and Country Information</h2>
         <p>When you provide us with your date of birth and country during registration, we use this information to ensure that:</p>
@@ -114,6 +117,20 @@ Language.onChange((lang) => {
         <ul>
             <li><a href="https://support.google.com/publisherpolicies/answer/10437794">What we must disclose in our privacy policy</a></li>
             <li><a href="http://www.google.com/policies/privacy/partners/">How Google uses data when you use our partners' sites or apps</a></li>
+        </ul>
+
+        <h2>Content Recommendations</h2>
+        <p>
+            Content recommended to you on the PenguinMod platform is based on previous projects and content you have seen on PenguinMod before.
+            We do not use data provided by third-parties or information about where you live to recommend you content.
+            You will only have content recommended to you when doing these actions:
+        </p>
+        <ul>
+            <li>You have opened a project on PenguinMod to view it.</li>
+            <li>You liked a PenguinMod project.</li>
+            <li>You voted for a PenguinMod project.</li>
+            <li>You interacted with a PenguinMod project.</li>
+            <li>You followed another user on PenguinMod.</li>
         </ul>
         
         <h2>Project Sharing & Accounts/Profiles</h2>
@@ -156,12 +173,13 @@ Language.onChange((lang) => {
         </p>
         <ul>
             <li>any projects uploaded will have their project name logged</li>
-            <li>any projects uploaded are publicly viewable (including unapproved or under review projects if you have the URL to them)</li>
+            <li>any projects uploaded are publicly viewable (including projects from accounts with a private profile, or projects under review if you have the URL to them)</li>
             <li>any private profiles or projects are visible to site moderators or admins (or visible to other users depending on the profile's settings)</li>
             <li>any profile info you set (bio/about me, featured project) is publicly viewable to all users (and private profiles are visible to site moderators or admins)</li>
             <li>any projects uploaded can be modified by admins or hosts of the service in any way (project image, project name, project code, etc.)</li>
             <li>any profile info you set can be modified by admins or hosts of the service in any way (profile about me, etc.)</li>
             <li>any projects, accounts, or content created on the platform may be logged when deemed neccessary</li>
+            <li>any account or project information will be logged and stored, even if changed later</li>
         </ul>
         <p>
             Uploaded projects will be publicly visible to all users on the website.

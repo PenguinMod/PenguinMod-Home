@@ -175,7 +175,7 @@ Content related to, glorifying, or referencing mass shootings, bombings, or any 
 Repeated violation will cause your account to be banned.
 
 # Sensitive/Personal information
-You should not include personal info about yourself in your project.
+You should not include personal information about yourself in your project.
 This means you should not share:
 - Your real name
 - How old you are or when you were born
@@ -183,8 +183,10 @@ This means you should not share:
 - Your password or your email
 - Pictures of yourself
 
-We will delete or censor your project if it contains this info.
+We will delete or censor your project if it contains this information.
 This is to protect you and your safety. We may ban your account for sharing your personal information if you continue to do it.
+
+We may remove projects that share other private or personal information for any legal reason.
 
 # Keeping others safe
 Your project should not put others in danger. General rules for this are:
@@ -192,12 +194,23 @@ Your project should not put others in danger. General rules for this are:
 - You cannot use their general location without full consent
 - You cannot ask others for their full name, password on any site, phone number, email address, or legal details
 - You cannot take pictures of others without full consent
+- You cannot constantly ask others for any details that they consider private or personal
 
 Faking personal information (ex: showing a fake IP address) should be noted in the project itself or the project's notes.
 If you need to use the user's general location, it is recommended to use a simple and understandable "yes or no" prompt for permission.
 
 Downloading malicious material may be an executable application or DLL that contains spyware, malware, ransomware, etc.
 Your account will be instantly banned and you may be reported to the Scratch Team or security services if your project does this.
+
+# Relationships/Online dating
+You cannot use PenguinMod as a platform for online dating, or creating/sharing romantic or sexual relationships.
+You cannot show real people, or characters that represent people doing:
+- Dating
+- Kissing
+- Similar romantic behavior
+
+You should not call other users "boyfriend" or "girlfriend" on PenguinMod as other users can be of any age, and we need to keep everyone safe.
+Online dating or relationships with strangers is seriously dangerous and we will remove users from interacting with the platform if we need to.
 
 # Profanity (Curse words/Swear words, Swearing, Explicit/Strong language)
 Swearing is allowed inside of projects, but it should be used sparingly and in moderation.
