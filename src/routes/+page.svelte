@@ -679,14 +679,17 @@
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">PenguinJam Super has ended!</h2>
+                        <h2 style="margin-block:4px;">PenguinJam Super has been ranked!</h2>
                         <div style="width:100%">
                             <p>
-                                The battle has been fought! We will see which team won soon.
+                                Sorry for missing this news post, but PenguinJam Super has been ranked!
                                 <br />
-                                Remember, projects that used both tags or didn't follow the theme will be ignored.
+                                We've ranked all 18 entries! See the project below to see all of the projects.
                                 <br />
-                                This section will be updated once the rankings project has been released.
+                                Remember, projects that used both tags or didn't follow the theme were ignored.
+                            </p>
+                            <p style="margin-block-start:4px;">
+                                <a href="https://projects.penguinmod.com/5992257996">PenguinJam Super 2025 Official Rankings</a>
                             </p>
                             <img
                                 src="/events/news/penguinjamsuper2025.png"
