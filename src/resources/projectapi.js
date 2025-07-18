@@ -1519,19 +1519,30 @@ class ProjectApi {
 
                 const max_size = PUBLIC_MAX_UPLOAD_SIZE * ((await this.isDonator()) ? 1.75 : 1);
 
-                return [
+                let extraAssetsSize = 0
+                if (zip.files['extraAssets/']) {
+                    extraAssetsSize = await (zip
+                        .filter((name, file) => !file.dir && name.startsWith('extraAssets/')))
+                        .reduce(async (o, v) => await o + (await v.async('blob')).size, 0)
+                }
+
+                let returns = [
                     {
                         name: `${MB(size)}/${max_size}MB`,
                         value: [
                             `thumbnail: ${MB(imageSize)}`,
                             {
-                                name: `project: ${MB(size)}`,
+                                name: `project: ${MB(size-extraAssetsSize)}`,
                                 value: statTree
                             }
                         ]
                     }, 
                     size > (Number(max_size) * 1024 * 1024)
                 ];
+                if (extraAssetsSize > 0) {
+                    returns[0].value.push(`extra assets: ${MB(extraAssetsSize)}`)
+                }
+                return returns;
             });
     }
     // TODO: move this into the pmp-protobuf library
