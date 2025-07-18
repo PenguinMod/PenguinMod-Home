@@ -1096,7 +1096,7 @@ class ProjectApi {
     
     removeProjectThumbnail(id) {
         const body = JSON.stringify({
-            projectID: id,
+            projectID: String(id),
             token: this.token
         })
 
