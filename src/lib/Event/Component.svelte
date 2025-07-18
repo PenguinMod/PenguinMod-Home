@@ -4,8 +4,8 @@
     import EventPages from "../../resources/markdown/events/pages.js";
 
     const isHavingEvent = false;
-    const eventName = "Spring 2025 PenguinJam";
-    const eventPath = "penguinjamspring2025";
+    const eventName = "Super 2025 PenguinJam";
+    const eventPath = "penguinjamsuper2025";
     
     let currentLang = "en";
     let pageLang = "en";

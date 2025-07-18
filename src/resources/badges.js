@@ -13,6 +13,9 @@ export default {
     partner: "partner",
 
     // event
+    // penguinjamsuper
+    penguinjamsupersuperhero: "superhero",
+    penguinjamsupersupervillain: "supervillain",
     // penguinjam
     studiojam: "studiopenguinjamwinner",
     // penguinjamdiamond: "penguinjamdiamond", // no translation

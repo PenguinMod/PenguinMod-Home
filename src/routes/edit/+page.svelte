@@ -78,6 +78,17 @@
         projectInstructions: null,
         projectNotes: null,
     };
+    
+    let tagsAreTooMany = false;
+    const tagsCalculateTooMany = () => {
+        const combinedText = `${String(components.projectName.value)} ${String(components.projectInstructions.value)} ${String(components.projectNotes.value)}`;
+        const hashtags = combinedText.match(/#([\w-]+)/g) || [];
+        tagsAreTooMany = hashtags.length > 6;
+    };
+    
+    const updateDescription = () => {
+        tagsCalculateTooMany();
+    };
 
     function floatTo2Decimals(number) {
         const num = Number(number);
@@ -253,6 +264,15 @@
         //     //     if (!continueEdit) return;
         // }
         isBusyUploading = true;
+
+        if (tagsAreTooMany) {
+            // TODO: Translation
+            const message = "You can only use up to 6 hashtags in your project's information.";
+            alert(message);
+            isBusyUploading = false;
+            return;
+        }
+
         const newMetadata = {};
         const data = {
             newMeta: newMetadata,
@@ -578,6 +598,7 @@
                     src={`https://library.penguinmod.com/files/emojis/${emojiPickerRandomEmoji}.png`}
                     alt="Emoji"
                     title="Pick an emoji"
+                    loading="lazy"
                     on:dragstart={(ev) => {
                         useEmojiDrag(ev, emojiPickerRandomEmoji);
                     }}
@@ -615,7 +636,7 @@
                                     lang={currentLang}
                                 />
                             </p>
-                        {:else}
+                        {:else if emojiPickerOpened}
                             {#each EmojiList.emojis as emoji}
                                 {#if
                                     !emojiSearchQuery
@@ -633,6 +654,7 @@
                                             src={`https://library.penguinmod.com/files/emojis/${emoji}.png`}
                                             alt={`:${emoji}:`}
                                             title={`:${emoji}:`}
+                                            loading="lazy"
                                             draggable="false"
                                         >
                                     </button>
@@ -660,6 +682,7 @@
                             currentLang
                         )}
                         bind:this={components.projectName}
+                        on:input={updateDescription}
                         on:dragover={allowEmojiDrop}
                         on:drop={handleEmojiDrop}
                         bind:value={projectName}
@@ -677,6 +700,7 @@
                             currentLang
                         )}
                         bind:this={components.projectInstructions}
+                        on:input={updateDescription}
                         on:dragover={allowEmojiDrop}
                         on:drop={handleEmojiDrop}
                         value={projectMetadata
@@ -696,6 +720,7 @@
                             currentLang
                         )}
                         bind:this={components.projectNotes}
+                        on:input={updateDescription}
                         on:dragover={allowEmojiDrop}
                         on:drop={handleEmojiDrop}
                         value={projectMetadata ? projectMetadata.notes : ""}

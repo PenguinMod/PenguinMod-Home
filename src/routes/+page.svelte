@@ -107,23 +107,8 @@
         voted: [],
         viewed: [],
         tagged: [],
+        suggested: null,
     };
-
-    const ratings = [
-        'omg you where so close with $1%!!!!! but sadly not this time',
-        'getting warmer :)',
-        'waaaaaaarmer.....',
-        'waaaarmer....',
-        'yeah thats the right direction',
-        'boowomp, you got nothing',
-        'your tempurture is!!!!!!!!!!! mild.',
-        'colder....',
-        'cooolder.....',
-        'bro stop, this isnt the correct direction',
-        'my g what are you doing, go back to 50%<',
-        'dude, are how unlucky are you dear god',
-        'dude just got owned by the js random number generater at a whoping $1% off from success'
-    ];
     function formatNumber(num) {
         return Math.abs(num) >= 0.01 && num % 1 !== 0
             ? num.toFixed(2)
@@ -141,14 +126,9 @@
         })}`;
     }
     function rateChance(max, thresh) {
-        const randomNumber = Math.random()
-        const underThresh = randomNumber * max <= thresh
-        const ratingIdx = Math.floor(randomNumber * ratings.length)
-        const ratingMsg = underThresh
-            ? 'yo you actually got it thats so epic!!!!!!!!'
-            : ratings[ratingIdx]
-                .replace('$1', formatNumber(randomNumber * 100))
-        return [underThresh, ratingMsg]
+        const randomNumber = Math.random();
+        const underThresh = randomNumber * max <= thresh;
+        return [underThresh]
     }
     let thingyActive = false;
     // do the thingy
@@ -159,11 +139,10 @@
             // only be like onr or two people who actually get this :Trol
             let message
             [thingyActive, message] = rateChance(9000, 1);
-            console.log(message)
             setTimeout(() => {
                 thingyActive = true;
             }, 1.44e7);
-        } else console.log("you dont get to see the thingy :trol:");
+        };
     }
 
     const getAndUpdateMyFeed = async () => {
@@ -268,6 +247,8 @@
                 projects.voted = results.voted;
                 projects.viewed = results.viewed;
                 projects.tagged = results.tagged;
+                if (results.suggested)
+                    projects.suggested = results.suggested;
                 tagForProjects = results.selectedTag;
                 projectsLoaded = true;
             })
@@ -698,19 +679,18 @@
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">PenguinJam Spring has ended!</h2>
+                        <h2 style="margin-block:4px;">PenguinJam Super has ended!</h2>
                         <div style="width:100%">
                             <p>
-                                We've ranked all 36 entries! See the project below to see all of the projects.
+                                The battle has been fought! We will see which team won soon.
                                 <br />
-                                Thanks to everyone who participated! We know many of you didn't have time this spring, but we'll try to do an event in the summer for you too!
-                            </p>
-                            <p style="margin-block-start:4px;">
-                                <a href="https://projects.penguinmod.com/2188411314">PenguinJam Spring 2025 Official Rankings</a>
+                                Remember, projects that used both tags or didn't follow the theme will be ignored.
+                                <br />
+                                This section will be updated once the rankings project has been released.
                             </p>
                             <img
-                                src="/events/news/penguinjamspring2025.png"
-                                alt="PenguinJam Spring 2025"
+                                src="/events/news/penguinjamsuper2025.png"
+                                alt="PenguinJam Super 2025"
                                 style="width:100%;"
                             />
                         </div>
@@ -895,6 +875,56 @@
                 {/if}
             </div>
         </ContentCategory>
+        {#if projects.suggested !== null}
+            <ContentCategory
+                header={TranslationHandler.text(
+                    "home.sections.suggestedforyou",
+                    currentLang
+                )}
+                style="width:65%;"
+                stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
+            >
+                <div class="project-list">
+                    {#if projects.suggested.length > 0}
+                        {#each projects.suggested as project}
+                            <Project {...project} />
+                        {/each}
+                    {:else if projectsLoaded === true}
+                        <div
+                            style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                        >
+                            <PenguinConfusedSVG width="8rem" />
+                            <p>
+                                <LocalizedText
+                                    text="Nothing found. You can fill this section by checking out other people's projects and liking them."
+                                    key="home.none.fyp"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        </div>
+                    {:else if projectsFailed === true}
+                        <div
+                            style="display:flex;flex-direction:column;align-items: center;width: 100%;"
+                        >
+                            <img
+                                src="/penguins/server.svg"
+                                alt="Server Penguin"
+                                style="width: 15rem"
+                            />
+                            <p>
+                                <LocalizedText
+                                    text="Whoops! Our server's having some problems. Try again later."
+                                    key="home.server.error"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        </div>
+                    {:else}
+                        <LoadingSpinner />
+                    {/if}
+                </div>
+            </ContentCategory>
+        {/if}
         {#if projects.tagged.length > 7}
             <ContentCategory
                 header={String(TranslationHandler.text(

@@ -151,25 +151,25 @@ class ProjectApi {
      */
     static searchProjects(page, searchQuery, username, token, allow_user=false, reverse=false) {
         const query = searchQuery.split(":", 1)[0];
-        let api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(query)}&username=${username}&token=${token}&reverse=${reverse}`;
+        let api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(query)}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
         switch (query) {
             case "user":
                 if (allow_user) {
                     const userQuery = searchQuery.split(":");
                     userQuery.shift();
-                    api = `${OriginApiUrl}/api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
+                    api = `${OriginApiUrl}/api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
                     break;
                 }
                 // fallthrough
             case "by":
                 const byQuery = searchQuery.split(":");
                 byQuery.shift();
-                api = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(byQuery.join())}`;
+                api = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(byQuery.join())}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
                 break;
             case "remixes":
                 const projectID = searchQuery.split(":");
                 projectID.shift();
-                return ProjectApi.getProjectRemixes(projectID, page);
+                return ProjectApi.getProjectRemixes(projectID, page, username, token);
             case "featured":
             case "newest":
             case "views":
@@ -177,7 +177,7 @@ class ProjectApi {
             case "loves":
                 const actual_query = searchQuery.split(":");
                 actual_query.shift();
-                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}&username=${username}&token=${token}&reverse=${reverse}`;
+                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
                 break;
             default:
                 break;
@@ -213,32 +213,6 @@ class ProjectApi {
     static getUserProjects(user, page) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${user}`;
-            fetch(url)
-                .then((res) => {
-                    if (!res.ok) {
-                        res.text().then(reject);
-                        return;
-                    }
-                    res.json().then((projectList) => {
-                        resolve(projectList);
-                    });
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        })
-    }
-
-    /**
-     * @param {number} page page
-     * @returns Array of projects
-     */
-    static getMyProjects(page) {
-        const username = localStorage.getItem("username");
-        const token = localStorage.getItem("token");
-
-        return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getmyprojects?page=${page}&username=${username}&token=${token}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -310,9 +284,9 @@ class ProjectApi {
         })
     }
 
-    static getProjectRemixes(id, page=0) {
+    static getProjectRemixes(id, page=0, username, token) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getremixes?projectID=${id}&page=${page}`;
+            const url = `${OriginApiUrl}/api/v1/projects/getremixes?projectID=${id}&page=${page}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -452,12 +426,32 @@ class ProjectApi {
                         res.text().then(reject);
                         return;
                     }
-                    res.json().then(resolve);
+                    res.json().then((projectList) => {
+                        resolve(projectList);
+                    });
                 })
                 .catch((err) => {
                     reject(err);
                 });
         });
+    }
+    getUserProjects(user, page) {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${user}&username=${this.username}&token=${this.token}`;
+            fetch(url)
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((projectList) => {
+                        resolve(projectList);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
     }
     getMyFeed(page) {
         return new Promise((resolve, reject) => {
@@ -1079,6 +1073,35 @@ class ProjectApi {
 
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/hardDeleteProject`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+    
+    removeProjectThumbnail(id) {
+        const body = JSON.stringify({
+            projectID: id,
+            token: this.token
+        })
+
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/v1/projects/deletethumb`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -2226,6 +2249,36 @@ class ProjectApi {
             fetch(url).then(res => {
                 res.json().then(json => {
                     resolve(json.has_blocked);
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
+
+    registerView(projectID) {
+        const url = `${OriginApiUrl}/api/v1/projects/interactions/registerView`;
+
+        // ?username=${this.username}&token=${this.token}&projectID=${projectID}
+
+        const body = JSON.stringify({
+            username: this.username,
+            token: this.token,
+            projectID,
+        });
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    resolve(json.success);
                 }).catch(err => {
                     reject(err);
                 })
