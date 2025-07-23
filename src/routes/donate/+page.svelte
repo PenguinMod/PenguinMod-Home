@@ -206,7 +206,7 @@
                 </p>
                 <p class="small">
                     <LocalizedText
-                        text="You can always donate to our parent projects Scratch or TurboWarp as well, to help them stay online."
+                        text="You can always donate to our parent project Scratch as well, to help it stay online."
                         key="donate.parents"
                         dolink={true}
                         lang={currentLang}
@@ -222,10 +222,6 @@
                 </p>
                 <a class="small" target="_blank" href={LINK.donate.scratch}>
                     Scratch
-                </a>
-                <br />
-                <a class="small" target="_blank" href={LINK.donate.turbowarp}>
-                    TurboWarp
                 </a>
             </div>
             <div class="section-details">
