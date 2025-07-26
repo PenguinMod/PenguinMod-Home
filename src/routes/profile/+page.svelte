@@ -939,21 +939,21 @@
                             {#if (!isBlocked || showAnyways) && !isProfilePrivate || String(user).toLowerCase() === String(loggedInUser).toLowerCase() || (isProfilePublicToFollowers && isFollowedByUser) || loggedInAdmin}
                                 <div class="follower-section">
                                     <div class="follower-counts">
-                                        <p class="follower-count">
+                                        <p class="follower-count"><a href={`/userlist?type=followers&target=${encodeURIComponent(user)}`}>
                                             {TranslationHandler.textSafe(
                                                 "profile.followers",
                                                 currentLang,
                                                 "followers"
                                             ).replace("$1", followerCount - Number(followOnLoad) + Number(isFollowingUser))}
-                                        </p>
+                                        </a></p>
                                         {#if isProfileFollowingVisible || (!isProfileFollowingVisible && ((String(user).toLowerCase() === String(loggedInUser).toLowerCase()) || loggedInAdmin))}
-                                            <p class="following-count">
+                                            <p class="following-count"><a href={`/userlist?type=following&target=${encodeURIComponent(user)}`}>
                                                 {TranslationHandler.textSafe(
                                                     "profile.following",
                                                     currentLang,
                                                     "following"
                                                 ).replace("$1", followingCount)}
-                                            </p>
+                                            </a></p>
                                         {/if}
                                     </div>
                                     <div>
@@ -2180,6 +2180,14 @@
         text-align: right;
         font-weight: bold;
         margin: 0 6px;
+    }
+    .follower-count a,
+    .following-count a {
+        color: black;
+    }
+    :global(body.dark-mode) .follower-count a,
+    :global(body.dark-mode) .following-count a {
+        color: white;
     }
     .follower-button {
         min-width: 100px;
