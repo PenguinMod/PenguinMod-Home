@@ -169,6 +169,24 @@
     <div style="height:24px"></div>
     {#if pageLoading}
         <LoadingSpinner enableTips={true}></LoadingSpinner>
+    {:else if pageError}
+        {#if pageError === "User not found"}
+            <p class="error-message">
+                <LocalizedText
+                    text="This user was not found."
+                    key="profile.doesntexist.alt"
+                    lang={currentLang}
+                />
+            </p>
+        {:else}
+            <p class="error-message">
+                <LocalizedText
+                    text="This page failed to load, please try again later."
+                    key="generic.failedloadpage"
+                    lang={currentLang}
+                />
+            </p>
+        {/if}
     {:else}
         {#if pageType === "followers" || pageType === "following"}
             <div class="profile-section">
@@ -227,12 +245,22 @@
                 {/if}
             </div>
         {:else}
-            {#each pageUsers as follower}
-                <a href={`/profile?user=${encodeURIComponent(follower.username)}`}>
-                    <button>{follower.username}</button>
-                </a>
-            {/each}
-            <p>TODO: List followers or following based on type.</p>
+            <div class="list-users">
+                {#each pageUsers as follower}
+                    <a class="list-user" href={`/profile?user=${encodeURIComponent(follower.username)}`}>
+                        <button>
+                            <img
+                                src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${pageTarget}`}
+                                alt="Profile"
+                                class="list-user-picture"
+                                draggable="false"
+                                loading="lazy"
+                            />
+                            {follower.username}
+                        </button>
+                    </a>
+                {/each}
+            </div>
         {/if}
     {/if}
 
@@ -249,7 +277,49 @@
         left: 0px;
         top: 0px;
         width: 100%;
-        min-width: 1000px;
+        min-width: 730px;
+    }
+
+    .error-message {
+        width: 100%;
+        text-align: center;
+    }
+
+    .list-users {
+        width: 100%;
+        
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .list-user {
+        width: 90%;
+        height: 3em;
+        max-width: 684px;
+        margin: 4px 0;
+        
+        text-decoration: none;
+    }
+    .list-user button {
+        width: 100%;
+        height: 100%;
+        
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        background: none;
+        border: 0;
+        text-align: left;
+        font-size: large;
+
+        cursor: pointer;
+    }
+    .list-user-picture {
+        height: 100%;
+        margin-right: 8px;
+        
+        border-radius: 8px;
     }
 
     .profile-section {
