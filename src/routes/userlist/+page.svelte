@@ -38,12 +38,14 @@
     function loggedInChange(username, privateCode) {
         if (username) ProjectClient.setUsername(username);
         if (privateCode) ProjectClient.setToken(privateCode);
+        pageShouldReload();
     }
     onMount(async () => {
         const username = localStorage.getItem("username");
         const token = localStorage.getItem("token");
         if (!token || !username) {
             loggedIn = false;
+            pageShouldReload();
             return;
         }
 
@@ -77,6 +79,7 @@
 
     Authentication.onLogout(() => {
         loggedIn = false;
+        loggedInChange();
     });
     Authentication.onAuthentication((username, privateCode) => {
         loggedIn = true;
@@ -90,10 +93,65 @@
     const metaDescription = pageType === "followers" ? `See ${pageTarget}'s followers.`
         : (pageType === "following" ? `See who ${pageTarget} is following.`
         : (`See a list of users.`));
+
+    let pageLoading = false;
+    let pageError = false;
+    let pageUsers = [];
+    let pageProfilePrivate = false;
+    let pageProfilePrivateToFollowers = false;
+    let pageProfilePrivateFollowingList = false;
+    const pageShouldReload = () => {
+        pageLoading = true;
+        pageError = false;
+
+        const knownPages = [
+            "followers",
+            "following"
+        ];
+        if (!knownPages.includes(pageType)) {
+            location.href = location.origin + `/error?error=404`;
+            return;
+        }
+
+        switch (pageType) {
+            case "followers":
+                ProjectClient.getFollowers(pageTarget, paginationPage)
+                    .then(followers => {
+                        pageUsers = followers;
+                    })
+                    .catch(err => {
+                        pageError = err;
+                    })
+                    .finally(() => {
+                        pageLoading = false;
+                    });
+                break;
+            case "following":
+                ProjectClient.getFollowing(pageTarget, paginationPage)
+                    .then(followers => {
+                        pageUsers = followers;
+                    })
+                    .catch(err => {
+                        if (err === "PrivateProfile") { pageProfilePrivate = true; return; }
+                        if (err === "Hidden") { pageProfilePrivateFollowingList = true; return; }
+                        pageError = err;
+                    })
+                    .finally(() => {
+                        pageLoading = false;
+                    });
+                break;
+        }
+    };
+    onMount(() => {
+        page.subscribe(store => {
+            if (store.url.searchParams.get("type") !== pageType) return window.location.reload();
+            if (store.url.searchParams.get("target") !== pageTarget) return window.location.reload();
+        });
+    });
 </script>
 
 <svelte:head>
-    <title>PenguinMod - User list</title>
+    <title>PenguinMod - {metaTitle}</title>
     <meta name="title"                   content={`PenguinMod - ${metaTitle}`} />
     <meta property="og:title"            content={`PenguinMod - ${metaTitle}`} />
     <meta property="twitter:title"       content={`PenguinMod - ${metaTitle}`}>
@@ -108,18 +166,75 @@
 <div class="main">
     <NavigationMargin />
 
-    {#if pageType === "followers" || pageType === "following"}
-        <div class="">
-            <img
-                src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${pageTarget}`}
-                alt="Profile"
-                class="profile-picture"
-            />
-            <h1>{pageTarget}</h1>
-        </div>
+    <div style="height:24px"></div>
+    {#if pageLoading}
+        <LoadingSpinner enableTips={true}></LoadingSpinner>
+    {:else}
+        {#if pageType === "followers" || pageType === "following"}
+            <div class="profile-section">
+                <img
+                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${pageTarget}`}
+                    alt="Profile"
+                    class="profile-picture"
+                />
+                <h1><a href={`/profile?user=${pageTarget}`}>
+                    {pageTarget}
+                </a></h1>
+                <div class="profile-switches">
+                    <!-- TODO: Translations. -->
+                    <a href={`/userlist?type=followers&target=${encodeURIComponent(pageTarget)}`}><button>Followers</button></a>
+                    <a href={`/userlist?type=following&target=${encodeURIComponent(pageTarget)}`}><button>Following</button></a>
+                </div>
+            </div>
+            <div style="height:24px"></div>
+        {/if}
+
+        {#if ((pageType === "followers" || pageType === "following") && pageProfilePrivate) || (pageType === "following" && pageProfilePrivateFollowingList)}
+            <div class="section-private">
+                <img
+                    src="/account/lock.svg"
+                    alt="Private"
+                    title="Private"
+                />
+                
+                {#if pageProfilePrivateToFollowers}
+                    <p>
+                        <LocalizedText
+                            text={"This profile is private. Only people {{NAME}} follows can see their profile."}
+                            key="profile.private.followers"
+                            lang={currentLang}
+                            replace={{
+                                "{{NAME}}": pageTarget,
+                            }}
+                        />
+                    </p>
+                {:else if pageProfilePrivateFollowingList}
+                    <p>
+                        <LocalizedText
+                            text="Your account is not allowed to view this."
+                            key="generic.limited.view"
+                            lang={currentLang}
+                        />
+                    </p>
+                {:else}
+                    <p>
+                        <LocalizedText
+                            text="This profile is private. You cannot view it."
+                            key="profile.private"
+                            lang={currentLang}
+                        />
+                    </p>
+                {/if}
+            </div>
+        {:else}
+            {#each pageUsers as follower}
+                <a href={`/profile?user=${encodeURIComponent(follower.username)}`}>
+                    <button>{follower.username}</button>
+                </a>
+            {/each}
+            <p>TODO: List followers or following based on type.</p>
+        {/if}
     {/if}
-    <p>TODO: Add a "type" parameter that this page can have, and if it is "following" or "followers" then also have a "target" parameter.</p>
-    <p>TODO: Private profiles or hidden following lists require a sign in button & requirement.</p>
 
     <div style="height: 16px;" />
 </div>
@@ -135,5 +250,50 @@
         top: 0px;
         width: 100%;
         min-width: 1000px;
+    }
+
+    .profile-section {
+        width: 100%;
+        height: 6em;
+        
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+    }
+    .profile-section > h1 {
+        margin: 0 8px;
+    }
+    .profile-section > h1 a {
+        color: black;
+        text-decoration: none;
+    }
+    :global(body.dark-mode) .profile-section > h1 a {
+        color: white;
+    }
+    .profile-picture {
+        height: 100%;
+        
+        border-radius: 8px;
+    }
+    .profile-switches button {
+        margin: 8px 0;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        background: transparent;
+        border: 0;
+        font-size: large;
+        color: black;
+
+        cursor: pointer;
+    }
+    :global(body.dark-mode) .profile-switches button {
+        color: white;
+    }
+    .profile-switches a {
+        text-decoration: none;
     }
 </style>

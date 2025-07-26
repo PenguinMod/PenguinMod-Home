@@ -528,6 +528,41 @@ class ProjectApi {
         });
     }
 
+    getFollowers(target, page) {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/v1/users/meta/getfollowers?page=${page}&target=${target}&username=${this.username}&token=${this.token}`;
+            fetch(url)
+                .then((res) => {
+                    res.json().then((followers) => {
+                        if (followers.error) {
+                            return reject(followers.error);
+                        }
+                        resolve(followers);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+    getFollowing(target, page) {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/v1/users/meta/getfollowing?page=${page}&target=${target}&username=${this.username}&token=${this.token}`;
+            fetch(url)
+                .then((res) => {
+                    res.json().then((followers) => {
+                        if (followers.error) {
+                            return reject(followers.error);
+                        }
+                        resolve(followers);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+
     isFollowing(username, target, raw) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/users/isfollowing?username=${username}&target=${target}`;
