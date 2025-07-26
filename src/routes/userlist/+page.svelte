@@ -1,4 +1,5 @@
 <script>
+    import { page } from '$app/stores';
     import { onMount } from "svelte";
     import Authentication from "../../resources/authentication.js";
     import AutoTranslate from "../../resources/autoTranslate.js";
@@ -24,7 +25,7 @@
     import PenguinConfusedSVG from "../../resources/icons/Penguin/confused.svelte";
 
     let loggedIn = null;
-    let page = 0;
+    let paginationPage = 0;
 
     let currentLang = "en";
     onMount(() => {
@@ -81,15 +82,23 @@
         loggedIn = true;
         loggedInChange(username, privateCode);
     });
+    
+    const pageType = $page.url.searchParams.get('type');
+    const pageTarget = $page.url.searchParams.get('target');
+    const metaTitle = (pageType === "followers" || pageType === "following") ? `${pageTarget}'s ${pageType}`
+        : "User list";
+    const metaDescription = pageType === "followers" ? `See ${pageTarget}'s followers.`
+        : (pageType === "following" ? `See who ${pageTarget} is following.`
+        : (`See a list of users.`));
 </script>
 
 <svelte:head>
-    <title>PenguinMod - Temp Name</title>
-    <meta name="title"                   content="PenguinMod - Temp Name" />
-    <meta property="og:title"            content="PenguinMod - Temp Name" />
-    <meta property="twitter:title"       content="PenguinMod - Temp Name">
-    <meta name="description"             content="test.">
-    <meta property="twitter:description" content="test.">
+    <title>PenguinMod - User list</title>
+    <meta name="title"                   content={`PenguinMod - ${metaTitle}`} />
+    <meta property="og:title"            content={`PenguinMod - ${metaTitle}`} />
+    <meta property="twitter:title"       content={`PenguinMod - ${metaTitle}`}>
+    <meta name="description"             content={metaDescription}>
+    <meta property="twitter:description" content={metaDescription}>
     <meta property="og:url"              content="https://penguinmod.com/userlist">
     <meta property="twitter:url"         content="https://penguinmod.com/userlist">
 </svelte:head>
@@ -99,6 +108,16 @@
 <div class="main">
     <NavigationMargin />
 
+    {#if pageType === "followers" || pageType === "following"}
+        <div class="">
+            <img
+                src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${pageTarget}`}
+                alt="Profile"
+                class="profile-picture"
+            />
+            <h1>{pageTarget}</h1>
+        </div>
+    {/if}
     <p>TODO: Add a "type" parameter that this page can have, and if it is "following" or "followers" then also have a "target" parameter.</p>
     <p>TODO: Private profiles or hidden following lists require a sign in button & requirement.</p>
 
