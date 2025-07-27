@@ -26,6 +26,7 @@
 
     let loggedIn = null;
     let paginationPage = 0;
+    let paginationWantedPage = 1;
 
     let currentLang = "en";
     onMount(() => {
@@ -142,6 +143,24 @@
                 break;
         }
     };
+    let pageUpdateTimeout = null;
+    const pageCheckPagination = () => {
+        // fix number, note that paginationWantedPage starts at 1
+        if (paginationWantedPage < 1) paginationWantedPage = 1;
+        if (isNaN(paginationWantedPage)) paginationWantedPage = 1;
+        if (!isFinite(paginationWantedPage)) paginationWantedPage = 1;
+        // queue an update to the page
+        const realPage = paginationWantedPage - 1;
+        if (pageUpdateTimeout) {
+            clearTimeout(pageUpdateTimeout);
+            pageUpdateTimeout = null;
+        }
+        pageUpdateTimeout = setTimeout(() => {
+            if (realPage === paginationPage) return;
+            paginationPage = realPage;
+            pageShouldReload();
+        }, 500);
+    };
     onMount(() => {
         page.subscribe(store => {
             if (store.url.searchParams.get("type") !== pageType) return window.location.reload();
@@ -170,23 +189,24 @@
     {#if pageLoading}
         <LoadingSpinner enableTips={true}></LoadingSpinner>
     {:else if pageError}
-        {#if pageError === "User not found"}
-            <p class="error-message">
+        <div class="error-penguin">
+            <PenguinConfusedSVG height="15rem"></PenguinConfusedSVG>
+        </div>
+        <p class="error-message">
+            {#if pageError === "User not found"}
                 <LocalizedText
                     text="This user was not found."
                     key="profile.doesntexist.alt"
                     lang={currentLang}
                 />
-            </p>
-        {:else}
-            <p class="error-message">
+            {:else}
                 <LocalizedText
                     text="This page failed to load, please try again later."
                     key="generic.failedloadpage"
                     lang={currentLang}
                 />
-            </p>
-        {/if}
+            {/if}
+        </p>
     {:else}
         {#if pageType === "followers" || pageType === "following"}
             <div class="profile-section">
@@ -199,9 +219,24 @@
                     {pageTarget}
                 </a></h1>
                 <div class="profile-switches">
-                    <!-- TODO: Translations. -->
-                    <a href={`/userlist?type=followers&target=${encodeURIComponent(pageTarget)}`}><button>Followers</button></a>
-                    <a href={`/userlist?type=following&target=${encodeURIComponent(pageTarget)}`}><button>Following</button></a>
+                    <a href={`/userlist?type=followers&target=${encodeURIComponent(pageTarget)}`}>
+                        <button>
+                            <LocalizedText
+                                text="Followers"
+                                key="profile.title.followers"
+                                lang={currentLang}
+                            />
+                        </button>
+                    </a>
+                    <a href={`/userlist?type=following&target=${encodeURIComponent(pageTarget)}`}>
+                        <button>
+                            <LocalizedText
+                                text="Following"
+                                key="profile.title.following"
+                                lang={currentLang}
+                            />
+                        </button>
+                    </a>
                 </div>
             </div>
             <div style="height:24px"></div>
@@ -245,6 +280,13 @@
                 {/if}
             </div>
         {:else}
+            <div class="list-paging">
+                <div class="list-paging-buttons">
+                    <button on:click={() => { paginationWantedPage -= 1; pageCheckPagination(); }}>◀</button>
+                    <input type="number" bind:value={paginationWantedPage} on:blur={pageCheckPagination}>
+                    <button on:click={() => { paginationWantedPage += 1; pageCheckPagination(); }}>▶</button>
+                </div>
+            </div>
             <div class="list-users">
                 {#each pageUsers as follower}
                     <a class="list-user" href={`/profile?user=${encodeURIComponent(follower.username)}`}>
@@ -283,6 +325,51 @@
     .error-message {
         width: 100%;
         text-align: center;
+    }
+    .error-penguin {
+        width: 100%;
+        
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .list-paging {
+        width: 100%;
+        height: 2em;
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+    }
+    .list-paging-buttons {
+        height: 100%;
+    }
+    .list-paging-buttons > button,
+    .list-paging-buttons > input {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+    .list-paging-buttons > button {
+        height: calc(100% - 2px);
+        padding: 0 8px;
+
+        background: #00c3ff;
+        color: white;
+        border: 1px solid rgba(0, 0, 0, 0.25);
+        border-radius: 4px;
+
+        cursor: pointer;
+    }
+    .list-paging-buttons > input {
+        width: 3em;
+        height: calc(100% - 2px);
+        padding: 0 8px;
+
+        background: white;
+        border: 1px solid rgba(0, 0, 0, 0.25);
+        border-radius: 4px;
     }
 
     .list-users {
