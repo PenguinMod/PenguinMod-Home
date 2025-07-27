@@ -121,6 +121,7 @@
                         pageUsers = followers;
                     })
                     .catch(err => {
+                        if (err === "PrivateProfile") { pageProfilePrivate = true; return; }
                         pageError = err;
                     })
                     .finally(() => {
@@ -452,5 +453,13 @@
     }
     .profile-switches a {
         text-decoration: none;
+    }
+
+    .section-private {
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 </style>
