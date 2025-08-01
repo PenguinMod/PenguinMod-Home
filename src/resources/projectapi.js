@@ -1514,17 +1514,74 @@ class ProjectApi {
                     const sounds = target.sounds
                         .map(asset => [asset.name, assets[asset.md5ext]]);
 
-                    const codeSize = pmp_protobuf.jsonToProtobuf(projectJSON).length - metaSize;
+                    const totalCodeSize = pmp_protobuf.jsonToProtobuf(projectJSON).length - metaSize;
+
+                    const original_target = projectJSON.targets[0];
+
+                    projectJSON.targets[0] = {
+                        isStage: false,
+                        name: "",
+                        variables: {},
+                        lists: {},
+                        broadcasts: {},
+                        customVars: [],
+                        blocks: {},
+                        comments: {},
+                        currentCostume: 0,
+                        costumes: [],
+                        sounds: [],
+                        id: "",
+                        volume: 0,
+                        layerOrder: 0,
+                        tempo: 0,
+                        videoTransparency: 0,
+                        videoState: "",
+                        textToSpeechLanguage: null,
+                        visible: false,
+                        x: 0,
+                        y: 0,
+                        size: 0,
+                        direction: 0,
+                        draggable: false,
+                        rotationStyle: "",
+                        extensionData: {}
+                    };
+
+                    const emptySize = pmp_protobuf.jsonToProtobuf(projectJSON).length;
+
+                    projectJSON.targets[0].blocks = original_target.blocks;
+
+                    const blockSize = pmp_protobuf.jsonToProtobuf(projectJSON).length - emptySize;
+
+                    projectJSON.targets[0].blocks = {};
+                    projectJSON.targets[0].variables = original_target.variables;
+
+                    const variableSize = pmp_protobuf.jsonToProtobuf(projectJSON).length - emptySize;
+
+                    projectJSON.targets[0].variables = {};
+                    projectJSON.targets[0].lists = original_target.lists;
+
+                    const listSize = pmp_protobuf.jsonToProtobuf(projectJSON).length - emptySize;
+
+                    projectJSON.targets[0] = original_target;
+
                     const costumeSize = costumes.reduce((c,v) => c + v[1].size, 0);
                     const soundSize = sounds.reduce((c,v) => c + v[1].size, 0);
-                    const size = codeSize
+                    const size = totalCodeSize
                         + costumeSize
                         + soundSize;
                     
                     statTree.push({
                         name: `${target.name}: ${MB(size)}`,
                         value: [
-                            `code: ${MB(codeSize)}`,
+                            {
+                                name: `code: ${MB(totalCodeSize)}`,
+                                value: [
+                                    `blocks: ${MB(blockSize)}`,
+                                    `variables: ${MB(variableSize)}`,
+                                    `lists: ${MB(listSize)}`
+                                ]
+                            },
                             {
                                 name: `costumes: ${MB(costumeSize)}`,
                                 value: costumes.map(([name, asset]) => `${name}: ${MB(asset.size)}`)
