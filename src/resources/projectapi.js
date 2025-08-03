@@ -1741,6 +1741,34 @@ class ProjectApi {
             })
         });
     }
+    setCanBeFeatured(id, value) {
+        const body = JSON.stringify({
+            token: this.token,
+            projectID: id,
+            toggle: value,
+        });
+        return new Promise((resolve, reject) => {
+            fetch(`${OriginApiUrl}/api/v1/projects/setCanBeFeatured`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
 
     toggleVoteProject(id, type, toggle) {
         type = String(type).toLowerCase().trim();

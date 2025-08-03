@@ -306,6 +306,14 @@
         if (!usure) return;
         ProjectClient.featureProject(id, value).catch((err) => alert(err));
     }
+    function setCommunityFeaturableProject(value) {
+        const id = String(projectIdSelection.value);
+        const usure = confirm(value ? `Enable community featuring for this project?`
+            : `Disabling community feature will remove this project from the "Projects people want Featured" list and the project can only be manually featured.`
+            + `\nWe have guidelines for which projects should have community features disabled. Are you sure this project deserves to lose the ability to be community featured?`);
+        if (!usure) return;
+        ProjectClient.setCanBeFeatured(id, value).catch((err) => alert(err));
+    }
 
     onMount(() => {
         projectIdSelection.onchange = () => {
@@ -1390,6 +1398,14 @@
                     />
                     <div style="width:24px" />
                     <Button
+                        label="Remove Thumbnail"
+                        color="red"
+                        on:click={() => deleteThumbnail()}
+                    />
+                </div>
+                <div style="height:24px" />
+                <div style="display: flex; flex-direction: row; width: 100%;">
+                    <Button
                         label="Feature"
                         color="orange"
                         on:click={() => featureProject(true)}
@@ -1401,12 +1417,16 @@
                     />
                     <div style="width:24px" />
                     <Button
-                        label="Remove Thumbnail"
+                        label="Allow Community Feature"
+                        color="remix"
+                        on:click={() => setCommunityFeaturableProject(true)}
+                    />
+                    <Button
+                        label="Disable Community Feature"
                         color="red"
-                        on:click={() => deleteThumbnail()}
+                        on:click={() => setCommunityFeaturableProject(false)}
                     />
                 </div>
-                <div style="height:24px" />
                 <h3>Removed Projects</h3>
                 <p>
                     Target Removed Project:
