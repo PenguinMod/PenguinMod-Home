@@ -10,6 +10,7 @@
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language";
     import beautify from "js-beautify";
+    import JSZip from 'jszip';
 
     let codeArea;
     /** @type {import('brace').Editor} */
@@ -36,15 +37,17 @@
         await import('brace/mode/javascript');
         await import('brace/theme/chrome');
         if (editor) editor.destroy();
-        editor = ace.edit(codeArea);
-        editor.setOptions({
-            fontSize: "15px", showPrintMargin: false,
-            highlightActiveLine: true, useWorker: false
+        queueMicrotask(() => {
+            editor = ace.edit(codeArea);
+            editor.setOptions({
+                fontSize: "15px", showPrintMargin: false,
+                highlightActiveLine: true, useWorker: false
+            });
+            editor.session.setMode('ace/mode/javascript');
+            editor.setTheme('ace/theme/chrome');
+            editor.setValue('// code will appear here when a log is selected');
+            editor.setReadOnly(true);
         });
-        editor.session.setMode('ace/mode/javascript');
-        editor.setTheme('ace/theme/chrome');
-        editor.setValue('// code will appear here when a log is selected');
-        editor.setReadOnly(true);
     }
 
     function xmlEscape(str) {
@@ -110,6 +113,12 @@
         const source = sources[url];
         editor.session.setValue(source);
     }
+    function selectTrace(id) {
+        const log = logs.find(log => log.id === selectedLog);
+        const trace = log.trace.find(trace => trace.id === id);
+        renderCode(trace.url);
+        editor.moveCursorTo(trace.origin[0], trace.origin[1]);
+    }
     function selectLog(id) {
         selectedLog = id;
         const log = logs.find(log => log.id === id);
@@ -120,7 +129,7 @@
             option.value = trace.id;
             selector.add(option);
         }
-        renderCode(log.trace[0].url);
+        selectTrace(log.trace[0].id);
     }
 </script>
 
@@ -141,11 +150,7 @@
 {#if !loading}
     <div class="rizz-grid">
         <div class="code-pane">
-            <select class="trace-selector" bind:this={selector} on:change={e => {
-                const log = logs.find(log => log.id === selectedLog);
-                const trace = log.trace.find(trace => trace.id === e.target.value);
-                renderCode(trace.url);
-            }}></select><br>
+            <select class="trace-selector" bind:this={selector} on:change={e => selectTrace(e.target.value)}></select>
             <div class="code-block" bind:this={codeArea}></div>
         </div>
         <div class="log-messages">
@@ -166,7 +171,7 @@
             {#if !message}
                 <h1>Provide a log file</h1>
                 <div class="card-content">
-                    <input class="file-area" type="file" accept=".json" on:change={function() {
+                    <input class="file-area" type="file" accept=".pml" on:change={function() {
                         message = 'Loading file';
                         subMessage = '';
                         const loader = new FileReader();
@@ -174,9 +179,9 @@
                             message = 'Parsing file';
                             subMessage = '';
                             try {
-                                logs = JSON.parse(loader.result);
-                                if (!Array.isArray(logs))
-                                    throw 'Not a valid logs file!';
+                                const files = await JSZip.loadAsync(loader.result);
+                                const index = JSON.parse(await files.file('index.json').async('text'));
+                                logs = JSON.parse(await files.file('logs.json').async('text'));
                                 for (const log of logs) {
                                     message = 'Formating log contents';
                                     subMessage = `Rendering format of log ${log.message}`;
@@ -186,10 +191,11 @@
                                         message = 'Loading trace contents';
                                         if (!(trace.url in sources)) {
                                             subMessage = `Fetching source ${trace.url}`;
-                                            sources[trace.url] = (await fetch(trace.url)
+                                            // check if the log file provided the file
+                                            sources[trace.url] = ((await files.file(index[trace.url])?.async?.('text')) ?? (await fetch(trace.url)
                                                 .then(async res => [!res.ok, await res.text()])
                                                 .catch(() => [true, ''])
-                                                .then(([bad, text]) => bad ? '/*!*!*/' + text : text))
+                                                .then(([bad, text]) => bad ? '/*!*!*/' + text : text)))
                                                 .split('\n')
                                                 .map(line => line.split(''));
                                         }
@@ -214,6 +220,19 @@
                                 for (const url in sources) {
                                     subMessage = `Beautifying ${url}`;
                                     sources[url] = beautify.js(sources[url].map(line => line.join('')).join('\n'));
+                                    subMessage = `Updating trace references for ${url}`;
+                                    const lines = sources[url].split('\n');
+                                    for (const log of logs) {
+                                        for (const trace of log.trace) {
+                                            if (trace.url !== url) continue;
+                                            const id = `/*! line,column/${trace.origin} !*/`;
+                                            const row = lines.findIndex(line => line.includes(id));
+                                            if (row === -1) continue;
+                                            const column = lines[row].indexOf(id);
+                                            trace.origin[0] = row;
+                                            trace.origin[1] = column;
+                                        }
+                                    }
                                 }
                             } catch (err) {
                                 message = 'Error while parsing file data';
@@ -223,7 +242,7 @@
                             loading = false;
                         }
                         loader.onerror = () => {};
-                        loader.readAsText(this.files[0]);
+                        loader.readAsArrayBuffer(this.files[0]);
                     }}>
                 </div>
             {:else}
@@ -295,8 +314,9 @@
     }
 
     .code-pane {
-        overflow: scroll;
         border-right: 1px solid grey;
+        display: grid;
+        grid-template-rows: max-content 1fr;
     }
     .code-block {
         white-space: preserve nowrap;
