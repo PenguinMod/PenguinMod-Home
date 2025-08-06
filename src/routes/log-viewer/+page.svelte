@@ -44,7 +44,7 @@
         editor.session.setMode('ace/mode/javascript');
         editor.setTheme('ace/theme/chrome');
         editor.setValue('// code will appear here when a log is selected');
-        // editor.setReadOnly(true);
+        editor.setReadOnly(true);
     }
 
     function xmlEscape(str) {
