@@ -87,8 +87,8 @@
         left: 0;
         width: 128px;
         padding: 8px 16px;
-        border: solid 1px gray;
-        border-radius: 0 8px;
+        border: solid 1px rgba(255, 255, 255, .3);
+        border-radius: 0 8px 8px 8px;
         background: rgba(0, 0, 0, 0.5);
         color: white;
         transform-origin: center;
