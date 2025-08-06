@@ -1,5 +1,4 @@
 <script>
-    import { Portal } from 'svelte-portal';
     import { onMount } from "svelte";
 
     // Static values
@@ -13,30 +12,18 @@
     export let currentLang = "en";
 
     let badgeIsFocused = false;
-    let badgeEl;
-    let badgeInfoPos = { top: 0, left: 0 };
-
-    const showBadgeInfo = () => {
+    const badgeFocus = () => {
         badgeIsFocused = true;
-
-        // Wait for DOM to render
-        setTimeout(() => {
-            const rect = badgeEl.getBoundingClientRect();
-            badgeInfoPos.top = rect.bottom + 6;
-            badgeInfoPos.left = rect.left + rect.width / 2;
-        });
     };
-
-    const hideBadgeInfo = () => {
+    const badgeUnfocus = () => {
         badgeIsFocused = false;
     };
 </script>
 
 <button
     class="badge"
-    bind:this={badgeEl}
-    on:click={showBadgeInfo}
-    on:focusout={hideBadgeInfo}
+    on:click={badgeFocus}
+    on:focusout={badgeUnfocus}
     title={TranslationHandler.text(
         `profile.badge.${badge}`,
         currentLang
@@ -62,18 +49,8 @@
             'en'
         )}
     />
-</button>
-
-{#if badgeIsFocused}
-    <Portal>
-        <div
-            class="badge-info"
-            style="
-                top: {badgeInfoPos.top}px;
-                left: {badgeInfoPos.left}px;
-                transform: translateX(-50%);
-            "
-        >
+    {#if badgeIsFocused}
+        <div class="badge-info">
             {TranslationHandler.text(
                 `profile.badge.${badge}`,
                 currentLang
@@ -82,8 +59,8 @@
                 'en'
             )}
         </div>
-    </Portal>
-{/if}
+    {/if}
+</button>
 
 <style>
     .badge {
@@ -105,15 +82,17 @@
     }
 
     .badge-info {
-        position: fixed;
-        z-index: 9999;
+        position: absolute;
+        top: 36px;
+        left: 0;
         width: 128px;
         padding: 8px 16px;
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
         border: solid 1px gray;
         border-radius: 0 8px;
-        pointer-events: none;
-        white-space: nowrap;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        transform-origin: center;
+        transform: translateX(calc(50% - 64px));
+        z-index: 5000;
     }
 </style>
