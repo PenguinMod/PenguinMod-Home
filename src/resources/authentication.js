@@ -146,14 +146,14 @@ class Authentication {
         })
     }
 
-    static changePassword(username, oldPassword, newPassword) {
+    static changePassword(username, token, oldPassword, newPassword) {
         return new Promise((resolve, reject) => {
             fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/changePassword`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ username, old_password: oldPassword, new_password: newPassword })
+                body: JSON.stringify({ username, token, old_password: oldPassword, new_password: newPassword })
             }).then(r => r.json().then(j => {
                 if (j.error) return reject(j.error);
                 resolve(j.token);

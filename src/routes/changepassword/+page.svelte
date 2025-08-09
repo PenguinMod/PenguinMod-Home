@@ -120,7 +120,7 @@
 
     function changePassword() {
         changingPassword = true;
-        Authentication.changePassword(username, oldPassword, password)
+        Authentication.changePassword(username, token, oldPassword, password)
             .then(() => {
                 changingPassword = false;
                 alert(TranslationHandler.textSafe(
