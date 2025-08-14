@@ -227,9 +227,8 @@
     let rejectingTextboxAreaText = "";
     let isRejectHard = false;
     function rejectProject(id) {
-        id ??= Number(projectIdSelection.value);
-        if (isNaN(id)) return;
-        const confirmationMessage = `Reject "${rejectingName}"?\n`
+        id ??= projectIdSelection.value;
+        const confirmationMessage = `Reject "${rejectingName || id}"?\n`
             + `${isRejectHard ?
                 'Hard reject is enabled.\nThe uploader will not be able to edit the original project once you reject it.'
                 : 'Soft reject is enabled.'}`;
@@ -250,9 +249,8 @@
         }
     }
     function deleteThumbnail(id) {
-        id ??= Number(projectIdSelection.value);
-        if (isNaN(id)) return;
-        if (!confirm("Are you sure you want to remove this project's thumbnail?")) return;
+        id ??= projectIdSelection.value;
+        if (!confirm(`Are you sure you want to remove project ${id}'s thumbnail?`)) return;
         ProjectClient.removeProjectThumbnail(id);
     }
     let selectedProjectName = "";
