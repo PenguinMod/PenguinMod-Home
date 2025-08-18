@@ -29,13 +29,24 @@
     });
     Language.onChange((lang) => {
         currentLang = lang;
+        let lastDarkMode = null;
+        const loop = () => {
+            const darkmode = isEmbed ?
+                location.hash.replace(/#/gmi, "") === "dark=true"
+                : String(localStorage.getItem('darkmode') || prefersDarkMode) === 'true';
+            if (darkmode === lastDarkMode) return;
+            lastDarkMode = darkmode;
+            onThemeChange(darkmode);
+        }
+        setInterval(loop, 100);
     });
     $: onCodeAreaChanged(codeArea);
     async function onCodeAreaChanged(codeArea) {
         if (!globalThis.window) return;
         ace = await import('brace');
         await import('brace/mode/javascript');
-        await import('brace/theme/chrome');
+        await import('brace/theme/twilight');
+        await import('brace/theme/dawn'); 
         if (editor) editor.destroy();
         queueMicrotask(() => {
             editor = ace.edit(codeArea);
@@ -44,10 +55,17 @@
                 highlightActiveLine: true, useWorker: false
             });
             editor.session.setMode('ace/mode/javascript');
-            editor.setTheme('ace/theme/chrome');
+            onThemeChange(String(localStorage.getItem('darkmode') || prefersDarkMode) === 'true');
             editor.setValue('// code will appear here when a log is selected');
             editor.setReadOnly(true);
         });
+    }
+    function onThemeChange(dark) {
+        if (!editor) return;
+        if (dark)
+            editor.setTheme('ace/theme/twilight');
+        else
+            editor.setTheme('ace/theme/dawn');
     }
 
     function xmlEscape(str) {
@@ -345,9 +363,23 @@
         margin: 5px;
         width: calc(100% - 10px);
         box-sizing: border-box;
+        border: 1px solid grey;
+        border-radius: 5px;
+        color: black;
+        background-color: #ddd;
+    }
+    :global(body.dark-mode) .trace-selector {
+        border: 1px solid rgba(255, 255, 255, 35%);
+        border-radius: 5px;
+        color: white;
+        background-color: #222;
     }
     
-    .log-message { 
+    :global(body.dark-mode) .log-message {
+        color: white;
+    }
+    .log-message {
+        color: black;
         margin-bottom: 2px;
         width: 100%;
         border: none;
