@@ -20,7 +20,7 @@
 		"js-beautify": "^1.15.4",
 		"jszip": "^3.10.1",
 		"markdown-it": "^13.0.2",
-		"pmp-protobuf": "^1.5.1",
+		"pmp-protobuf": "^1.6.0",
 		"protobufjs": "^7.3.2",
 		"svelte-confetti": "^1.4.0",
 		"three": "^0.158.0"
