@@ -990,6 +990,19 @@
             console.error(err);
             alert(`Failed to get permited users; ${err}`);
         });
+
+    function putOnWatchlist(enabled) {
+        ProjectClient.putOnWatchlist(userSelectionData.username, enabled)
+            .then(success => {
+                if (!success)
+                    alert("FAILURE!!!");
+                else
+                    alert("success");
+            })
+            .catch(error => {
+                alert(`ERROR: ${error}`);
+            });
+    }
 </script>
 
 <svelte:head>
@@ -1666,6 +1679,11 @@
                     <br>
                     <div class="user-action-row">
                         <Button color="red" on:click={deleteAccount}>Delete User Account</Button>
+                    </div>
+                    <br>
+                    <div class="user-action-row">
+                        <Button color="orange" on:click={()=>putOnWatchlist(true)}>Put on watchlist</Button>
+                        <Button color="blue" on:click={()=>putOnWatchlist(false)}>Take off watchlist</Button>
                     </div>
                 </div>
                 <!-- <br>

@@ -2374,5 +2374,34 @@ class ProjectApi {
             })
         });
     }
+
+    putOnWatchlist(target, enabled) {
+        const url = `${OriginApiUrl}/api/v1/users/putonwatchlist`;
+
+        const body = JSON.stringify({
+            username: this.username,
+            token: this.token,
+            target,
+            enabled,
+        });
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    resolve(json.success);
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
 }
 export default ProjectApi;
