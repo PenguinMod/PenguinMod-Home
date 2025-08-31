@@ -16,6 +16,7 @@
     /** @type {import('brace').Editor} */
     let editor;
     let ace;
+    /** @type {HTMLSelectElement} */
     let selector;
     let selectedLog = null;
     let message = null;
@@ -101,7 +102,7 @@
                 switch (match.groups.type) {
                 case 'o':
                 case 'O':
-                    out = left + `<object-inspector>${xmlEscape(item)}</object-inspector>` + right;
+                    out = left + JSON.stringify(item) + right;
                     break;
                 case 'd':
                 case 'i':
@@ -118,6 +119,7 @@
                     break;
                 }
             }
+            if (idx < (args.length -1)) out += formatMessage(args.slice(idx));
             return out;
         }
         if (args.every(arg => typeof arg !== 'object'))
@@ -125,7 +127,7 @@
                 .map(arg => (arg = xmlEscape(String(arg)).length > 400 
                     ? arg.slice(0, 400) + '...' 
                     : arg)).join(' ');
-        return xmlEscape(args.map(arg => `<object-inspector>${xmlEscape(JSON.stringify(arg))}</object-inspector>`).join(' '));
+        return xmlEscape(args.map(arg => JSON.stringify(arg)).join(' '));
     }
     function renderCode(url) {
         const source = sources[url];
@@ -140,6 +142,7 @@
     function selectLog(id) {
         selectedLog = id;
         const log = logs.find(log => log.id === id);
+        selector.innerHTML = '';
         for (const trace of log.trace) {
             /** @type {HTMLOptionElement} */
             const option = document.createElement('option');
