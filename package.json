@@ -8,8 +8,8 @@
 		"preview": "vite preview"
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-vercel": "^2.4.3",
-		"@sveltejs/kit": "^1.5.0",
+		"@sveltejs/adapter-vercel": "^3.x",
+		"@sveltejs/kit": "^1.30.4",
 		"svelte": "^3.54.0",
 		"vite": "^4.3.0"
 	},
@@ -21,8 +21,6 @@
 		"jszip": "^3.10.1",
 		"markdown-it": "^13.0.2",
 		"pmp-protobuf": "^1.6.0",
-		"protobufjs": "^7.3.2",
-		"svelte-confetti": "^1.4.0",
-		"three": "^0.158.0"
+		"protobufjs": "^7.3.2"
 	}
 }

@@ -1,6 +1,5 @@
 <script>
   import { onMount } from "svelte";
-  import { Confetti } from "svelte-confetti";
 
   // Components
   import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
@@ -39,18 +38,6 @@
 
 <NavigationBar />
 
-<div class="confetti-wrapper">
-  <Confetti
-    x={[-5, 5]}
-    y={[0, 0.1]}
-    infinite
-    duration="6000"
-    amount="100"
-    size="15"
-    fallDistance="120vh"
-  />
-</div>
-
 <div class="main">
   <NavigationMargin />
 
@@ -74,18 +61,6 @@
           lang={currentLang}
       />
     </p>
-    <div class="pengfetti-wrapper">
-      <Confetti
-        amount="200"
-        size="30"
-        x={[-15, 15]}
-        y={[-15, 15]}
-        noGravity
-        duration="6000"
-        fallDistance="100vh"
-        colorArray={["url(/badges/donator.png)"]}
-      />
-    </div>
     <img src="/penguins/cheer.svg" alt="Cheering" class="thank-you" />
     <div class="card">
         <h2 style="text-align:center;">
@@ -170,29 +145,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-  .confetti-wrapper {
-    position: fixed;
-    top: -50px;
-    left: 0;
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    justify-content: center;
-    overflow: hidden;
-    pointer-events: none;
-  }
-  .pengfetti-wrapper {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    pointer-events: none;
   }
 
   @keyframes bouncy {
