@@ -1996,7 +1996,7 @@
                                     {#if !reportDetails[content.target]}
                                         <LoadingSpinner />
                                     {:else}
-                                        <h5>By: {content.reporter}</h5>
+                                        <h5>By: <a href={`https://penguinmod.com/profile?user=${content.reporter}`}>{content.reporter}</a></h5>
                                         <p>
                                             {content.report}
                                         </p>
@@ -2062,7 +2062,7 @@
                             </button>
                             {#if selectedReportDetailed === idx}
                                 <div class="reports-generic-details">
-                                    <h5>By: {content.reporter}</h5>
+                                    <h5>By: <a href={`https://penguinmod.com/profile?user=${content.reporter}`}>{content.reporter}</a></h5>
                                     <p>
                                         {content.report}
                                     </p>
