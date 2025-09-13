@@ -1007,6 +1007,7 @@
 
 <svelte:head>
     <title>PenguinMod - Admin Panel</title>
+    <meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex,nocache,none" />
     <meta name="title" content="PenguinMod - Home" />
     <meta property="og:title" content="PenguinMod - Home" />
     <meta property="twitter:title" content="PenguinMod - Home">
