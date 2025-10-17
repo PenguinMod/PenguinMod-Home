@@ -234,6 +234,7 @@ class ProjectApi {
             const url = `${OriginApiUrl}/api/v1/projects/frontpage?username=${this.username}&token=${this.token}`; // so mods can see ALL!!!!!!!!!!!!!
             fetch(url)
                 .then((res) => {
+                    if (res.status === 429) return reject(429);
                     if (!res.ok) {
                         res.text().then(reject);
                         return;

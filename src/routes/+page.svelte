@@ -53,6 +53,7 @@
     let ghcommitsLoaded = false;
     let projectsLoaded = false;
     let projectsFailed = false;
+    let projectsRateLimited = false;
 
     let catText = '⠀';
     let existingInterval;
@@ -252,8 +253,11 @@
                 tagForProjects = results.selectedTag;
                 projectsLoaded = true;
             })
-            .catch(() => {
+            .catch((err) => {
                 projectsFailed = true;
+                if (err === 429) {
+                    projectsRateLimited = true;
+                }
             });
     });
 
@@ -809,18 +813,33 @@
                     <div
                         style="display:flex;flex-direction:column;align-items: center;width: 100%;"
                     >
-                        <img
-                            src="/penguins/server.svg"
-                            alt="Server Penguin"
-                            style="width: 15rem"
-                        />
-                        <p>
-                            <LocalizedText
-                                text="Whoops! Our server's having some problems. Try again later."
-                                key="home.server.error"
-                                lang={currentLang}
+                        {#if projectsRateLimited}
+                            <img
+                                src="/errors/429.svg"
+                                alt="Ratelimit Error"
+                                style="width: 12rem"
                             />
-                        </p>
+                            <p>
+                                <LocalizedText
+                                    text="Please wait before trying to access this page again."
+                                    key="navigation.error.429"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        {:else}
+                            <img
+                                src="/penguins/server.svg"
+                                alt="Server Penguin"
+                                style="width: 15rem"
+                            />
+                            <p>
+                                <LocalizedText
+                                    text="Whoops! Our server's having some problems. Try again later."
+                                    key="home.server.error"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        {/if}
                     </div>
                 {:else}
                     <LoadingSpinner />
@@ -858,18 +877,33 @@
                     <div
                         style="display:flex;flex-direction:column;align-items: center;width: 100%;"
                     >
-                        <img
-                            src="/penguins/server.svg"
-                            alt="Server Penguin"
-                            style="width: 15rem"
-                        />
-                        <p>
-                            <LocalizedText
-                                text="Whoops! Our server's having some problems. Try again later."
-                                key="home.server.error"
-                                lang={currentLang}
+                        {#if projectsRateLimited}
+                            <img
+                                src="/errors/429.svg"
+                                alt="Ratelimit Error"
+                                style="width: 12rem"
                             />
-                        </p>
+                            <p>
+                                <LocalizedText
+                                    text="Please wait before trying to access this page again."
+                                    key="navigation.error.429"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        {:else}
+                            <img
+                                src="/penguins/server.svg"
+                                alt="Server Penguin"
+                                style="width: 15rem"
+                            />
+                            <p>
+                                <LocalizedText
+                                    text="Whoops! Our server's having some problems. Try again later."
+                                    key="home.server.error"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        {/if}
                     </div>
                 {:else}
                     <LoadingSpinner />
@@ -907,18 +941,33 @@
                         <div
                             style="display:flex;flex-direction:column;align-items: center;width: 100%;"
                         >
-                            <img
-                                src="/penguins/server.svg"
-                                alt="Server Penguin"
-                                style="width: 15rem"
-                            />
-                            <p>
-                                <LocalizedText
-                                    text="Whoops! Our server's having some problems. Try again later."
-                                    key="home.server.error"
-                                    lang={currentLang}
+                            {#if projectsRateLimited}
+                                <img
+                                    src="/errors/429.svg"
+                                    alt="Ratelimit Error"
+                                    style="width: 12rem"
                                 />
-                            </p>
+                                <p>
+                                    <LocalizedText
+                                        text="Please wait before trying to access this page again."
+                                        key="navigation.error.429"
+                                        lang={currentLang}
+                                    />
+                                </p>
+                            {:else}
+                                <img
+                                    src="/penguins/server.svg"
+                                    alt="Server Penguin"
+                                    style="width: 15rem"
+                                />
+                                <p>
+                                    <LocalizedText
+                                        text="Whoops! Our server's having some problems. Try again later."
+                                        key="home.server.error"
+                                        lang={currentLang}
+                                    />
+                                </p>
+                            {/if}
                         </div>
                     {:else}
                         <LoadingSpinner />
@@ -961,18 +1010,33 @@
                     <div
                         style="display:flex;flex-direction:column;align-items: center;width: 100%;"
                     >
-                        <img
-                            src="/penguins/server.svg"
-                            alt="Server Penguin"
-                            style="width: 15rem"
-                        />
-                        <p>
-                            <LocalizedText
-                                text="Whoops! Our server's having some problems. Try again later."
-                                key="home.server.error"
-                                lang={currentLang}
+                        {#if projectsRateLimited}
+                            <img
+                                src="/errors/429.svg"
+                                alt="Ratelimit Error"
+                                style="width: 12rem"
                             />
-                        </p>
+                            <p>
+                                <LocalizedText
+                                    text="Please wait before trying to access this page again."
+                                    key="navigation.error.429"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        {:else}
+                            <img
+                                src="/penguins/server.svg"
+                                alt="Server Penguin"
+                                style="width: 15rem"
+                            />
+                            <p>
+                                <LocalizedText
+                                    text="Whoops! Our server's having some problems. Try again later."
+                                    key="home.server.error"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        {/if}
                     </div>
                 {:else}
                     <LoadingSpinner />
