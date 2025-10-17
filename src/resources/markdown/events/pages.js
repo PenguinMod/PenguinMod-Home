@@ -20,6 +20,8 @@ import PenguinJamSuper2025En from "./en/penguinjamsuper2025.md?raw";
 import PenguinJamSuper2025Ja from "./ja/penguinjamsuper2025.md?raw";
 import PenguinJamSuper2025Es from "./es/penguinjamsuper2025.md?raw";
 import PenguinJamSuper2025Tr from "./tr/penguinjamsuper2025.md?raw";
+// PenguinModThirdAnniversary
+import PenguinModThirdAnniversaryEn from "./en/penguinmodthirdanniversary.md?raw";
 
 export default {
     "example": {
@@ -47,5 +49,8 @@ export default {
         "ja": PenguinJamSuper2025Ja,
         "es": PenguinJamSuper2025Es,
         "tr": PenguinJamSuper2025Tr,
+    },
+    "penguinmodthirdanniversary": {
+        "en": PenguinModThirdAnniversaryEn,
     },
 };

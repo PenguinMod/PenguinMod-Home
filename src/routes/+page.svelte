@@ -679,21 +679,19 @@
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">PenguinJam Super has been ranked!</h2>
+                        <h2 style="margin-block:4px;">Today is PenguinMod's Third Anniversary!</h2>
                         <div style="width:100%">
                             <p>
-                                Sorry for missing this news post, but PenguinJam Super has been ranked!
+                                Can you believe it has been 3 years since we first started PenguinMod?
                                 <br />
-                                We've ranked all 18 entries! See the project below to see all of the projects.
-                                <br />
-                                Remember, projects that used both tags or didn't follow the theme were ignored.
+                                We made a video and are hosting a few small things to do! Check the event page for more information.
                             </p>
                             <p style="margin-block-start:4px;">
-                                <a href="https://projects.penguinmod.com/5992257996">PenguinJam Super 2025 Official Rankings</a>
+                                <a href="https://penguinmod.com/events/penguinmodthirdanniversary">PenguinMod's Third Anniversary</a>
                             </p>
                             <img
-                                src="/events/news/penguinjamsuper2025.png"
-                                alt="PenguinJam Super 2025"
+                                src="/events/news/penguinmodthirdanniversary.png"
+                                alt="PenguinMod's Third Anniversary"
                                 style="width:100%;"
                             />
                         </div>
