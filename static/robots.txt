@@ -1,0 +1,33 @@
+# Block a bunch of useless stuff in terms of search engines/AI bots
+User-agent: *
+# Old/dead redirects
+Disallow: /PenguinMod-Packager
+Disallow: /addons.html
+Disallow: /credits.html
+Disallow: /editor.html
+Disallow: /fullscreen.html
+Disallow: /privacy.html
+# Internally used stuff
+Disallow: /embed
+Disallow: /panel
+Disallow: /userpanel
+Disallow: /guidelines/moderation$
+# Pages only seen when completing a previous action and are broken/useless otherwise
+Disallow: /canceldonation
+Disallow: /oauthchangepasswordintermediate
+Disallow: /redirect
+Disallow: /restore
+Disallow: /successdonation
+Disallow: /sucessdonation
+Disallow: /unfinishedsignup
+# Random dev stuff
+Disallow: /05-02-1998_test_screenshot.png
+Disallow: /8ball.html
+Disallow: /eao.html
+Disallow: /MENGUINPOD-THETRUTH.html
+Disallow: /recompilepls.txt
+# Random stuff/resources/weird urls that are requested for no reason
+Disallow: /cdn-cgi/
+Disallow: /_app
+Disallow: /fn$
+Allow: /
