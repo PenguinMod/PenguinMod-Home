@@ -3,7 +3,7 @@
     import Language from "../../resources/language.js";
     import EventPages from "../../resources/markdown/events/pages.js";
 
-    const isHavingEvent = true;
+    const isHavingEvent = false;
     const eventName = "PenguinMod's 3rd Anniversary";
     const eventPath = "penguinmodthirdanniversary";
     
