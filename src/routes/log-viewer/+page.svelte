@@ -9,6 +9,7 @@
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language";
+    import { stringify, parse } from "../../resources/json-circular.js";
     import beautify from "js-beautify";
     import JSZip from 'jszip';
 
@@ -102,7 +103,7 @@
                 switch (match.groups.type) {
                 case 'o':
                 case 'O':
-                    out = left + JSON.stringify(item) + right;
+                    out = left + `<object-viewer object="${xmlEscape(stringify(item))}"></object-viewer>` + right;
                     break;
                 case 'd':
                 case 'i':
@@ -122,12 +123,12 @@
             if (idx < (args.length -1)) out += formatMessage(args.slice(idx));
             return out;
         }
-        if (args.every(arg => typeof arg !== 'object'))
-            return args
-                .map(arg => (arg = xmlEscape(String(arg)).length > 400 
+        return args
+            .map(arg => (typeof arg !== 'object'
+                ? (arg = xmlEscape(String(arg)).length > 400 
                     ? arg.slice(0, 400) + '...' 
-                    : arg)).join(' ');
-        return xmlEscape(args.map(arg => JSON.stringify(arg)).join(' '));
+                    : arg)
+                : `<object-viewer object="${xmlEscape(stringify(arg))}"></object-viewer>`)).join(' ');
     }
     function renderCode(url) {
         const source = sources[url];
@@ -202,7 +203,8 @@
                             try {
                                 const files = await JSZip.loadAsync(loader.result);
                                 const index = JSON.parse(await files.file('index.json').async('text'));
-                                logs = JSON.parse(await files.file('logs.json').async('text'));
+                                // hehehaw, imagine running into a recursive item
+                                logs = parse(await files.file('logs.json').async('text'));
                                 for (const log of logs) {
                                     message = 'Formating log contents';
                                     subMessage = `Rendering format of log ${log.message}`;
