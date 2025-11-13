@@ -1,5 +1,5 @@
 // replace with your api key, if your a pm dev than just ask gsa for a key
-const KEY = '';
+const KEY = 'AIzaSyBjB5Rtl8pGSqsMSqH5QySmX-Z3Z6I4zoQ';
 import fs from 'fs/promises'
 
 // get the index sheet for what all pages exist
@@ -25,5 +25,7 @@ fetch(`https://sheets.googleapis.com/v4/spreadsheets/114K0H8ZbAA5r0APKLbybgHDcEV
         const sheet = possible[0];
         const req = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/114K0H8ZbAA5r0APKLbybgHDcEVmsrQP5HRwKT589A9c/values/${sheet.name}!A1:B${sheet.height}?key=${KEY}`);
         const cells = await req.json();
-        fs.writeFile(process.argv.at(-1) || 'en.json', JSON.stringify(Object.fromEntries(cells.values), null, 4));
+        cells.values.shift();
+        const langDef = JSON.stringify(Object.fromEntries(cells.values), null, 4);
+        fs.writeFile(process.argv.at(-1) || 'en.json', langDef);
     });
