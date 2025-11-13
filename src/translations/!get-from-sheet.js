@@ -1,5 +1,5 @@
 // replace with your api key, if your a pm dev than just ask gsa for a key
-const KEY = 'AIzaSyBjB5Rtl8pGSqsMSqH5QySmX-Z3Z6I4zoQ';
+const KEY = '';
 import fs from 'fs/promises'
 
 // get the index sheet for what all pages exist
