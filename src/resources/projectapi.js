@@ -529,6 +529,41 @@ class ProjectApi {
         });
     }
 
+    getFollowers(target, page) {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/v1/users/meta/getfollowers?page=${page}&target=${target}&username=${this.username}&token=${this.token}`;
+            fetch(url)
+                .then((res) => {
+                    res.json().then((followers) => {
+                        if (followers.error) {
+                            return reject(followers.error);
+                        }
+                        resolve(followers);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+    getFollowing(target, page) {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/v1/users/meta/getfollowing?page=${page}&target=${target}&username=${this.username}&token=${this.token}`;
+            fetch(url)
+                .then((res) => {
+                    res.json().then((followers) => {
+                        if (followers.error) {
+                            return reject(followers.error);
+                        }
+                        resolve(followers);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        })
+    }
+
     isFollowing(username, target, raw) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/users/isfollowing?username=${username}&target=${target}`;
@@ -1934,6 +1969,37 @@ class ProjectApi {
             token: this.token,
             privateProfile,
             privateToFollowing
+        });
+
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body
+            }).then(res => {
+                res.json().then(json => {
+                    if (!res.ok) {
+                        reject(json.error);
+                        return;
+                    }
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    }
+    updatePrivateFollowing(profileHideFollowing) {
+        const url = `${OriginApiUrl}/api/v1/users/privateFollowSettings`;
+
+        const body = JSON.stringify({
+            username: this.username,
+            token: this.token,
+            profileHideFollowing,
         });
 
         return new Promise((resolve, reject) => {
