@@ -1,5 +1,7 @@
+import { GOOGLE_SHEETS_KEY } from "./!token.js";
+
 // replace with your api key, if your a pm dev than just ask gsa for a key
-const KEY = '';
+const KEY = GOOGLE_SHEETS_KEY;
 import fs from 'fs/promises'
 
 // get the index sheet for what all pages exist

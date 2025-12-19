@@ -9,3 +9,5 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vercel/*
 .dev/*
+
+src/translations/!token.js
