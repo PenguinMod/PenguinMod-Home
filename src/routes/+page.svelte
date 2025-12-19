@@ -683,19 +683,21 @@
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">Today is PenguinMod's Third Anniversary!</h2>
+                        <h2 style="margin-block:4px;">A PenguinJam to end the year!</h2>
                         <div style="width:100%">
                             <p>
-                                Can you believe it has been 3 years since we first started PenguinMod?
+                                New Years is approaching! Start the new year off fresh by joining the PenguinJam!
                                 <br />
-                                We made a video and are hosting a few small things to do! Check the event page for more information.
+                                The theme will be announced on December 21st at 5:00 PM EST.
+                                <br />
+                                See the event page for more details!
                             </p>
                             <p style="margin-block-start:4px;">
-                                <a href="https://penguinmod.com/events/penguinmodthirdanniversary">PenguinMod's Third Anniversary</a>
+                                <a href="https://penguinmod.com/events/penguinjamnewyears2025">New Year's PenguinJam 2025</a>
                             </p>
                             <img
-                                src="/events/news/penguinmodthirdanniversary.png"
-                                alt="PenguinMod's Third Anniversary"
+                                src="/events/news/penguinjamnewyears2025.webp"
+                                alt="New Year's PenguinJam 2025"
                                 style="width:100%;"
                             />
                         </div>
