@@ -683,14 +683,14 @@
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">A PenguinJam to end the year!</h2>
+                        <h2 style="margin-block:4px;">New Year's PenguinJam has started!</h2>
                         <div style="width:100%">
                             <p>
-                                New Years is approaching! Start the new year off fresh by joining the PenguinJam!
+                                The theme is "Reverse!"
                                 <br />
-                                The theme will be announced on December 21st at 5:00 PM EST.
+                                Have fun making projects around this theme to get a badge!
                                 <br />
-                                See the event page for more details!
+                                See the event page for details on how to submit!
                             </p>
                             <p style="margin-block-start:4px;">
                                 <a href="https://penguinmod.com/events/penguinjamnewyears2025">New Year's PenguinJam 2025</a>

@@ -1,6 +1,6 @@
 # 2025 Yeni Yıl PenguinJam’e hoş geldin!
 
-Tema henüz açıklanmadı. Lütfen Game Jam başladığında geri gel
+Bu yılın teması "Ters" (Reverse). Dilediğiniz gibi yorumlayın! Yapabileceğiniz bazı şeyler; kontrolleri tersine çevirmek, rolleri değiştirmek veya zamanı geri sarmaktır. Bunlar sadece birkaç fikir, bizi şaşırtın!
 
 ## Jam Süresi:
 22 Aralık saat 01:00 = 2 Ocak saat 01:00

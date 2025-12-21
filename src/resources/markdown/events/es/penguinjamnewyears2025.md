@@ -1,6 +1,6 @@
 # ¡Bienvenido al PenguinJam de Año Nuevo 2025!
 
-¡El tema aún no se ha revelado! Vuelve cuando empiece la Game Jam.
+El tema de este año es “Inverso”. ¡Interprétalo como quieras! Algunas cosas que puedes hacer son invertir los controles, cambio de roles o rebobinar el tiempo. Estas son solo algunas ideas, ¡sorpréndenos!
 
 ## Duración de la Jam:
 Diciembre 21, 5:00 PM EST - Enero 1, 5:00 PM EST

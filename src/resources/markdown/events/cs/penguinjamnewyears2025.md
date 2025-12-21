@@ -1,6 +1,6 @@
 # Vítejte na Novoročním PenguinJam 2025!
 
-Téma ještě nebylo vydáno, prosím, vraťte se sem a podívejte se na něj, jakmile bude vydáno.
+Téma na letošní rok je “Reverse.” Představte si to jakkoli chcete! Nějaké věci mohou mít prohozené funkce, vyměněné role nebo obrácený čas. Toto je jen pár nápadů, buďte kreativní a překvapte nás!
 
 ## Délka Jamu:
 21\. Prosinec, 5:00 PM EST - 1. Leden, 5:00 PM EST
