@@ -3,7 +3,7 @@
     import Language from "../../resources/language.js";
     import EventPages from "../../resources/markdown/events/pages.js";
 
-    const isHavingEvent = true;
+    const isHavingEvent = false;
     const eventName = "New Year's PenguinJam 2025";
     const eventPath = "penguinjamnewyears2025";
     
