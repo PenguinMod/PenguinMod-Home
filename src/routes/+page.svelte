@@ -194,21 +194,17 @@
     let loggedInAdminOrMod = false;
     onMount(async () => {
         Language.forceUpdate();
-        let username = localStorage.getItem("username")
+        const username = localStorage.getItem("username")
         const token = localStorage.getItem("token")
         if (!token || !username) {
             loggedIn = false;
             loggedInAdminOrMod = false;
         } else {
-            const {username:usernameActual, isAdmin, isApprover} = Authentication.usernameFromCode(username, token)
+            const {isAdmin, isApprover} = Authentication.usernameFromCode(username, token)
                 .catch((err) => {
                     loggedIn = false;
                     loggedInAdminOrMod = false;
                 });
-
-            // oh my god bruh
-            username = usernameActual;
-            localStorage.setItem("username", usernameActual);
 
             loggedInUsername = username;
             ProjectClient.setUsername(username);
