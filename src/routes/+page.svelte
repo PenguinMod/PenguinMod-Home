@@ -200,13 +200,11 @@
             loggedIn = false;
             loggedInAdminOrMod = false;
         } else {
-            const {username, isAdmin, isApprover} = Authentication.usernameFromCode(username, token)
+            const {isAdmin, isApprover} = Authentication.usernameFromCode(username, token)
                 .catch((err) => {
                     loggedIn = false;
                     loggedInAdminOrMod = false;
                 });
-
-                localStorage.setItem("username", username);
 
             loggedInUsername = username;
             ProjectClient.setUsername(username);
