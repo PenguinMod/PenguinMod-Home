@@ -194,24 +194,29 @@
     let loggedInAdminOrMod = false;
     onMount(async () => {
         Language.forceUpdate();
-        const username = localStorage.getItem("username")
+        let username = localStorage.getItem("username")
         const token = localStorage.getItem("token")
         if (!token || !username) {
             loggedIn = false;
             loggedInAdminOrMod = false;
         } else {
-            const {isAdmin, isApprover} = Authentication.usernameFromCode(username, token)
+            Authentication.usernameFromCode(username, token)
+                .then(({username:usernameActual, isAdmin, isApprover}) => {
+                    // oh my god bruh
+                    username = usernameActual;
+                    localStorage.setItem("username", usernameActual);
+
+                    loggedInUsername = username;
+                    ProjectClient.setUsername(username);
+                    ProjectClient.setToken(token);
+                    loggedIn = true;
+                    loggedInAdminOrMod = isAdmin || isApprover;
+                    getAndUpdateMyFeed();
+                })
                 .catch((err) => {
                     loggedIn = false;
                     loggedInAdminOrMod = false;
                 });
-
-            loggedInUsername = username;
-            ProjectClient.setUsername(username);
-            ProjectClient.setToken(token);
-            loggedIn = true;
-            loggedInAdminOrMod = isAdmin || isApprover;
-            getAndUpdateMyFeed();
         }
 
         const projectId = Number(location.hash.replace("#", ""));

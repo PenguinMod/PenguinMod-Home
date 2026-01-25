@@ -137,7 +137,7 @@ class Authentication {
             fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/userfromcode?username=${username}&token=${token}`).then(r => r.json().then(j => {
                 if (j.error) return reject(j.error);
                 resolve({
-                    username: username, 
+                    username: j.username, 
                     isAdmin: j.admin,
                     isApprover: j.approver,
                     ...j
