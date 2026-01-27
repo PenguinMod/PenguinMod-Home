@@ -99,7 +99,7 @@
         class="project-author"
     >
         <img
-            src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${author.username}`}
+            src={`https://fake.penguinmod.com//api/v1/users/getpfp?username=${author.username}`}
             alt="Project Author"
             class="project-author"
         />

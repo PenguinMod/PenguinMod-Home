@@ -44,7 +44,7 @@
     </div>
     <div class="project-author">
         <img
-            src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${author}`}
+            src={`https://fake.penguinmod.com//api/v1/users/getpfp?username=${author}`}
             alt="Project Author"
             class="project-author"
         />

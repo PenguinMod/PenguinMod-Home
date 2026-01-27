@@ -490,7 +490,7 @@
         {:else}
             <div class="welcome-back-card">
                 <img
-                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${loggedInUsername}`}
+                    src={`https://fake.penguinmod.com//api/v1/users/getpfp?username=${loggedInUsername}`}
                     alt="Profile"
                     class="profile-picture"
                 />
@@ -579,7 +579,7 @@
                                         message.data
                                     )}
                                     author={message.username}
-                                    image={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${message.username}`}
+                                    image={`https://fake.penguinmod.com//api/v1/users/getpfp?username=${message.username}`}
                                 />
                             {/if}
                         {/each}

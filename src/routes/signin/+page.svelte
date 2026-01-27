@@ -56,7 +56,7 @@
     let apiOnlineResponding = false;
     if (browser) {
         onMount(() => {
-            const url = `${PUBLIC_API_URL}/api/v1`;
+            const url = `https://fake.penguinmod.com//api/v1`;
             fetch(url).then(res => {
                 apiOnlineResponding = res.ok;
             }).finally(() => {
@@ -127,7 +127,7 @@
 
     function addOAuthEventListener() {
         window.addEventListener("message", (event) => {
-            if (event.origin !== PUBLIC_API_URL) return;
+            if (event.origin !== "https://fake.penguinmod.com/") return;
             
             if (!event.data) return;
 
@@ -159,7 +159,7 @@
     }
 
     function oauthFrame(method) {
-        let iframe = window.open(`${PUBLIC_API_URL}/api/v1/users/loginoauthaccount?method=${method}`, `Login with ${method}`, "width=500,height=500");
+        let iframe = window.open(`https://fake.penguinmod.com//api/v1/users/loginoauthaccount?method=${method}`, `Login with ${method}`, "width=500,height=500");
 
         if (!iframe) {
             alert(TranslationHandler.textSafe(

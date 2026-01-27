@@ -148,7 +148,7 @@
                 {:else}
                     <AccountStatus
                         username={loggedInUsername}
-                        image="{PUBLIC_API_URL}/api/v1/users/getpfp?username={loggedInUsername}"
+                        image="https://fake.penguinmod.com//api/v1/users/getpfp?username={loggedInUsername}"
                         showname={true}
                         status={1}
                         detail={4}

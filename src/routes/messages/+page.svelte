@@ -591,7 +591,7 @@
                                 </p>
                             {:else if message.message.type === "followerAdded"}
                                 <a class="follower-added" href={`/profile?user=${message.message.user.username}`}>
-                                    <img src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${message.message.user.username}`} alt="" />
+                                    <img src={`https://fake.penguinmod.com//api/v1/users/getpfp?username=${message.message.user.username}`} alt="" />
                                     <span>
                                         {String(
                                             TranslationHandler.text(

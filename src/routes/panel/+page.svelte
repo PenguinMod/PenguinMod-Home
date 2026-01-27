@@ -1982,7 +1982,7 @@
                                 }}
                             >
                                 <img
-                                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${content.target}`}
+                                    src={`https://fake.penguinmod.com//api/v1/users/getpfp?username=${content.target}`}
                                     alt={content.target}
                                 />
                                 <div class="reports-user-content">
@@ -2047,7 +2047,7 @@
                                 }}
                             >
                                 <img
-                                    src={`${PUBLIC_API_URL}/api/v1/projects/getproject?projectID=${content.targetID}&requestType=thumbnail`}
+                                    src={`https://fake.penguinmod.com//api/v1/projects/getproject?projectID=${content.targetID}&requestType=thumbnail`}
                                     alt={content.target}
                                 />
                                 <div

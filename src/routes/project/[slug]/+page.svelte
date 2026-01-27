@@ -213,7 +213,7 @@
     <main>
         <div class="namebar">
             <img
-                src="{PUBLIC_API_URL}/api/v1/users/getpfp?username={meta.author.username}&reload=false"
+                src="https://fake.penguinmod.com//api/v1/users/getpfp?username={meta.author.username}&reload=false"
                 alt="{meta.author.username}"
                 draggable="false"
                 onclick="window.open('/profile?user={meta.author.username}')"
@@ -225,7 +225,7 @@
         </div>
         <div class="enter">
             <img
-                src="{PUBLIC_API_URL}/api/v1/projects/getproject?projectID={meta.id}&requestType=thumbnail"
+                src="https://fake.penguinmod.com//api/v1/projects/getproject?projectID={meta.id}&requestType=thumbnail"
                 alt="{meta.title}"
                 onclick="window.open('{PUBLIC_STUDIO_URL}/#{meta.id}')"
             />

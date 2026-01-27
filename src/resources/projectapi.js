@@ -2,7 +2,7 @@ import { PUBLIC_API_URL, PUBLIC_STUDIO_URL, PUBLIC_MAX_UPLOAD_SIZE } from "$env/
 import pmp_protobuf from "pmp-protobuf";
 import JSZip from "jszip";
 
-let OriginApiUrl = PUBLIC_API_URL;
+let OriginApiUrl = "https://fake.penguinmod.com/";
 
 function MB(num) {
     const Kb = num / 1000;

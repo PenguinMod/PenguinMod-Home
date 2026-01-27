@@ -134,7 +134,7 @@
         let login;
 
         const handleMessageReciever = (event) => {
-            if (event.origin !== PUBLIC_API_URL) {
+            if (event.origin !== "https://fake.penguinmod.com/") {
                 return;
             }
 
@@ -287,7 +287,7 @@
     function addOAuthEventListener() {
         return new Promise((resolve) => {
             window.addEventListener("message", (event) => {
-                if (event.origin !== PUBLIC_API_URL) return;
+                if (event.origin !== "https://fake.penguinmod.com/") return;
                 
                 if (!event.data) return;
 
@@ -303,7 +303,7 @@
     
     function oauthFrame(method) {
         let iframe = window.open(
-            `${PUBLIC_API_URL}/api/v1/users/addoauthmethod?method=${method}&username=${ProjectClient.username}&token=${ProjectClient.token}`,
+            `https://fake.penguinmod.com//api/v1/users/addoauthmethod?method=${method}&username=${ProjectClient.username}&token=${ProjectClient.token}`,
             `Sign in with ${method}`,
             "width=500,height=500"
         );
@@ -406,7 +406,7 @@
             <div class="profile-section">
                 <button class="profile-section-image" on:click={setPFP}>
                     <img
-                        src="{PUBLIC_API_URL}/api/v1/users/getpfp?username={loggedInUsername}&reload={pfpReload}"
+                        src="https://fake.penguinmod.com//api/v1/users/getpfp?username={loggedInUsername}&reload={pfpReload}"
                         alt={loggedInUsername}
                     />
                     <div class="profile-section-image-edit">
@@ -692,7 +692,7 @@
                         </h1>
                         <AccountStatus
                             username={loggedInUsername}
-                            image="{PUBLIC_API_URL}/api/v1/users/getpfp?username={loggedInUsername}&reload={pfpReload}"
+                            image="https://fake.penguinmod.com//api/v1/users/getpfp?username={loggedInUsername}&reload={pfpReload}"
                             showname={false}
                             status={standing}
                             detail={4}

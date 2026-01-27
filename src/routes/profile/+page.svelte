@@ -908,7 +908,7 @@
                             <div class="user-username">
                                 <img
                                     style="border-color:{isDonator ? "#a237db" : "#efefef"}"
-                                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${user}`}
+                                    src={`https://fake.penguinmod.com//api/v1/users/getpfp?username=${user}`}
                                     alt="Profile"
                                     class="profile-picture"
                                 />
@@ -1332,7 +1332,7 @@
                                 />
                                 <div class="profile-project-authordiv">
                                     <img
-                                        src="{PUBLIC_API_URL}/api/v1/users/getpfp?username={user}"
+                                        src="https://fake.penguinmod.com//api/v1/users/getpfp?username={user}"
                                         alt="Project Author"
                                         title={user}
                                         class="profile-project-author"

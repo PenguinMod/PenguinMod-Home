@@ -51,7 +51,7 @@
     let apiOnlineResponding = false;
     if (browser) {
         onMount(() => {
-            const url = `${PUBLIC_API_URL}/api/v1`;
+            const url = `https://fake.penguinmod.com//api/v1`;
             fetch(url).then(res => {
                 apiOnlineResponding = res.ok;
             }).finally(() => {
@@ -311,7 +311,7 @@
     }
     
     function checkIsUsernameUnique(username) {
-        let url = `${PUBLIC_API_URL}/api/v1/users/userexists?username=${username}`;
+        let url = `https://fake.penguinmod.com//api/v1/users/userexists?username=${username}`;
 
         return new Promise((resolve, reject) => {
             fetch(url)
@@ -369,7 +369,7 @@
 
     function addOAuthEventListener() {
         window.addEventListener("message", (event) => {
-            if (event.origin !== PUBLIC_API_URL) return;
+            if (event.origin !== "https://fake.penguinmod.com/") return;
             
             if (!event.data) return;
 
@@ -401,7 +401,7 @@
     }
 
     function oauthFrame(method) {
-        let iframe = window.open(`${PUBLIC_API_URL}/api/v1/users/createoauthaccount?method=${method}`, `Sign up with ${method}`, "width=500,height=500");
+        let iframe = window.open(`https://fake.penguinmod.com//api/v1/users/createoauthaccount?method=${method}`, `Sign up with ${method}`, "width=500,height=500");
 
         if (!iframe) {
             alert(TranslationHandler.textSafe(

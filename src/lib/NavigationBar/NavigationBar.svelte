@@ -431,7 +431,7 @@
 			on:click={openAccountMenu}
 		>
 			<img
-				src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${accountUsername}&reload=${pfpkey}`}
+				src={`https://fake.penguinmod.com//api/v1/users/getpfp?username=${accountUsername}&reload=${pfpkey}`}
 				alt="Profile Picture"
 				class="profile-picture"
 			/>

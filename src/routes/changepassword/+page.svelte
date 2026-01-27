@@ -102,7 +102,7 @@
     };
 
     function toOAuthPage(method) {
-        const url = `${PUBLIC_API_URL}/api/v1/users/addpasswordtooauth?method=${method}&username=${username}&token=${token}`
+        const url = `https://fake.penguinmod.com//api/v1/users/addpasswordtooauth?method=${method}&username=${username}&token=${token}`
         location.href = url;
     }
 
