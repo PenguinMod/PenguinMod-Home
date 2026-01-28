@@ -1,14 +1,14 @@
 <script>
     import { onMount } from "svelte";
-    import { page } from '$app/stores';
+    import { page } from "$app/stores";
     import { browser } from "$app/environment";
     import MarkdownIt from "markdown-it";
 
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
-    
+
     // Static values
     import LINK from "../../resources/urls.js";
-    
+
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
@@ -39,24 +39,26 @@
     let country = "";
     let creatingAccount = false;
     let canCreateAccount = false;
-    let apiCreateRejectReason = '';
+    let apiCreateRejectReason = "";
     let showingPassword = false;
     let focused = "";
     let embed = false;
     if (browser) {
-        embed = $page.url.searchParams.get('embed') === "true";
+        embed = $page.url.searchParams.get("embed") === "true";
     }
 
     let apiOnlineChecking = true;
     let apiOnlineResponding = false;
     if (browser) {
         onMount(() => {
-            const url = `https://fake.penguinmod.com//api/v1`;
-            fetch(url).then(res => {
-                apiOnlineResponding = res.ok;
-            }).finally(() => {
-                apiOnlineChecking = false;
-            });
+            const url = `${PUBLIC_API_URL}/api/v1`;
+            fetch(url)
+                .then((res) => {
+                    apiOnlineResponding = res.ok;
+                })
+                .finally(() => {
+                    apiOnlineChecking = false;
+                });
         });
     }
 
@@ -73,21 +75,28 @@
     let captcha_token = false;
 
     const usernameRequirements = [
-        {name: "username.requirement.length", value: false},
-        {name: "username.requirement.letters", value: false},
-        {name: "username.requirement.unique", value: false}
-    ]
+        { name: "username.requirement.length", value: false },
+        { name: "username.requirement.letters", value: false },
+        { name: "username.requirement.unique", value: false },
+    ];
 
     const passwordRequirements = [
-        {name: "password.requirement.length", value: false},
-        {name: "password.requirement.casing", value: false},
-        {name: "password.requirement.number", value: false},
-        {name: "password.requirement.symbol", value: false},
-    ]
+        { name: "password.requirement.length", value: false },
+        { name: "password.requirement.casing", value: false },
+        { name: "password.requirement.number", value: false },
+        { name: "password.requirement.symbol", value: false },
+    ];
 
     async function createAccount() {
-        const token = await Authentication.createAccount(username, password, email, birthday, country, captcha_token);
-        
+        const token = await Authentication.createAccount(
+            username,
+            password,
+            email,
+            birthday,
+            country,
+            captcha_token,
+        );
+
         if (!token) {
             throw "Failed to create account";
         }
@@ -102,73 +111,81 @@
                 return;
             }
             if (emailValid === 1) {
-                alert(TranslationHandler.textSafe(
-                    "forgotpassword.invalidemail",
-                    currentLang,
-                    "Your email is not valid."
-                ));
+                alert(
+                    TranslationHandler.textSafe(
+                        "forgotpassword.invalidemail",
+                        currentLang,
+                        "Your email is not valid.",
+                    ),
+                );
                 return;
             }
 
             if (!consentedToDataUsage || !accurateDataAgreement) {
-                return alert(TranslationHandler.textSafe(
-                    "agreement.requirement.all",
-                    currentLang,
-                    "Not all agreements have been checked."
-                ));
+                return alert(
+                    TranslationHandler.textSafe(
+                        "agreement.requirement.all",
+                        currentLang,
+                        "Not all agreements have been checked.",
+                    ),
+                );
             }
 
             if (!captcha_token) {
-                return alert(TranslationHandler.textSafe(
-                    "login.error.captcha.complete",
-                    currentLang,
-                    "Please complete the captcha."
-                ));
+                return alert(
+                    TranslationHandler.textSafe(
+                        "login.error.captcha.complete",
+                        currentLang,
+                        "Please complete the captcha.",
+                    ),
+                );
             }
 
-            alert(TranslationHandler.textSafe(
-                "username.requirement.notmet",
-                currentLang,
-                "Your username or password do not meet the requirements needed to create an account."
-            ));
+            alert(
+                TranslationHandler.textSafe(
+                    "username.requirement.notmet",
+                    currentLang,
+                    "Your username or password do not meet the requirements needed to create an account.",
+                ),
+            );
             return;
         }
 
         if (creatingAccount) return;
         creatingAccount = true;
-        
+
         createAccount()
-        .then(() => {
-            if (embed) {
-                const opener = window.opener || window.parent;
+            .then(
+                () => {
+                    if (embed) {
+                        const opener = window.opener || window.parent;
 
-                function post(data) {
-                    opener.postMessage(
-                        data,
-                        `/`
-                    );
-                }
+                        function post(data) {
+                            opener.postMessage(data, `/`);
+                        }
 
-                post();
+                        post();
 
-                window.close();
-                return;
-            }
+                        window.close();
+                        return;
+                    }
 
-            // redirect
-            const redir = $page.url.searchParams.get('redirect');
-        
-            window.location.href = redir ? redir : "/";
-        }, (err) => {
-            canCreateAccount = false;
-            apiCreateRejectReason = err;
-            alert(`Failed to create account: ${err}`);
-            console.error(err);
-        })
-        .finally(() => {
-            creatingAccount = false;
-        });
-    }
+                    // redirect
+                    const redir = $page.url.searchParams.get("redirect");
+
+                    window.location.href = redir ? redir : "/";
+                },
+                (err) => {
+                    canCreateAccount = false;
+                    apiCreateRejectReason = err;
+                    alert(`Failed to create account: ${err}`);
+                    console.error(err);
+                },
+            )
+            .finally(() => {
+                creatingAccount = false;
+            });
+    };
     const parseBirthday = (birthday) => {
         if (!birthday) return;
         if (typeof birthday !== "string") return;
@@ -188,25 +205,36 @@
     let hasDoneUsernameCheck = false;
     let usernameUniqueCheckId = 0; // used to fix problems when we type while checking if a username is unique
     function checkIfValid() {
-        const usernameDoesNotMeetLength = username.length < 3 || username.length > 20;
+        const usernameDoesNotMeetLength =
+            username.length < 3 || username.length > 20;
 
-        const usernameHasIllegalChars = Boolean(username.match(/[^a-z0-9\-_]/i));
+        const usernameHasIllegalChars = Boolean(
+            username.match(/[^a-z0-9\-_]/i),
+        );
 
         const userCheck = usernameDoesNotMeetLength || usernameHasIllegalChars;
 
-        const passwordDoesNotMeetLength = password.length < 8 || password.length > 50;
-        const passwordMeetsTextInclude = password.match(/[a-z]/) && password.match(/[A-Z]/);
+        const passwordDoesNotMeetLength =
+            password.length < 8 || password.length > 50;
+        const passwordMeetsTextInclude =
+            password.match(/[a-z]/) && password.match(/[A-Z]/);
         const passwordHasNumber = !!password.match(/[0-9]/);
         const passwordMeetsSpecialInclude = !!password.match(/[^a-z0-9]/i);
 
-        const passwordCheck = passwordDoesNotMeetLength || !(passwordMeetsTextInclude && passwordMeetsSpecialInclude && passwordHasNumber);
+        const passwordCheck =
+            passwordDoesNotMeetLength ||
+            !(
+                passwordMeetsTextInclude &&
+                passwordMeetsSpecialInclude &&
+                passwordHasNumber
+            );
 
         passwordRequirements[0].value = !passwordDoesNotMeetLength;
         passwordRequirements[1].value = passwordMeetsTextInclude;
         passwordRequirements[2].value = passwordHasNumber;
         passwordRequirements[3].value = passwordMeetsSpecialInclude;
         passwordValid = !passwordCheck;
-        
+
         // NOTE: The API technically doesnt require a birthday or country, but that's only for OAuth2 accounts when they are first created.
         // We can skip that on the frontend for password-based accounts to make sign up smoother.
         birthdayFaked = false;
@@ -226,7 +254,10 @@
             if (birthYear > currentDate.getFullYear()) {
                 birthdayValid = false;
             }
-            if (birthYear === currentDate.getFullYear() && parsedBirthday.getDate() > currentDate.getDate()) {
+            if (
+                birthYear === currentDate.getFullYear() &&
+                parsedBirthday.getDate() > currentDate.getDate()
+            ) {
                 birthdayValid = false;
             }
         }
@@ -242,8 +273,12 @@
             return;
         }
 
-        canCreateAccount = !(userCheck || passwordCheck) && (isUsernameUnique && hasDoneUsernameCheck) && emailValid !== 1;
-        usernameValid = (isUsernameUnique && hasDoneUsernameCheck) && !userCheck;
+        canCreateAccount =
+            !(userCheck || passwordCheck) &&
+            isUsernameUnique &&
+            hasDoneUsernameCheck &&
+            emailValid !== 1;
+        usernameValid = isUsernameUnique && hasDoneUsernameCheck && !userCheck;
         if (!birthdayValid || !countryValid) {
             canCreateAccount = false;
         }
@@ -253,7 +288,9 @@
 
         usernameRequirements[0].value = !usernameDoesNotMeetLength;
         usernameRequirements[1].value = !usernameHasIllegalChars;
-        usernameRequirements[2].value = hasDoneUsernameCheck ? isUsernameUnique : "loading";
+        usernameRequirements[2].value = hasDoneUsernameCheck
+            ? isUsernameUnique
+            : "loading";
 
         if (userCheck) {
             // the username is unique if it doesnt meet any of the other requirements
@@ -279,8 +316,10 @@
 
     const validateEmail = (email) => {
         return email.match(
-            /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-        ) ? 2 : 1;
+            /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        )
+            ? 2
+            : 1;
     };
     const getMaxBirthdate = () => {
         const todaysDate = new Date();
@@ -299,30 +338,30 @@
     const birthdayInputChanged = (event) => {
         birthday = event.target.value;
         checkIfValid();
-    }
+    };
     const countryInputChanged = (event) => {
         country = event.target.value;
         checkIfValid();
-    }
+    };
 
     function passwordInputChanged(event) {
         password = event.target.value;
         checkIfValid();
     }
-    
+
     function checkIsUsernameUnique(username) {
-        let url = `https://fake.penguinmod.com//api/v1/users/userexists?username=${username}`;
+        let url = `${PUBLIC_API_URL}/api/v1/users/userexists?username=${username}`;
 
         return new Promise((resolve, reject) => {
             fetch(url)
-            .then((res) => res.json())
-            .then((res) => {
-                // if it doesnt exist, its unique
-                resolve(!res.exists);
-            })
-            .catch((err) => {
-                reject(err);
-            });
+                .then((res) => res.json())
+                .then((res) => {
+                    // if it doesnt exist, its unique
+                    resolve(!res.exists);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
@@ -340,7 +379,7 @@
         setInterval(() => {
             if (!tabIsFocused) return;
             if (lastCheckedValue === username) return;
-            
+
             // we dont want to query the api while they are typing
             if (Date.now() - lastUsernameType < 600) return;
             // username should be valid before we check anything
@@ -351,14 +390,13 @@
             usernameUniqueCheckId += 1;
             let checkIdThisEvent = usernameUniqueCheckId;
 
-            checkIsUsernameUnique(username)
-                .then(isUnique => {
-                    // this affectively acts like restartExistingThreads in scratch, since the username changed
-                    if (checkIdThisEvent != usernameUniqueCheckId) return;
-                    hasDoneUsernameCheck = true;
-                    isUsernameUnique = isUnique;
-                    checkIfValid();
-                });
+            checkIsUsernameUnique(username).then((isUnique) => {
+                // this affectively acts like restartExistingThreads in scratch, since the username changed
+                if (checkIdThisEvent != usernameUniqueCheckId) return;
+                hasDoneUsernameCheck = true;
+                isUsernameUnique = isUnique;
+                checkIfValid();
+            });
             lastCheckedValue = username;
         }, 1000);
     }
@@ -369,8 +407,8 @@
 
     function addOAuthEventListener() {
         window.addEventListener("message", (event) => {
-            if (event.origin !== "https://fake.penguinmod.com/") return;
-            
+            if (event.origin !== PUBLIC_API_URL) return;
+
             if (!event.data) return;
 
             const { username, token } = event.data;
@@ -382,10 +420,7 @@
                 const opener = window.opener || window.parent;
 
                 function post(data) {
-                    opener.postMessage(
-                        data,
-                        `/`
-                    );
+                    opener.postMessage(data, `/`);
                 }
 
                 post();
@@ -394,21 +429,27 @@
                 return;
             }
 
-            const redir = $page.url.searchParams.get('redirect');
+            const redir = $page.url.searchParams.get("redirect");
 
             location.href = redir ? redir : "/";
         });
     }
 
     function oauthFrame(method) {
-        let iframe = window.open(`https://fake.penguinmod.com//api/v1/users/createoauthaccount?method=${method}`, `Sign up with ${method}`, "width=500,height=500");
+        let iframe = window.open(
+            `${PUBLIC_API_URL}/api/v1/users/createoauthaccount?method=${method}`,
+            `Sign up with ${method}`,
+            "width=500,height=500",
+        );
 
         if (!iframe) {
-            alert(TranslationHandler.textSafe(
-                "signup.oauth.nopopup",
-                currentLang,
-                "Please enable popups to sign up with {{WEBSITE}}."
-            ).replace('{{WEBSITE}}', method));
+            alert(
+                TranslationHandler.textSafe(
+                    "signup.oauth.nopopup",
+                    currentLang,
+                    "Please enable popups to sign up with {{WEBSITE}}.",
+                ).replace("{{WEBSITE}}", method),
+            );
             return;
         }
 
@@ -433,18 +474,20 @@
         linkify: false,
         breaks: true,
     });
-    
-    const defaultLinkOpenRender = md.renderer.rules.link_open || function (tokens, idx, options, env, self) {
-        return self.renderToken(tokens, idx, options);
-    };
+
+    const defaultLinkOpenRender =
+        md.renderer.rules.link_open ||
+        function (tokens, idx, options, env, self) {
+            return self.renderToken(tokens, idx, options);
+        };
     md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
         // we should not exit the signup page
-        tokens[idx].attrSet('target', '_blank');
+        tokens[idx].attrSet("target", "_blank");
 
         // Pass the token to the default renderer.
         return defaultLinkOpenRender(tokens, idx, options, env, self);
     };
-    
+
     const env = {};
     const generateMarkdown = (mdtext) => {
         const tokens = md.parse(mdtext, env);
@@ -452,16 +495,22 @@
         return bodyHTML;
     };
 </script>
-    
+
 <svelte:head>
     <title>PenguinMod - Sign Up</title>
     <meta name="title" content="PenguinMod - Sign Up" />
     <meta property="og:title" content="PenguinMod - Sign Up" />
-    <meta property="twitter:title" content="PenguinMod - Sign Up">
-    <meta name="description" content="Sign up for PenguinMod to start sharing your projects!">
-    <meta property="twitter:description" content="Sign up for PenguinMod to start sharing your projects!">
-    <meta property="og:url" content="https://penguinmod.com/signup">
-    <meta property="twitter:url" content="https://penguinmod.com/signup">
+    <meta property="twitter:title" content="PenguinMod - Sign Up" />
+    <meta
+        name="description"
+        content="Sign up for PenguinMod to start sharing your projects!"
+    />
+    <meta
+        property="twitter:description"
+        content="Sign up for PenguinMod to start sharing your projects!"
+    />
+    <meta property="og:url" content="https://penguinmod.com/signup" />
+    <meta property="twitter:url" content="https://penguinmod.com/signup" />
 </svelte:head>
 
 {#if !embed}
@@ -482,7 +531,7 @@
                     title={TranslationHandler.textSafe(
                         "signup.profilewheel",
                         currentLang,
-                        "Feel free to draw your own profile picture to get ready for your new account!"
+                        "Feel free to draw your own profile picture to get ready for your new account!",
                     )}
                 />
             </div>
@@ -499,11 +548,29 @@
                 <div class="gsi-material-button-state"></div>
                 <div class="gsi-material-button-content-wrapper">
                     <div class="gsi-material-button-icon">
-                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: block;">
-                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                        <svg
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 48 48"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            style="display: block;"
+                        >
+                            <path
+                                fill="#EA4335"
+                                d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+                            ></path>
+                            <path
+                                fill="#4285F4"
+                                d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
+                            ></path>
+                            <path
+                                fill="#FBBC05"
+                                d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
+                            ></path>
+                            <path
+                                fill="#34A853"
+                                d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+                            ></path>
                             <path fill="none" d="M0 0h48v48H0z"></path>
                         </svg>
                     </div>
@@ -556,7 +623,11 @@
                 <div class="gsi-material-button-state"></div>
                 <div class="gsi-material-button-content-wrapper">
                     <div class="gsi-material-button-icon">
-                        <img src="/Scratch_S.svg" alt="Scratch" style="display:block;width:20px;height:20px;">
+                        <img
+                            src="/Scratch_S.svg"
+                            alt="Scratch"
+                            style="display:block;width:20px;height:20px;"
+                        />
                     </div>
                     <span class="gsi-material-button-contents">
                         <LocalizedText
@@ -595,18 +666,18 @@
                 placeholder={TranslationHandler.textSafe(
                     "account.fields.username.placeholder",
                     currentLang,
-                    "Use something iconic!"
+                    "Use something iconic!",
                 )}
                 data-valid={usernameValid}
                 maxlength="20"
                 on:input={usernameInputChanged}
-                on:focusin={() => focused = "username"}
-                on:focusout={() => focused = ""}
+                on:focusin={() => (focused = "username")}
+                on:focusout={() => (focused = "")}
             />
             {#if focused === "username"}
                 <ChecksBox items={usernameRequirements} />
             {/if}
-                
+
             <span class="input-title">
                 <LocalizedText
                     text="Email (Optional)"
@@ -619,14 +690,14 @@
                 placeholder={TranslationHandler.textSafe(
                     "account.fields.email.placeholder",
                     currentLang,
-                    "Your email address"
+                    "Your email address",
                 )}
                 data-valid={emailValid}
                 class="email-input"
                 maxlength="254"
                 on:input={emailInputChanged}
-                on:focusin={() => focused = "email"}
-                on:focusout={() => focused = ""}
+                on:focusin={() => (focused = "email")}
+                on:focusout={() => (focused = "")}
             />
 
             <span class="input-title">
@@ -642,17 +713,15 @@
                     placeholder={TranslationHandler.textSafe(
                         "account.fields.password.placeholder",
                         currentLang,
-                        "Remember to write it down!"
+                        "Remember to write it down!",
                     )}
                     data-valid={passwordValid}
                     maxlength="50"
                     on:input={passwordInputChanged}
-                    on:focusin={() => focused = "password"}
-                    on:focusout={() => focused = ""}
+                    on:focusin={() => (focused = "password")}
+                    on:focusout={() => (focused = "")}
                 />
-                <button
-                    class="password-show"
-                    on:click={togglePasswordView}>
+                <button class="password-show" on:click={togglePasswordView}>
                     {#if showingPassword}
                         <img
                             src="/account/hidepassword.svg"
@@ -692,7 +761,9 @@
                     />
                 </option>
                 {#each CountryLookup.countryCodes as countryCode}
-                    <option value={countryCode}>{CountryLookup.countryNames[countryCode]}</option>
+                    <option value={countryCode}
+                        >{CountryLookup.countryNames[countryCode]}</option
+                    >
                 {/each}
             </select>
 
@@ -711,9 +782,11 @@
                 on:input={birthdayInputChanged}
             />
 
-            <Captcha on:update={(event) => {
-                captcha_token = event.detail;
-            }} />
+            <Captcha
+                on:update={(event) => {
+                    captcha_token = event.detail;
+                }}
+            />
 
             {#if birthdayFaked}
                 <p class="birthday-warning">
@@ -722,7 +795,7 @@
                         key="birthday.requirement.faked.line1"
                         lang={currentLang}
                     />
-                    <br>
+                    <br />
                     <LocalizedText
                         text="That seems like you're trying to secretly make an account without them knowing."
                         key="birthday.requirement.faked.line2"
@@ -738,11 +811,13 @@
                     on:change={checkIfValid}
                 />
                 <span class="disable-markdown-margin">
-                    {@html generateMarkdown(`${TranslationHandler.textSafe(
-                        "account.fields.agreements.personalinfo",
-                        currentLang,
-                        "I agree to allow PenguinMod to collect and use my country and date of birth (or my child's if I am registering on their behalf) in accordance with the [Privacy Policy](/privacy)."
-                    )}`)}
+                    {@html generateMarkdown(
+                        `${TranslationHandler.textSafe(
+                            "account.fields.agreements.personalinfo",
+                            currentLang,
+                            "I agree to allow PenguinMod to collect and use my country and date of birth (or my child's if I am registering on their behalf) in accordance with the [Privacy Policy](/privacy).",
+                        )}`,
+                    )}
                 </span>
             </label>
             <label style="width:60%">
@@ -752,23 +827,32 @@
                     on:change={checkIfValid}
                 />
                 <span class="disable-markdown-margin">
-                    {@html generateMarkdown(`${TranslationHandler.textSafe(
-                        "account.fields.agreements.accurate",
-                        currentLang,
-                        "I confirm that the information I have provided is accurate, and I understand that my date of birth and country cannot be changed after account creation without contacting support."
-                    )}`)}
+                    {@html generateMarkdown(
+                        `${TranslationHandler.textSafe(
+                            "account.fields.agreements.accurate",
+                            currentLang,
+                            "I confirm that the information I have provided is accurate, and I understand that my date of birth and country cannot be changed after account creation without contacting support.",
+                        )}`,
+                    )}
                 </span>
             </label>
 
             <p>
-                {@html generateMarkdown(`${TranslationHandler.textSafe(
-                    "signup.confirm.legal.alt",
-                    currentLang,
-                    "By creating a PenguinMod account through any means provided on this page, you agree to abide by the [Terms of Service](/terms) and [Uploading Guidelines](/guidelines/uploading) and confirm that you have read the [Privacy Policy](/privacy) in its entirety. If you are a parent or guardian creating an account for a child, you agree to these terms on their behalf. If you are legally an adult, you confirm that you are creating this account for yourself."
-                )}`)}
+                {@html generateMarkdown(
+                    `${TranslationHandler.textSafe(
+                        "signup.confirm.legal.alt",
+                        currentLang,
+                        "By creating a PenguinMod account through any means provided on this page, you agree to abide by the [Terms of Service](/terms) and [Uploading Guidelines](/guidelines/uploading) and confirm that you have read the [Privacy Policy](/privacy) in its entirety. If you are a parent or guardian creating an account for a child, you agree to these terms on their behalf. If you are legally an adult, you confirm that you are creating this account for yourself.",
+                    )}`,
+                )}
             </p>
 
-            <button type="submit" class="create-acc" data-canCreate={canCreateAccount} on:click={createAccountSafe}>
+            <button
+                type="submit"
+                class="create-acc"
+                data-canCreate={canCreateAccount}
+                on:click={createAccountSafe}
+            >
                 {#if creatingAccount}
                     <LoadingSpinner icon="/loading_white.png" />
                 {:else}
@@ -844,7 +928,7 @@
     <!-- the magical div of scroll -->
     <div style="height:32px" />
 </div>
-    
+
 <style>
     * {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -999,7 +1083,7 @@
     .footer-links a {
         margin: 0 8px;
     }
-    
+
     main a {
         margin-top: 8px;
         color: dodgerblue;
@@ -1015,7 +1099,7 @@
         padding: 4px 8px;
         width: 60%;
         margin-top: 4px;
-        
+
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -1023,19 +1107,19 @@
         border: 1px solid rgba(0, 0, 0, 0.2);
         font-size: 18px;
     }
-    
-    .create-acc[data-canCreate=true] {
+
+    .create-acc[data-canCreate="true"] {
         background: #00c3ff;
         cursor: pointer;
         color: white;
     }
 
-    :global(body.dark-mode) .create-acc[data-canCreate=false] {
+    :global(body.dark-mode) .create-acc[data-canCreate="false"] {
         background: #9c9c9c;
         color: rgb(255, 255, 255);
     }
 
-    .create-acc[data-canCreate=false] {
+    .create-acc[data-canCreate="false"] {
         background: #9c9c9c;
         color: rgb(255, 255, 255);
         cursor: not-allowed;
@@ -1058,25 +1142,32 @@
     }
 
     @keyframes profile-scroll {
-        0%, 10% {
+        0%,
+        10% {
             transform: translateX(0);
         }
-        15%, 25% {
+        15%,
+        25% {
             transform: translateX(-96px);
         }
-        30%, 40% {
+        30%,
+        40% {
             transform: translateX(-192px);
         }
-        45%, 55% {
+        45%,
+        55% {
             transform: translateX(-288px);
         }
-        60%, 70% {
+        60%,
+        70% {
             transform: translateX(-384px);
         }
-        75%, 85% {
+        75%,
+        85% {
             transform: translateX(-480px);
         }
-        90%, 100% {
+        90%,
+        100% {
             transform: translateX(-480px);
         }
     }
@@ -1113,7 +1204,7 @@
         box-sizing: border-box;
         color: #1f1f1f;
         cursor: pointer;
-        font-family: 'Roboto', arial, sans-serif;
+        font-family: "Roboto", arial, sans-serif;
         font-size: 14px;
         height: 40px;
         letter-spacing: 0.25px;
@@ -1122,8 +1213,14 @@
         padding: 0 12px;
         position: relative;
         text-align: center;
-        -webkit-transition: background-color .218s, border-color .218s, box-shadow .218s;
-        transition: background-color .218s, border-color .218s, box-shadow .218s;
+        -webkit-transition:
+            background-color 0.218s,
+            border-color 0.218s,
+            box-shadow 0.218s;
+        transition:
+            background-color 0.218s,
+            border-color 0.218s,
+            box-shadow 0.218s;
         vertical-align: middle;
         white-space: nowrap;
         width: 60%;
@@ -1162,7 +1259,7 @@
     .gsi-material-button .gsi-material-button-contents {
         -webkit-flex-grow: 1;
         flex-grow: 1;
-        font-family: 'Roboto', arial, sans-serif;
+        font-family: "Roboto", arial, sans-serif;
         font-weight: 500;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -1170,8 +1267,8 @@
     }
 
     .gsi-material-button .gsi-material-button-state {
-        -webkit-transition: opacity .218s;
-        transition: opacity .218s;
+        -webkit-transition: opacity 0.218s;
+        transition: opacity 0.218s;
         bottom: 0;
         left: 0;
         opacity: 0;
@@ -1202,28 +1299,38 @@
         opacity: 38%;
     }
 
-    .gsi-material-button:not(:disabled):active .gsi-material-button-state, 
+    .gsi-material-button:not(:disabled):active .gsi-material-button-state,
     .gsi-material-button:not(:disabled):focus .gsi-material-button-state {
         background-color: #303030;
         opacity: 12%;
     }
 
-    :global(body.dark-mode) .gsi-material-button:not(:disabled):active .gsi-material-button-state, 
-    :global(body.dark-mode) .gsi-material-button:not(:disabled):focus .gsi-material-button-state {
+    :global(body.dark-mode)
+        .gsi-material-button:not(:disabled):active
+        .gsi-material-button-state,
+    :global(body.dark-mode)
+        .gsi-material-button:not(:disabled):focus
+        .gsi-material-button-state {
         background-color: white;
         opacity: 12%;
     }
 
     .gsi-material-button:not(:disabled):hover {
-        -webkit-box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
-        box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
+        -webkit-box-shadow:
+            0 1px 2px 0 rgba(60, 64, 67, 0.3),
+            0 1px 3px 1px rgba(60, 64, 67, 0.15);
+        box-shadow:
+            0 1px 2px 0 rgba(60, 64, 67, 0.3),
+            0 1px 3px 1px rgba(60, 64, 67, 0.15);
     }
 
     .gsi-material-button:not(:disabled):hover .gsi-material-button-state {
         background-color: #303030;
         opacity: 8%;
     }
-    :global(body.dark-mode) .gsi-material-button:not(:disabled):hover .gsi-material-button-state {
+    :global(body.dark-mode)
+        .gsi-material-button:not(:disabled):hover
+        .gsi-material-button-state {
         background-color: white;
         opacity: 8%;
     }

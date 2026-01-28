@@ -1,8 +1,12 @@
-import { PUBLIC_API_URL, PUBLIC_STUDIO_URL, PUBLIC_MAX_UPLOAD_SIZE } from "$env/static/public";
+import {
+    PUBLIC_API_URL,
+    PUBLIC_STUDIO_URL,
+    PUBLIC_MAX_UPLOAD_SIZE,
+} from "$env/static/public";
 import pmp_protobuf from "pmp-protobuf";
 import JSZip from "jszip";
 
-let OriginApiUrl = "https://fake.penguinmod.com/";
+let OriginApiUrl = PUBLIC_API_URL;
 
 function MB(num) {
     const Kb = num / 1000;
@@ -98,7 +102,7 @@ class ProjectApi {
     }
     static getProfile(user, includeBio) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/profile?target=${user}${includeBio ? '&bio=true' : ''}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
+            const url = `${OriginApiUrl}/api/v1/users/profile?target=${user}${includeBio ? "&bio=true" : ""}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -119,12 +123,12 @@ class ProjectApi {
             return ProjectApi.CachedDonators[user];
         }
         const badges = await ProjectApi.getUserBadges(user);
-        ProjectApi.CachedDonators[user] = badges.includes('donator');
-        return badges.includes('donator');
+        ProjectApi.CachedDonators[user] = badges.includes("donator");
+        return badges.includes("donator");
     }
-    static getProjects(page, oldFirst=false, username="", token="") {
+    static getProjects(page, oldFirst = false, username = "", token = "") {
         return new Promise((resolve, reject) => {
-            const reverseParam = oldFirst ? '&reverse=true' : '';
+            const reverseParam = oldFirst ? "&reverse=true" : "";
             const url = `${OriginApiUrl}/api/v1/projects/getprojects?page=${page}${reverseParam}&username=${username}&token=${token}`;
             fetch(url)
                 .then((res) => {
@@ -149,7 +153,14 @@ class ProjectApi {
      * @param {string} token token of user
      * @returns Array of projects
      */
-    static searchProjects(page, searchQuery, username, token, allow_user=false, reverse=false) {
+    static searchProjects(
+        page,
+        searchQuery,
+        username,
+        token,
+        allow_user = false,
+        reverse = false,
+    ) {
         const query = searchQuery.split(":", 1)[0];
         let api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(query)}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
         switch (query) {
@@ -160,7 +171,7 @@ class ProjectApi {
                     api = `${OriginApiUrl}/api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
                     break;
                 }
-                // fallthrough
+            // fallthrough
             case "by":
                 const byQuery = searchQuery.split(":");
                 byQuery.shift();
@@ -169,7 +180,12 @@ class ProjectApi {
             case "remixes":
                 const projectID = searchQuery.split(":");
                 projectID.shift();
-                return ProjectApi.getProjectRemixes(projectID, page, username, token);
+                return ProjectApi.getProjectRemixes(
+                    projectID,
+                    page,
+                    username,
+                    token,
+                );
             case "featured":
             case "newest":
             case "views":
@@ -202,7 +218,7 @@ class ProjectApi {
     }
 
     getRemovedProjects() {
-        throw new Error("Unapproved Projects can only be viewed in a client")
+        throw new Error("Unapproved Projects can only be viewed in a client");
     }
 
     /**
@@ -226,9 +242,9 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
-    
+
     async getFrontPage() {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/projects/frontpage?username=${this.username}&token=${this.token}`; // so mods can see ALL!!!!!!!!!!!!!
@@ -246,7 +262,7 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
 
     static getProjectMeta(id) {
@@ -265,7 +281,7 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
 
     static getProjectThumbnail(id) {
@@ -282,10 +298,10 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
 
-    static getProjectRemixes(id, page=0, username, token) {
+    static getProjectRemixes(id, page = 0, username, token) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/projects/getremixes?projectID=${id}&page=${page}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
             fetch(url)
@@ -301,7 +317,7 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
 
     static getProjectFile(id) {
@@ -317,11 +333,11 @@ class ProjectApi {
                 })
                 .then((res) => {
                     const blob = new Uint8Array(res.project.data);
-                    const assets = []
+                    const assets = [];
                     for (const asset of res.assets) {
                         assets.push({
                             id: asset.id,
-                            buffer: new Uint8Array(asset.buffer.data).buffer
+                            buffer: new Uint8Array(asset.buffer.data).buffer,
                         });
                     }
                     return pmp_protobuf.protobufToPMP(blob, assets);
@@ -336,35 +352,40 @@ class ProjectApi {
     }
 
     async downloadHardRejectedProject(id) {
-        return new Promise(((resolve, reject) => {
-            const params = `project=${id}&username=${this.username}&token=${this.token}`;
-            const url = `${OriginApiUrl}/api/v1/projects/downloadHardReject?${params}`;
-            fetch(url)
-                .then((res) => {
-                    if (!res.ok) {
-                        res.text().then(reject);
-                        return;
-                    }
-                    return res.json();
-                })
-                .then(((res) => {
-                    const blob = new Uint8Array(res.project.data);
-                    const assets = []
-                    for (const asset of res.assets) {
-                        assets.push({
-                            id: asset.id,
-                            buffer: new Uint8Array(asset.buffer.data).buffer
-                        });
-                    }
-                    return pmp_protobuf.protobufToPMP(blob, assets);
-                }).bind(this))
-                .then((arrayBuffer) => {
-                    resolve(arrayBuffer);
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        }).bind(this))
+        return new Promise(
+            ((resolve, reject) => {
+                const params = `project=${id}&username=${this.username}&token=${this.token}`;
+                const url = `${OriginApiUrl}/api/v1/projects/downloadHardReject?${params}`;
+                fetch(url)
+                    .then((res) => {
+                        if (!res.ok) {
+                            res.text().then(reject);
+                            return;
+                        }
+                        return res.json();
+                    })
+                    .then(
+                        ((res) => {
+                            const blob = new Uint8Array(res.project.data);
+                            const assets = [];
+                            for (const asset of res.assets) {
+                                assets.push({
+                                    id: asset.id,
+                                    buffer: new Uint8Array(asset.buffer.data)
+                                        .buffer,
+                                });
+                            }
+                            return pmp_protobuf.protobufToPMP(blob, assets);
+                        }).bind(this),
+                    )
+                    .then((arrayBuffer) => {
+                        resolve(arrayBuffer);
+                    })
+                    .catch((err) => {
+                        reject(err);
+                    });
+            }).bind(this),
+        );
     }
 
     setToken(p) {
@@ -452,7 +473,7 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
     getMyFeed(page) {
         return new Promise((resolve, reject) => {
@@ -489,7 +510,7 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
     getMessageCount() {
         return new Promise((resolve, reject) => {
@@ -558,13 +579,13 @@ class ProjectApi {
                 username: this.username,
                 token: this.token,
                 target: username,
-                toggle
+                toggle,
             };
             const url = `${OriginApiUrl}/api/v1/users/follow`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
+                method: "POST",
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -578,7 +599,7 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
 
     readMessage(id) {
@@ -586,9 +607,9 @@ class ProjectApi {
             const data = {
                 username: this.username,
                 token: this.token,
-                messageID: id
+                messageID: id,
             };
-            if (typeof id !== 'string') {
+            if (typeof id !== "string") {
                 reject();
                 return;
             }
@@ -596,7 +617,7 @@ class ProjectApi {
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
+                method: "POST",
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -610,20 +631,20 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
 
     markAllMessagesAsRead() {
         return new Promise((resolve, reject) => {
             const data = {
                 username: this.username,
-                token: this.token
+                token: this.token,
             };
             const url = `${OriginApiUrl}/api/v1/users/markAllMessagesAsRead`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
+                method: "POST",
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -637,7 +658,7 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
 
     disputeMessage(id, text) {
@@ -646,13 +667,13 @@ class ProjectApi {
                 username: this.username,
                 token: this.token,
                 messageID: id,
-                dispute: text
+                dispute: text,
             };
             const url = `${OriginApiUrl}/api/v1/projects/dispute`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
+                method: "POST",
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -666,11 +687,12 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
-    
-    getReports(type, userOrId, page=0) {
-        if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
+
+    getReports(type, userOrId, page = 0) {
+        if (type !== "project" && type !== "user")
+            throw new Error("Invalid reporting type");
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/reports/getReportsByTarget?target=${userOrId}&username=${this.username}&token=${this.token}&page=${page}`;
             fetch(url)
@@ -689,7 +711,8 @@ class ProjectApi {
         });
     }
     getTypeWithReports(type, page) {
-        if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
+        if (type !== "project" && type !== "user")
+            throw new Error("Invalid reporting type");
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/reports/getReports?username=${this.username}&token=${this.token}&type=${type}&page=${page}`;
             fetch(url)
@@ -712,13 +735,13 @@ class ProjectApi {
             const data = {
                 username: this.username,
                 token: this.token,
-                reportID: id
+                reportID: id,
             };
             const url = `${OriginApiUrl}/api/v1/reports/deleteReport`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
+                method: "POST",
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -738,13 +761,13 @@ class ProjectApi {
             const data = {
                 username: this.username,
                 token: this.token,
-                project: id
+                project: id,
             };
             const url = `${OriginApiUrl}/api/v1/projects/restore`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
+                method: "POST",
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -756,20 +779,20 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
     deleteRejectedProject(id) {
         return new Promise((resolve, reject) => {
             const data = {
                 username: this.username,
                 token: this.token,
-                projectID: id
+                projectID: id,
             };
             const url = `${OriginApiUrl}/api/v1/projects/hardDeleteProject`;
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
+                method: "POST",
             })
                 .then((res) => {
                     if (!res.ok) {
@@ -781,27 +804,29 @@ class ProjectApi {
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
     getProfanityFilter() {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/misc/getProfanityList?username=${this.username}&token=${this.token}`;
             fetch(url)
                 .then((res) => {
-                    res.json().then(json => {
-                        if (!res.ok) {
-                            reject(json.error);
-                            return;
-                        }
-                        resolve(json);
-                    }).catch(err => {
-                        reject(err);
-                    });
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve(json);
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
                 })
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
     setProfanityFilter(newData) {
         return new Promise((resolve, reject) => {
@@ -809,28 +834,30 @@ class ProjectApi {
             const data = {
                 username: this.username,
                 token: this.token,
-                json: newData
+                json: newData,
             };
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
+                method: "POST",
             })
                 .then((res) => {
-                    res.json().then(json => {
-                        if (!res.ok) {
-                            reject(json.error);
-                            return;
-                        }
-                        resolve();
-                    }).catch(err => {
-                        reject(err);
-                    });
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
                 })
                 .catch((err) => {
                     reject(err);
                 });
-        })
+        });
     }
     setUserBadges(target, badges) {
         return new Promise((resolve, reject) => {
@@ -838,25 +865,29 @@ class ProjectApi {
                 username: this.username,
                 token: this.token,
                 badges,
-                target
+                target,
             };
             fetch(`${OriginApiUrl}/api/v1/users/setBadges`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
+                method: "POST",
+            })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
                     reject(err);
                 });
-            }).catch(err => {
-                reject(err);
-            });
         });
     }
     setUsersBadges(targets, badges, optIsRemoving) {
@@ -866,25 +897,29 @@ class ProjectApi {
                 token: this.token,
                 targets,
                 badges,
-                removing: optIsRemoving
+                removing: optIsRemoving,
             };
             fetch(`${OriginApiUrl}/api/v1/users/setbadgesmultiple`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
+                method: "POST",
+            })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
                     reject(err);
                 });
-            }).catch(err => {
-                reject(err);
-            });
         });
     }
     banUser(username, reason, time, toggle) {
@@ -900,20 +935,24 @@ class ProjectApi {
             fetch(`${OriginApiUrl}/api/v1/users/ban`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
+                method: "POST",
+            })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
                     reject(err);
                 });
-            }).catch(err => {
-                reject(err);
-            });
         });
     }
     reportContent(type, nameOrId, reason) {
@@ -922,30 +961,35 @@ class ProjectApi {
             token: this.token,
             report: reason,
             target: nameOrId,
-            type
-        }
+            type,
+        };
 
-        if (type !== "project" && type !== "user") throw new Error('Invalid reporting type');
+        if (type !== "project" && type !== "user")
+            throw new Error("Invalid reporting type");
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/reports/sendReport`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(body)
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
+                body: JSON.stringify(body),
+            })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
                     reject(err);
                 });
-            }).catch(err => {
-                reject(err);
-            });
         });
     }
     assingUsersPermisions(username, admin, approver) {
@@ -955,27 +999,31 @@ class ProjectApi {
                 token: this.token,
                 target: username,
                 admin,
-                approver
-            }
+                approver,
+            };
             fetch(`${OriginApiUrl}/api/v1/users/assignPossition`, {
-                method:"POST",
+                method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body:JSON.stringify(body)
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
+                body: JSON.stringify(body),
+            })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
                     reject(err);
                 });
-            }).catch(err => {
-                reject(err);
-            });
         });
     }
 
@@ -984,27 +1032,31 @@ class ProjectApi {
             const body = JSON.stringify({
                 username: this.username,
                 token: this.token,
-                toggle: enabled
-            })
+                toggle: enabled,
+            });
             fetch(`${OriginApiUrl}/api/v1/projects/toggleviewing`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
+                body,
+            })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
                     reject(err);
                 });
-            }).catch(err => {
-                reject(err);
-            });
         });
     }
     setErrorAllUploadProjects(enabled) {
@@ -1012,27 +1064,31 @@ class ProjectApi {
             const body = JSON.stringify({
                 username: this.username,
                 token: this.token,
-                toggle: enabled
-            })
+                toggle: enabled,
+            });
             fetch(`${OriginApiUrl}/api/v1/projects/toggleuploading`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
+                body,
+            })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
                     reject(err);
                 });
-            }).catch(err => {
-                reject(err);
-            });
         });
     }
     setErrorAccountCreation(enabled) {
@@ -1040,88 +1096,100 @@ class ProjectApi {
             const body = JSON.stringify({
                 username: this.username,
                 token: this.token,
-                toggle: enabled
-            })
+                toggle: enabled,
+            });
             fetch(`${OriginApiUrl}/api/v1/projects/toggleaccountcreation`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
+                body,
+            })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
                     reject(err);
                 });
-            }).catch(err => {
-                reject(err);
-            });
         });
     }
-    
+
     deleteProject(id, reason) {
         const body = JSON.stringify({
             projectID: id,
             username: this.username,
             token: this.token,
-            reason
-        })
+            reason,
+        });
 
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/hardDeleteProject`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                body,
             })
-        })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
-    
+
     removeProjectThumbnail(id) {
         const body = JSON.stringify({
             projectID: String(id),
-            token: this.token
-        })
+            token: this.token,
+        });
 
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/deletethumb`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                body,
             })
-        })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
 
     rejectProject(id, reason) {
@@ -1135,21 +1203,25 @@ class ProjectApi {
             fetch(`${OriginApiUrl}/api/v1/projects/softreject`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                method: "POST",
             })
-        })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
 
     hardRejectProject(id, reason) {
@@ -1163,47 +1235,55 @@ class ProjectApi {
             fetch(`${OriginApiUrl}/api/v1/projects/hardreject`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                method: "POST",
             })
-        })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
 
     attemptRankUp() {
         const data = {
             token: this.token,
-            username: this.username
+            username: this.username,
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/users/requestrankup`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                method: "POST",
             })
-        })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
     setBio(text, adminForced, adminTarget) {
         const data = {
@@ -1213,78 +1293,93 @@ class ProjectApi {
             target: adminTarget,
         };
         return new Promise((resolve, reject) => {
-            fetch(`${OriginApiUrl}/api/v1/users/${adminForced ? 'setBioAdmin' : "setBio"}`, {
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-                method: "POST"
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
+            fetch(
+                `${OriginApiUrl}/api/v1/users/${adminForced ? "setBioAdmin" : "setBio"}`,
+                {
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                    method: "POST",
+                },
+            )
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
                 })
-            }).catch(err => {
-                reject(err);
-            })
-        })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
     setMyFeaturedProject(id, title) {
         const data = {
             username: this.username,
             token: this.token,
             project: id,
-            title
+            title,
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/users/setmyfeaturedproject`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                method: "POST",
             })
-        })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
     filloutSafetyDetails(birthday, country) {
         const data = {
             username: this.username,
             token: this.token,
             birthday,
-            country
+            country,
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/users/filloutSafetyDetails`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                method: "POST",
             })
-        })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
     respondToDispute(messageId, text) {
         const data = {
@@ -1297,21 +1392,25 @@ class ProjectApi {
             fetch(`${OriginApiUrl}/api/v1/projects/modresponse`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                method: "POST",
             })
-        })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
     sendModeratorMessage(target, text, disputable) {
         const data = {
@@ -1319,27 +1418,31 @@ class ProjectApi {
             username: this.username,
             target,
             message: text,
-            disputable
+            disputable,
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/modmessage`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                method: "POST",
             })
-        })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
     deleteModeratorMessage(messageID) {
         const data = {
@@ -1351,21 +1454,25 @@ class ProjectApi {
             fetch(`${OriginApiUrl}/api/v1/projects/deletemodmessage`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-                method: "POST"
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                method: "POST",
             })
-        })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
     addMessage(type, target, data) {
         const gdata = {
@@ -1374,28 +1481,32 @@ class ProjectApi {
             target,
             message: {
                 ...data,
-                type
+                type,
             },
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/users/addMessage`, {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(gdata),
-                method: "POST"
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                method: "POST",
             })
-        })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
     updateProject(id, data) {
         const username = this.username;
@@ -1405,7 +1516,6 @@ class ProjectApi {
         const notes = data.newMeta.notes;
 
         return new Promise(async (resolve, reject) => {
-
             if (!data.project) {
                 const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/updateProject`;
                 const request = new XMLHttpRequest();
@@ -1438,9 +1548,11 @@ class ProjectApi {
                 return;
             }
 
-            JSZip.loadAsync(data.project).then(async zip => {
+            JSZip.loadAsync(data.project).then(async (zip) => {
                 // TODO: change the pmp-protobuf library to have a like PMPToParts
-                const projectJSON = JSON.parse(await zip.file("project.json").async("text"))
+                const projectJSON = JSON.parse(
+                    await zip.file("project.json").async("text"),
+                );
 
                 const protobuf = pmp_protobuf.jsonToProtobuf(projectJSON);
 
@@ -1450,7 +1562,7 @@ class ProjectApi {
                     if (relativePath === "project.json") return;
                     assets.push(file);
                 });
-                
+
                 const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/updateProject`;
                 const request = new XMLHttpRequest();
                 const formData = new FormData();
@@ -1476,7 +1588,11 @@ class ProjectApi {
 
                 for (let i = 0; i < assets.length; i++) {
                     // convert to blob
-                    formData.append("assets", await assets[i].async("blob"), assets[i].name);
+                    formData.append(
+                        "assets",
+                        await assets[i].async("blob"),
+                        assets[i].name,
+                    );
                 }
 
                 formData.append("jsonFile", new Blob([protobuf]));
@@ -1488,163 +1604,206 @@ class ProjectApi {
     }
 
     resolveProjectSizes(file, imageSize = 0) {
-        return JSZip.loadAsync(file)
-            .then(async zip => {
-                const projectJSON = JSON.parse(await zip.file("project.json").async("text"));
-                let protobuf = pmp_protobuf.jsonToProtobuf(projectJSON);
+        return JSZip.loadAsync(file).then(async (zip) => {
+            const projectJSON = JSON.parse(
+                await zip.file("project.json").async("text"),
+            );
+            let protobuf = pmp_protobuf.jsonToProtobuf(projectJSON);
 
-                const projectSize = protobuf.length;
-                const targets = projectJSON.targets;
+            const projectSize = protobuf.length;
+            const targets = projectJSON.targets;
 
-                projectJSON.targets = [];
-                protobuf = pmp_protobuf.jsonToProtobuf(projectJSON);
-                const metaSize = pmp_protobuf.jsonToProtobuf(projectJSON).length;
+            projectJSON.targets = [];
+            protobuf = pmp_protobuf.jsonToProtobuf(projectJSON);
+            const metaSize = pmp_protobuf.jsonToProtobuf(projectJSON).length;
 
-                const assets = (await Promise.all(zip
-                    .filter((name, file) => 
-                            !file.dir && 
-                            name !== 'project.json')
-                    .map(async file => [await file.async('blob'), file.name])))
-                    .reduce((c,v) => (c[v[1]] = v[0], c), {});
+            const assets = (
+                await Promise.all(
+                    zip
+                        .filter(
+                            (name, file) =>
+                                !file.dir && name !== "project.json",
+                        )
+                        .map(async (file) => [
+                            await file.async("blob"),
+                            file.name,
+                        ]),
+                )
+            ).reduce((c, v) => ((c[v[1]] = v[0]), c), {});
 
-                const statTree = [];
-                for (const target of targets) {
-                    projectJSON.targets[0] = target;
-                    const costumes = target.costumes
-                        .map(asset => [asset.name, assets[asset.md5ext]]);
-                    const sounds = target.sounds
-                        .map(asset => [asset.name, assets[asset.md5ext]]);
+            const statTree = [];
+            for (const target of targets) {
+                projectJSON.targets[0] = target;
+                const costumes = target.costumes.map((asset) => [
+                    asset.name,
+                    assets[asset.md5ext],
+                ]);
+                const sounds = target.sounds.map((asset) => [
+                    asset.name,
+                    assets[asset.md5ext],
+                ]);
 
-                    const totalCodeSize = pmp_protobuf.jsonToProtobuf(projectJSON).length - metaSize;
+                const totalCodeSize =
+                    pmp_protobuf.jsonToProtobuf(projectJSON).length - metaSize;
 
-                    const original_target = projectJSON.targets[0];
+                const original_target = projectJSON.targets[0];
 
-                    projectJSON.targets[0] = {
-                        isStage: false,
-                        name: "",
-                        variables: {},
-                        lists: {},
-                        broadcasts: {},
-                        customVars: [],
-                        blocks: {},
-                        comments: {},
-                        currentCostume: 0,
-                        costumes: [],
-                        sounds: [],
-                        id: "",
-                        volume: 0,
-                        layerOrder: 0,
-                        tempo: 0,
-                        videoTransparency: 0,
-                        videoState: "",
-                        textToSpeechLanguage: null,
-                        visible: false,
-                        x: 0,
-                        y: 0,
-                        size: 0,
-                        direction: 0,
-                        draggable: false,
-                        rotationStyle: "",
-                        extensionData: {}
-                    };
+                projectJSON.targets[0] = {
+                    isStage: false,
+                    name: "",
+                    variables: {},
+                    lists: {},
+                    broadcasts: {},
+                    customVars: [],
+                    blocks: {},
+                    comments: {},
+                    currentCostume: 0,
+                    costumes: [],
+                    sounds: [],
+                    id: "",
+                    volume: 0,
+                    layerOrder: 0,
+                    tempo: 0,
+                    videoTransparency: 0,
+                    videoState: "",
+                    textToSpeechLanguage: null,
+                    visible: false,
+                    x: 0,
+                    y: 0,
+                    size: 0,
+                    direction: 0,
+                    draggable: false,
+                    rotationStyle: "",
+                    extensionData: {},
+                };
 
-                    const emptySize = pmp_protobuf.jsonToProtobuf(projectJSON).length;
+                const emptySize =
+                    pmp_protobuf.jsonToProtobuf(projectJSON).length;
 
-                    projectJSON.targets[0].blocks = original_target.blocks;
+                projectJSON.targets[0].blocks = original_target.blocks;
 
-                    const blockSize = pmp_protobuf.jsonToProtobuf(projectJSON).length - emptySize;
+                const blockSize =
+                    pmp_protobuf.jsonToProtobuf(projectJSON).length - emptySize;
 
-                    projectJSON.targets[0].blocks = {};
-                    projectJSON.targets[0].variables = original_target.variables;
+                projectJSON.targets[0].blocks = {};
+                projectJSON.targets[0].variables = original_target.variables;
 
-                    const variableSize = pmp_protobuf.jsonToProtobuf(projectJSON).length - emptySize;
+                const variableSize =
+                    pmp_protobuf.jsonToProtobuf(projectJSON).length - emptySize;
 
-                    projectJSON.targets[0].variables = {};
-                    projectJSON.targets[0].lists = original_target.lists;
+                projectJSON.targets[0].variables = {};
+                projectJSON.targets[0].lists = original_target.lists;
 
-                    const listSize = pmp_protobuf.jsonToProtobuf(projectJSON).length - emptySize;
+                const listSize =
+                    pmp_protobuf.jsonToProtobuf(projectJSON).length - emptySize;
 
-                    projectJSON.targets[0] = original_target;
+                projectJSON.targets[0] = original_target;
 
-                    const costumeSize = costumes.reduce((c,v) => c + v[1].size, 0);
-                    const soundSize = sounds.reduce((c,v) => c + v[1].size, 0);
-                    const size = totalCodeSize
-                        + costumeSize
-                        + soundSize;
-                    
-                    statTree.push({
-                        name: `${target.name}: ${MB(size)}`,
-                        value: [
-                            {
-                                name: `code: ${MB(totalCodeSize)}`,
-                                value: [
-                                    `blocks: ${MB(blockSize)}`,
-                                    `variables: ${MB(variableSize)}`,
-                                    `lists: ${MB(listSize)}`
-                                ]
-                            },
-                            {
-                                name: `costumes: ${MB(costumeSize)}`,
-                                value: costumes.map(([name, asset]) => `${name}: ${MB(asset.size)}`)
-                            },
-                            {
-                                name: `sounds: ${MB(soundSize)}`,
-                                value: sounds.map(([name, asset]) => `${name}: ${MB(asset.size)}`)
-                            }
-                        ]
-                    })
-                }
+                const costumeSize = costumes.reduce((c, v) => c + v[1].size, 0);
+                const soundSize = sounds.reduce((c, v) => c + v[1].size, 0);
+                const size = totalCodeSize + costumeSize + soundSize;
 
-                const size = Object.values(assets)
-                    .reduce((c,v) => c + v.size, projectSize);
+                statTree.push({
+                    name: `${target.name}: ${MB(size)}`,
+                    value: [
+                        {
+                            name: `code: ${MB(totalCodeSize)}`,
+                            value: [
+                                `blocks: ${MB(blockSize)}`,
+                                `variables: ${MB(variableSize)}`,
+                                `lists: ${MB(listSize)}`,
+                            ],
+                        },
+                        {
+                            name: `costumes: ${MB(costumeSize)}`,
+                            value: costumes.map(
+                                ([name, asset]) => `${name}: ${MB(asset.size)}`,
+                            ),
+                        },
+                        {
+                            name: `sounds: ${MB(soundSize)}`,
+                            value: sounds.map(
+                                ([name, asset]) => `${name}: ${MB(asset.size)}`,
+                            ),
+                        },
+                    ],
+                });
+            }
 
-                const max_size = PUBLIC_MAX_UPLOAD_SIZE * ((await this.isDonator()) ? 1.75 : 1);
+            const size = Object.values(assets).reduce(
+                (c, v) => c + v.size,
+                projectSize,
+            );
 
-                let extraAssetsSize = 0
-                if (zip.files['extraAssets/']) {
-                    extraAssetsSize = await (zip
-                        .filter((name, file) => !file.dir && name.startsWith('extraAssets/')))
-                        .reduce(async (o, v) => await o + (await v.async('blob')).size, 0)
-                }
+            const max_size =
+                PUBLIC_MAX_UPLOAD_SIZE * ((await this.isDonator()) ? 1.75 : 1);
 
-                let returns = [
-                    {
-                        name: `${MB(size)}/${max_size}MB`,
-                        value: [
-                            `thumbnail: ${MB(imageSize)}`,
-                            {
-                                name: `project: ${MB(size-extraAssetsSize)}`,
-                                value: statTree
-                            }
-                        ]
-                    }, 
-                    size > (Number(max_size) * 1024 * 1024)
-                ];
-                if (extraAssetsSize > 0) {
-                    returns[0].value.push(`extra assets: ${MB(extraAssetsSize)}`)
-                }
-                return returns;
-            });
+            let extraAssetsSize = 0;
+            if (zip.files["extraAssets/"]) {
+                extraAssetsSize = await zip
+                    .filter(
+                        (name, file) =>
+                            !file.dir && name.startsWith("extraAssets/"),
+                    )
+                    .reduce(
+                        async (o, v) =>
+                            (await o) + (await v.async("blob")).size,
+                        0,
+                    );
+            }
+
+            let returns = [
+                {
+                    name: `${MB(size)}/${max_size}MB`,
+                    value: [
+                        `thumbnail: ${MB(imageSize)}`,
+                        {
+                            name: `project: ${MB(size - extraAssetsSize)}`,
+                            value: statTree,
+                        },
+                    ],
+                },
+                size > Number(max_size) * 1024 * 1024,
+            ];
+            if (extraAssetsSize > 0) {
+                returns[0].value.push(`extra assets: ${MB(extraAssetsSize)}`);
+            }
+            return returns;
+        });
     }
     // TODO: move this into the pmp-protobuf library
     handleProjectFile(file, imageSize = 0) {
-        return JSZip.loadAsync(file)
-            .then(async zip => {
-                const projectJSON = JSON.parse(await zip.file("project.json").async("text"));
-                const protobuf = new Blob([pmp_protobuf.jsonToProtobuf(projectJSON)]);
+        return JSZip.loadAsync(file).then(async (zip) => {
+            const projectJSON = JSON.parse(
+                await zip.file("project.json").async("text"),
+            );
+            const protobuf = new Blob([
+                pmp_protobuf.jsonToProtobuf(projectJSON),
+            ]);
 
-                const assets = await Promise.all(zip
-                    .filter((name, file) => 
-                            !file.dir && 
-                            name !== 'project.json')
-                    .map(async file => [await file.async('blob'), file.name]));
-                
-                const size = assets.reduce((c,v) => c + v[0].size, protobuf.size + imageSize);
-                if (size > (Number(PUBLIC_MAX_UPLOAD_SIZE) * ((await this.isDonator()) ? 1.75 : 1) * 1024 * 1024)) 
-                    throw 'ProjectTooLarge';
-    
-                return { protobuf, assets };
-            });
+            const assets = await Promise.all(
+                zip
+                    .filter(
+                        (name, file) => !file.dir && name !== "project.json",
+                    )
+                    .map(async (file) => [await file.async("blob"), file.name]),
+            );
+
+            const size = assets.reduce(
+                (c, v) => c + v[0].size,
+                protobuf.size + imageSize,
+            );
+            if (
+                size >
+                Number(PUBLIC_MAX_UPLOAD_SIZE) *
+                    ((await this.isDonator()) ? 1.75 : 1) *
+                    1024 *
+                    1024
+            )
+                throw "ProjectTooLarge";
+
+            return { protobuf, assets };
+        });
     }
 
     uploadProject(data) {
@@ -1656,11 +1815,13 @@ class ProjectApi {
         const remix = data.remix || 0;
 
         return new Promise(async (resolve, reject) => {
-            const { protobuf, assets } = await this.handleProjectFile(data.project, data.image.size)
-                .catch(err => {
-                    reject(err);
-                    return { protobuf: null, assets: [] };
-                });
+            const { protobuf, assets } = await this.handleProjectFile(
+                data.project,
+                data.image.size,
+            ).catch((err) => {
+                reject(err);
+                return { protobuf: null, assets: [] };
+            });
             if (!protobuf) return;
 
             const API_ENDPOINT = `${OriginApiUrl}/api/v1/projects/uploadProject`;
@@ -1685,11 +1846,11 @@ class ProjectApi {
             formData.append("instructions", instructions);
             formData.append("notes", notes);
             formData.append("remix", remix);
-            assets.forEach(ent => formData.append("assets", ...ent))
+            assets.forEach((ent) => formData.append("assets", ...ent));
             formData.append("jsonFile", protobuf);
             formData.append("thumbnail", data.image);
 
-            console.debug(formData.getAll("assets"))
+            console.debug(formData.getAll("assets"));
 
             request.send(formData);
         });
@@ -1698,20 +1859,24 @@ class ProjectApi {
     approveProject(id, webhook) {
         const url = `${OriginApiUrl}/api/projects/approve?token=${this.token}&approver=${this.username}&webhook=${webhook}&id=${id}`;
         return new Promise((resolve, reject) => {
-            fetch(url).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve(json.id);
-                }).catch(err => {
-                    reject(err);
+            fetch(url)
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve(json.id);
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
                 })
-            }).catch(err => {
-                reject(err);
-            })
-        })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
     featureProject(id, value) {
         const body = JSON.stringify({
@@ -1724,22 +1889,26 @@ class ProjectApi {
             fetch(`${OriginApiUrl}/api/v1/projects/manualfeature`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                body,
             })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
     setCanBeFeatured(id, value) {
@@ -1752,44 +1921,48 @@ class ProjectApi {
             fetch(`${OriginApiUrl}/api/v1/projects/setCanBeFeatured`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                body,
             })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
     toggleVoteProject(id, type, toggle) {
         type = String(type).toLowerCase().trim();
         switch (type) {
-            case 'feature':
-            case 'features':
-            case 'featured':
-            case 'vote':
-            case 'voted':
-                type = 'vote';
+            case "feature":
+            case "features":
+            case "featured":
+            case "vote":
+            case "voted":
+                type = "vote";
                 break;
-            case 'love':
-            case 'loved':
-            case 'like':
-            case 'liked':
-            case 'likes':
-                type = 'love';
+            case "love":
+            case "loved":
+            case "like":
+            case "liked":
+            case "likes":
+                type = "love";
                 break;
             default:
-                type = 'vote';
+                type = "vote";
         }
         const url = `${OriginApiUrl}/api/v1/projects/interactions/${type}Toggle`;
         return new Promise((resolve, reject) => {
@@ -1800,87 +1973,106 @@ class ProjectApi {
                     projectId: id,
                     username: this.username,
                     token: this.token,
-                    toggle: toggle
-                })
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                    toggle: toggle,
+                }),
             })
-        })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
     getVoteStates(id) {
         const url = `${OriginApiUrl}/api/v1/projects/getuserstatewrapper?username=${this.username}&token=${this.token}&projectId=${id}`;
         return new Promise((resolve, reject) => {
-            fetch(url).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve({loved: json.hasLoved, voted: json.hasVoted});
-                }).catch(err => {
-                    reject(err);
+            fetch(url)
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve({
+                                loved: json.hasLoved,
+                                voted: json.hasVoted,
+                            });
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
                 })
-            }).catch(err => {
-                reject(err);
-            })
-        })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
 
     setLastPolicyUpdate(policies) {
         const body = JSON.stringify({
             username: this.username,
             token: this.token,
-            types: policies
+            types: policies,
         });
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/misc/setLastPolicyUpdate`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                body,
             })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
     getLastPolicyUpdate() {
-        const url = `${OriginApiUrl}/api/v1/misc/getLastPolicyUpdate`
+        const url = `${OriginApiUrl}/api/v1/misc/getLastPolicyUpdate`;
         return new Promise((resolve, reject) => {
-            fetch(url).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve(json);
-                }).catch(err => {
-                    reject(err);
+            fetch(url)
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve(json);
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
                 })
-            }).catch(err => {
-                reject(err);
-            })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
@@ -1904,25 +2096,29 @@ class ProjectApi {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     username: this.username,
-                    token: this.token
-                })
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                    token: this.token,
+                }),
             })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
@@ -1933,29 +2129,33 @@ class ProjectApi {
             username: this.username,
             token: this.token,
             privateProfile,
-            privateToFollowing
+            privateToFollowing,
         });
 
         return new Promise((resolve, reject) => {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                body,
             })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
@@ -1966,29 +2166,33 @@ class ProjectApi {
             username: this.username,
             token: this.token,
             target: username,
-            toggle
+            toggle,
         });
 
         return new Promise((resolve, reject) => {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                body,
             })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
@@ -2006,88 +2210,104 @@ class ProjectApi {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                body,
             })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
     getConnectedIPs(username) {
-        const url = `${OriginApiUrl}/api/v1/users/getAllIPs`
+        const url = `${OriginApiUrl}/api/v1/users/getAllIPs`;
 
         const query = `?username=${this.username}&token=${this.token}&target=${username}`;
 
         return new Promise((resolve, reject) => {
-            fetch(url + query).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve(json.ips);
-                }).catch(err => {
-                    reject(err);
+            fetch(url + query)
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve(json.ips);
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
                 })
-            }).catch(err => {
-                reject(err);
-            })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
     getConnectedUsers(ip) {
-        const url = `${OriginApiUrl}/api/v1/users/getAllAccountsWithIP`
+        const url = `${OriginApiUrl}/api/v1/users/getAllAccountsWithIP`;
 
         const query = `?username=${this.username}&token=${this.token}&target=${ip}`;
 
         return new Promise((resolve, reject) => {
-            fetch(url + query).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve(json.users);
-                }).catch(err => {
-                    reject(err);
+            fetch(url + query)
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve(json.users);
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
                 })
-            }).catch(err => {
-                reject(err);
-            })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
     getAlts(target_username) {
-        const url = `${OriginApiUrl}/api/v1/users/getAlts`
+        const url = `${OriginApiUrl}/api/v1/users/getAlts`;
 
         const query = `?username=${this.username}&token=${this.token}&target=${target_username}`;
 
         return new Promise((resolve, reject) => {
-            fetch(url + query).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve(json.alts);
-                }).catch(err => {
-                    reject(err);
+            fetch(url + query)
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve(json.alts);
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
                 })
-            }).catch(err => {
-                reject(err);
-            })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
@@ -2098,29 +2318,33 @@ class ProjectApi {
             username: this.username,
             token: this.token,
             targetIP: ip,
-            toggle
+            toggle,
         });
 
         return new Promise((resolve, reject) => {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                body,
             })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
@@ -2137,22 +2361,26 @@ class ProjectApi {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                body,
             })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
     setUsernameOfUser(targetUsername, newName) {
@@ -2169,22 +2397,26 @@ class ProjectApi {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                body,
             })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
     setPFP(file) {
@@ -2243,29 +2475,33 @@ class ProjectApi {
         const body = JSON.stringify({
             username: this.username,
             token: this.token,
-            email
+            email,
         });
 
         return new Promise((resolve, reject) => {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                body,
             })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
@@ -2275,29 +2511,33 @@ class ProjectApi {
         const body = JSON.stringify({
             username: this.username,
             token: this.token,
-            method
+            method,
         });
 
         return new Promise((resolve, reject) => {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    if (!res.ok) {
-                        reject(json.error);
-                        return;
-                    }
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                body,
             })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            if (!res.ok) {
+                                reject(json.error);
+                                return;
+                            }
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
@@ -2315,18 +2555,22 @@ class ProjectApi {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(() => {
-                    resolve();
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                body,
             })
+                .then((res) => {
+                    res.json()
+                        .then(() => {
+                            resolve();
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
@@ -2334,15 +2578,19 @@ class ProjectApi {
         const url = `${OriginApiUrl}/api/v1/users/hasblocked?username=${this.username}&token=${this.token}&target=${user}`;
 
         return new Promise((resolve, reject) => {
-            fetch(url).then(res => {
-                res.json().then(json => {
-                    resolve(json.has_blocked);
-                }).catch(err => {
-                    reject(err);
+            fetch(url)
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            resolve(json.has_blocked);
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
                 })
-            }).catch(err => {
-                reject(err);
-            })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
@@ -2363,16 +2611,20 @@ class ProjectApi {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    resolve(json.success);
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                body,
             })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            resolve(json.success);
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 
@@ -2392,16 +2644,20 @@ class ProjectApi {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body
-            }).then(res => {
-                res.json().then(json => {
-                    resolve(json.success);
-                }).catch(err => {
-                    reject(err);
-                })
-            }).catch(err => {
-                reject(err);
+                body,
             })
+                .then((res) => {
+                    res.json()
+                        .then((json) => {
+                            resolve(json.success);
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
         });
     }
 }

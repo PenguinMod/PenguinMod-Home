@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
 
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
-    
+
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
@@ -13,7 +13,7 @@
     import Language from "../../resources/language.js";
     import TranslationHandler from "../../resources/translations.js";
     import Authentication from "../../resources/authentication.js";
-    import { page } from '$app/stores';
+    import { page } from "$app/stores";
 
     let loginMethods = [];
 
@@ -40,7 +40,7 @@
 
     Authentication.onLogout(() => {
         location.href = "/";
-    })
+    });
 
     Language.onChange((lang) => {
         currentLang = lang;
@@ -59,19 +59,27 @@
     let passwordValid = false;
 
     const passwordRequirements = [
-        {name: "password.requirement.length", value: false},
-        {name: "password.requirement.casing", value: false},
-        {name: "password.requirement.number", value: false},
-        {name: "password.requirement.symbol", value: false},
-    ]
+        { name: "password.requirement.length", value: false },
+        { name: "password.requirement.casing", value: false },
+        { name: "password.requirement.number", value: false },
+        { name: "password.requirement.symbol", value: false },
+    ];
 
     async function checkIfValid() {
-        const passwordDoesNotMeetLength = password.length < 8 || password.length > 50;
-        const passwordMeetsTextInclude = password.match(/[a-z]/) && password.match(/[A-Z]/);
+        const passwordDoesNotMeetLength =
+            password.length < 8 || password.length > 50;
+        const passwordMeetsTextInclude =
+            password.match(/[a-z]/) && password.match(/[A-Z]/);
         const passwordHasNumber = !!password.match(/[0-9]/);
         const passwordMeetsSpecialInclude = !!password.match(/[^a-z0-9]/i);
 
-        const passwordCheck = passwordDoesNotMeetLength || !(passwordMeetsTextInclude && passwordMeetsSpecialInclude && passwordHasNumber);
+        const passwordCheck =
+            passwordDoesNotMeetLength ||
+            !(
+                passwordMeetsTextInclude &&
+                passwordMeetsSpecialInclude &&
+                passwordHasNumber
+            );
 
         passwordRequirements[0].value = !passwordDoesNotMeetLength;
         passwordRequirements[1].value = passwordMeetsTextInclude;
@@ -102,7 +110,7 @@
     };
 
     function toOAuthPage(method) {
-        const url = `https://fake.penguinmod.com//api/v1/users/addpasswordtooauth?method=${method}&username=${username}&token=${token}`
+        const url = `${PUBLIC_API_URL}/api/v1/users/addpasswordtooauth?method=${method}&username=${username}&token=${token}`;
         location.href = url;
     }
 
@@ -123,11 +131,13 @@
         Authentication.changePassword(username, token, oldPassword, password)
             .then(() => {
                 changingPassword = false;
-                alert(TranslationHandler.textSafe(
-                    "password.update.success",
-                    currentLang,
-                    "Password changed successfully!"
-                ));
+                alert(
+                    TranslationHandler.textSafe(
+                        "password.update.success",
+                        currentLang,
+                        "Password changed successfully!",
+                    ),
+                );
                 location.href = "/";
             })
             .catch((error) => {
@@ -136,18 +146,27 @@
             });
     }
 </script>
-    
+
 <svelte:head>
     <title>PenguinMod - Change Password</title>
     <meta name="title" content="PenguinMod - Change Password" />
     <meta property="og:title" content="PenguinMod - Change Password" />
     <meta property="twitter:title" content="PenguinMod - Change Password" />
-    <meta name="description" content="Change your password for PenguinMod to access your account with a new password" />
-    <meta property="twitter:description" content="Change your password for PenguinMod to access your account with a new password" />
-    <meta property="og:url" content="https://penguinmod.com/changepassword">
-    <meta property="twitter:url" content="https://penguinmod.com/changepassword">
+    <meta
+        name="description"
+        content="Change your password for PenguinMod to access your account with a new password"
+    />
+    <meta
+        property="twitter:description"
+        content="Change your password for PenguinMod to access your account with a new password"
+    />
+    <meta property="og:url" content="https://penguinmod.com/changepassword" />
+    <meta
+        property="twitter:url"
+        content="https://penguinmod.com/changepassword"
+    />
 </svelte:head>
-    
+
 <NavigationBar />
 
 <div class="main">
@@ -155,10 +174,7 @@
 
     <main>
         <div class="profile-section">
-            <img
-                src="/account/profile_sheet.png"
-                alt="Profiles"
-            />
+            <img src="/account/profile_sheet.png" alt="Profiles" />
         </div>
         <h1 style="margin-block:4px">PenguinMod</h1>
         <p>
@@ -174,11 +190,29 @@
                 <div class="gsi-material-button-state"></div>
                 <div class="gsi-material-button-content-wrapper">
                     <div class="gsi-material-button-icon">
-                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: block;">
-                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                        <svg
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 48 48"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            style="display: block;"
+                        >
+                            <path
+                                fill="#EA4335"
+                                d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+                            ></path>
+                            <path
+                                fill="#4285F4"
+                                d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
+                            ></path>
+                            <path
+                                fill="#FBBC05"
+                                d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
+                            ></path>
+                            <path
+                                fill="#34A853"
+                                d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+                            ></path>
                             <path fill="none" d="M0 0h48v48H0z"></path>
                         </svg>
                     </div>
@@ -235,7 +269,11 @@
                 <div class="gsi-material-button-state"></div>
                 <div class="gsi-material-button-content-wrapper">
                     <div class="gsi-material-button-icon">
-                        <img src="/Scratch_S.svg" alt="Scratch" style="display:block;width:20px;height:20px;">
+                        <img
+                            src="/Scratch_S.svg"
+                            alt="Scratch"
+                            style="display:block;width:20px;height:20px;"
+                        />
                     </div>
                     <span class="gsi-material-button-contents">
                         <LocalizedText
@@ -279,7 +317,7 @@
                     placeholder={TranslationHandler.textSafe(
                         "password.update.old.placeholder",
                         currentLang,
-                        "You won't need this anymore!"
+                        "You won't need this anymore!",
                     )}
                     maxlength="50"
                     on:input={oldPasswordInputChanged}
@@ -290,7 +328,7 @@
                     on:click={toggleOldPasswordView}
                 />
             </div>
-            
+
             <span class="input-title">
                 <LocalizedText
                     text="Password"
@@ -304,13 +342,13 @@
                     placeholder={TranslationHandler.textSafe(
                         "account.fields.password.placeholder",
                         currentLang,
-                        "Remember to write it down!"
+                        "Remember to write it down!",
                     )}
                     data-valid={passwordValid}
                     maxlength="50"
                     on:input={passwordInputChanged}
-                    on:focusin={() => focused = true}
-                    on:focusout={() => focused = false}
+                    on:focusin={() => (focused = true)}
+                    on:focusout={() => (focused = false)}
                 />
                 <button
                     class="password-show invert-on-dark"
@@ -322,7 +360,11 @@
                 <ChecksBox items={passwordRequirements} />
             {/if}
 
-            <button class="create-acc" data-canCreate={canChangePassword} on:click={changePassword}>
+            <button
+                class="create-acc"
+                data-canCreate={canChangePassword}
+                on:click={changePassword}
+            >
                 {#if changingPassword}
                     <LoadingSpinner icon="/loading_white.png" />
                 {:else}
@@ -336,7 +378,7 @@
         {/if}
     </main>
 </div>
-    
+
 <style>
     * {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -404,7 +446,7 @@
         background: #111;
         color: white;
     }
-    
+
     main input[data-valid="true"] {
         border-color: rgb(0, 187, 0) !important;
     }
@@ -420,13 +462,13 @@
         height: calc(100% - 8px);
         border: 0;
         background: transparent;
-        background-image: url('account/showpassword.svg');
+        background-image: url("account/showpassword.svg");
         background-size: 100% 100%;
         opacity: 0.7;
         cursor: pointer;
     }
     .password-show[data-visible="true"] {
-        background-image: url('account/hidepassword.svg');
+        background-image: url("account/hidepassword.svg");
         background-size: 100% 100%;
     }
     :global(body.dark-mode) .invert-on-dark {
@@ -451,7 +493,7 @@
         padding: 4px 8px;
         width: 60%;
         margin-top: 4px;
-        
+
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -459,19 +501,19 @@
         border: 1px solid rgba(0, 0, 0, 0.2);
         font-size: 18px;
     }
-    
-    .create-acc[data-canCreate=true] {
+
+    .create-acc[data-canCreate="true"] {
         background: #00c3ff;
         cursor: pointer;
         color: white;
     }
 
-    :global(body.dark-mode) .create-acc[data-canCreate=false] {
+    :global(body.dark-mode) .create-acc[data-canCreate="false"] {
         background: #9c9c9c;
         color: rgb(255, 255, 255);
     }
 
-    .create-acc[data-canCreate=false] {
+    .create-acc[data-canCreate="false"] {
         background: #9c9c9c;
         color: rgb(255, 255, 255);
         cursor: not-allowed;
@@ -494,25 +536,32 @@
     }
 
     @keyframes profile-scroll {
-        0%, 10% {
+        0%,
+        10% {
             transform: translateX(0);
         }
-        15%, 25% {
+        15%,
+        25% {
             transform: translateX(-96px);
         }
-        30%, 40% {
+        30%,
+        40% {
             transform: translateX(-192px);
         }
-        45%, 55% {
+        45%,
+        55% {
             transform: translateX(-288px);
         }
-        60%, 70% {
+        60%,
+        70% {
             transform: translateX(-384px);
         }
-        75%, 85% {
+        75%,
+        85% {
             transform: translateX(-480px);
         }
-        90%, 100% {
+        90%,
+        100% {
             transform: translateX(-480px);
         }
     }
@@ -532,7 +581,6 @@
         animation-delay: 3s;
     }
 
-
     /* google stuff */
     .gsi-material-button {
         -moz-user-select: none;
@@ -550,7 +598,7 @@
         box-sizing: border-box;
         color: #1f1f1f;
         cursor: pointer;
-        font-family: 'Roboto', arial, sans-serif;
+        font-family: "Roboto", arial, sans-serif;
         font-size: 14px;
         height: 40px;
         letter-spacing: 0.25px;
@@ -559,8 +607,14 @@
         padding: 0 12px;
         position: relative;
         text-align: center;
-        -webkit-transition: background-color .218s, border-color .218s, box-shadow .218s;
-        transition: background-color .218s, border-color .218s, box-shadow .218s;
+        -webkit-transition:
+            background-color 0.218s,
+            border-color 0.218s,
+            box-shadow 0.218s;
+        transition:
+            background-color 0.218s,
+            border-color 0.218s,
+            box-shadow 0.218s;
         vertical-align: middle;
         white-space: nowrap;
         width: 60%;
@@ -599,7 +653,7 @@
     .gsi-material-button .gsi-material-button-contents {
         -webkit-flex-grow: 1;
         flex-grow: 1;
-        font-family: 'Roboto', arial, sans-serif;
+        font-family: "Roboto", arial, sans-serif;
         font-weight: 500;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -607,8 +661,8 @@
     }
 
     .gsi-material-button .gsi-material-button-state {
-        -webkit-transition: opacity .218s;
-        transition: opacity .218s;
+        -webkit-transition: opacity 0.218s;
+        transition: opacity 0.218s;
         bottom: 0;
         left: 0;
         opacity: 0;
@@ -616,7 +670,6 @@
         right: 0;
         top: 0;
     }
-
 
     .gsi-material-button:disabled {
         cursor: default;
@@ -627,7 +680,6 @@
         background-color: #13131461;
         border-color: #8e918f1f;
     }
-
 
     .gsi-material-button:disabled .gsi-material-button-state {
         background-color: #e3e3e31f;
@@ -641,30 +693,38 @@
         opacity: 38%;
     }
 
-    .gsi-material-button:not(:disabled):active .gsi-material-button-state, 
+    .gsi-material-button:not(:disabled):active .gsi-material-button-state,
     .gsi-material-button:not(:disabled):focus .gsi-material-button-state {
         background-color: #303030;
         opacity: 12%;
     }
 
-    :global(body.dark-mode) .gsi-material-button:not(:disabled):active .gsi-material-button-state, 
-    :global(body.dark-mode) .gsi-material-button:not(:disabled):focus .gsi-material-button-state {
+    :global(body.dark-mode)
+        .gsi-material-button:not(:disabled):active
+        .gsi-material-button-state,
+    :global(body.dark-mode)
+        .gsi-material-button:not(:disabled):focus
+        .gsi-material-button-state {
         background-color: white;
         opacity: 12%;
     }
 
-
     .gsi-material-button:not(:disabled):hover {
-        -webkit-box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
-        box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
+        -webkit-box-shadow:
+            0 1px 2px 0 rgba(60, 64, 67, 0.3),
+            0 1px 3px 1px rgba(60, 64, 67, 0.15);
+        box-shadow:
+            0 1px 2px 0 rgba(60, 64, 67, 0.3),
+            0 1px 3px 1px rgba(60, 64, 67, 0.15);
     }
-
 
     .gsi-material-button:not(:disabled):hover .gsi-material-button-state {
         background-color: #303030;
         opacity: 8%;
     }
-    :global(body.dark-mode) .gsi-material-button:not(:disabled):hover .gsi-material-button-state {
+    :global(body.dark-mode)
+        .gsi-material-button:not(:disabled):hover
+        .gsi-material-button-state {
         background-color: white;
         opacity: 8%;
     }

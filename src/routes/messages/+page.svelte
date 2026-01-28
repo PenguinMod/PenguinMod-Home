@@ -38,14 +38,14 @@
     let lastPolicyRead = {
         privacyPolicy: now,
         TOS: now,
-        guidelines: now
-    }
+        guidelines: now,
+    };
 
     let lastPolicyUpdate = {
         privacyPolicy: now,
         TOS: now,
-        guidelines: now
-    }
+        guidelines: now,
+    };
 
     const disputeTexts = {};
     const autoTranslations = {};
@@ -83,7 +83,7 @@
                 message: {
                     type: "privacyPolicy",
                 },
-                id: "privacyPolicy"
+                id: "privacyPolicy",
             });
         }
         if (lastPolicyUpdate.TOS > lastPolicyRead.TOS) {
@@ -91,16 +91,15 @@
                 message: {
                     type: "TOS",
                 },
-                id: "TOS"
+                id: "TOS",
             });
         }
         if (lastPolicyUpdate.guidelines > lastPolicyRead.guidelines) {
             messages.push({
                 message: {
                     type: "guidelines",
-                    
                 },
-                id: "guidelines"
+                id: "guidelines",
             });
         }
 
@@ -119,7 +118,7 @@
                     messages = ["notfound"];
                     return;
                 }
-                
+
                 messages = messagess;
                 if (messages.length < 20) {
                     pageIsLast = true;
@@ -145,12 +144,11 @@
     // }
     const downloadRejectedProject = async (projectId) => {
         try {
-            const projectFile = await ProjectClient.downloadHardRejectedProject(
-                projectId
-            );
+            const projectFile =
+                await ProjectClient.downloadHardRejectedProject(projectId);
             FileSaver.saveAs(
                 new Blob([projectFile]),
-                `Project_${projectId}.pmp`
+                `Project_${projectId}.pmp`,
             );
         } catch (err) {
             console.error(err);
@@ -230,7 +228,7 @@
         } else {
             readMessages = [].concat(
                 readMessages,
-                messages.map((message) => message.id)
+                messages.map((message) => message.id),
             );
         }
         readMessages = readMessages;
@@ -244,7 +242,7 @@
         ProjectClient.markAllMessagesAsRead();
 
         readMessages = readMessages.concat(
-            messages.map((message) => message.id)
+            messages.map((message) => message.id),
         );
         pageUpdateCount += 1;
     }
@@ -254,8 +252,8 @@
             !confirm(
                 TranslationHandler.text(
                     "messages.alert.staff.reply.confirm",
-                    currentLang
-                )
+                    currentLang,
+                ),
             )
         ) {
             return;
@@ -264,16 +262,16 @@
         if (!text) return;
         ProjectClient.disputeMessage(id, text).then(location.reload);
     }
-    
+
     function unixToDisplayDate(unix) {
-       unix = Number(unix);
+        unix = Number(unix);
         return `${new Date(unix).toLocaleString([], {
             year: "numeric",
             month: "long",
             day: "numeric",
             hour: "numeric",
             minute: "numeric",
-            hour12: true
+            hour12: true,
         })}`;
     }
 
@@ -294,13 +292,16 @@
 
 <svelte:head>
     <title>PenguinMod - Messages</title>
-    <meta name="title"                   content="PenguinMod - Messages" />
-    <meta property="og:title"            content="PenguinMod - Messages" />
-    <meta property="twitter:title"       content="PenguinMod - Messages">
-    <meta name="description"             content="See your messages or alerts.">
-    <meta property="twitter:description" content="See your messages or alerts.">
-    <meta property="og:url"              content="https://penguinmod.com/messages">
-    <meta property="twitter:url"         content="https://penguinmod.com/messages">
+    <meta name="title" content="PenguinMod - Messages" />
+    <meta property="og:title" content="PenguinMod - Messages" />
+    <meta property="twitter:title" content="PenguinMod - Messages" />
+    <meta name="description" content="See your messages or alerts." />
+    <meta
+        property="twitter:description"
+        content="See your messages or alerts."
+    />
+    <meta property="og:url" content="https://penguinmod.com/messages" />
+    <meta property="twitter:url" content="https://penguinmod.com/messages" />
 </svelte:head>
 
 <NavigationBar />
@@ -368,28 +369,21 @@
                     {#each messages as message}
                         <button
                             class="message"
-                            data-moderator={message.message.type === "modresponse"
-                                || message.message.type === "modMessage"
-                                || message.message.type === "reject"
-                                || message.message.type === "removed"
-                                || message.message.type === "restored"
-                                || message.message.type === "ban"
-                                || message.message.type === "tempban"
-                                || message.message.type === "unban"
-                                || message.message.type === "disputeResponse"}
+                            data-moderator={message.message.type ===
+                                "modresponse" ||
+                                message.message.type === "modMessage" ||
+                                message.message.type === "reject" ||
+                                message.message.type === "removed" ||
+                                message.message.type === "restored" ||
+                                message.message.type === "ban" ||
+                                message.message.type === "tempban" ||
+                                message.message.type === "unban" ||
+                                message.message.type === "disputeResponse"}
                             data-read={message.read === true ||
                                 readMessages.includes(message.id)}
                             on:click={() => markAsRead(message.id)}
                         >
-                            {#if message.message.type === "modresponse"
-                                || message.message.type === "modMessage"
-                                || message.message.type === "reject"
-                                || message.message.type === "removed"
-                                || message.message.type === "restored"
-                                || message.message.type === "ban"
-                                || message.message.type === "tempban"
-                                || message.message.type === "unban"
-                                || message.message.type === "disputeResponse"}
+                            {#if message.message.type === "modresponse" || message.message.type === "modMessage" || message.message.type === "reject" || message.message.type === "removed" || message.message.type === "restored" || message.message.type === "ban" || message.message.type === "tempban" || message.message.type === "unban" || message.message.type === "disputeResponse"}
                                 <h2>
                                     <LocalizedText
                                         text="Moderator Message"
@@ -405,9 +399,12 @@
                                         {String(
                                             TranslationHandler.text(
                                                 "messages.alert.staff.removed.title",
-                                                currentLang
-                                            )
-                                        ).replace("$1", message.message.project.title)}
+                                                currentLang,
+                                            ),
+                                        ).replace(
+                                            "$1",
+                                            message.message.project.title,
+                                        )}
                                     </b>
                                 </p>
                                 <p>{message.message.message}</p>
@@ -417,7 +414,10 @@
                                         class="fake-link"
                                         style="display:flex;align-items:center;"
                                         on:click={() =>
-                                            autoTranslate(message.id, message.message.message)}
+                                            autoTranslate(
+                                                message.id,
+                                                message.message.message,
+                                            )}
                                     >
                                         <img
                                             src="/messagesstatic/translate.png"
@@ -451,14 +451,21 @@
                                         {String(
                                             TranslationHandler.text(
                                                 "messages.projectid",
-                                                currentLang
-                                            )
-                                        ).replace("$1", message.message.project.id)}
+                                                currentLang,
+                                            ),
+                                        ).replace(
+                                            "$1",
+                                            message.message.project.id,
+                                        )}
                                     </b>
                                 </p>
                                 {#if message.message.hardReject === false}
                                     <h3>
-                                        <a href="/edit?id={message.message.project.id}" style="display:flex;align-items:center;">
+                                        <a
+                                            href="/edit?id={message.message
+                                                .project.id}"
+                                            style="display:flex;align-items:center;"
+                                        >
                                             <img
                                                 src="/pencil.png"
                                                 alt="Edit"
@@ -478,7 +485,9 @@
                                         class="fake-link"
                                         style="display:flex;align-items:center;"
                                         on:click={() =>
-                                            downloadRejectedProject(message.message.project.id)}
+                                            downloadRejectedProject(
+                                                message.message.project.id,
+                                            )}
                                     >
                                         <img
                                             src="/messagesstatic/download.png"
@@ -494,14 +503,14 @@
                                         />
                                     </button>
                                 {/if}
-                            {:else if message.message.type === "removed"} 
+                            {:else if message.message.type === "removed"}
                                 <p>
                                     <b>
                                         {String(
                                             TranslationHandler.text(
                                                 "messages.alert.staff.removed.title",
-                                                currentLang
-                                            )
+                                                currentLang,
+                                            ),
                                         ).replace("$1", message.message.title)}
                                     </b>
                                 </p>
@@ -512,7 +521,10 @@
                                         class="fake-link"
                                         style="display:flex;align-items:center;"
                                         on:click={() =>
-                                            autoTranslate(message.id, message.message.message)}
+                                            autoTranslate(
+                                                message.id,
+                                                message.message.message,
+                                            )}
                                     >
                                         <img
                                             src="/messagesstatic/translate.png"
@@ -549,7 +561,10 @@
                                         class="fake-link"
                                         style="display:flex;align-items:center;"
                                         on:click={() =>
-                                            autoTranslate(message.id, message.message.message)}
+                                            autoTranslate(
+                                                message.id,
+                                                message.message.message,
+                                            )}
                                     >
                                         <img
                                             src="/messagesstatic/translate.png"
@@ -584,40 +599,57 @@
                                         {String(
                                             TranslationHandler.text(
                                                 "messages.alert.featured",
-                                                currentLang
-                                            )
-                                        ).replace("$1", message.message.project.title)}
+                                                currentLang,
+                                            ),
+                                        ).replace(
+                                            "$1",
+                                            message.message.project.title,
+                                        )}
                                     </b> 🌟
                                 </p>
                             {:else if message.message.type === "followerAdded"}
-                                <a class="follower-added" href={`/profile?user=${message.message.user.username}`}>
-                                    <img src={`https://fake.penguinmod.com//api/v1/users/getpfp?username=${message.message.user.username}`} alt="" />
+                                <a
+                                    class="follower-added"
+                                    href={`/profile?user=${message.message.user.username}`}
+                                >
+                                    <img
+                                        src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${message.message.user.username}`}
+                                        alt=""
+                                    />
                                     <span>
                                         {String(
                                             TranslationHandler.text(
                                                 "messages.alert.followeradded",
-                                                currentLang
-                                            )
-                                        ).replace("$1", message.message.user.username)}
+                                                currentLang,
+                                            ),
+                                        ).replace(
+                                            "$1",
+                                            message.message.user.username,
+                                        )}
                                     </span>
                                 </a>
                             {:else if message.message.type === "newBadge"}
-                                <div style="display:flex; flex-direction:row; align-items:center;">
+                                <div
+                                    style="display:flex; flex-direction:row; align-items:center;"
+                                >
                                     <p>
                                         {String(
                                             TranslationHandler.text(
                                                 "messages.alert.badge",
-                                                currentLang
-                                            )
+                                                currentLang,
+                                            ),
                                         ).replace(
                                             "$1",
                                             TranslationHandler.text(
                                                 `profile.badge.${message.message.badge}`,
-                                                currentLang
-                                            )
+                                                currentLang,
+                                            ),
                                         )}
                                     </p>
-                                    <ProfileBadge badge={message.message.badge} {currentLang} />
+                                    <ProfileBadge
+                                        badge={message.message.badge}
+                                        {currentLang}
+                                    />
                                 </div>
                             {:else if message.message.type === "remix"}
                                 <p>
@@ -628,13 +660,21 @@
                                         {String(
                                             TranslationHandler.text(
                                                 "messages.alert.remix",
-                                                currentLang
-                                            )
+                                                currentLang,
+                                            ),
                                         )
                                             .replace("$1", "__${{{___1")
                                             .replace("$2", "__${{{___2")
-                                            .replace("__${{{___1", message.message.oldProject.title)
-                                            .replace("__${{{___2", message.message.newProject.title)}
+                                            .replace(
+                                                "__${{{___1",
+                                                message.message.oldProject
+                                                    .title,
+                                            )
+                                            .replace(
+                                                "__${{{___2",
+                                                message.message.newProject
+                                                    .title,
+                                            )}
                                     </a>
                                 </p>
                             {:else if message.message.type === "custom"}
@@ -647,7 +687,10 @@
                                         class="fake-link"
                                         style="display:flex;align-items:center;"
                                         on:click={() =>
-                                            autoTranslate(message.id, message.message.text)}
+                                            autoTranslate(
+                                                message.id,
+                                                message.message.text,
+                                            )}
                                     >
                                         <img
                                             src="/messagesstatic/translate.png"
@@ -681,9 +724,12 @@
                                     {String(
                                         TranslationHandler.text(
                                             "messages.alert.staff.restoredproject2.title",
-                                            currentLang
-                                        )
-                                    ).replace("$1", message.message.project.title)}
+                                            currentLang,
+                                        ),
+                                    ).replace(
+                                        "$1",
+                                        message.message.project.title,
+                                    )}
                                 </p>
                                 <p>
                                     <a
@@ -721,7 +767,10 @@
                                         class="fake-link"
                                         style="display:flex;align-items:center;"
                                         on:click={() =>
-                                            autoTranslate(message.id, message.message.reason)}
+                                            autoTranslate(
+                                                message.id,
+                                                message.message.reason,
+                                            )}
                                     >
                                         <img
                                             src="/messagesstatic/translate.png"
@@ -770,22 +819,28 @@
                                 <p>{message.message.reason}</p>
                                 <p>
                                     <b>
-                                        {
-                                            String(
+                                        {String(
+                                            TranslationHandler.text(
+                                                `account.settings.standing.dateunban`,
+                                                currentLang,
+                                            ) ||
                                                 TranslationHandler.text(
                                                     `account.settings.standing.dateunban`,
-                                                    currentLang
-                                                ) || TranslationHandler.text(
-                                                    `account.settings.standing.dateunban`,
-                                                    'en'
-                                                ) || "Unban Date: {{DATE}}"
-                                            ).replace("{{DATE}}", new Date(message.message.time + Date.now()).toLocaleDateString(currentLang, {
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric',
-                                                hour: 'numeric',
-                                            }))
-                                        }
+                                                    "en",
+                                                ) ||
+                                                "Unban Date: {{DATE}}",
+                                        ).replace(
+                                            "{{DATE}}",
+                                            new Date(
+                                                message.message.time +
+                                                    Date.now(),
+                                            ).toLocaleDateString(currentLang, {
+                                                year: "numeric",
+                                                month: "long",
+                                                day: "numeric",
+                                                hour: "numeric",
+                                            }),
+                                        )}
                                     </b>
                                 </p>
                                 {#if canAutoTranslate && !autoTranslations[message.id] && !autoTranslationCode.startsWith("en")}
@@ -794,7 +849,10 @@
                                         class="fake-link"
                                         style="display:flex;align-items:center;"
                                         on:click={() =>
-                                            autoTranslate(message.id, message.message.reason)}
+                                            autoTranslate(
+                                                message.id,
+                                                message.message.reason,
+                                            )}
                                     >
                                         <img
                                             src="/messagesstatic/translate.png"
@@ -847,7 +905,10 @@
                                             class="fake-link"
                                             style="display:flex;align-items:center;"
                                             on:click={() =>
-                                                autoTranslate(message.id, message.message.message)}
+                                                autoTranslate(
+                                                    message.id,
+                                                    message.message.message,
+                                                )}
                                         >
                                             <img
                                                 src="/messagesstatic/translate.png"
@@ -907,60 +968,61 @@
                                     {/if}
                                 </p> -->
                             {:else if message.message.type === "privacyPolicy"}
-                                <a
-                                    href="/privacy"
-                                >
-                                    {
-                                        String(
+                                <a href="/privacy">
+                                    {String(
+                                        TranslationHandler.text(
+                                            `messages.alert.privacy`,
+                                            currentLang,
+                                        ) ||
                                             TranslationHandler.text(
                                                 `messages.alert.privacy`,
-                                                currentLang
-                                            ) || TranslationHandler.text(
-                                                `messages.alert.privacy`,
-                                                'en'
-                                            )
-                                        )
-                                        .replace("{{PRIVACY_POLICY}}", TranslationHandler.text(
+                                                "en",
+                                            ),
+                                    ).replace(
+                                        "{{PRIVACY_POLICY}}",
+                                        TranslationHandler.text(
                                             "home.footer.sections.info.privacy",
-                                            currentLang
-                                        ))
-                                    }
+                                            currentLang,
+                                        ),
+                                    )}
                                 </a>
                             {:else if message.message.type === "guidelines"}
                                 <a href="/guidelines/uploading">
-                                    {
-                                        String(
+                                    {String(
+                                        TranslationHandler.text(
+                                            `messages.alert.uploadingguidelines`,
+                                            currentLang,
+                                        ) ||
                                             TranslationHandler.text(
                                                 `messages.alert.uploadingguidelines`,
-                                                currentLang
-                                            ) || TranslationHandler.text(
-                                                `messages.alert.uploadingguidelines`,
-                                                'en'
-                                            )
-                                        )
-                                        .replace("{{UPLOADING_GUIDELINES}}", TranslationHandler.text(
+                                                "en",
+                                            ),
+                                    ).replace(
+                                        "{{UPLOADING_GUIDELINES}}",
+                                        TranslationHandler.text(
                                             "home.footer.sections.info.guidelines",
-                                            currentLang
-                                        ))
-                                    }
+                                            currentLang,
+                                        ),
+                                    )}
                                 </a>
                             {:else if message.message.type === "TOS"}
                                 <a href="/terms">
-                                    {
-                                        String(
+                                    {String(
+                                        TranslationHandler.text(
+                                            `messages.alert.terms`,
+                                            currentLang,
+                                        ) ||
                                             TranslationHandler.text(
                                                 `messages.alert.terms`,
-                                                currentLang
-                                            ) || TranslationHandler.text(
-                                                `messages.alert.terms`,
-                                                'en'
-                                            )
-                                        )
-                                        .replace("{{TERMS_OF_SERVICE}}", TranslationHandler.text(
+                                                "en",
+                                            ),
+                                    ).replace(
+                                        "{{TERMS_OF_SERVICE}}",
+                                        TranslationHandler.text(
                                             "home.footer.sections.info.terms",
-                                            currentLang
-                                        ))
-                                    }
+                                            currentLang,
+                                        ),
+                                    )}
                                 </a>
                             {:else}
                                 <!-- what is this? -->
@@ -992,12 +1054,19 @@
                                             {/if}
                                         </b>
                                     </summary>
-                                    <div style="margin-top: 8px; width: 100%;" />
-                                    <textarea bind:value={disputeTexts[message.id]} />
-                                    <div style="margin-top: 8px; width: 100%;" />
+                                    <div
+                                        style="margin-top: 8px; width: 100%;"
+                                    />
+                                    <textarea
+                                        bind:value={disputeTexts[message.id]}
+                                    />
+                                    <div
+                                        style="margin-top: 8px; width: 100%;"
+                                    />
                                     <div class="action-bar-full">
                                         <Button
-                                            on:click={() => disputeMessage(message.id)}
+                                            on:click={() =>
+                                                disputeMessage(message.id)}
                                         >
                                             <LocalizedText
                                                 text="Reply"
@@ -1009,7 +1078,9 @@
                                 </details>
                             {/if}
                             {#if message.date}
-                                <p class="message-date">{unixToDisplayDate(message.date)}</p>
+                                <p class="message-date">
+                                    {unixToDisplayDate(message.date)}
+                                </p>
                             {/if}
                         </button>
                     {:else}
@@ -1162,7 +1233,7 @@
     :global(html[dir="rtl"]) .message {
         text-align: right;
     }
-    
+
     .message-date {
         float: right;
         opacity: 0.5;

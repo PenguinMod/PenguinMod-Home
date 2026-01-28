@@ -1,14 +1,14 @@
 <script>
     import { onMount } from "svelte";
-    import { page } from '$app/stores';
+    import { page } from "$app/stores";
     import { browser } from "$app/environment";
     import MarkdownIt from "markdown-it";
-    
+
     import { PUBLIC_API_URL } from "$env/static/public";
-    
+
     // Static values
     import LINK from "../../resources/urls.js";
-    
+
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
@@ -24,12 +24,12 @@
     let currentLang = "en";
     onMount(() => {
         Language.forceUpdate();
-        embed = $page.url.searchParams.get('embed') === "true";
+        embed = $page.url.searchParams.get("embed") === "true";
     });
     Language.onChange((lang) => {
         currentLang = lang;
     });
-    
+
     const env = {};
     const md = new MarkdownIt({
         html: false,
@@ -51,17 +51,19 @@
 
     let wrongInfo = false;
     let captcha_token = false;
-    
+
     let apiOnlineChecking = true;
     let apiOnlineResponding = false;
     if (browser) {
         onMount(() => {
-            const url = `https://fake.penguinmod.com//api/v1`;
-            fetch(url).then(res => {
-                apiOnlineResponding = res.ok;
-            }).finally(() => {
-                apiOnlineChecking = false;
-            });
+            const url = `${PUBLIC_API_URL}/api/v1`;
+            fetch(url)
+                .then((res) => {
+                    apiOnlineResponding = res.ok;
+                })
+                .finally(() => {
+                    apiOnlineChecking = false;
+                });
         });
     }
 
@@ -70,7 +72,11 @@
     };
 
     async function login() {
-        const token = await Authentication.verifyPassword(username, password, captcha_token);
+        const token = await Authentication.verifyPassword(
+            username,
+            password,
+            captcha_token,
+        );
 
         if (token) {
             localStorage.setItem("username", username);
@@ -87,48 +93,47 @@
 
         loggingIn = true;
         login()
-        .then((success) => {
-            if (success) {
-                if (embed) {
-                    const opener = window.opener || window.parent;
+            .then(
+                (success) => {
+                    if (success) {
+                        if (embed) {
+                            const opener = window.opener || window.parent;
 
-                    function post(data) {
-                        opener.postMessage(
-                            data,
-                            `/`
-                        );
+                            function post(data) {
+                                opener.postMessage(data, `/`);
+                            }
+
+                            post();
+
+                            window.close();
+                            return;
+                        }
+
+                        // redirect
+                        const redir = $page.url.searchParams.get("redirect");
+
+                        window.location.href = redir ? redir : "/";
+                    } else {
+                        wrongInfo = true;
                     }
-
-                    post();
-
-                    window.close();
-                    return;
-                }
-
-                // redirect
-                const redir = $page.url.searchParams.get('redirect');
-            
-                window.location.href = redir ? redir : "/";
-            }
-            else {
-                wrongInfo = true;
-            }
-        }, (err) => {
-            wrongInfo = true;
-            alert("error:", err);
-        })
-        .catch((err) => {
-            alert("error:", err);
-        })
-        .finally(() => {
-            loggingIn = false;
-        });
-    }
+                },
+                (err) => {
+                    wrongInfo = true;
+                    alert("error:", err);
+                },
+            )
+            .catch((err) => {
+                alert("error:", err);
+            })
+            .finally(() => {
+                loggingIn = false;
+            });
+    };
 
     function addOAuthEventListener() {
         window.addEventListener("message", (event) => {
-            if (event.origin !== "https://fake.penguinmod.com/") return;
-            
+            if (event.origin !== PUBLIC_API_URL) return;
+
             if (!event.data) return;
 
             const { username, token } = event.data;
@@ -140,33 +145,36 @@
                 const opener = window.opener || window.parent;
 
                 function post(data) {
-                    opener.postMessage(
-                        data,
-                        `/`
-                    );
+                    opener.postMessage(data, `/`);
                 }
 
-                post()
+                post();
 
                 window.close();
                 return;
             }
 
-            const redir = $page.url.searchParams.get('redirect');
+            const redir = $page.url.searchParams.get("redirect");
 
             location.href = redir ? redir : "/";
         });
     }
 
     function oauthFrame(method) {
-        let iframe = window.open(`https://fake.penguinmod.com//api/v1/users/loginoauthaccount?method=${method}`, `Login with ${method}`, "width=500,height=500");
+        let iframe = window.open(
+            `${PUBLIC_API_URL}/api/v1/users/loginoauthaccount?method=${method}`,
+            `Login with ${method}`,
+            "width=500,height=500",
+        );
 
         if (!iframe) {
-            alert(TranslationHandler.textSafe(
-                "login.oauth.nopopup",
-                currentLang,
-                "Please enable popups to login with {{WEBSITE}}."
-            ).replace('{{WEBSITE}}', method));
+            alert(
+                TranslationHandler.textSafe(
+                    "login.oauth.nopopup",
+                    currentLang,
+                    "Please enable popups to login with {{WEBSITE}}.",
+                ).replace("{{WEBSITE}}", method),
+            );
             return;
         }
 
@@ -187,19 +195,25 @@
 
     function passwordInputChanged(event) {
         password = event.target.value;
-        wrongInfo = false
+        wrongInfo = false;
     }
 </script>
-    
+
 <svelte:head>
     <title>PenguinMod - Login</title>
     <meta name="title" content="PenguinMod - Login" />
     <meta property="og:title" content="PenguinMod - Login" />
-    <meta property="twitter:title" content="PenguinMod - Login">
-    <meta name="description" content="Login for PenguinMod to start sharing your projects!">
-    <meta property="twitter:description" content="Login for PenguinMod to start sharing your projects!">
-    <meta property="og:url" content="https://penguinmod.com/signin">
-    <meta property="twitter:url" content="https://penguinmod.com/signin">
+    <meta property="twitter:title" content="PenguinMod - Login" />
+    <meta
+        name="description"
+        content="Login for PenguinMod to start sharing your projects!"
+    />
+    <meta
+        property="twitter:description"
+        content="Login for PenguinMod to start sharing your projects!"
+    />
+    <meta property="og:url" content="https://penguinmod.com/signin" />
+    <meta property="twitter:url" content="https://penguinmod.com/signin" />
 </svelte:head>
 
 {#if !embed}
@@ -212,10 +226,7 @@
 
     {#if !apiOnlineChecking && apiOnlineResponding}
         <main>
-            <img
-                src="/penguins/signin.svg"
-                alt="Profiles"
-            />
+            <img src="/penguins/signin.svg" alt="Profiles" />
             <h1 style="margin-block:4px">PenguinMod</h1>
             <p>
                 <LocalizedText
@@ -224,29 +235,47 @@
                     lang={currentLang}
                 />
             </p>
-            
+
             <div class="old-accounts-warning">
                 {@html generateMarkdown(`${TranslationHandler.textSafe(
                     "login.linkto.oldaccounts2025.line1",
                     currentLang,
-                    "Due to server issues, accounts & projects created from November 2024 to January 2025 have been deleted."
+                    "Due to server issues, accounts & projects created from November 2024 to January 2025 have been deleted.",
                 )}
                 ${TranslationHandler.textSafe(
                     "login.linkto.oldaccounts2025.line2",
                     currentLang,
-                    "Check the post [here](https://penguinmod.com/devposts/3-18-2025-shutdown-incident) for more information."
+                    "Check the post [here](https://penguinmod.com/devposts/3-18-2025-shutdown-incident) for more information.",
                 )}`)}
             </div>
-        
+
             <button class="gsi-material-button" on:click={googleOAuth}>
                 <div class="gsi-material-button-state"></div>
                 <div class="gsi-material-button-content-wrapper">
                     <div class="gsi-material-button-icon">
-                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: block;">
-                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                        <svg
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 48 48"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            style="display: block;"
+                        >
+                            <path
+                                fill="#EA4335"
+                                d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+                            ></path>
+                            <path
+                                fill="#4285F4"
+                                d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
+                            ></path>
+                            <path
+                                fill="#FBBC05"
+                                d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
+                            ></path>
+                            <path
+                                fill="#34A853"
+                                d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+                            ></path>
                             <path fill="none" d="M0 0h48v48H0z"></path>
                         </svg>
                     </div>
@@ -266,7 +295,7 @@
                     </span>
                 </div>
             </button>
-        
+
             <button class="gsi-material-button" on:click={githubOAuth}>
                 <div class="gsi-material-button-state"></div>
                 <div class="gsi-material-button-content-wrapper">
@@ -294,12 +323,16 @@
                     </span>
                 </div>
             </button>
-        
+
             <button class="gsi-material-button" on:click={scratchOauth}>
                 <div class="gsi-material-button-state"></div>
                 <div class="gsi-material-button-content-wrapper">
                     <div class="gsi-material-button-icon">
-                        <img src="/Scratch_S.svg" alt="Scratch" style="display:block;width:20px;height:20px;">
+                        <img
+                            src="/Scratch_S.svg"
+                            alt="Scratch"
+                            style="display:block;width:20px;height:20px;"
+                        />
                     </div>
                     <span class="gsi-material-button-contents">
                         <LocalizedText
@@ -317,7 +350,7 @@
                     </span>
                 </div>
             </button>
-            
+
             <p class="or-line">
                 <LocalizedText
                     text="or"
@@ -325,7 +358,7 @@
                     lang={currentLang}
                 />
             </p>
-        
+
             <span class="input-title">
                 <LocalizedText
                     text="Username"
@@ -339,10 +372,10 @@
                 placeholder={TranslationHandler.textSafe(
                     "generic.typehere",
                     currentLang,
-                    "Type here..."
+                    "Type here...",
                 )}
                 maxlength="20"
-                on:input={() => wrongInfo = false}
+                on:input={() => (wrongInfo = false)}
             />
             <span class="input-title">
                 <LocalizedText
@@ -357,14 +390,12 @@
                     placeholder={TranslationHandler.textSafe(
                         "generic.typehere",
                         currentLang,
-                        "Type here..."
+                        "Type here...",
                     )}
                     maxlength="50"
                     on:input={passwordInputChanged}
                 />
-                <button
-                    class="password-show"
-                    on:click={togglePasswordView}>
+                <button class="password-show" on:click={togglePasswordView}>
                     {#if showingPassword}
                         <img
                             src="/account/hidepassword.svg"
@@ -380,12 +411,18 @@
                     {/if}
                 </button>
             </div>
-        
-            <Captcha on:update={(event) => {
-                captcha_token = event.detail;
-            }} />
-    
-            <button class="Login-acc" data-canClick={!!captcha_token} on:click={LoginAccountSafe}>
+
+            <Captcha
+                on:update={(event) => {
+                    captcha_token = event.detail;
+                }}
+            />
+
+            <button
+                class="Login-acc"
+                data-canClick={!!captcha_token}
+                on:click={LoginAccountSafe}
+            >
                 {#if loggingIn}
                     <LoadingSpinner icon="/loading_white.png" />
                 {:else}
@@ -396,7 +433,7 @@
                     />
                 {/if}
             </button>
-        
+
             <a href="/forgotpassword" style="margin: 8px">
                 <LocalizedText
                     text="Forgot your password? Reset it here."
@@ -404,13 +441,13 @@
                     lang={currentLang}
                 />
             </a>
-        
+
             <LocalizedText
                 text="or"
                 key="account.methods.orline"
                 lang={currentLang}
             />
-        
+
             <a href="/signup?embed={embed}" style="margin: 8px">
                 <LocalizedText
                     text="Don't have an account? Sign up here!"
@@ -418,7 +455,7 @@
                     lang={currentLang}
                 />
             </a>
-        
+
             {#if wrongInfo}
                 <p style="color: red;margin-bottom:0;">
                     <LocalizedText
@@ -491,11 +528,11 @@
             />
         </a>
     </div>
-    
+
     <!-- the magical div of scroll -->
     <div style="height:32px" />
 </div>
-    
+
 <style>
     * {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -580,7 +617,7 @@
         width: 24px;
         height: 24px;
     }
-    
+
     :global(body.dark-mode) .invert-on-dark {
         filter: invert(1);
     }
@@ -588,7 +625,7 @@
         right: initial;
         left: -4px;
     }
-    
+
     .or-line {
         margin-block: 2px;
     }
@@ -628,7 +665,7 @@
         color: grey;
     }
 
-    .Login-acc[data-canClick=true] {
+    .Login-acc[data-canClick="true"] {
         background: #00c3ff;
         cursor: pointer;
         color: white;
@@ -675,7 +712,7 @@
         box-sizing: border-box;
         color: #1f1f1f;
         cursor: pointer;
-        font-family: 'Roboto', arial, sans-serif;
+        font-family: "Roboto", arial, sans-serif;
         font-size: 14px;
         height: 40px;
         letter-spacing: 0.25px;
@@ -684,8 +721,14 @@
         padding: 0 12px;
         position: relative;
         text-align: center;
-        -webkit-transition: background-color .218s, border-color .218s, box-shadow .218s;
-        transition: background-color .218s, border-color .218s, box-shadow .218s;
+        -webkit-transition:
+            background-color 0.218s,
+            border-color 0.218s,
+            box-shadow 0.218s;
+        transition:
+            background-color 0.218s,
+            border-color 0.218s,
+            box-shadow 0.218s;
         vertical-align: middle;
         white-space: nowrap;
         width: 60%;
@@ -724,7 +767,7 @@
     .gsi-material-button .gsi-material-button-contents {
         -webkit-flex-grow: 1;
         flex-grow: 1;
-        font-family: 'Roboto', arial, sans-serif;
+        font-family: "Roboto", arial, sans-serif;
         font-weight: 500;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -732,8 +775,8 @@
     }
 
     .gsi-material-button .gsi-material-button-state {
-        -webkit-transition: opacity .218s;
-        transition: opacity .218s;
+        -webkit-transition: opacity 0.218s;
+        transition: opacity 0.218s;
         bottom: 0;
         left: 0;
         opacity: 0;
@@ -764,28 +807,38 @@
         opacity: 38%;
     }
 
-    .gsi-material-button:not(:disabled):active .gsi-material-button-state, 
+    .gsi-material-button:not(:disabled):active .gsi-material-button-state,
     .gsi-material-button:not(:disabled):focus .gsi-material-button-state {
         background-color: #303030;
         opacity: 12%;
     }
 
-    :global(body.dark-mode) .gsi-material-button:not(:disabled):active .gsi-material-button-state, 
-    :global(body.dark-mode) .gsi-material-button:not(:disabled):focus .gsi-material-button-state {
+    :global(body.dark-mode)
+        .gsi-material-button:not(:disabled):active
+        .gsi-material-button-state,
+    :global(body.dark-mode)
+        .gsi-material-button:not(:disabled):focus
+        .gsi-material-button-state {
         background-color: white;
         opacity: 12%;
     }
 
     .gsi-material-button:not(:disabled):hover {
-        -webkit-box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
-        box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
+        -webkit-box-shadow:
+            0 1px 2px 0 rgba(60, 64, 67, 0.3),
+            0 1px 3px 1px rgba(60, 64, 67, 0.15);
+        box-shadow:
+            0 1px 2px 0 rgba(60, 64, 67, 0.3),
+            0 1px 3px 1px rgba(60, 64, 67, 0.15);
     }
 
     .gsi-material-button:not(:disabled):hover .gsi-material-button-state {
         background-color: #303030;
         opacity: 8%;
     }
-    :global(body.dark-mode) .gsi-material-button:not(:disabled):hover .gsi-material-button-state {
+    :global(body.dark-mode)
+        .gsi-material-button:not(:disabled):hover
+        .gsi-material-button-state {
         background-color: white;
         opacity: 8%;
     }

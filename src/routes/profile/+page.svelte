@@ -11,7 +11,7 @@
     import ProjectApi from "../../resources/projectapi.js";
     import EmojiList from "../../resources/emojis.js";
     const ProjectClient = new ProjectApi();
-    
+
     // Static values
     import ProfileBadges from "../../resources/badges.js";
 
@@ -55,13 +55,13 @@
     let isRankingUpMenu = false;
     let isAttemptingRankUp = false;
     let profileFeaturedProject = null;
-    
+
     let isProfilePrivate = false;
     let isProfilePublicToFollowers = false;
     let isFollowedByUser = false;
 
     const profileEditingData = {
-        bio: '',
+        bio: "",
         project: 0,
         projectTitle: 1,
         isEditingBio: false,
@@ -78,21 +78,28 @@
         canSendSaveReq = false;
         profileEditingData.isBioInappropriate = false;
         profileEditingData.isBioEditLoading = true;
-        ProjectClient.setBio(profileEditingData.bio, String(user).toLowerCase() !== String(loggedInUser).toLowerCase(), user).then(() => {
-            fullProfile.bio = profileEditingData.bio;
-            profileEditingData.isEditingBio = false;
-            setTimeout(() => {
-                renderScratchBlocks();
-            }, 0);
-        }).catch(err => {
-            if (err === 'IllegalWordsUsed') {
-                profileEditingData.isBioInappropriate = true;
-            }
-            console.log(err)
-        }).finally(() => {
-            canSendSaveReq = true;
-            profileEditingData.isBioEditLoading = false;
-        });
+        ProjectClient.setBio(
+            profileEditingData.bio,
+            String(user).toLowerCase() !== String(loggedInUser).toLowerCase(),
+            user,
+        )
+            .then(() => {
+                fullProfile.bio = profileEditingData.bio;
+                profileEditingData.isEditingBio = false;
+                setTimeout(() => {
+                    renderScratchBlocks();
+                }, 0);
+            })
+            .catch((err) => {
+                if (err === "IllegalWordsUsed") {
+                    profileEditingData.isBioInappropriate = true;
+                }
+                console.log(err);
+            })
+            .finally(() => {
+                canSendSaveReq = true;
+                profileEditingData.isBioEditLoading = false;
+            });
     };
     const updateProjectFeaturedTitle = (element) => {
         const projectTitle = Number(element.target.value);
@@ -102,40 +109,30 @@
         if (!canSendEditedProject) return;
         canSendEditedProject = false;
         profileEditingData.project = id;
-        console.log(profileEditingData.project, profileEditingData.projectTitle)
-        profileEditingData.isProjectEditLoading = true
-        ProjectClient.setMyFeaturedProject(profileEditingData.project, profileEditingData.projectTitle).then(() => {
-            profileEditingData.isEditingProject = false;
-            location.reload();
-        }).catch(err => {
-            alert(err);
-        }).finally(() => {
-            canSendEditedProject = true;
-            profileEditingData.isProjectEditLoading = false;
-        });
+        console.log(
+            profileEditingData.project,
+            profileEditingData.projectTitle,
+        );
+        profileEditingData.isProjectEditLoading = true;
+        ProjectClient.setMyFeaturedProject(
+            profileEditingData.project,
+            profileEditingData.projectTitle,
+        )
+            .then(() => {
+                profileEditingData.isEditingProject = false;
+                location.reload();
+            })
+            .catch((err) => {
+                alert(err);
+            })
+            .finally(() => {
+                canSendEditedProject = true;
+                profileEditingData.isProjectEditLoading = false;
+            });
     };
 
     const projectTitles = [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13,
-        14,
-        15,
-        16,
-        17,
-        18,
-        19,
-        20
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
     ];
     const projectTitleStrings = [
         "Featured Project",
@@ -190,18 +187,23 @@
 
                 let profileFeatured = fullProfile.myFeaturedProject;
                 if (profileFeatured === -1) {
-                    profileFeatured = 0
+                    profileFeatured = 0;
                 }
                 if (profileFeatured) {
-                    ProjectApi.getProjectMeta(profileFeatured).then(metadata => {
-                        //console.log(metadata);
-                        profileFeaturedProject = metadata;
-                    }).catch((err) => {
-                        console.warn('Failed to load profile featured project;', err);
-                        profileFeaturedProject = 'none';
-                    });
+                    ProjectApi.getProjectMeta(profileFeatured)
+                        .then((metadata) => {
+                            //console.log(metadata);
+                            profileFeaturedProject = metadata;
+                        })
+                        .catch((err) => {
+                            console.warn(
+                                "Failed to load profile featured project;",
+                                err,
+                            );
+                            profileFeaturedProject = "none";
+                        });
                 } else if (!profileFeatured && !projects.all[0]) {
-                    profileFeaturedProject = 'none';
+                    profileFeaturedProject = "none";
                 } else if (!profileFeatured && projects.all[0]) {
                     profileFeaturedProject = projects.all[0];
                 }
@@ -212,29 +214,39 @@
             console.log(err);
             err = JSON.parse(err);
             err = err.error;
-            if (err === 'NotFound' || err === 'UserNotFound') {
+            if (err === "NotFound" || err === "UserNotFound") {
                 wasNotFound = true;
             }
-            if (err === 'PrivateProfile') {
+            if (err === "PrivateProfile") {
                 isProfilePrivate = true;
                 then([]);
             }
         };
 
-        if ((loggedIn && username) && String(user).toLowerCase() === String(username).toLowerCase()) {
-            ProjectClient.getMyProjects(0).then(then).catch(catch_func).finally(() => {
-                fetchedFullProfile = true;
-                setTimeout(() => {
-                    renderScratchBlocks();
-                }, 0);
-            });
+        if (
+            loggedIn &&
+            username &&
+            String(user).toLowerCase() === String(username).toLowerCase()
+        ) {
+            ProjectClient.getMyProjects(0)
+                .then(then)
+                .catch(catch_func)
+                .finally(() => {
+                    fetchedFullProfile = true;
+                    setTimeout(() => {
+                        renderScratchBlocks();
+                    }, 0);
+                });
         } else {
-            ProjectClient.getUserProjects(user, 0).then(then).catch(catch_func).finally(() => {
-                fetchedFullProfile = true;
-                setTimeout(() => {
-                    renderScratchBlocks();
-                }, 0);
-            });
+            ProjectClient.getUserProjects(user, 0)
+                .then(then)
+                .catch(catch_func)
+                .finally(() => {
+                    fetchedFullProfile = true;
+                    setTimeout(() => {
+                        renderScratchBlocks();
+                    }, 0);
+                });
         }
     };
     const loggedInChange = async () => {
@@ -256,26 +268,31 @@
         }
         fetchProfile();
     };
-    
+
     function unixToDisplayDate(unix) {
-       unix = Number(unix);
+        unix = Number(unix);
         return `${new Date(unix).toLocaleString([], {
             year: "numeric",
             month: "long",
             day: "numeric",
             hour: "numeric",
             minute: "numeric",
-            hour12: true
+            hour12: true,
         })}`;
     }
     const xmlEscape = function (unsafe) {
-        return unsafe.replace(/[<>&'"]/g, c => {
+        return unsafe.replace(/[<>&'"]/g, (c) => {
             switch (c) {
-            case '<': return '&lt;';
-            case '>': return '&gt;';
-            case '&': return '&amp;';
-            case '\'': return '&apos;';
-            case '"': return '&quot;';
+                case "<":
+                    return "&lt;";
+                case ">":
+                    return "&gt;";
+                case "&":
+                    return "&amp;";
+                case "'":
+                    return "&apos;";
+                case '"':
+                    return "&quot;";
             }
         });
     };
@@ -283,7 +300,7 @@
         const title = xmlEscape(String(_title));
         const emojiRegex = /:(\w+):/g;
         return title.replace(emojiRegex, (match) => {
-            const emojiName = match.replace(/\:/gmi, "");
+            const emojiName = match.replace(/\:/gim, "");
             return `<img
                 src="https://library.penguinmod.com/files/emojis/${emojiName}.png"
                 alt=":${emojiName}:"
@@ -293,7 +310,7 @@
             >`;
         });
     };
-    
+
     onMount(async () => {
         const params = new URLSearchParams(location.search);
         const query = params.get("user") ?? "";
@@ -305,7 +322,7 @@
             const username = await new Promise((resolve) => {
                 ProjectApi.getUsernameById(idQuery)
                     .then((username) => {
-                        resolve(username)
+                        resolve(username);
                     })
                     .catch(() => {
                         resolve();
@@ -316,10 +333,14 @@
             }
         }
 
-        page.subscribe(v => {
+        page.subscribe((v) => {
             if (!v.url.searchParams.get("user") || !user) return;
-            if (String(v.url.searchParams.get("user")).toLowerCase() === String(user).toLowerCase()) return;
-            
+            if (
+                String(v.url.searchParams.get("user")).toLowerCase() ===
+                String(user).toLowerCase()
+            )
+                return;
+
             window.location.reload();
         });
     });
@@ -458,10 +479,12 @@
             })
             .catch((err) => {
                 console.error(err);
-                alert(`${TranslationHandler.text(
-                    "profile.rankup.error",
-                    currentLang
-                )}\n${err}`);
+                alert(
+                    `${TranslationHandler.text(
+                        "profile.rankup.error",
+                        currentLang,
+                    )}\n${err}`,
+                );
                 isAttemptingRankUp = false;
                 isRankingUpMenu = false;
             });
@@ -476,47 +499,49 @@
     // EMOJIS eae
 
     const emojiPickerRandomEmojis = [
-        'angel',
-        'angry',
-        'annoyed',
-        'bigsad',
-        'disappointed',
-        'happy',
-        'idk',
-        'meh',
-        'salute',
-        'shocked',
-        'sobbing',
-        'worried',
-        'investigate',
-        'grimacing',
-        'confusedthinking',
-        'cool',
+        "angel",
+        "angry",
+        "annoyed",
+        "bigsad",
+        "disappointed",
+        "happy",
+        "idk",
+        "meh",
+        "salute",
+        "shocked",
+        "sobbing",
+        "worried",
+        "investigate",
+        "grimacing",
+        "confusedthinking",
+        "cool",
     ];
-    let emojiPickerRandomEmoji = '';
-    let emojiSearchQuery = '';
+    let emojiPickerRandomEmoji = "";
+    let emojiSearchQuery = "";
     let emojiSearchBar;
     let lastSelectedFormArea;
     const pickRandomEmojiPickerDisplay = () => {
-        emojiPickerRandomEmoji = emojiPickerRandomEmojis
-            [Math.round(Math.random() * (emojiPickerRandomEmojis.length - 1))];
+        emojiPickerRandomEmoji =
+            emojiPickerRandomEmojis[
+                Math.round(Math.random() * (emojiPickerRandomEmojis.length - 1))
+            ];
     };
     pickRandomEmojiPickerDisplay();
 
     let emojiPickerListUpdate = 0;
     const allowEmojiDrop = (ev) => {
         const data = ev.dataTransfer.getData("emoji");
-        if (data && typeof data === 'string') {
+        if (data && typeof data === "string") {
             ev.preventDefault();
         }
-    }
+    };
     const useEmojiDrag = (ev, name) => {
         ev.dataTransfer.setData("emoji", name);
-    }
+    };
     const handleEmojiDrop = (ev) => {
         const data = ev.dataTransfer.getData("emoji");
-        if (data && typeof data === 'string') {
-            ev.dataTransfer.setData("emoji", '');
+        if (data && typeof data === "string") {
+            ev.dataTransfer.setData("emoji", "");
             ev.preventDefault();
         } else {
             return;
@@ -531,7 +556,7 @@
             emojiSearchQuery = emojiSearchBar.value;
         }
         emojiPickerListUpdate++;
-    }
+    };
     const placeEmojiInTextbox = (emoji) => {
         if (!lastSelectedFormArea) return;
         lastSelectedFormArea.value += `:${emoji}:`;
@@ -567,7 +592,7 @@
     // markdown code
     // markdown code
     // markdown code
-    
+
     const md = new MarkdownIt({
         html: false,
         linkify: true,
@@ -579,30 +604,32 @@
 
         if (token.info === "warning") {
             return `<div class="guidelines-warning-box">${md.utils.escapeHtml(
-                token.content
+                token.content,
             )}</div>`;
         }
-        
+
         if (token.info === "scratch") {
             env.usesScratchBlocks = true;
             return `<div class="render-scratchblocks">${md.utils.escapeHtml(
-                token.content
+                token.content,
             )}</div>`;
         }
 
         // By default markdown-it will use a strange combination of <code> and <pre>; we'd rather it
         // just use <pre>
         return `<pre class="language-${md.utils.escapeHtml(
-            token.info
+            token.info,
         )}">${md.utils.escapeHtml(token.content)}</pre>`;
     };
     md.renderer.rules.image = () => {
         return `<img src="/notallowed.png" height="16"></img>`;
     };
     // Remember the old renderer if overridden, or proxy to the default renderer.
-    const defaultLinkOpenRender = md.renderer.rules.link_open || function (tokens, idx, options, env, self) {
-        return self.renderToken(tokens, idx, options);
-    };
+    const defaultLinkOpenRender =
+        md.renderer.rules.link_open ||
+        function (tokens, idx, options, env, self) {
+            return self.renderToken(tokens, idx, options);
+        };
 
     const doesntShowRedirectURLs = [
         /https:\/\/([a-z]+\.|)penguinmod\.com/i,
@@ -631,58 +658,71 @@
         /https:\/\/(www\.|store\.|support\.|help\.|)(steampowered|steamcommunity)\.com/i,
     ];
     md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
-        const href = String(tokens[idx].attrGet('href'));
+        const href = String(tokens[idx].attrGet("href"));
         // only force open in new tab if we are not penguinmod.com
         if (!href.match(safeURLs[1])) {
-            tokens[idx].attrSet('target', '_blank');
+            tokens[idx].attrSet("target", "_blank");
         }
         // if we match a URL that should show a redirect, change the href attribute
-        if (!doesntShowRedirectURLs.some(regex => href.match(regex))) {
+        if (!doesntShowRedirectURLs.some((regex) => href.match(regex))) {
             const base64 = encodeURIComponent(btoa(href));
-            tokens[idx].attrSet('href', `https://penguinmod.com/redirect?t=${base64}`);
+            tokens[idx].attrSet(
+                "href",
+                `https://penguinmod.com/redirect?t=${base64}`,
+            );
         }
 
         // disables clicking on non-verified links
-        if (!safeURLs.some(regex => href.match(regex))) {
-            return '';
+        if (!safeURLs.some((regex) => href.match(regex))) {
+            return "";
         }
 
         // Pass the token to the default renderer.
         return defaultLinkOpenRender(tokens, idx, options, env, self);
     };
-    
-    const defaultTextRender = md.renderer.rules.text || function (tokens, idx, options, env, self) {
-        return self.renderToken(tokens, idx, options);
-    };
-    
+
+    const defaultTextRender =
+        md.renderer.rules.text ||
+        function (tokens, idx, options, env, self) {
+            return self.renderToken(tokens, idx, options);
+        };
+
     const regexRules = {
         // we have to use far more sophisticated regex here due to weird url behavior
         // due to browser compat, we do this in the next comment
         project: /#([\w-]+)/g,
         user: /@([\w-]+)/g,
-        emoji: /:(\w+):/g
-    }
+        emoji: /:(\w+):/g,
+    };
     // certain iOS devices do not support lookbehind-assertion, and will throw an error
     // this was present in Scratch for Discord for a bit, before i just replaced the regex entirely
     // we can handle this horrible behavior properly though:
     try {
-        regexRules.project = new RegExp('(?<!\\b(?:https?:\\/\\/|www\\.)\\S*)#(\\w+|\\d+)(?!\\S)', 'g');
-        regexRules.user = new RegExp('(?<!\\b(?:https?:\\/\\/|www\\.)\\S*)@(\\w+|\\d+)(?!\\S)', 'g');
+        regexRules.project = new RegExp(
+            "(?<!\\b(?:https?:\\/\\/|www\\.)\\S*)#(\\w+|\\d+)(?!\\S)",
+            "g",
+        );
+        regexRules.user = new RegExp(
+            "(?<!\\b(?:https?:\\/\\/|www\\.)\\S*)@(\\w+|\\d+)(?!\\S)",
+            "g",
+        );
     } catch {
         // iOS users will experience weird gaps and or urls with hashtags leading to 2 different places
         regexRules.project = /#([\w-]+)/g;
-        regexRules.user = /@([\w-]+)/g,
-        console.warn('Browser does not support lookbehind assertion in regex');
+        ((regexRules.user = /@([\w-]+)/g),
+            console.warn(
+                "Browser does not support lookbehind assertion in regex",
+            ));
     }
 
     md.renderer.rules.text = function (tokens, idx, options, env, self) {
         const token = tokens[idx];
-        
+
         let textChanged = false;
         let newText = `${md.utils.escapeHtml(token.content)}`;
         if (newText.match(regexRules.project)) {
-            newText = newText.replace(regexRules.project, function(id) {
-                id = id.replace('#', '');
+            newText = newText.replace(regexRules.project, function (id) {
+                id = id.replace("#", "");
                 if (/^\d{6,}$/.test(id)) {
                     return `<a href="${PUBLIC_STUDIO_URL}/#${id}" target="_blank">#${id}</a>`;
                 }
@@ -691,15 +731,15 @@
             textChanged = true;
         }
         if (newText.match(regexRules.user)) {
-            newText = newText.replace(regexRules.user, function(name) {
-                name = name.replace('@', '');
+            newText = newText.replace(regexRules.user, function (name) {
+                name = name.replace("@", "");
                 return `<a href="https://penguinmod.com/profile?user=${name}">@${name}</a>`;
             });
             textChanged = true;
         }
         if (newText.match(regexRules.emoji)) {
-            newText = newText.replace(regexRules.emoji, function(text) {
-                const emojiName = text.replace(/:/gmi, '');
+            newText = newText.replace(regexRules.emoji, function (text) {
+                const emojiName = text.replace(/:/gim, "");
                 return `<img
                     src="https://library.penguinmod.com/files/emojis/${emojiName}.png"
                     alt="${emojiName}"
@@ -740,26 +780,30 @@
     };
 
     function block() {
-        const doBlock = confirm(`${TranslationHandler.textSafe(
+        const doBlock = confirm(
+            `${TranslationHandler.textSafe(
                 "profile.block.confirm",
                 currentLang,
-                "Are you sure you want to block {{USERNAME}}?"
+                "Are you sure you want to block {{USERNAME}}?",
             ).replace("{{USERNAME}}", user)}\n${TranslationHandler.textSafe(
                 "profile.blockednote2",
                 currentLang,
-                "If you are blocking this user for harassment, please also report them."
-            )}`);
+                "If you are blocking this user for harassment, please also report them.",
+            )}`,
+        );
         if (doBlock) {
             ProjectClient.block(user, true).then(() => location.reload());
         }
     }
 
     function unblock() {
-        const doUnblock = confirm(`${TranslationHandler.textSafe(
+        const doUnblock = confirm(
+            `${TranslationHandler.textSafe(
                 "profile.block.confirm.remove",
                 currentLang,
-                "Are you sure you want to unblock {{USERNAME}}?"
-            ).replace("{{USERNAME}}", user)}`);
+                "Are you sure you want to unblock {{USERNAME}}?",
+            ).replace("{{USERNAME}}", user)}`,
+        );
         if (doUnblock) {
             ProjectClient.block(user, false).then(() => location.reload());
         }
@@ -773,13 +817,25 @@
 
 <svelte:head>
     <title>PenguinMod - {user ? user : "Profile"}</title>
-    <meta name="title"                   content="PenguinMod - {user ? user : "User Profile"}" />
-    <meta property="og:title"            content="PenguinMod - {user ? user : "User Profile"}" />
-    <meta property="twitter:title"       content="PenguinMod - {user ? user : "User Profile"}">
-    <meta name="description"             content="View {user ? user : "this user"}'s profile on PenguinMod.">
-    <meta property="twitter:description" content="View {user ? user : "this user"}'s profile on PenguinMod.">
-    <meta property="og:url"              content="https://penguinmod.com/profile">
-    <meta property="twitter:url"         content="https://penguinmod.com/profile">
+    <meta name="title" content="PenguinMod - {user ? user : 'User Profile'}" />
+    <meta
+        property="og:title"
+        content="PenguinMod - {user ? user : 'User Profile'}"
+    />
+    <meta
+        property="twitter:title"
+        content="PenguinMod - {user ? user : 'User Profile'}"
+    />
+    <meta
+        name="description"
+        content="View {user ? user : 'this user'}'s profile on PenguinMod."
+    />
+    <meta
+        property="twitter:description"
+        content="View {user ? user : 'this user'}'s profile on PenguinMod."
+    />
+    <meta property="og:url" content="https://penguinmod.com/profile" />
+    <meta property="twitter:url" content="https://penguinmod.com/profile" />
 </svelte:head>
 
 <NavigationBar />
@@ -842,12 +898,20 @@
                         key="profile.featured.chooselabel"
                         lang={currentLang}
                     />
-                    <select bind:value={profileEditingData.projectTitle} on:change={updateProjectFeaturedTitle}>
+                    <select
+                        bind:value={profileEditingData.projectTitle}
+                        on:change={updateProjectFeaturedTitle}
+                    >
                         {#each projectTitles as title}
-                            <option value="{title}">
+                            <option value={title}>
                                 <LocalizedText
-                                    text="{projectTitleStrings[Math.max(1, title - 1)]}"
-                                    key="profile.featured.title{Math.max(0, title)}"
+                                    text={projectTitleStrings[
+                                        Math.max(1, title - 1)
+                                    ]}
+                                    key="profile.featured.title{Math.max(
+                                        0,
+                                        title,
+                                    )}"
                                     lang={currentLang}
                                 />
                             </option>
@@ -857,8 +921,15 @@
                 <div class="featured-project-list">
                     {#if projects.all.length > 0}
                         {#if projects.all[0] !== "none"}
-                            {#each (projects.all.map(x => {x.author = loggedInUser;return x})) as project}
-                                <ClickableProject {...project} on:click={() => saveEditedProject(project.id)} />
+                            {#each projects.all.map((x) => {
+                                x.author = loggedInUser;
+                                return x;
+                            }) as project}
+                                <ClickableProject
+                                    {...project}
+                                    on:click={() =>
+                                        saveEditedProject(project.id)}
+                                />
                             {/each}
                         {:else}
                             <div class="none-found">
@@ -876,9 +947,12 @@
                         <LoadingSpinner />
                     {/if}
                 </div>
-                <Button color="gray" on:click={() => {
-                    profileEditingData.isEditingProject = false;
-                }}>
+                <Button
+                    color="gray"
+                    on:click={() => {
+                        profileEditingData.isEditingProject = false;
+                    }}
+                >
                     <LocalizedText
                         text="Cancel"
                         key="profile.featured.cancel"
@@ -896,616 +970,135 @@
     <StatusAlert />
 
     {#if (projects.all.length > 0 && fetchedFullProfile) || isProfilePrivate || wasNotFound || isForceView}
-        {#if
-            !wasNotFound
-            || isForceView
-        }
-        <div class="background">
-            {#if user}
-                <div class="section-user">
-                    <div class="section-user-header">
-                        <div class="subuser-section">
-                            <div class="user-username">
-                                <img
-                                    style="border-color:{isDonator ? "#a237db" : "#efefef"}"
-                                    src={`https://fake.penguinmod.com//api/v1/users/getpfp?username=${user}`}
-                                    alt="Profile"
-                                    class="profile-picture"
-                                />
-                                <div class="user-after-image">
-                                    {#if isDonator}
-                                        <h1 class="donator-color">{fullProfile.real_username || user}</h1>
-                                    {:else}
-                                        <h1>{fullProfile.real_username || user}</h1>
-                                    {/if}
-                                    
-                                    {#if isProfilePrivate && !loggedInAdmin && (!isBlocked || showAnyways)}
-                                        <img
-                                            src="/account/lock.svg"
-                                            alt="Private"
-                                            title={TranslationHandler.textSafe(
-                                                "profile.private.note",
-                                                currentLang,
-                                                "This profile is private."
-                                            )}
-                                        />
-                                    {/if}
-                                </div>
-                            </div>
-                            {#if (!isBlocked || showAnyways) && !isProfilePrivate || String(user).toLowerCase() === String(loggedInUser).toLowerCase() || (isProfilePublicToFollowers && isFollowedByUser) || loggedInAdmin}
-                                <div class="follower-section">
-                                    <p class="follower-count">
-                                        {TranslationHandler.text(
-                                            "profile.followers",
-                                            currentLang
-                                        ).replace("$1", followerCount - Number(followOnLoad) + Number(isFollowingUser))}
-                                    </p>
-                                    <div>
-                                        {#if !(loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase())}
-                                            {#key isFollowingUser}
-                                                <button
-                                                    class={`follower-button
-                                                        ${isDonator ? ' follower-button-donator' : ''}
-                                                        ${isFollowingUser ? ' follower-button-following' : ''}`}
-                                                    on:click={safeFollowUser}
-                                                >
-                                                    {#if isFollowingUser}
-                                                        <LocalizedText
-                                                            text="Unfollow"
-                                                            key="profile.unfollow"
-                                                            lang={currentLang}
-                                                        />
-                                                    {:else}
-                                                        <LocalizedText
-                                                            text="Follow"
-                                                            key="profile.follow"
-                                                            lang={currentLang}
-                                                        />
-                                                    {/if}
-                                                </button>
-                                            {/key}
-                                        {/if}
-                                    </div>
-                                </div>
-                            {/if}
-                        </div>
-                    </div>
-                </div>
-            {/if}
-            {#if isBlocked && !showAnyways}
-                <div class="section-private">
-                    <img
-                        src="/account/status_warn.svg"
-                        alt="Blocked"
-                        title="Blocked"
-                    />
-
-                    <p style="margin-block-end: 4px">
-                        <LocalizedText
-                            text="You have this user currently blocked."
-                            key="profile.blockednote"
-                            lang={currentLang}
-                        />
-                    </p>
-                    <p style="margin-block-start: 4px">
-                        <LocalizedText
-                            text="If you are blocking this user for harassment, please also report them."
-                            key="profile.blockednote2"
-                            lang={currentLang}
-                        />
-                    </p>
-                    <div
-                        class="button-container"
-                    >
-                        <button
-                            class="unblock-button"
-                            on:click={unblock}
-                        >
-                            <LocalizedText
-                                text="Unblock"
-                                key="profile.unblock"
-                                lang={currentLang}
-                            />
-                        </button>
-
-                        <button
-                            class="show-anyways"
-                            on:click={setShowAnyways}
-                        >
-                            <LocalizedText
-                                text="Continue"
-                                key="account.settings.continue"
-                                lang={currentLang}
-                            />
-                        </button>
-                    </div>
-                    <div style="height:16px" />
-                    <a
-                        href={`/report?type=user&id=${user}`}
-                        target="_blank"
-                        class="report-link"
-                        style="color: red !important;"
-                    >
-                        <img
-                            class="report-icon"
-                            src="/report_flag.png"
-                            style="margin: 0 4px"
-                            alt="Report"
-                        />
-                        <LocalizedText
-                            text="Report"
-                            key="report.title"
-                            lang={currentLang}
-                        />
-                    </a>
-                </div>
-            {:else}
-            {#if isProfilePrivate && String(user).toLowerCase() !== String(loggedInUser).toLowerCase() && !(isProfilePublicToFollowers && isFollowedByUser) && !loggedInAdmin}
-                <div class="section-private">
-                    <img
-                        src="/account/lock.svg"
-                        alt="Private"
-                        title="Private"
-                    />
-                    
-                    {#if isProfilePublicToFollowers}
-                        <p>
-                            <LocalizedText
-                                text={"This profile is private. Only people {{NAME}} follows can see their profile."}
-                                key="profile.private.followers"
-                                lang={currentLang}
-                                replace={{
-                                    "{{NAME}}": user,
-                                }}
-                            />
-                        </p>
-                    {:else}
-                        <p>
-                            <LocalizedText
-                                text="This profile is private. You cannot view it."
-                                key="profile.private"
-                                lang={currentLang}
-                            />
-                        </p>
-                    {/if}
-                </div>
-            {:else}
-            <div class="section-projects">
-                <div class="user-ordering-stats" style="width:90%">
-                    <div class="section-user-stats">
-                        {#if profileEditingData.isEditingBio}
-                            <div>
-                                <button
-                                    on:mouseenter={pickRandomEmojiPickerDisplay}
-                                    on:click={() => {
-                                        emojiPickerOpened = !emojiPickerOpened;
-                                    }}
-                                    title="Pick an emoji"
-                                    class="emoji-picker-button"
-                                >
+        {#if !wasNotFound || isForceView}
+            <div class="background">
+                {#if user}
+                    <div class="section-user">
+                        <div class="section-user-header">
+                            <div class="subuser-section">
+                                <div class="user-username">
                                     <img
-                                        src={`https://library.penguinmod.com/files/emojis/${emojiPickerRandomEmoji}.png`}
-                                        alt="Emoji"
-                                        title="Pick an emoji"
-                                        loading="lazy"
-                                        on:dragstart={(ev) => {
-                                            useEmojiDrag(ev, emojiPickerRandomEmoji);
-                                        }}
-                                    >
-                                </button>
-                                <div class="emoji-picker-list" data-opened={emojiPickerOpened}>
-                                    <div class="emoji-picker-search-container">
-                                        <div class="emoji-picker-search-icon">
-                                            <SearchSVG
-                                                width="30px"
-                                                height="20px"
-                                                color="#000000"
-                                                scale="2px"
-                                                style="margin-bottom:5px; margin-top: 5px;"
-                                            />
-                                        </div>
-                                        <input
-                                            on:dragover={allowEmojiDrop}
-                                            on:drop={handleEmojiDrop}
-                                            type="text"
-                                            placeholder="..."
-                                            bind:value={emojiSearchQuery}
-                                            bind:this={emojiSearchBar}
-                                        >
-                                    </div>
-                                    <div class="emoji-picker-emoji-container">
-                                        {#key emojiPickerListUpdate}
-                                            {#if EmojiList.loading}
-                                                <LoadingSpinner></LoadingSpinner>
-                                            {:else if EmojiList.failed}
-                                                <p>
-                                                    <LocalizedText
-                                                        text="Unknown error."
-                                                        key="generic.errorsmall"
-                                                        lang={currentLang}
-                                                    />
-                                                </p>
-                                            {:else if emojiPickerOpened}
-                                                {#each EmojiList.emojis as emoji}
-                                                    {#if
-                                                        !emojiSearchQuery
-                                                        || String(emoji).includes(
-                                                            emojiSearchQuery
-                                                                .toLowerCase()
-                                                                .replace(/[^a-z]+/gmi, '')
-                                                        )
-                                                    }
-                                                        <button
-                                                            class="emoji-picker-emoji"
-                                                            on:click={() => placeEmojiInTextbox(emoji)}
-                                                        >
-                                                            <img
-                                                                src={`https://library.penguinmod.com/files/emojis/${emoji}.png`}
-                                                                alt={`:${emoji}:`}
-                                                                title={`:${emoji}:`}
-                                                                draggable="false"
-                                                                loading="lazy"
-                                                            >
-                                                        </button>
-                                                    {/if}
-                                                {/each}
-                                            {/if}
-                                        {/key}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="profile-bio-sidenotes">
-                                <div class="profile-bio-sidenote">
-                                    <img
-                                        src="/notallowed.png"
-                                        alt="X"
-                                        style="height:1.5em"
-                                    >
-                                    <LocalizedText
-                                        text="Don't say your real name"
-                                        key="profile.bio.warning1"
-                                        lang={currentLang}
+                                        style="border-color:{isDonator
+                                            ? '#a237db'
+                                            : '#efefef'}"
+                                        src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${user}`}
+                                        alt="Profile"
+                                        class="profile-picture"
                                     />
-                                </div>
-                                <div class="profile-bio-sidenote">
-                                    <img
-                                        src="/notallowed.png"
-                                        alt="X"
-                                        style="height:1.5em"
-                                    >
-                                    <LocalizedText
-                                        text="Don't say how old you are or when you were born"
-                                        key="profile.bio.warning2"
-                                        lang={currentLang}
-                                    />
-                                </div>
-                                <div class="profile-bio-sidenote">
-                                    <img
-                                        src="/notallowed.png"
-                                        alt="X"
-                                        style="height:1.5em"
-                                    >
-                                    <LocalizedText
-                                        text="Don't say where you live"
-                                        key="profile.bio.warning3"
-                                        lang={currentLang}
-                                    />
-                                </div>
-                                <div class="profile-bio-sidenote">
-                                    <img
-                                        src="/notallowed.png"
-                                        alt="X"
-                                        style="height:1.5em"
-                                    >
-                                    <LocalizedText
-                                        text="Don't say your password or your email"
-                                        key="profile.bio.warning4"
-                                        lang={currentLang}
-                                    />
-                                </div>
-                            </div>
-                        {/if}
-                        <h2 style="margin-block:4px">
-                            <LocalizedText
-                                text="About Me"
-                                key="profile.bio.title"
-                                lang={currentLang}
-                            />
-                            {#if profileEditingData.isEditingBio}
-                                {#if !profileEditingData.isBioEditLoading}
-                                    <button class="edit-done" on:click={saveEditedBio}>
-                                        <img
-                                            src="/badges/approver.png"
-                                            alt="Save"
-                                            style="height:1.5em"
-                                        >
-                                    </button>
-                                {/if}
-                            {:else}
-                                {#if loggedIn && (String(user).toLowerCase() === String(loggedInUser).toLowerCase() || loggedInAdmin)}
-                                    <button class="edit-link" on:click={() => {
-                                        profileEditingData.bio = fullProfile.bio || '';
-                                        profileEditingData.isEditingBio = true;
-                                    }}>
-                                        <img
-                                            src="/pencil.png"
-                                            alt="Edit"
-                                            style="height:1.5em"
-                                        >
-                                    </button>
-                                {/if}
-                            {/if}
-                        </h2>
-                        <div class="profile-bio-line"></div>
-                        <div class="profile-bio">
-                            {#if profileEditingData.isEditingBio}
-                                <textarea
-                                    class="profile-bio-textarea{profileEditingData.isBioInappropriate ? ' profile-bio-textarea-inappropriate' : ''}"
-                                    on:click={() => {
-                                        lastSelectedFormArea = profileEditingData.bioComponent;
-                                    }}
-                                    on:focus={() => {
-                                        lastSelectedFormArea = profileEditingData.bioComponent;
-                                    }}
-                                    bind:this={profileEditingData.bioComponent}
-                                    bind:value={profileEditingData.bio}
-                                    on:dragover={allowEmojiDrop}
-                                    on:drop={handleEmojiDrop}
-                                    maxLength="2048"
-                                />
-                                {#if profileEditingData.isBioInappropriate}
-                                    <div class="profile-bio-warning-inappropriate">
-                                        <LocalizedText
-                                            text="Your bio contains inappropriate words or websites we don't allow. Please remove them to change your bio."
-                                            key="profile.bio.inappropriate"
-                                            lang={currentLang}
-                                        />
-                                    </div>
-                                {/if}    
-                            {:else}
-                                {#if fullProfile.bio}
-                                    {@html generateMarkdown(fullProfile.bio)}
-                                {:else}
-                                    <p style="opacity:0.5">
-                                        {#if String(user).toLowerCase() === String(loggedInUser).toLowerCase()}
-                                            <LocalizedText
-                                                text="There's nothing here.. yet! Write some things you want to share here!"
-                                                key="profile.bio.none"
-                                                lang={currentLang}
-                                            />
+                                    <div class="user-after-image">
+                                        {#if isDonator}
+                                            <h1 class="donator-color">
+                                                {fullProfile.real_username ||
+                                                    user}
+                                            </h1>
                                         {:else}
-                                            <LocalizedText
-                                                text="Nothing yet!"
-                                                key="generic.noneyet"
-                                                lang={currentLang}
+                                            <h1>
+                                                {fullProfile.real_username ||
+                                                    user}
+                                            </h1>
+                                        {/if}
+
+                                        {#if isProfilePrivate && !loggedInAdmin && (!isBlocked || showAnyways)}
+                                            <img
+                                                src="/account/lock.svg"
+                                                alt="Private"
+                                                title={TranslationHandler.textSafe(
+                                                    "profile.private.note",
+                                                    currentLang,
+                                                    "This profile is private.",
+                                                )}
                                             />
                                         {/if}
-                                    </p>
-                                {/if}
-                            {/if}
-                        </div>
-                    </div>
-                    <div class="section-user-stats">
-                        <h2 style="margin-block:4px">
-                            <LocalizedText
-                                text={projectTitleStrings[(fullProfile.myFeaturedProjectTitle || 1) - 1] || projectTitleStrings[0]}
-                                key="profile.featured.title{Math.max(1, fullProfile.myFeaturedProjectTitle || 1)}"
-                                lang={currentLang}
-                            />
-                            {#if loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase() && profileFeaturedProject && !profileEditingData.isEditingProject}
-                                <button class="edit-link" on:click={() => {
-                                    profileEditingData.project = profileFeaturedProject.id || 0;
-                                    profileEditingData.projectTitle = fullProfile.myFeaturedProjectTitle || 1;
-                                    if (profileFeaturedProject.id === -1) {
-                                        profileEditingData.project = 0;
-                                    }
-                                    if (fullProfile.myFeaturedProjectTitle === -1) {
-                                        profileEditingData.projectTitle = 1;
-                                    }
-                                    profileEditingData.isEditingProject = true;
-                                }}>
-                                    <img
-                                        src="/pencil.png"
-                                        alt="Edit"
-                                        style="height:1.5em"
-                                    >
-                                </button>
-                            {/if}
-                        </h2>
-                        <div class="profile-bio-line"></div>
-                        {#if !profileFeaturedProject}
-                            <LoadingSpinner></LoadingSpinner>
-                        {:else if profileFeaturedProject === 'none'}
-                            <p style="opacity:0.5">
-                                <LocalizedText
-                                    text="Nothing yet!"
-                                    key="generic.noneyet"
-                                    lang={currentLang}
-                                />
-                            </p>
-                        {:else if profileFeaturedProject.author.id === fullProfile.id}
-                            <a href={`${LINK.base}#${profileFeaturedProject.id}`} style="text-decoration: none">
-                                <img
-                                    src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectID=${profileFeaturedProject.id}&requestType=thumbnail`}
-                                    alt="Project Thumbnail"
-                                    class="profile-project-image"
-                                />
-                                <div class="profile-project-authordiv">
-                                    <img
-                                        src="https://fake.penguinmod.com//api/v1/users/getpfp?username={user}"
-                                        alt="Project Author"
-                                        title={user}
-                                        class="profile-project-author"
-                                    >
-                                    <div class="profile-project-authorinfo">
-                                        <p class="profile-project-link">{@html formatProjectTitle(profileFeaturedProject.title)}</p>
-                                        <p class="profile-project-date">{unixToDisplayDate(profileFeaturedProject.date)}</p>
                                     </div>
                                 </div>
-                            </a>
-                        {/if}
-                    </div>
-                    <div class="section-user-stats">
-                        <div class="user-stat-box" style="border-bottom: 1px solid rgba(0, 0, 0, 0.15);">
-                            <div class="user-stat-box-inner">
-                                <LocalizedText
-                                    text="Rank"
-                                    key="profile.ranking.title"
-                                    lang={currentLang}
-                                />
-                            </div>
-                            <p class="small" style="margin-block:4px">
-                                {#if fullProfile.admin === true}
-                                    <LocalizedText
-                                        text="King Penguin"
-                                        key="profile.ranking.admin"
-                                        lang={currentLang}
-                                    />
-                                {:else if fullProfile.approver === true}
-                                    <LocalizedText
-                                        text="Guard Penguin"
-                                        key="profile.ranking.mod"
-                                        lang={currentLang}
-                                    />
-                                {:else if fullProfile.rank === 1}
-                                    <LocalizedText
-                                        text="Penguin"
-                                        key="profile.ranking.ranked"
-                                        lang={currentLang}
-                                    />
-                                {:else}
-                                    <LocalizedText
-                                        text="Newborn Penguin"
-                                        key="profile.ranking.new"
-                                        lang={currentLang}
-                                    />
-                                {/if}
-                                {#if loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase() && fullProfile.rank === 0}
-                                    {#if !fullProfile.canrankup}
-                                        <span style="opacity: 0.5;font-size:.7em;">
-                                            <br>
-                                            <LocalizedText
-                                                text="Cannot rank up yet"
-                                                key="profile.rankup.cannot"
-                                                lang={currentLang}
-                                            />
-                                        </span>
-                                    {:else}
-                                        <!-- svelte-ignore a11y-invalid-attribute -->
-                                        <a
-                                            href="#"
-                                            style="color:dodgerblue;font-size:.6em;"
-                                            on:click={() => {
-                                                isRankingUpMenu = true;
-                                            }}
-                                        >
-                                            <br>
-                                            <LocalizedText
-                                                text="Rank up"
-                                                key="profile.rankup.title"
-                                                lang={currentLang}
-                                            />
-                                            <div class="rankup-badge">
-                                                !
-                                            </div>
-                                        </a>
-                                    {/if}
-                                {/if}
-                            </p>
-                        </div>
-                        <div class="user-stat-box" style="align-content: flex-start;">
-                            <div class="user-stat-box-inner">
-                                <LocalizedText
-                                    text="Badges"
-                                    key="profile.badges.title"
-                                    lang={currentLang}
-                                />
-                            </div>
-                            <div class="user-badge-container">
-                                <div class="user-badges">
-                                    {#each badges as badge, idx}
-                                        {#if ProfileBadges[badge]}
-                                            <ProfileBadge {badge} {currentLang} />
-                                        {/if}
-                                    {:else}
-                                        <p style="font-size: initial; font-weight: normal; width: 100%; text-align: center;">
-                                            <LocalizedText
-                                                text="Nothing was found."
-                                                key="generic.notfound"
-                                                lang={currentLang}
-                                            />
+                                {#if ((!isBlocked || showAnyways) && !isProfilePrivate) || String(user).toLowerCase() === String(loggedInUser).toLowerCase() || (isProfilePublicToFollowers && isFollowedByUser) || loggedInAdmin}
+                                    <div class="follower-section">
+                                        <p class="follower-count">
+                                            {TranslationHandler.text(
+                                                "profile.followers",
+                                                currentLang,
+                                            ).replace(
+                                                "$1",
+                                                followerCount -
+                                                    Number(followOnLoad) +
+                                                    Number(isFollowingUser),
+                                            )}
                                         </p>
-                                    {/each}
-                                </div>
+                                        <div>
+                                            {#if !(loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase())}
+                                                {#key isFollowingUser}
+                                                    <button
+                                                        class={`follower-button
+                                                        ${isDonator ? " follower-button-donator" : ""}
+                                                        ${isFollowingUser ? " follower-button-following" : ""}`}
+                                                        on:click={safeFollowUser}
+                                                    >
+                                                        {#if isFollowingUser}
+                                                            <LocalizedText
+                                                                text="Unfollow"
+                                                                key="profile.unfollow"
+                                                                lang={currentLang}
+                                                            />
+                                                        {:else}
+                                                            <LocalizedText
+                                                                text="Follow"
+                                                                key="profile.follow"
+                                                                lang={currentLang}
+                                                            />
+                                                        {/if}
+                                                    </button>
+                                                {/key}
+                                            {/if}
+                                        </div>
+                                    </div>
+                                {/if}
                             </div>
                         </div>
                     </div>
-                </div>
-                <ContentCategory
-                    header={TranslationHandler.text(
-                        "profile.projects.all",
-                        currentLang
-                    )}
-                    style="width:calc(90% - 10px);"
-                    stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
-                    seemore={`/search?q=by%3A${user}`}
-                >
-                    <div class="project-list">
-                        {#if projects.all.length > 0}
-                            {#if projects.all[0] !== "none"}
-                                {#each projects.all as project}
-                                    <Project
-                                        {...project}
-                                        {...(loggedIn && user === loggedInUser ? {
-                                            author: {
-                                                username: loggedInUser,
-                                                id: loggedInUserId
-                                            }
-                                        } : {})}
-                                    />
-                                {/each}
-                            {:else}
-                                <div class="none-found">
-                                    <PenguinConfusedSVG height="10rem" />
-                                    <p>
-                                        <LocalizedText
-                                            text="Nothing was found. Did you misspell something or does the user not exist?"
-                                            key="generic.notfound"
-                                            lang={currentLang}
-                                        />
-                                    </p>
-                                </div>
-                            {/if}
-                        {:else}
-                            <LoadingSpinner />
-                        {/if}
-                    </div>
-                </ContentCategory>
-            </div>
-            <div class="section-serious-actions">
-                {#if !(loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase())}
-                    <div class="report-action">
-                        {#if !(isBlocked && setShowAnyways)}
-                            <button
-                                on:click={block}
-                                target="_blank"
-                                class="block-button"
-                                style="color: red !important;"
-                            >
-                                <img
-                                    class="block-icon"
-                                    src="/notallowed.png"
-                                    alt="Block"
-                                    style="position:relative;top:4px"
-                                />
+                {/if}
+                {#if isBlocked && !showAnyways}
+                    <div class="section-private">
+                        <img
+                            src="/account/status_warn.svg"
+                            alt="Blocked"
+                            title="Blocked"
+                        />
+
+                        <p style="margin-block-end: 4px">
+                            <LocalizedText
+                                text="You have this user currently blocked."
+                                key="profile.blockednote"
+                                lang={currentLang}
+                            />
+                        </p>
+                        <p style="margin-block-start: 4px">
+                            <LocalizedText
+                                text="If you are blocking this user for harassment, please also report them."
+                                key="profile.blockednote2"
+                                lang={currentLang}
+                            />
+                        </p>
+                        <div class="button-container">
+                            <button class="unblock-button" on:click={unblock}>
                                 <LocalizedText
-                                    text="Block"
-                                    key="profile.block"
+                                    text="Unblock"
+                                    key="profile.unblock"
                                     lang={currentLang}
                                 />
                             </button>
-                        {/if}
-                        <div style="width:30px;"/>
+
+                            <button
+                                class="show-anyways"
+                                on:click={setShowAnyways}
+                            >
+                                <LocalizedText
+                                    text="Continue"
+                                    key="account.settings.continue"
+                                    lang={currentLang}
+                                />
+                            </button>
+                        </div>
+                        <div style="height:16px" />
                         <a
                             href={`/report?type=user&id=${user}`}
                             target="_blank"
@@ -1515,6 +1108,7 @@
                             <img
                                 class="report-icon"
                                 src="/report_flag.png"
+                                style="margin: 0 4px"
                                 alt="Report"
                             />
                             <LocalizedText
@@ -1524,11 +1118,573 @@
                             />
                         </a>
                     </div>
+                {:else if isProfilePrivate && String(user).toLowerCase() !== String(loggedInUser).toLowerCase() && !(isProfilePublicToFollowers && isFollowedByUser) && !loggedInAdmin}
+                    <div class="section-private">
+                        <img
+                            src="/account/lock.svg"
+                            alt="Private"
+                            title="Private"
+                        />
+
+                        {#if isProfilePublicToFollowers}
+                            <p>
+                                <LocalizedText
+                                    text={"This profile is private. Only people {{NAME}} follows can see their profile."}
+                                    key="profile.private.followers"
+                                    lang={currentLang}
+                                    replace={{
+                                        "{{NAME}}": user,
+                                    }}
+                                />
+                            </p>
+                        {:else}
+                            <p>
+                                <LocalizedText
+                                    text="This profile is private. You cannot view it."
+                                    key="profile.private"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        {/if}
+                    </div>
+                {:else}
+                    <div class="section-projects">
+                        <div class="user-ordering-stats" style="width:90%">
+                            <div class="section-user-stats">
+                                {#if profileEditingData.isEditingBio}
+                                    <div>
+                                        <button
+                                            on:mouseenter={pickRandomEmojiPickerDisplay}
+                                            on:click={() => {
+                                                emojiPickerOpened =
+                                                    !emojiPickerOpened;
+                                            }}
+                                            title="Pick an emoji"
+                                            class="emoji-picker-button"
+                                        >
+                                            <img
+                                                src={`https://library.penguinmod.com/files/emojis/${emojiPickerRandomEmoji}.png`}
+                                                alt="Emoji"
+                                                title="Pick an emoji"
+                                                loading="lazy"
+                                                on:dragstart={(ev) => {
+                                                    useEmojiDrag(
+                                                        ev,
+                                                        emojiPickerRandomEmoji,
+                                                    );
+                                                }}
+                                            />
+                                        </button>
+                                        <div
+                                            class="emoji-picker-list"
+                                            data-opened={emojiPickerOpened}
+                                        >
+                                            <div
+                                                class="emoji-picker-search-container"
+                                            >
+                                                <div
+                                                    class="emoji-picker-search-icon"
+                                                >
+                                                    <SearchSVG
+                                                        width="30px"
+                                                        height="20px"
+                                                        color="#000000"
+                                                        scale="2px"
+                                                        style="margin-bottom:5px; margin-top: 5px;"
+                                                    />
+                                                </div>
+                                                <input
+                                                    on:dragover={allowEmojiDrop}
+                                                    on:drop={handleEmojiDrop}
+                                                    type="text"
+                                                    placeholder="..."
+                                                    bind:value={
+                                                        emojiSearchQuery
+                                                    }
+                                                    bind:this={emojiSearchBar}
+                                                />
+                                            </div>
+                                            <div
+                                                class="emoji-picker-emoji-container"
+                                            >
+                                                {#key emojiPickerListUpdate}
+                                                    {#if EmojiList.loading}
+                                                        <LoadingSpinner
+                                                        ></LoadingSpinner>
+                                                    {:else if EmojiList.failed}
+                                                        <p>
+                                                            <LocalizedText
+                                                                text="Unknown error."
+                                                                key="generic.errorsmall"
+                                                                lang={currentLang}
+                                                            />
+                                                        </p>
+                                                    {:else if emojiPickerOpened}
+                                                        {#each EmojiList.emojis as emoji}
+                                                            {#if !emojiSearchQuery || String(emoji).includes(emojiSearchQuery
+                                                                        .toLowerCase()
+                                                                        .replace(/[^a-z]+/gim, ""))}
+                                                                <button
+                                                                    class="emoji-picker-emoji"
+                                                                    on:click={() =>
+                                                                        placeEmojiInTextbox(
+                                                                            emoji,
+                                                                        )}
+                                                                >
+                                                                    <img
+                                                                        src={`https://library.penguinmod.com/files/emojis/${emoji}.png`}
+                                                                        alt={`:${emoji}:`}
+                                                                        title={`:${emoji}:`}
+                                                                        draggable="false"
+                                                                        loading="lazy"
+                                                                    />
+                                                                </button>
+                                                            {/if}
+                                                        {/each}
+                                                    {/if}
+                                                {/key}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="profile-bio-sidenotes">
+                                        <div class="profile-bio-sidenote">
+                                            <img
+                                                src="/notallowed.png"
+                                                alt="X"
+                                                style="height:1.5em"
+                                            />
+                                            <LocalizedText
+                                                text="Don't say your real name"
+                                                key="profile.bio.warning1"
+                                                lang={currentLang}
+                                            />
+                                        </div>
+                                        <div class="profile-bio-sidenote">
+                                            <img
+                                                src="/notallowed.png"
+                                                alt="X"
+                                                style="height:1.5em"
+                                            />
+                                            <LocalizedText
+                                                text="Don't say how old you are or when you were born"
+                                                key="profile.bio.warning2"
+                                                lang={currentLang}
+                                            />
+                                        </div>
+                                        <div class="profile-bio-sidenote">
+                                            <img
+                                                src="/notallowed.png"
+                                                alt="X"
+                                                style="height:1.5em"
+                                            />
+                                            <LocalizedText
+                                                text="Don't say where you live"
+                                                key="profile.bio.warning3"
+                                                lang={currentLang}
+                                            />
+                                        </div>
+                                        <div class="profile-bio-sidenote">
+                                            <img
+                                                src="/notallowed.png"
+                                                alt="X"
+                                                style="height:1.5em"
+                                            />
+                                            <LocalizedText
+                                                text="Don't say your password or your email"
+                                                key="profile.bio.warning4"
+                                                lang={currentLang}
+                                            />
+                                        </div>
+                                    </div>
+                                {/if}
+                                <h2 style="margin-block:4px">
+                                    <LocalizedText
+                                        text="About Me"
+                                        key="profile.bio.title"
+                                        lang={currentLang}
+                                    />
+                                    {#if profileEditingData.isEditingBio}
+                                        {#if !profileEditingData.isBioEditLoading}
+                                            <button
+                                                class="edit-done"
+                                                on:click={saveEditedBio}
+                                            >
+                                                <img
+                                                    src="/badges/approver.png"
+                                                    alt="Save"
+                                                    style="height:1.5em"
+                                                />
+                                            </button>
+                                        {/if}
+                                    {:else if loggedIn && (String(user).toLowerCase() === String(loggedInUser).toLowerCase() || loggedInAdmin)}
+                                        <button
+                                            class="edit-link"
+                                            on:click={() => {
+                                                profileEditingData.bio =
+                                                    fullProfile.bio || "";
+                                                profileEditingData.isEditingBio = true;
+                                            }}
+                                        >
+                                            <img
+                                                src="/pencil.png"
+                                                alt="Edit"
+                                                style="height:1.5em"
+                                            />
+                                        </button>
+                                    {/if}
+                                </h2>
+                                <div class="profile-bio-line"></div>
+                                <div class="profile-bio">
+                                    {#if profileEditingData.isEditingBio}
+                                        <textarea
+                                            class="profile-bio-textarea{profileEditingData.isBioInappropriate
+                                                ? ' profile-bio-textarea-inappropriate'
+                                                : ''}"
+                                            on:click={() => {
+                                                lastSelectedFormArea =
+                                                    profileEditingData.bioComponent;
+                                            }}
+                                            on:focus={() => {
+                                                lastSelectedFormArea =
+                                                    profileEditingData.bioComponent;
+                                            }}
+                                            bind:this={
+                                                profileEditingData.bioComponent
+                                            }
+                                            bind:value={profileEditingData.bio}
+                                            on:dragover={allowEmojiDrop}
+                                            on:drop={handleEmojiDrop}
+                                            maxLength="2048"
+                                        />
+                                        {#if profileEditingData.isBioInappropriate}
+                                            <div
+                                                class="profile-bio-warning-inappropriate"
+                                            >
+                                                <LocalizedText
+                                                    text="Your bio contains inappropriate words or websites we don't allow. Please remove them to change your bio."
+                                                    key="profile.bio.inappropriate"
+                                                    lang={currentLang}
+                                                />
+                                            </div>
+                                        {/if}
+                                    {:else if fullProfile.bio}
+                                        {@html generateMarkdown(
+                                            fullProfile.bio,
+                                        )}
+                                    {:else}
+                                        <p style="opacity:0.5">
+                                            {#if String(user).toLowerCase() === String(loggedInUser).toLowerCase()}
+                                                <LocalizedText
+                                                    text="There's nothing here.. yet! Write some things you want to share here!"
+                                                    key="profile.bio.none"
+                                                    lang={currentLang}
+                                                />
+                                            {:else}
+                                                <LocalizedText
+                                                    text="Nothing yet!"
+                                                    key="generic.noneyet"
+                                                    lang={currentLang}
+                                                />
+                                            {/if}
+                                        </p>
+                                    {/if}
+                                </div>
+                            </div>
+                            <div class="section-user-stats">
+                                <h2 style="margin-block:4px">
+                                    <LocalizedText
+                                        text={projectTitleStrings[
+                                            (fullProfile.myFeaturedProjectTitle ||
+                                                1) - 1
+                                        ] || projectTitleStrings[0]}
+                                        key="profile.featured.title{Math.max(
+                                            1,
+                                            fullProfile.myFeaturedProjectTitle ||
+                                                1,
+                                        )}"
+                                        lang={currentLang}
+                                    />
+                                    {#if loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase() && profileFeaturedProject && !profileEditingData.isEditingProject}
+                                        <button
+                                            class="edit-link"
+                                            on:click={() => {
+                                                profileEditingData.project =
+                                                    profileFeaturedProject.id ||
+                                                    0;
+                                                profileEditingData.projectTitle =
+                                                    fullProfile.myFeaturedProjectTitle ||
+                                                    1;
+                                                if (
+                                                    profileFeaturedProject.id ===
+                                                    -1
+                                                ) {
+                                                    profileEditingData.project = 0;
+                                                }
+                                                if (
+                                                    fullProfile.myFeaturedProjectTitle ===
+                                                    -1
+                                                ) {
+                                                    profileEditingData.projectTitle = 1;
+                                                }
+                                                profileEditingData.isEditingProject = true;
+                                            }}
+                                        >
+                                            <img
+                                                src="/pencil.png"
+                                                alt="Edit"
+                                                style="height:1.5em"
+                                            />
+                                        </button>
+                                    {/if}
+                                </h2>
+                                <div class="profile-bio-line"></div>
+                                {#if !profileFeaturedProject}
+                                    <LoadingSpinner></LoadingSpinner>
+                                {:else if profileFeaturedProject === "none"}
+                                    <p style="opacity:0.5">
+                                        <LocalizedText
+                                            text="Nothing yet!"
+                                            key="generic.noneyet"
+                                            lang={currentLang}
+                                        />
+                                    </p>
+                                {:else if profileFeaturedProject.author.id === fullProfile.id}
+                                    <a
+                                        href={`${LINK.base}#${profileFeaturedProject.id}`}
+                                        style="text-decoration: none"
+                                    >
+                                        <img
+                                            src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectID=${profileFeaturedProject.id}&requestType=thumbnail`}
+                                            alt="Project Thumbnail"
+                                            class="profile-project-image"
+                                        />
+                                        <div class="profile-project-authordiv">
+                                            <img
+                                                src="{PUBLIC_API_URL}/api/v1/users/getpfp?username={user}"
+                                                alt="Project Author"
+                                                title={user}
+                                                class="profile-project-author"
+                                            />
+                                            <div
+                                                class="profile-project-authorinfo"
+                                            >
+                                                <p class="profile-project-link">
+                                                    {@html formatProjectTitle(
+                                                        profileFeaturedProject.title,
+                                                    )}
+                                                </p>
+                                                <p class="profile-project-date">
+                                                    {unixToDisplayDate(
+                                                        profileFeaturedProject.date,
+                                                    )}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                {/if}
+                            </div>
+                            <div class="section-user-stats">
+                                <div
+                                    class="user-stat-box"
+                                    style="border-bottom: 1px solid rgba(0, 0, 0, 0.15);"
+                                >
+                                    <div class="user-stat-box-inner">
+                                        <LocalizedText
+                                            text="Rank"
+                                            key="profile.ranking.title"
+                                            lang={currentLang}
+                                        />
+                                    </div>
+                                    <p class="small" style="margin-block:4px">
+                                        {#if fullProfile.admin === true}
+                                            <LocalizedText
+                                                text="King Penguin"
+                                                key="profile.ranking.admin"
+                                                lang={currentLang}
+                                            />
+                                        {:else if fullProfile.approver === true}
+                                            <LocalizedText
+                                                text="Guard Penguin"
+                                                key="profile.ranking.mod"
+                                                lang={currentLang}
+                                            />
+                                        {:else if fullProfile.rank === 1}
+                                            <LocalizedText
+                                                text="Penguin"
+                                                key="profile.ranking.ranked"
+                                                lang={currentLang}
+                                            />
+                                        {:else}
+                                            <LocalizedText
+                                                text="Newborn Penguin"
+                                                key="profile.ranking.new"
+                                                lang={currentLang}
+                                            />
+                                        {/if}
+                                        {#if loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase() && fullProfile.rank === 0}
+                                            {#if !fullProfile.canrankup}
+                                                <span
+                                                    style="opacity: 0.5;font-size:.7em;"
+                                                >
+                                                    <br />
+                                                    <LocalizedText
+                                                        text="Cannot rank up yet"
+                                                        key="profile.rankup.cannot"
+                                                        lang={currentLang}
+                                                    />
+                                                </span>
+                                            {:else}
+                                                <!-- svelte-ignore a11y-invalid-attribute -->
+                                                <a
+                                                    href="#"
+                                                    style="color:dodgerblue;font-size:.6em;"
+                                                    on:click={() => {
+                                                        isRankingUpMenu = true;
+                                                    }}
+                                                >
+                                                    <br />
+                                                    <LocalizedText
+                                                        text="Rank up"
+                                                        key="profile.rankup.title"
+                                                        lang={currentLang}
+                                                    />
+                                                    <div class="rankup-badge">
+                                                        !
+                                                    </div>
+                                                </a>
+                                            {/if}
+                                        {/if}
+                                    </p>
+                                </div>
+                                <div
+                                    class="user-stat-box"
+                                    style="align-content: flex-start;"
+                                >
+                                    <div class="user-stat-box-inner">
+                                        <LocalizedText
+                                            text="Badges"
+                                            key="profile.badges.title"
+                                            lang={currentLang}
+                                        />
+                                    </div>
+                                    <div class="user-badge-container">
+                                        <div class="user-badges">
+                                            {#each badges as badge, idx}
+                                                {#if ProfileBadges[badge]}
+                                                    <ProfileBadge
+                                                        {badge}
+                                                        {currentLang}
+                                                    />
+                                                {/if}
+                                            {:else}
+                                                <p
+                                                    style="font-size: initial; font-weight: normal; width: 100%; text-align: center;"
+                                                >
+                                                    <LocalizedText
+                                                        text="Nothing was found."
+                                                        key="generic.notfound"
+                                                        lang={currentLang}
+                                                    />
+                                                </p>
+                                            {/each}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <ContentCategory
+                            header={TranslationHandler.text(
+                                "profile.projects.all",
+                                currentLang,
+                            )}
+                            style="width:calc(90% - 10px);"
+                            stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
+                            seemore={`/search?q=by%3A${user}`}
+                        >
+                            <div class="project-list">
+                                {#if projects.all.length > 0}
+                                    {#if projects.all[0] !== "none"}
+                                        {#each projects.all as project}
+                                            <Project
+                                                {...project}
+                                                {...loggedIn &&
+                                                user === loggedInUser
+                                                    ? {
+                                                          author: {
+                                                              username:
+                                                                  loggedInUser,
+                                                              id: loggedInUserId,
+                                                          },
+                                                      }
+                                                    : {}}
+                                            />
+                                        {/each}
+                                    {:else}
+                                        <div class="none-found">
+                                            <PenguinConfusedSVG
+                                                height="10rem"
+                                            />
+                                            <p>
+                                                <LocalizedText
+                                                    text="Nothing was found. Did you misspell something or does the user not exist?"
+                                                    key="generic.notfound"
+                                                    lang={currentLang}
+                                                />
+                                            </p>
+                                        </div>
+                                    {/if}
+                                {:else}
+                                    <LoadingSpinner />
+                                {/if}
+                            </div>
+                        </ContentCategory>
+                    </div>
+                    <div class="section-serious-actions">
+                        {#if !(loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase())}
+                            <div class="report-action">
+                                {#if !(isBlocked && setShowAnyways)}
+                                    <button
+                                        on:click={block}
+                                        target="_blank"
+                                        class="block-button"
+                                        style="color: red !important;"
+                                    >
+                                        <img
+                                            class="block-icon"
+                                            src="/notallowed.png"
+                                            alt="Block"
+                                            style="position:relative;top:4px"
+                                        />
+                                        <LocalizedText
+                                            text="Block"
+                                            key="profile.block"
+                                            lang={currentLang}
+                                        />
+                                    </button>
+                                {/if}
+                                <div style="width:30px;" />
+                                <a
+                                    href={`/report?type=user&id=${user}`}
+                                    target="_blank"
+                                    class="report-link"
+                                    style="color: red !important;"
+                                >
+                                    <img
+                                        class="report-icon"
+                                        src="/report_flag.png"
+                                        alt="Report"
+                                    />
+                                    <LocalizedText
+                                        text="Report"
+                                        key="report.title"
+                                        lang={currentLang}
+                                    />
+                                </a>
+                            </div>
+                        {/if}
+                    </div>
                 {/if}
             </div>
-            {/if}
-            {/if}
-        </div>
         {:else}
             <div style="height:32px;" />
             <div style="display:flex;flex-direction:column;align-items:center;">
@@ -1540,7 +1696,7 @@
                         lang={currentLang}
                     />
                 </p>
-                <br>
+                <br />
                 <!-- only show if we fetched the full profile -->
                 {#if fetchedFullProfile}
                     <!-- <Button link="https://scratch.mit.edu/users/{user}/" noredirect={true}>
@@ -1551,9 +1707,11 @@
                         />
                     </Button> -->
                     {#if loggedInAdmin}
-                        <Button on:click={() => {
-                            isForceView = true;
-                        }}>
+                        <Button
+                            on:click={() => {
+                                isForceView = true;
+                            }}
+                        >
                             (Admin) Force view profile
                         </Button>
                     {/if}
@@ -1791,9 +1949,9 @@
         margin: 0 4px;
     }
     .block-button {
-        background: none!important;
+        background: none !important;
         border: none;
-        padding: 0!important;
+        padding: 0 !important;
         text-decoration: underline;
         cursor: pointer;
         font-size: medium;
@@ -1802,7 +1960,7 @@
     }
     .block-icon {
         height: 16px;
-        top: 0px!important;
+        top: 0px !important;
     }
 
     .unblock-button {
@@ -1822,7 +1980,7 @@
     .show-anyways {
         min-width: 100px;
         height: 35px;
-        font-size: medium;  
+        font-size: medium;
         font-weight: bold;
         background-color: rgb(243, 199, 199);
         color: rgb(60, 60, 60);
@@ -1913,7 +2071,7 @@
     }
 
     .small {
-        font-size: .8em;
+        font-size: 0.8em;
         font-weight: lighter;
         text-align: center;
         width: 100%;

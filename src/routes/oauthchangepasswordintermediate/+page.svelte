@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
 
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
-    
+
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
@@ -13,7 +13,7 @@
     import Language from "../../resources/language.js";
     import TranslationHandler from "../../resources/translations.js";
     import Authentication from "../../resources/authentication.js";
-    import { page } from '$app/stores';
+    import { page } from "$app/stores";
 
     let currentLang = "en";
     onMount(() => {
@@ -33,60 +33,70 @@
     let passwordValid = false;
 
     const passwordRequirements = [
-        {name: "password.requirement.length", value: false},
-        {name: "password.requirement.casing", value: false},
-        {name: "password.requirement.number", value: false},
-        {name: "password.requirement.symbol", value: false},
-    ]
+        { name: "password.requirement.length", value: false },
+        { name: "password.requirement.casing", value: false },
+        { name: "password.requirement.number", value: false },
+        { name: "password.requirement.symbol", value: false },
+    ];
 
     function changePasswordRedirect() {
         // get url params
         const urlParams = $page.url.searchParams;
-        const method = urlParams.get('method');
-        const accessToken = urlParams.get('at');
+        const method = urlParams.get("method");
+        const accessToken = urlParams.get("at");
 
-        let url = `https://fake.penguinmod.com//api/v1/users/`;
+        let url = `${PUBLIC_API_URL}/api/v1/users/`;
         switch (method) {
             case "google":
-                url += "googlecallback/addpasswordfinal"
+                url += "googlecallback/addpasswordfinal";
                 break;
             case "github":
-                url += "githubcallback/addpasswordfinal"
+                url += "githubcallback/addpasswordfinal";
                 break;
             case "scratch":
-                url += "scratchaddpasswordfinal"
+                url += "scratchaddpasswordfinal";
                 break;
             default:
                 throw new Error("Invalid method");
         }
-        
+
         url += `?at=${accessToken}&password=${password}`;
 
         location.href = url;
     }
     const changePasswordRedirectSafe = () => {
         if (!canChangePassword) {
-            alert(TranslationHandler.textSafe(
-                "password.requirement.notmet",
-                currentLang,
-                "Your password does not meet the requirements needed to change your password."
-            ));
+            alert(
+                TranslationHandler.textSafe(
+                    "password.requirement.notmet",
+                    currentLang,
+                    "Your password does not meet the requirements needed to change your password.",
+                ),
+            );
             return;
         }
 
         if (changingPassword) return;
         changingPassword = true;
-        
-        changePasswordRedirect()
-    }
+
+        changePasswordRedirect();
+    };
 
     async function checkIfValid() {
-        const passwordDoesNotMeetLength = password.length < 8 || password.length > 50;
-        const passwordMeetsTextInclude = password.match(/[a-z]/) && password.match(/[A-Z]/);
+        const passwordDoesNotMeetLength =
+            password.length < 8 || password.length > 50;
+        const passwordMeetsTextInclude =
+            password.match(/[a-z]/) && password.match(/[A-Z]/);
         const passwordHasNumber = !!password.match(/[0-9]/);
         const passwordMeetsSpecialInclude = !!password.match(/[^a-z0-9]/i);
 
-        const passwordCheck = passwordDoesNotMeetLength || !(passwordMeetsTextInclude && passwordMeetsSpecialInclude && passwordHasNumber);
+        const passwordCheck =
+            passwordDoesNotMeetLength ||
+            !(
+                passwordMeetsTextInclude &&
+                passwordMeetsSpecialInclude &&
+                passwordHasNumber
+            );
 
         passwordRequirements[0].value = !passwordDoesNotMeetLength;
         passwordRequirements[1].value = passwordMeetsTextInclude;
@@ -107,18 +117,36 @@
         showingPassword = !showingPassword;
     };
 </script>
-    
+
 <svelte:head>
     <title>PenguinMod - Change Password With OAuth</title>
     <meta name="title" content="PenguinMod - Change Password With OAuth" />
-    <meta property="og:title" content="PenguinMod - Change Password With OAuth" />
-    <meta property="twitter:title" content="PenguinMod - Change Password With OAuth" />
-    <meta name="description" content="Change your password with OAuth for PenguinMod to access your account with a password or to just change it" />
-    <meta property="twitter:description" content="Change your password with OAuth for PenguinMod to access your account with a password or to just change it" />
-    <meta property="og:url" content="https://penguinmod.com/oauthchangepassword">
-    <meta property="twitter:url" content="https://penguinmod.com/oauthchangepassword">
+    <meta
+        property="og:title"
+        content="PenguinMod - Change Password With OAuth"
+    />
+    <meta
+        property="twitter:title"
+        content="PenguinMod - Change Password With OAuth"
+    />
+    <meta
+        name="description"
+        content="Change your password with OAuth for PenguinMod to access your account with a password or to just change it"
+    />
+    <meta
+        property="twitter:description"
+        content="Change your password with OAuth for PenguinMod to access your account with a password or to just change it"
+    />
+    <meta
+        property="og:url"
+        content="https://penguinmod.com/oauthchangepassword"
+    />
+    <meta
+        property="twitter:url"
+        content="https://penguinmod.com/oauthchangepassword"
+    />
 </svelte:head>
-    
+
 <NavigationBar />
 
 <div class="main">
@@ -126,10 +154,7 @@
 
     <main>
         <div class="profile-section">
-            <img
-                src="/account/profile_sheet.png"
-                alt="Profiles"
-            />
+            <img src="/account/profile_sheet.png" alt="Profiles" />
         </div>
         <h1 style="margin-block:4px">PenguinMod</h1>
         <p>
@@ -154,8 +179,8 @@
                 data-valid={passwordValid}
                 maxlength="50"
                 on:input={passwordInputChanged}
-                on:focusin={() => focused = true}
-                on:focusout={() => focused = false}
+                on:focusin={() => (focused = true)}
+                on:focusout={() => (focused = false)}
             />
             <button
                 class="password-show invert-on-dark"
@@ -167,7 +192,11 @@
             <ChecksBox items={passwordRequirements} />
         {/if}
 
-        <button class="create-acc" data-canCreate={canChangePassword} on:click={changePasswordRedirectSafe}>
+        <button
+            class="create-acc"
+            data-canCreate={canChangePassword}
+            on:click={changePasswordRedirectSafe}
+        >
             {#if changingPassword}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}
@@ -180,7 +209,7 @@
         </button>
     </main>
 </div>
-    
+
 <style>
     * {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -248,7 +277,7 @@
         background: #111;
         color: white;
     }
-    
+
     main input[data-valid="true"] {
         border-color: rgb(0, 187, 0) !important;
     }
@@ -264,13 +293,13 @@
         height: calc(100% - 8px);
         border: 0;
         background: transparent;
-        background-image: url('account/showpassword.svg');
+        background-image: url("account/showpassword.svg");
         background-size: 100% 100%;
         opacity: 0.7;
         cursor: pointer;
     }
     .password-show[data-visible="true"] {
-        background-image: url('account/hidepassword.svg');
+        background-image: url("account/hidepassword.svg");
         background-size: 100% 100%;
     }
     :global(body.dark-mode) .invert-on-dark {
@@ -286,7 +315,7 @@
         padding: 4px 8px;
         width: 60%;
         margin-top: 4px;
-        
+
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -294,19 +323,19 @@
         border: 1px solid rgba(0, 0, 0, 0.2);
         font-size: 18px;
     }
-    
-    .create-acc[data-canCreate=true] {
+
+    .create-acc[data-canCreate="true"] {
         background: #00c3ff;
         cursor: pointer;
         color: white;
     }
 
-    :global(body.dark-mode) .create-acc[data-canCreate=false] {
+    :global(body.dark-mode) .create-acc[data-canCreate="false"] {
         background: #9c9c9c;
         color: rgb(255, 255, 255);
     }
 
-    .create-acc[data-canCreate=false] {
+    .create-acc[data-canCreate="false"] {
         background: #9c9c9c;
         color: rgb(255, 255, 255);
         cursor: not-allowed;
@@ -329,25 +358,32 @@
     }
 
     @keyframes profile-scroll {
-        0%, 10% {
+        0%,
+        10% {
             transform: translateX(0);
         }
-        15%, 25% {
+        15%,
+        25% {
             transform: translateX(-96px);
         }
-        30%, 40% {
+        30%,
+        40% {
             transform: translateX(-192px);
         }
-        45%, 55% {
+        45%,
+        55% {
             transform: translateX(-288px);
         }
-        60%, 70% {
+        60%,
+        70% {
             transform: translateX(-384px);
         }
-        75%, 85% {
+        75%,
+        85% {
             transform: translateX(-480px);
         }
-        90%, 100% {
+        90%,
+        100% {
             transform: translateX(-480px);
         }
     }

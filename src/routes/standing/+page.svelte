@@ -1,12 +1,12 @@
 <script>
-    import { page } from '$app/stores';
+    import { page } from "$app/stores";
     import { onMount } from "svelte";
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
     const ProjectClient = new ProjectApi();
-    
+
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
@@ -17,13 +17,13 @@
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
-    
+
     let loggedIn = null;
     let loggedInUsername = null;
     let token = null;
-    
-    const displayAccountDeleted = $page.url.searchParams.get('deleted');
-    const deletedUsername = $page.url.searchParams.get('username');
+
+    const displayAccountDeleted = $page.url.searchParams.get("deleted");
+    const deletedUsername = $page.url.searchParams.get("username");
     let accountStanding = 1;
 
     let currentLang = "en";
@@ -85,7 +85,7 @@
                 loggedIn = false;
             });
     });
-    
+
     const sendToHome = () => {
         location.href = location.origin;
     };
@@ -101,11 +101,11 @@
     <title>PenguinMod - Standing</title>
     <meta name="title" content="PenguinMod - Standing" />
     <meta property="og:title" content="PenguinMod - Standing" />
-    <meta property="twitter:title" content="PenguinMod - Standing">
-    <meta name="description" content="See your account standing.">
-    <meta property="twitter:description" content="See your account standing.">
-    <meta property="og:url" content="https://penguinmod.com/standing">
-    <meta property="twitter:url" content="https://penguinmod.com/standing">
+    <meta property="twitter:title" content="PenguinMod - Standing" />
+    <meta name="description" content="See your account standing." />
+    <meta property="twitter:description" content="See your account standing." />
+    <meta property="og:url" content="https://penguinmod.com/standing" />
+    <meta property="twitter:url" content="https://penguinmod.com/standing" />
 </svelte:head>
 
 <NavigationBar />
@@ -148,13 +148,13 @@
                 {:else}
                     <AccountStatus
                         username={loggedInUsername}
-                        image="https://fake.penguinmod.com//api/v1/users/getpfp?username={loggedInUsername}"
+                        image="{PUBLIC_API_URL}/api/v1/users/getpfp?username={loggedInUsername}"
                         showname={true}
                         status={1}
                         detail={4}
                     />
                 {/if}
-    
+
                 <div class="center" style="margin-top: 24px;">
                     {#if displayAccountDeleted}
                         <Button on:click={logoutUser}>

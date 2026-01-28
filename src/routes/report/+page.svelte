@@ -31,7 +31,7 @@
         userSexualContentReason: "",
         userAttackReason: "",
         userIllegalReason: "",
-        
+
         projectMalwareReason: "",
         projectStoreInfoReason: "",
         projectSexualContentReason: "",
@@ -124,7 +124,7 @@
         ProjectClient.reportContent(
             pageDetails.type,
             pageDetails.id,
-            reportText
+            reportText,
         )
             .then(() => {
                 alert("Sent report.");
@@ -137,7 +137,7 @@
             .catch((err) => {
                 console.error(err);
                 alert(
-                    `Something went wrong. Please try again later or make sure you filled everything out.\n${err}`
+                    `Something went wrong. Please try again later or make sure you filled everything out.\n${err}`,
                 );
             })
             .finally(() => {
@@ -250,13 +250,19 @@
 
 <svelte:head>
     <title>PenguinMod - Report</title>
-    <meta name="title"                   content="PenguinMod - Report" />
-    <meta property="og:title"            content="PenguinMod - Report" />
-    <meta property="twitter:title"       content="PenguinMod - Report">
-    <meta name="description"             content="Report a specific project or user on PenguinMod.">
-    <meta property="twitter:description" content="Report a specific project or user on PenguinMod.">
-    <meta property="og:url"              content="https://penguinmod.com/report">
-    <meta property="twitter:url"         content="https://penguinmod.com/report">
+    <meta name="title" content="PenguinMod - Report" />
+    <meta property="og:title" content="PenguinMod - Report" />
+    <meta property="twitter:title" content="PenguinMod - Report" />
+    <meta
+        name="description"
+        content="Report a specific project or user on PenguinMod."
+    />
+    <meta
+        property="twitter:description"
+        content="Report a specific project or user on PenguinMod."
+    />
+    <meta property="og:url" content="https://penguinmod.com/report" />
+    <meta property="twitter:url" content="https://penguinmod.com/report" />
 </svelte:head>
 
 <NavigationBar />
@@ -292,13 +298,13 @@
             {#if pageDetails.type === "user"}
                 <img
                     class="profile-picture"
-                    src={`https://fake.penguinmod.com//api/v1/users/getpfp?username=${pageDetails.id}`}
+                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${pageDetails.id}`}
                     alt={pageDetails.id}
                 />
             {:else}
                 <img
                     class="project-picture"
-                    src={`https://fake.penguinmod.com//api/v1/projects/getproject?projectID=${pageDetails.id}&requestType=thumbnail`}
+                    src={`${PUBLIC_API_URL}/api/v1/projects/getproject?projectID=${pageDetails.id}&requestType=thumbnail`}
                     alt={pageDetails.id}
                 />
             {/if}
@@ -326,13 +332,16 @@
                                 type="text"
                                 class="custom-reason"
                                 bind:value={pageDetails[reason.pageDetail]}
-                                placeholder={String(TranslationHandler.text(
-                                    "report.reason.clarify",
-                                    currentLang
-                                ) || TranslationHandler.text(
-                                    "report.reason.clarify",
-                                    'en'
-                                ))}
+                                placeholder={String(
+                                    TranslationHandler.text(
+                                        "report.reason.clarify",
+                                        currentLang,
+                                    ) ||
+                                        TranslationHandler.text(
+                                            "report.reason.clarify",
+                                            "en",
+                                        ),
+                                )}
                             />
                         {/if}
                     {/each}
@@ -354,13 +363,16 @@
                             type="text"
                             class="custom-reason"
                             bind:value={pageDetails.otherReason}
-                            placeholder={String(TranslationHandler.text(
-                                "report.reason.other.reason",
-                                currentLang
-                            ) || TranslationHandler.text(
-                                "report.reason.other.reason",
-                                'en'
-                            ))}
+                            placeholder={String(
+                                TranslationHandler.text(
+                                    "report.reason.other.reason",
+                                    currentLang,
+                                ) ||
+                                    TranslationHandler.text(
+                                        "report.reason.other.reason",
+                                        "en",
+                                    ),
+                            )}
                         />
                     {/if}
                 </div>

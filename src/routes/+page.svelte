@@ -1,4 +1,4 @@
-<script> 
+<script>
     import { onMount } from "svelte";
     import { page } from "$app/stores";
 
@@ -36,7 +36,9 @@
         const date = new Date(Date.now());
         const urlParams = $page.url.searchParams;
         const isAprilFools = date.getMonth() === 3 && date.getDate() === 1; // month is 0 indexed for literally no reason
-        const runningLocal = String(urlParams.get('forceaprilfools')) === 'true' && $page.url.hostname === 'localhost';
+        const runningLocal =
+            String(urlParams.get("forceaprilfools")) === "true" &&
+            $page.url.hostname === "localhost";
 
         return isAprilFools || runningLocal;
     };
@@ -55,10 +57,10 @@
     let projectsFailed = false;
     let projectsRateLimited = false;
 
-    let catText = '⠀';
+    let catText = "⠀";
     let existingInterval;
     const catAudio = () => {
-        const audio = new Audio('./cat/speak.mp3');
+        const audio = new Audio("./cat/speak.mp3");
         audio.currentTime = 0;
         audio.volume = 0.5;
 
@@ -74,7 +76,7 @@
         }
 
         const randomText = (() => {
-	    	const catEmotions = [
+            const catEmotions = [
                 "/ᐠ.ꞈ.ᐟ\\",
                 "(^・x・^)",
                 "ฅ^•ﻌ•^ฅ",
@@ -84,12 +86,14 @@
                 "(^人^)",
                 "ヾ(=^・^=)丿",
                 "ヽ(^◇^*)/",
-                "ฅ(=･ω･=)ฅ"
+                "ฅ(=･ω･=)ฅ",
             ];
-	    	return catEmotions[Math.round(Math.random() * (catEmotions.length - 1))];
-	    })();
+            return catEmotions[
+                Math.round(Math.random() * (catEmotions.length - 1))
+            ];
+        })();
         let index = 0;
-        catText = '⠀';
+        catText = "⠀";
 
         existingInterval = setInterval(() => {
             catText += randomText.charAt(index);
@@ -111,9 +115,7 @@
         suggested: null,
     };
     function formatNumber(num) {
-        return Math.abs(num) >= 0.01 && num % 1 !== 0
-            ? num.toFixed(2)
-            : num
+        return Math.abs(num) >= 0.01 && num % 1 !== 0 ? num.toFixed(2) : num;
     }
     function unixToDisplayDate(unix) {
         unix = Number(unix);
@@ -123,13 +125,13 @@
             day: "numeric",
             hour: "numeric",
             minute: "numeric",
-            hour12: true
+            hour12: true,
         })}`;
     }
     function rateChance(max, thresh) {
         const randomNumber = Math.random();
         const underThresh = randomNumber * max <= thresh;
-        return [underThresh]
+        return [underThresh];
     }
     let thingyActive = false;
     // do the thingy
@@ -138,12 +140,12 @@
             // 1:9000 chance that we will play the video imediatly rather then after four hours
             // we use 9000 because thats roughly how many users we have, so there will now
             // only be like onr or two people who actually get this :Trol
-            let message
+            let message;
             [thingyActive, message] = rateChance(9000, 1);
             setTimeout(() => {
                 thingyActive = true;
             }, 1.44e7);
-        };
+        }
     }
 
     const getAndUpdateMyFeed = async () => {
@@ -158,11 +160,14 @@
     const getFeedText = (type, author, content) => {
         switch (type) {
             case "follow":
-                return TranslationHandler.text(
-                    "feed.following",
-                    currentLang
-                ).replace("$1", author)
-                .replace("$2", content.username === localStorage.getItem("username") ? "you" : content.username)
+                return TranslationHandler.text("feed.following", currentLang)
+                    .replace("$1", author)
+                    .replace(
+                        "$2",
+                        content.username === localStorage.getItem("username")
+                            ? "you"
+                            : content.username,
+                    );
             case "upload":
                 return TranslationHandler.text("feed.uploaded", currentLang)
                     .replace("$1", author)
@@ -174,7 +179,7 @@
             case "posted":
                 return TranslationHandler.text(
                     "feed.posted",
-                    currentLang
+                    currentLang,
                 ).replace("$1", author);
         }
     };
@@ -194,14 +199,14 @@
     let loggedInAdminOrMod = false;
     onMount(async () => {
         Language.forceUpdate();
-        let username = localStorage.getItem("username")
-        const token = localStorage.getItem("token")
+        let username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
         if (!token || !username) {
             loggedIn = false;
             loggedInAdminOrMod = false;
         } else {
             Authentication.usernameFromCode(username, token)
-                .then(({username:usernameActual, isAdmin, isApprover}) => {
+                .then(({ username: usernameActual, isAdmin, isApprover }) => {
                     // oh my god bruh
                     username = usernameActual;
                     localStorage.setItem("username", usernameActual);
@@ -247,14 +252,13 @@
         });
 
         ProjectClient.getFrontPage()
-            .then(results => {
+            .then((results) => {
                 projects.today = results.latest;
                 projects.featured = results.featured;
                 projects.voted = results.voted;
                 projects.viewed = results.viewed;
                 projects.tagged = results.tagged;
-                if (results.suggested)
-                    projects.suggested = results.suggested;
+                if (results.suggested) projects.suggested = results.suggested;
                 tagForProjects = results.selectedTag;
                 projectsLoaded = true;
             })
@@ -294,12 +298,21 @@
     <title>PenguinMod - Home</title>
     <meta name="title" content="PenguinMod - Home" />
     <meta property="og:title" content="PenguinMod - Home" />
-    <meta property="twitter:title" content="PenguinMod - Home">
-    <meta name="description" content="The area where featured projects and community stuff & info is shown.">
-    <meta property="twitter:description" content="The area where featured projects and community stuff & info is shown.">
-    <meta property="og:url" content="https://penguinmod.com/">
-    <meta property="twitter:url" content="https://penguinmod.com/">
-    <meta name="google-site-verification" content="07oAYybKa_CH2le7AvPJkNNtwhZSq_G0V4d9P7AIZYE" />
+    <meta property="twitter:title" content="PenguinMod - Home" />
+    <meta
+        name="description"
+        content="The area where featured projects and community stuff & info is shown."
+    />
+    <meta
+        property="twitter:description"
+        content="The area where featured projects and community stuff & info is shown."
+    />
+    <meta property="og:url" content="https://penguinmod.com/" />
+    <meta property="twitter:url" content="https://penguinmod.com/" />
+    <meta
+        name="google-site-verification"
+        content="07oAYybKa_CH2le7AvPJkNNtwhZSq_G0V4d9P7AIZYE"
+    />
 </svelte:head>
 
 <NavigationBar />
@@ -427,11 +440,7 @@
 
     {#if langDecided && currentLang != "en" && loggedIn}
         <div class="section-language-warning">
-            <img
-                src="/warning.png"
-                draggable="false"
-                alt="Warning"
-            />
+            <img src="/warning.png" draggable="false" alt="Warning" />
             <p>
                 <LocalizedText
                     text="PenguinMod is made by English-speaking developers. Expect minor issues and sorry for any translation errors."
@@ -457,7 +466,7 @@
             <ContentCategory
                 header={TranslationHandler.text(
                     "home.sections.whatsnew",
-                    currentLang
+                    currentLang,
                 )}
                 seemore={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
             >
@@ -490,15 +499,15 @@
         {:else}
             <div class="welcome-back-card">
                 <img
-                    src={`https://fake.penguinmod.com//api/v1/users/getpfp?username=${loggedInUsername}`}
+                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${loggedInUsername}`}
                     alt="Profile"
                     class="profile-picture"
                 />
                 <h1>
                     {TranslationHandler.text(
                         "home.welcome",
-                        currentLang
-                    ).replace('$1', loggedInUsername)}
+                        currentLang,
+                    ).replace("$1", loggedInUsername)}
                 </h1>
                 <div class="welcome-back-row">
                     <a href={LINK.editor} class="welcome-back-no-underline">
@@ -559,7 +568,7 @@
             <ContentCategory
                 header={TranslationHandler.textSafe(
                     "home.sections.feed",
-                    currentLang
+                    currentLang,
                 )}
             >
                 <div class="category-content">
@@ -570,16 +579,16 @@
                                     link={getFeedUrl(
                                         message.type,
                                         message.username,
-                                        message.data
+                                        message.data,
                                     )}
                                     userLink={`/profile?user=${message.username}`}
                                     text={getFeedText(
                                         message.type,
                                         message.username,
-                                        message.data
+                                        message.data,
                                     )}
                                     author={message.username}
-                                    image={`https://fake.penguinmod.com//api/v1/users/getpfp?username=${message.username}`}
+                                    image={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${message.username}`}
                                 />
                             {/if}
                         {/each}
@@ -601,7 +610,7 @@
             <ContentCategory
                 header={TranslationHandler.textSafe(
                     "home.sections.githubcommits",
-                    currentLang
+                    currentLang,
                 )}
                 seemore={LINK.github}
             >
@@ -649,7 +658,7 @@
             <ContentCategory
                 header={TranslationHandler.textSafe(
                     "home.sections.whatsnew",
-                    currentLang
+                    currentLang,
                 )}
                 seemore={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
             >
@@ -682,23 +691,31 @@
             <ContentCategory
                 header={TranslationHandler.textSafe(
                     "home.sections.informational",
-                    currentLang
+                    currentLang,
                 )}
             >
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">New Years PenguinJam has been ranked!</h2>
+                        <h2 style="margin-block:4px;">
+                            New Years PenguinJam has been ranked!
+                        </h2>
                         <div style="width:100%">
                             <p>
-                                All of the projects in the New Years PenguinJam have been ranked!
+                                All of the projects in the New Years PenguinJam
+                                have been ranked!
                                 <br />
                                 Thanks to everyone who participated!
                                 <br />
-                                If you got a bad score, that's not a bad thing! It means there's room to improve and you can do better next time around to try and get a higher score.
+                                If you got a bad score, that's not a bad thing! It
+                                means there's room to improve and you can do better
+                                next time around to try and get a higher score.
                             </p>
                             <p style="margin-block-start:4px;">
-                                <a href="https://projects.penguinmod.com/4826108719">New Years PenguinJam Official Rankings</a>
+                                <a
+                                    href="https://projects.penguinmod.com/4826108719"
+                                    >New Years PenguinJam Official Rankings</a
+                                >
                             </p>
                             <img
                                 src="/events/news/penguinjamnewyears2025.webp"
@@ -710,7 +727,12 @@
                     <div class="category-footer">
                         <p>
                             {#if currentLang === "en"}
-                                {LoadingTips[Math.round(Math.random() * (LoadingTips.length - 1))]}
+                                {LoadingTips[
+                                    Math.round(
+                                        Math.random() *
+                                            (LoadingTips.length - 1),
+                                    )
+                                ]}
                             {:else}
                                 <LocalizedText
                                     text="PenguinNews is not translated in your language. Sorry! :("
@@ -783,7 +805,7 @@
             </div>
         </div>
     {/if}
-    
+
     <div style="width:80%; margin:0 10%;">
         <EventComponent />
     </div>
@@ -792,7 +814,7 @@
         <ContentCategory
             header={TranslationHandler.text(
                 "home.sections.weeklyfeatured",
-                currentLang
+                currentLang,
             )}
             seemore={`/search?q=featured%3A`}
             style="width:65%;"
@@ -856,7 +878,7 @@
         <ContentCategory
             header={TranslationHandler.text(
                 "home.sections.mostvoted",
-                currentLang
+                currentLang,
             )}
             seemore={`/search?q=sort%3Avotes%20featured%3Aexclude`}
             style="width:65%;"
@@ -921,7 +943,7 @@
             <ContentCategory
                 header={TranslationHandler.text(
                     "home.sections.suggestedforyou",
-                    currentLang
+                    currentLang,
                 )}
                 style="width:65%;"
                 stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
@@ -984,10 +1006,12 @@
         {/if}
         {#if projects.tagged.length > 7}
             <ContentCategory
-                header={String(TranslationHandler.text(
-                    "home.sections.sortedbytag",
-                    currentLang
-                )).replace('$1', tagForProjects.slice(1))}
+                header={String(
+                    TranslationHandler.text(
+                        "home.sections.sortedbytag",
+                        currentLang,
+                    ),
+                ).replace("$1", tagForProjects.slice(1))}
                 seemore={`/search?q=%23${tagForProjects.slice(1)}`}
                 style="width:65%;"
                 stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
@@ -1002,7 +1026,7 @@
         <ContentCategory
             header={TranslationHandler.text(
                 "home.sections.todaysprojects",
-                currentLang
+                currentLang,
             )}
             seemore={`/search?q=newest%3A`}
             style="width:65%;"
@@ -1050,10 +1074,10 @@
                 {/if}
             </div>
         </ContentCategory>
-        
+
         {#if isAprilFools()}
             <button class="cat-button" on:click={catSpeak}>
-                <img src="/cat/dave.png" alt="cat">
+                <img src="/cat/dave.png" alt="cat" />
                 <p>{catText}</p>
             </button>
         {/if}
@@ -1113,7 +1137,10 @@
                         lang={currentLang}
                     />
                 </p>
-                <a target="_blank" href={"https://github.com/PenguinMod/PenguinMod-Home/issues"}>
+                <a
+                    target="_blank"
+                    href={"https://github.com/PenguinMod/PenguinMod-Home/issues"}
+                >
                     <LocalizedText
                         text="Report an issue"
                         key="home.footer.sections.info.reportissue"
@@ -1127,7 +1154,11 @@
                         lang={currentLang}
                     />
                 </a>
-                <a target="_blank" href={`https://penguinmod.com/redirect?t=${encodeURIComponent(btoa(LINK.discord))}`}>Discord</a>
+                <a
+                    target="_blank"
+                    href={`https://penguinmod.com/redirect?t=${encodeURIComponent(btoa(LINK.discord))}`}
+                    >Discord</a
+                >
             </div>
             <div class="footer-section">
                 <p>
@@ -1246,7 +1277,7 @@
     }
     .cat-button p {
         font-size: 20px;
-        font-family: 'Comic Sans MS', 'Arial', sans-serif;
+        font-family: "Comic Sans MS", "Arial", sans-serif;
         color: black;
         height: 20px;
     }
@@ -1371,14 +1402,15 @@
     .welcome-back-button:active .welcome-back-icon-container {
         background: rgba(0, 0, 0, 0.2);
     }
-    .welcome-back-row >
-    a:first-child .welcome-back-icon-container {
+    .welcome-back-row > a:first-child .welcome-back-icon-container {
         border-top-left-radius: 36px;
         border-bottom-left-radius: 36px;
         padding-left: 8px;
     }
-    :global(html[dir="rtl"]) .welcome-back-row >
-    a:first-child .welcome-back-icon-container {
+    :global(html[dir="rtl"])
+        .welcome-back-row
+        > a:first-child
+        .welcome-back-icon-container {
         border-top-left-radius: initial;
         border-bottom-left-radius: initial;
         padding-left: initial;
@@ -1386,14 +1418,15 @@
         border-bottom-right-radius: 36px;
         padding-right: 8px;
     }
-    .welcome-back-row >
-    a:last-child .welcome-back-icon-container {
+    .welcome-back-row > a:last-child .welcome-back-icon-container {
         border-top-right-radius: 36px;
         border-bottom-right-radius: 36px;
         padding-right: 8px;
     }
-    :global(html[dir="rtl"]) .welcome-back-row >
-    a:last-child .welcome-back-icon-container {
+    :global(html[dir="rtl"])
+        .welcome-back-row
+        > a:last-child
+        .welcome-back-icon-container {
         border-top-right-radius: initial;
         border-bottom-right-radius: initial;
         padding-right: initial;

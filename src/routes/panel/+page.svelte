@@ -1,6 +1,6 @@
 <script>
     import { onMount } from "svelte";
-    import { page } from '$app/stores';
+    import { page } from "$app/stores";
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
     import Authentication from "../../resources/authentication.js";
     import LINK from "../../resources/urls.js";
@@ -24,14 +24,14 @@
 
     function unixToDisplayDate(unix) {
         return `${new Date(Number(unix)).toDateString()} at ${new Date(
-            Number(unix)
+            Number(unix),
         ).toLocaleTimeString()}`;
     }
 
     let loggedIn = null;
     let projectIdSelection;
     let serverStats = [];
-    const selectForReject = $page.url.searchParams.get('reject');
+    const selectForReject = $page.url.searchParams.get("reject");
 
     function kickOut(loggedOut) {
         const error = loggedOut ? 401 : 403;
@@ -53,7 +53,7 @@
                     stats.push({ name: name, value: Flatten(obj[name]) });
                     continue;
                 }
-                stats.push(`${name}: ${obj[name]}`)
+                stats.push(`${name}: ${obj[name]}`);
             }
             return stats;
         }
@@ -100,7 +100,7 @@
     const guidelinesNotifs = {
         tos: false,
         pp: false,
-        ug: false
+        ug: false,
     };
 
     const loadReportDetails = async (id) => {
@@ -112,13 +112,13 @@
             if (id in reportDetails) {
                 return;
             }
-            let reports = await ProjectClient.getReports(type, id)
+            let reports = await ProjectClient.getReports(type, id);
             reportDetails[id] = reports;
             reportDetails = reportDetails;
         } catch {
-            console.warn(`Failed to load report details for ${id}`)
+            console.warn(`Failed to load report details for ${id}`);
             reportDetails[id] = [];
-            reportDetails = reportDetails; 
+            reportDetails = reportDetails;
         }
     };
 
@@ -156,11 +156,11 @@
             });
     };
 
-    let projectListStyle = '';
+    let projectListStyle = "";
     const refreshProjectMenu = () => {
         unapprovedProjects = [];
         contentWithReports = [];
-        projectListStyle = '';
+        projectListStyle = "";
         selectedReportDetailed = -1;
         reportDetails = Object.create(null);
         switch (dropdownSelectMenu.value) {
@@ -168,13 +168,13 @@
             case "project":
                 return openReportsMenu(dropdownSelectMenu.value);
             case "removed":
-                projectListStyle = 'flex-direction: row;flex-wrap: wrap;';
-                //return openProjectsMenu(dropdownSelectMenu.value);
+                projectListStyle = "flex-direction: row;flex-wrap: wrap;";
+            //return openProjectsMenu(dropdownSelectMenu.value);
         }
     };
     const closeUserReport = (reportID) => {
         const confirmed = prompt(
-            "Are you sure you've looked over this result completely? (Type 'ok' to confirm)"
+            "Are you sure you've looked over this result completely? (Type 'ok' to confirm)",
         );
         if (confirmed !== "ok") return;
         ProjectClient.closeReport(reportID)
@@ -191,17 +191,21 @@
         // type is assumed to be unapproved because we have nothing else right now
         unapprovedProjects = [];
         contentWithReports = [];
-        ProjectClient.getRemovedProjects(unapprovedPage - 1).then(unapprovedProjs => {
-            unapprovedProjects = unapprovedProjs;
-        });
+        ProjectClient.getRemovedProjects(unapprovedPage - 1).then(
+            (unapprovedProjs) => {
+                unapprovedProjects = unapprovedProjs;
+            },
+        );
     }
     function openReportsMenu(type) {
         unapprovedProjects = [];
         contentWithReports = [];
-        ProjectClient.getTypeWithReports(type, 0).then((projectsWithReports) => {
-            contentWithReports = projectsWithReports;
-            console.log(contentWithReports)
-        });
+        ProjectClient.getTypeWithReports(type, 0).then(
+            (projectsWithReports) => {
+                contentWithReports = projectsWithReports;
+                console.log(contentWithReports);
+            },
+        );
         // get approved projects anyways cuz we need to update list
         // todo: getProjects is paged breh what we do?
         //       add a new endpoint containing all project names with tons of compression propably :idk_man:
@@ -228,29 +232,41 @@
     let isRejectHard = false;
     function rejectProject(id) {
         id ??= projectIdSelection.value;
-        const confirmationMessage = `Reject "${rejectingName || id}"?\n`
-            + `${isRejectHard ?
-                'Hard reject is enabled.\nThe uploader will not be able to edit the original project once you reject it.'
-                : 'Soft reject is enabled.'}`;
+        const confirmationMessage =
+            `Reject "${rejectingName || id}"?\n` +
+            `${
+                isRejectHard
+                    ? "Hard reject is enabled.\nThe uploader will not be able to edit the original project once you reject it."
+                    : "Soft reject is enabled."
+            }`;
         if (!confirm(confirmationMessage)) return;
         if (rejectingTextboxAreaText.length <= 3) {
             return alert("The action was cancelled.");
         }
         if (!isRejectHard) {
-            ProjectClient.rejectProject(id, rejectingTextboxAreaText).then(() => {
-                rejectionPageOpen = false;
-                refreshProjectMenu();
-            });
+            ProjectClient.rejectProject(id, rejectingTextboxAreaText).then(
+                () => {
+                    rejectionPageOpen = false;
+                    refreshProjectMenu();
+                },
+            );
         } else {
-            ProjectClient.hardRejectProject(id, rejectingTextboxAreaText).then(() => {
-                rejectionPageOpen = false;
-                refreshProjectMenu();
-            });
+            ProjectClient.hardRejectProject(id, rejectingTextboxAreaText).then(
+                () => {
+                    rejectionPageOpen = false;
+                    refreshProjectMenu();
+                },
+            );
         }
     }
     function deleteThumbnail(id) {
         id ??= projectIdSelection.value;
-        if (!confirm(`Are you sure you want to remove project ${id}'s thumbnail?`)) return;
+        if (
+            !confirm(
+                `Are you sure you want to remove project ${id}'s thumbnail?`,
+            )
+        )
+            return;
         ProjectClient.removeProjectThumbnail(id);
     }
     let selectedProjectName = "";
@@ -261,7 +277,7 @@
         if (name) {
             selectedProjectName = name;
         } else {
-            ProjectApi.getProjectMeta(id).then(v => {
+            ProjectApi.getProjectMeta(id).then((v) => {
                 selectedProjectName = v.title;
             });
         }
@@ -277,7 +293,7 @@
                 const projectMeta = await ProjectApi.getProjectMeta(id);
                 rejectingName = projectMeta.title;
             } catch {
-                rejectingName = '';
+                rejectingName = "";
             }
         }
         rejectionPageOpen = true;
@@ -293,11 +309,11 @@
                 const projectMeta = await ProjectApi.getProjectMeta(id);
                 rejectingName = projectMeta.title;
             } catch {
-                rejectingName = '';
+                rejectingName = "";
             }
         }
         deletionPageOpen = true;
-    }
+    };
     function featureProject(value) {
         const id = String(projectIdSelection.value);
         const usure = confirm(`${value ? "Feature" : "Unfeature"} project?`);
@@ -306,9 +322,12 @@
     }
     function setCommunityFeaturableProject(value) {
         const id = String(projectIdSelection.value);
-        const usure = confirm(value ? `Enable community featuring for this project?`
-            : `Disabling community feature will remove this project from the "Projects people want Featured" list and the project can only be manually featured.`
-            + `\nWe have guidelines for which projects should have community features disabled. Are you sure this project deserves to lose the ability to be community featured?`);
+        const usure = confirm(
+            value
+                ? `Enable community featuring for this project?`
+                : `Disabling community feature will remove this project from the "Projects people want Featured" list and the project can only be manually featured.` +
+                      `\nWe have guidelines for which projects should have community features disabled. Are you sure this project deserves to lose the ability to be community featured?`,
+        );
         if (!usure) return;
         ProjectClient.setCanBeFeatured(id, value).catch((err) => alert(err));
     }
@@ -344,10 +363,14 @@
     // }
 
     const filterJSONStuff = {
-        text: ''
+        text: "",
     };
     filterJSONStuff.get = async () => {
-        filterJSONStuff.text = JSON.stringify(await ProjectClient.getProfanityFilter(), null, 4);
+        filterJSONStuff.text = JSON.stringify(
+            await ProjectClient.getProfanityFilter(),
+            null,
+            4,
+        );
     };
     filterJSONStuff.set = (data) => {
         ProjectClient.setProfanityFilter(data);
@@ -405,10 +428,10 @@
                             const extensionData = json.extensionURLs
                                 ? json.extensionURLs
                                 : {};
-                            
+
                             inspectMenuDetails.extensionData = extensionData;
                             inspectMenuDetails.extensionUrls = JSON.parse(
-                                JSON.stringify(extensionData)
+                                JSON.stringify(extensionData),
                             );
                             inspectMenuDetails.downloading = false;
                             // get all urls
@@ -424,7 +447,7 @@
                                             extensionData[extensionId] = code;
                                             resetInspectMenu();
                                         });
-                                    }
+                                    },
                                 );
                             }
                         })
@@ -445,16 +468,16 @@
             /**
              * @type {Blob}
              */
-            const blob = await zip
-                .file(assetFile)
-                .async("blob");
+            const blob = await zip.file(assetFile).async("blob");
             const fileType = await BlobAndDataUrl.fileTypeFromBlob(blob);
             const mimeType = FileTypes.mimeTypePairs[fileType];
-            const typedBlob = new Blob([await blob.arrayBuffer()], { type: mimeType });
+            const typedBlob = new Blob([await blob.arrayBuffer()], {
+                type: mimeType,
+            });
             const properURL = URL.createObjectURL(typedBlob);
             array.push({ name: asset.name, url: properURL, file: assetFile });
         } catch (e) {
-            console.warn('asset', asset.name, assetFile, 'failed to load', e);
+            console.warn("asset", asset.name, assetFile, "failed to load", e);
         }
     };
     const fillCensorMenu = async (projectJson, zip) => {
@@ -486,14 +509,16 @@
          * @type {{ zip:JSZip, json:object }}
          */
         const project = censorMenuDetails.rawProject;
-        const censorCostume = await fetchElementAsBlob('/censor/costume.svg');
-        const censorSound = await fetchElementAsBlob('/censor/sound.mp3');
+        const censorCostume = await fetchElementAsBlob("/censor/costume.svg");
+        const censorSound = await fetchElementAsBlob("/censor/sound.mp3");
         // get info that needs updating
         // NOTE: these include the file type at the end
-        const censoredCostumes = Object.keys(censorMenuDetails.censoredCostumes)
-            .filter(key => censorMenuDetails.censoredCostumes[key] === true);
-        const censoredSounds = Object.keys(censorMenuDetails.mutedSounds)
-            .filter(key => censorMenuDetails.mutedSounds[key] === true);
+        const censoredCostumes = Object.keys(
+            censorMenuDetails.censoredCostumes,
+        ).filter((key) => censorMenuDetails.censoredCostumes[key] === true);
+        const censoredSounds = Object.keys(
+            censorMenuDetails.mutedSounds,
+        ).filter((key) => censorMenuDetails.mutedSounds[key] === true);
         // update json
         for (const target of project.json.targets) {
             for (const costumeId of censoredCostumes) {
@@ -522,7 +547,9 @@
         for (const soundId of censoredSounds) {
             project.zip.file(soundId, censorSound);
         }
-        const penguinModProject = await project.zip.generateAsync({ type: "blob" });
+        const penguinModProject = await project.zip.generateAsync({
+            type: "blob",
+        });
         const projectId = censorMenuDetails.id;
 
         const meta = await ProjectApi.getProjectMeta(projectId);
@@ -533,9 +560,9 @@
             newMeta: {
                 title: meta.title,
                 instructions: meta.instructions,
-                notes: meta.notes
+                notes: meta.notes,
             },
-            image: thumbnail
+            image: thumbnail,
         });
     };
     const applyCensorChanges = async () => {
@@ -570,7 +597,7 @@
                             censorMenuDetails.sounds = [];
                             censorMenuDetails.rawProject = {
                                 zip,
-                                json
+                                json,
                             };
                             await fillCensorMenu(json, zip);
                         })
@@ -602,64 +629,77 @@
             return;
         ProjectClient.respondToDispute(
             messageReplyInfo.id,
-            messageReplyInfo.text
-        ).then(() => {
-            alert("Sent!");
-            messageReplyInfo.id = "";
-            messageReplyInfo.text = "";
-        }).catch(err => alert('Failed to send message:' + err));
+            messageReplyInfo.text,
+        )
+            .then(() => {
+                alert("Sent!");
+                messageReplyInfo.id = "";
+                messageReplyInfo.text = "";
+            })
+            .catch((err) => alert("Failed to send message:" + err));
     };
     const sendNewMessage = () => {
         if (!messageReplyInfo.text)
             return alert("No message text was specified.");
-        if (!confirm(`Send ${messageReplyInfo.canBeReplied ? "respondable" : "non-respondable"} message to ${messageReplyInfo.target} with "${messageReplyInfo.text}"?${messageReplyInfo.canBeReplied ? "" : "\nThe user will not be able to respond to your message."}`))
+        if (
+            !confirm(
+                `Send ${messageReplyInfo.canBeReplied ? "respondable" : "non-respondable"} message to ${messageReplyInfo.target} with "${messageReplyInfo.text}"?${messageReplyInfo.canBeReplied ? "" : "\nThe user will not be able to respond to your message."}`,
+            )
+        )
             return;
         ProjectClient.sendModeratorMessage(
             messageReplyInfo.target,
             messageReplyInfo.text,
-            messageReplyInfo.canBeReplied
-        ).then(() => {
-            alert("Sent!");
-            messageReplyInfo.target = "";
-            messageReplyInfo.text = "";
-        }).catch(err => alert('Failed to send message:' + err));
+            messageReplyInfo.canBeReplied,
+        )
+            .then(() => {
+                alert("Sent!");
+                messageReplyInfo.target = "";
+                messageReplyInfo.text = "";
+            })
+            .catch((err) => alert("Failed to send message:" + err));
     };
     const deleteModMessage = () => {
         if (!messageReplyInfo.deleteId)
             return alert("No message ID was specified.");
-        if (prompt("Delete moderator message? Type \"ok\" to confirm.") !== "ok")
+        if (prompt('Delete moderator message? Type "ok" to confirm.') !== "ok")
             return;
-        ProjectClient.deleteModeratorMessage(messageReplyInfo.deleteId).then(() => {
-            alert("Deleted.");
-            messageReplyInfo.deleteId = "";
-        }).catch(err => alert('Failed to delete message:' + err));
+        ProjectClient.deleteModeratorMessage(messageReplyInfo.deleteId)
+            .then(() => {
+                alert("Deleted.");
+                messageReplyInfo.deleteId = "";
+            })
+            .catch((err) => alert("Failed to delete message:" + err));
     };
     const sendGuidelinesNotifs = () => {
         const notifs = [];
         if (guidelinesNotifs.tos) {
-            notifs.push('tos');
+            notifs.push("tos");
         }
         if (guidelinesNotifs.pp) {
-            notifs.push('privacyPolicy');
+            notifs.push("privacyPolicy");
         }
         if (guidelinesNotifs.ug) {
-            notifs.push('guidelines');
+            notifs.push("guidelines");
         }
         if (notifs.length <= 0) return alert("No notifs were selected!");
-        const confirmed = prompt('Are you sure you want to notify ALL users of the site?\nType "ok" to confirm.');
-        if (confirmed !== 'ok') return;
-        ProjectClient.setLastPolicyUpdate(notifs)
+        const confirmed = prompt(
+            'Are you sure you want to notify ALL users of the site?\nType "ok" to confirm.',
+        );
+        if (confirmed !== "ok") return;
+        ProjectClient.setLastPolicyUpdate(notifs);
     };
 
     let rejectedProjectId = "0";
     const downloadRejectedProject = async () => {
         try {
-            const projectFile = await ProjectClient.downloadHardRejectedProject(
-                rejectedProjectId
-            );
+            const projectFile =
+                await ProjectClient.downloadHardRejectedProject(
+                    rejectedProjectId,
+                );
             FileSaver.saveAs(
                 new Blob([projectFile]),
-                `Project_${rejectedProjectId}.pmp`
+                `Project_${rejectedProjectId}.pmp`,
             );
         } catch (err) {
             console.error(err);
@@ -680,7 +720,7 @@
     const deleteProject = (id, reason) => {
         if (
             !confirm(
-                "Are you sure you want to PERMANENTLY delete this project?\nYou should only do this if the project contains some really bad stuff."
+                "Are you sure you want to PERMANENTLY delete this project?\nYou should only do this if the project contains some really bad stuff.",
             )
         )
             return;
@@ -705,12 +745,17 @@
     };
     const renameUser = () => {
         const promptMessage = prompt(
-            `Are you sure you want to rename ${userSelectionData.username} to ${userSelectionData.newUsername}?\nType "ok" to confirm.`
+            `Are you sure you want to rename ${userSelectionData.username} to ${userSelectionData.newUsername}?\nType "ok" to confirm.`,
         );
         if (promptMessage !== "ok") return;
-        ProjectClient.setUsernameOfUser(userSelectionData.username, userSelectionData.newUsername)
+        ProjectClient.setUsernameOfUser(
+            userSelectionData.username,
+            userSelectionData.newUsername,
+        )
             .then(() => {
-                alert(`Renamed ${userSelectionData.username} to ${userSelectionData.newUsername}`);
+                alert(
+                    `Renamed ${userSelectionData.username} to ${userSelectionData.newUsername}`,
+                );
             })
             .catch((err) => {
                 console.error(err);
@@ -732,12 +777,17 @@
     };
     const changePfpUser = () => {
         const promptMessage = prompt(
-            `Are you sure you want to change ${userSelectionData.username}'s Profile Picture?\nType "ok" to confirm.`
+            `Are you sure you want to change ${userSelectionData.username}'s Profile Picture?\nType "ok" to confirm.`,
         );
         if (promptMessage !== "ok") return;
-        ProjectClient.setPFPOfUser(userSelectionData.username, userSelectionData.newPfp)
+        ProjectClient.setPFPOfUser(
+            userSelectionData.username,
+            userSelectionData.newPfp,
+        )
             .then(() => {
-                alert(`Changed ${userSelectionData.username}'s Profile Picture.`);
+                alert(
+                    `Changed ${userSelectionData.username}'s Profile Picture.`,
+                );
             })
             .catch((err) => {
                 console.error(err);
@@ -747,10 +797,15 @@
 
     const banUser = () => {
         const promptMessage = prompt(
-            `Are you sure you want to ban ${userSelectionData.username} for "${userSelectionData.reason}"? Type "ok" to confirm.`
+            `Are you sure you want to ban ${userSelectionData.username} for "${userSelectionData.reason}"? Type "ok" to confirm.`,
         );
         if (promptMessage !== "ok") return;
-        ProjectClient.banUser(userSelectionData.username, userSelectionData.reason, 0, true)
+        ProjectClient.banUser(
+            userSelectionData.username,
+            userSelectionData.reason,
+            0,
+            true,
+        )
             .then(() => {
                 alert(`Banned ${userSelectionData.username}.`);
             })
@@ -762,10 +817,15 @@
 
     const tempBanUser = () => {
         const promptMessage = prompt(
-            `Are you sure you want to temp ban ${userSelectionData.username} for "${userSelectionData.reason}" for ${userSelectionData.time} seconds (${userSelectionData.time / (60 * 60)} hours)? Type "ok" to confirm.`
+            `Are you sure you want to temp ban ${userSelectionData.username} for "${userSelectionData.reason}" for ${userSelectionData.time} seconds (${userSelectionData.time / (60 * 60)} hours)? Type "ok" to confirm.`,
         );
         if (promptMessage !== "ok") return;
-        ProjectClient.banUser(userSelectionData.username, userSelectionData.reason, Math.ceil(userSelectionData.time*1000), true)
+        ProjectClient.banUser(
+            userSelectionData.username,
+            userSelectionData.reason,
+            Math.ceil(userSelectionData.time * 1000),
+            true,
+        )
             .then(() => {
                 alert(`Banned ${userSelectionData.username}.`);
             })
@@ -777,10 +837,15 @@
 
     const unbanUser = () => {
         const promptMessage = prompt(
-            `Are you sure you want to unban ${userSelectionData.username}? Type "ok" to confirm.`
+            `Are you sure you want to unban ${userSelectionData.username}? Type "ok" to confirm.`,
         );
         if (promptMessage !== "ok") return;
-        ProjectClient.banUser(userSelectionData.username, userSelectionData.reason, 0, false)
+        ProjectClient.banUser(
+            userSelectionData.username,
+            userSelectionData.reason,
+            0,
+            false,
+        )
             .then(() => {
                 alert(`Unbanned ${userSelectionData.username}.`);
             })
@@ -804,7 +869,9 @@
     const loadUserBadges = async () => {
         userBadgeInfo.areBadgesLoaded = false;
         if (!userBadgeInfo.targetUsername) return;
-        const realBadges = await ProjectApi.getUserBadges(userBadgeInfo.targetUsername);
+        const realBadges = await ProjectApi.getUserBadges(
+            userBadgeInfo.targetUsername,
+        );
         userBadgeInfo.currentUserBadges = {};
         for (const badgeName in ProfileBadges) {
             userBadgeInfo.currentUserBadges[badgeName] = false;
@@ -815,14 +882,18 @@
         userBadgeInfo.areBadgesLoaded = true;
     };
     const applyUserBadges = () => {
-        const targetUsers = userBadgeInfo.targetUsernamesBox.split("\n").map(username => username.replace(/[\r\s]/g, "").toLowerCase());
-        const affectedUsers = !userBadgeInfo.isEditingMulti ? 1 : targetUsers.length;
+        const targetUsers = userBadgeInfo.targetUsernamesBox
+            .split("\n")
+            .map((username) => username.replace(/[\r\s]/g, "").toLowerCase());
+        const affectedUsers = !userBadgeInfo.isEditingMulti
+            ? 1
+            : targetUsers.length;
         if (userBadgeInfo.isEditingMulti) {
             if (!confirm(`Edit badges for ${affectedUsers} users?`)) return;
         } else {
             if (!confirm("Apply badges to this user?")) return;
         }
-        
+
         if (userBadgeInfo.isEditingMulti) {
             const newBadges = [];
             for (const badgeName in userBadgeInfo.targetFilterBadges) {
@@ -832,7 +903,11 @@
             }
 
             console.log(targetUsers, newBadges, userBadgeInfo.isRemovingBadges);
-            ProjectClient.setUsersBadges(targetUsers, newBadges, userBadgeInfo.isRemovingBadges)
+            ProjectClient.setUsersBadges(
+                targetUsers,
+                newBadges,
+                userBadgeInfo.isRemovingBadges,
+            )
                 .then(() => {
                     alert("Badges are set!");
                 })
@@ -866,18 +941,18 @@
             ? `grant ${userSelectionData.username} modderator?`
             : `revoke ${userSelectionData.username}'s modderation possition?`;
         const promptMessage = prompt(
-            `Are you sure you want to ${verbAdmin} & ${verbApprover} Type "ok" to confirm.`
+            `Are you sure you want to ${verbAdmin} & ${verbApprover} Type "ok" to confirm.`,
         );
         if (promptMessage !== "ok") return;
         ProjectClient.assingUsersPermisions(
             userSelectionData.username,
             userSelectionData.admin,
-            userSelectionData.approver
+            userSelectionData.approver,
         )
             .then(() => {
                 // i don wana make it re-say the whole grant-revoke thingy
                 alert(
-                    `Successfully did what ever you said to do ${userSelectionData.username}.`
+                    `Successfully did what ever you said to do ${userSelectionData.username}.`,
                 );
             })
             .catch((err) => {
@@ -886,17 +961,19 @@
             });
     };
 
-    function ipBanUser(toggle=true) {
+    function ipBanUser(toggle = true) {
         if (toggle) {
             const promptMessage = prompt(
-                `Are you sure you want to IP ban ${userSelectionData.username}? They will be unable to use ANY part of the site that requires the server. People who are on the same network may not be able to access that either. Type "ok" to confirm.`
+                `Are you sure you want to IP ban ${userSelectionData.username}? They will be unable to use ANY part of the site that requires the server. People who are on the same network may not be able to access that either. Type "ok" to confirm.`,
             );
             if (promptMessage !== "ok") return;
         }
-        
+
         ProjectClient.ipBanUser(userSelectionData.username, toggle)
             .then(() => {
-                alert(`${toggle ? "" : "Un "}IP Banned ${userSelectionData.username}.`);
+                alert(
+                    `${toggle ? "" : "Un "}IP Banned ${userSelectionData.username}.`,
+                );
             })
             .catch((err) => {
                 console.error(err);
@@ -905,8 +982,16 @@
     }
 
     function deleteAccount() {
-        if (prompt("Are you sure you want to delete this account? THIS IS PERMANENT AND DELETES **ALL** DATA. enter \"ok\" to confirm.") !== "ok") return;
-        ProjectClient.deleteUserAccount(userSelectionData.username, userSelectionData.reason)
+        if (
+            prompt(
+                'Are you sure you want to delete this account? THIS IS PERMANENT AND DELETES **ALL** DATA. enter "ok" to confirm.',
+            ) !== "ok"
+        )
+            return;
+        ProjectClient.deleteUserAccount(
+            userSelectionData.username,
+            userSelectionData.reason,
+        )
             .then(() => {
                 alert("Account deleted.");
             })
@@ -919,7 +1004,7 @@
     let ipBanData = {
         input: "",
         connectedIPs: [],
-    }
+    };
 
     function getConnectedIPs() {
         ProjectClient.getConnectedIPs(ipBanData.input)
@@ -935,7 +1020,7 @@
     function getConnectedUsers() {
         ProjectClient.getConnectedUsers(ipBanData.input)
             .then((users) => {
-                ipBanData.connectedIPs = users.map(v => v.username);
+                ipBanData.connectedIPs = users.map((v) => v.username);
             })
             .catch((err) => {
                 console.error(err);
@@ -963,11 +1048,11 @@
     function banIP(toggle) {
         if (toggle) {
             const promptMessage = prompt(
-                `Are you sure you want to ban this ip? No one who has this ip, even who are just on the same network, will be able to use anything that needs the api. Type "ok" to confirm.`
+                `Are you sure you want to ban this ip? No one who has this ip, even who are just on the same network, will be able to use anything that needs the api. Type "ok" to confirm.`,
             );
             if (promptMessage !== "ok") return;
         }
-        
+
         ProjectClient.banIP(ipBanData.input, toggle)
             .then(() => {
                 alert(`${toggle ? "" : "Un "}Banned ${ipBanData.input}.`);
@@ -981,25 +1066,24 @@
     let showUserPerms = false;
     let listOfAdmins = [];
     let listOfMods = [];
-    const loadUserPerms = () => ProjectClient.getAllPermitedUsers()
-        .then(users => {
-            listOfAdmins = users.admins;
-            listOfMods = users.mods;
-        })
-        .catch((err) => {
-            console.error(err);
-            alert(`Failed to get permited users; ${err}`);
-        });
+    const loadUserPerms = () =>
+        ProjectClient.getAllPermitedUsers()
+            .then((users) => {
+                listOfAdmins = users.admins;
+                listOfMods = users.mods;
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(`Failed to get permited users; ${err}`);
+            });
 
     function putOnWatchlist(enabled) {
         ProjectClient.putOnWatchlist(userSelectionData.username, enabled)
-            .then(success => {
-                if (!success)
-                    alert("FAILURE!!!");
-                else
-                    alert("success");
+            .then((success) => {
+                if (!success) alert("FAILURE!!!");
+                else alert("success");
             })
-            .catch(error => {
+            .catch((error) => {
                 alert(`ERROR: ${error}`);
             });
     }
@@ -1007,14 +1091,23 @@
 
 <svelte:head>
     <title>PenguinMod - Admin Panel</title>
-    <meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex,nocache,none" />
+    <meta
+        name="robots"
+        content="noindex,nofollow,noarchive,nosnippet,noimageindex,nocache,none"
+    />
     <meta name="title" content="PenguinMod - Home" />
     <meta property="og:title" content="PenguinMod - Home" />
-    <meta property="twitter:title" content="PenguinMod - Home">
-    <meta name="description" content="The area where featured projects and community stuff & info is shown.">
-    <meta property="twitter:description" content="The area where featured projects and community stuff & info is shown.">
-    <meta property="og:url" content="https://penguinmod.com/">
-    <meta property="twitter:url" content="https://penguinmod.com/">
+    <meta property="twitter:title" content="PenguinMod - Home" />
+    <meta
+        name="description"
+        content="The area where featured projects and community stuff & info is shown."
+    />
+    <meta
+        property="twitter:description"
+        content="The area where featured projects and community stuff & info is shown."
+    />
+    <meta property="og:url" content="https://penguinmod.com/" />
+    <meta property="twitter:url" content="https://penguinmod.com/" />
 </svelte:head>
 
 <NavigationBar />
@@ -1027,7 +1120,10 @@
 <div class="main" style={loggedIn ? "" : "display:none"}>
     <NavigationMargin />
 
-    <div class="front-card-page" style="z-index: 20000;{rejectionPageOpen ? '' : 'display:none;'}">
+    <div
+        class="front-card-page"
+        style="z-index: 20000;{rejectionPageOpen ? '' : 'display:none;'}"
+    >
         <div class="card-page big-card-page">
             <div class="card-header">
                 <h1>Reject Project</h1>
@@ -1039,7 +1135,7 @@
                     alt="Image of {rejectingName}"
                     width="240"
                     height="180"
-                >
+                />
                 <!-- svelte-ignore a11y-autofocus -->
                 <textarea
                     bind:value={rejectingTextboxAreaText}
@@ -1050,16 +1146,19 @@
                 <details>
                     <summary>Dangerous options</summary>
                     <label style="color:red">
-                        <input type="checkbox" bind:checked={isRejectHard}>
-                        Don't allow the uploader to edit the project after reject (hard reject)
+                        <input type="checkbox" bind:checked={isRejectHard} />
+                        Don't allow the uploader to edit the project after reject
+                        (hard reject)
                     </label>
                 </details>
                 <br />
                 <br />
                 <h2><b>Quick-Reject</b></h2>
-                <QuickRejectComponent on:select={(arg) => {
-                    rejectingTextboxAreaText = arg.detail;
-                }} />
+                <QuickRejectComponent
+                    on:select={(arg) => {
+                        rejectingTextboxAreaText = arg.detail;
+                    }}
+                />
             </div>
             <div style="display:flex;flex-direction:row;padding:1em">
                 <Button
@@ -1079,7 +1178,10 @@
         </div>
     </div>
 
-    <div class="front-card-page" style="z-index: 20000;{deletionPageOpen ? '' : 'display:none;'}">
+    <div
+        class="front-card-page"
+        style="z-index: 20000;{deletionPageOpen ? '' : 'display:none;'}"
+    >
         <div class="card-page big-card-page">
             <div class="card-header">
                 <h1>Delete Project</h1>
@@ -1091,7 +1193,7 @@
                     alt="Image of {rejectingName}"
                     width="240"
                     height="180"
-                >
+                />
                 <!-- svelte-ignore a11y-autofocus -->
                 <textarea
                     bind:value={rejectingTextboxAreaText}
@@ -1102,9 +1204,11 @@
                 <br />
                 <br />
                 <h2><b>Quick-Delete</b></h2>
-                <QuickRejectComponent on:select={(arg) => {
-                    rejectingTextboxAreaText = arg.detail;
-                }} />
+                <QuickRejectComponent
+                    on:select={(arg) => {
+                        rejectingTextboxAreaText = arg.detail;
+                    }}
+                />
             </div>
             <div style="display:flex;flex-direction:row;padding:1em">
                 <Button
@@ -1150,14 +1254,15 @@
                                         {String(
                                             inspectMenuDetails.extensionUrls[
                                                 extensionId
-                                            ]
+                                            ],
                                         ).length > 456
                                             ? "Extension URL is too long"
                                             : String(
-                                                inspectMenuDetails.extensionUrls[
-                                                    extensionId
-                                                ]
-                                            )}
+                                                  inspectMenuDetails
+                                                      .extensionUrls[
+                                                      extensionId
+                                                  ],
+                                              )}
                                     </a>
 
                                     <textarea
@@ -1170,7 +1275,6 @@
                                     (Core Extension)
                                 {/if}
                             </p>
-                            
                         {/each}
                     {/if}
                     {#if inspectMenuDetails.error}
@@ -1203,41 +1307,66 @@
                         </p>
                     {:else}
                         <h1>Costumes</h1>
-                        <p>Click the Replace button to mark it to be replaced with a 🚫 sign</p>
+                        <p>
+                            Click the Replace button to mark it to be replaced
+                            with a 🚫 sign
+                        </p>
                         <p>
                             <label>
-                                <input type="checkbox" bind:checked={censorMenuDetails.previewBlack}>
+                                <input
+                                    type="checkbox"
+                                    bind:checked={
+                                        censorMenuDetails.previewBlack
+                                    }
+                                />
                                 Use black background
                             </label>
                         </p>
                         <p>
                             <label>
-                                <input type="checkbox" bind:checked={censorMenuDetails.previewNoBG}>
+                                <input
+                                    type="checkbox"
+                                    bind:checked={censorMenuDetails.previewNoBG}
+                                />
                                 Use no background
                             </label>
                         </p>
                         <p>
                             <label>
                                 Size
-                                <input type="number" bind:value={censorMenuDetails.size}>
+                                <input
+                                    type="number"
+                                    bind:value={censorMenuDetails.size}
+                                />
                                 (enter nothing to use image size)
                             </label>
                         </p>
                         <div style="display:flex;flex-wrap:wrap;">
                             {#each censorMenuDetails.costumes as costume}
-                                <div style="padding:4px; border:1px solid black; margin:4px;">
+                                <div
+                                    style="padding:4px; border:1px solid black; margin:4px;"
+                                >
                                     <img
                                         src={costume.url}
                                         alt={costume.name}
                                         width={censorMenuDetails.size}
                                         height={censorMenuDetails.size}
-                                        style={censorMenuDetails.previewNoBG ? '' :
-                                            `background:${censorMenuDetails.previewBlack ? 'black' : "white"}`}
-                                    >
+                                        style={censorMenuDetails.previewNoBG
+                                            ? ""
+                                            : `background:${censorMenuDetails.previewBlack ? "black" : "white"}`}
+                                    />
                                     <p>{costume.name}</p>
                                     <p>
                                         <label>
-                                            <input type="checkbox" bind:checked={censorMenuDetails.censoredCostumes[costume.file]}>
+                                            <input
+                                                type="checkbox"
+                                                bind:checked={
+                                                    censorMenuDetails
+                                                        .censoredCostumes[
+                                                        costume.file
+                                                    ]
+                                                }
+                                            />
                                             Replace
                                         </label>
                                     </p>
@@ -1249,17 +1378,24 @@
                         {#each censorMenuDetails.sounds as sound}
                             <figure>
                                 <figcaption>{sound.name}</figcaption>
-                                <audio
-                                    volume={0.5}
-                                    src={sound.url}
-                                    controls
-                                />
-                                <br>
-                                <a download="{sound.name}" href={sound.url} target="_blank">
+                                <audio volume={0.5} src={sound.url} controls />
+                                <br />
+                                <a
+                                    download={sound.name}
+                                    href={sound.url}
+                                    target="_blank"
+                                >
                                     Download
                                 </a>
                                 <label>
-                                    <input type="checkbox" bind:checked={censorMenuDetails.mutedSounds[sound.file]}>
+                                    <input
+                                        type="checkbox"
+                                        bind:checked={
+                                            censorMenuDetails.mutedSounds[
+                                                sound.file
+                                            ]
+                                        }
+                                    />
                                     Mute
                                 </label>
                             </figure>
@@ -1376,7 +1512,7 @@
                         <img
                             src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectID=${lastSelectedProjectId}&requestType=thumbnail`}
                             alt="Project Thumbnail"
-                            style={{ maxWidth: '100%' }} 
+                            style={{ maxWidth: "100%" }}
                         />
                     </a>
                 {/if}
@@ -1454,7 +1590,7 @@
                 </div>
             </div>
 
-            <br/>
+            <br />
 
             <p>
                 <a
@@ -1467,7 +1603,7 @@
             </p>
 
             <br />
-            
+
             <div class="card">
                 <h2>Server Stats</h2>
                 <Stats stats_data={serverStats} render={true} />
@@ -1487,24 +1623,29 @@
                         PenguinMod Moderation Expectations
                     </a>
                 </p>
-                <button on:click={() => {
-                    messageReplyInfo.inReplyTab = true;
-                }}>Reply Menu</button>
-                <button on:click={() => {
-                    messageReplyInfo.inReplyTab = false;
-                }}>Send Menu</button>
+                <button
+                    on:click={() => {
+                        messageReplyInfo.inReplyTab = true;
+                    }}>Reply Menu</button
+                >
+                <button
+                    on:click={() => {
+                        messageReplyInfo.inReplyTab = false;
+                    }}>Send Menu</button
+                >
                 {#if messageReplyInfo.inReplyTab}
                     <p>Respond to a project dispute/reply here.</p>
-                    <p><i>
-                        NOTE: Your usage of the moderator messaging system must be appropriate.
-                        <br />
-                        View the <a
-                            target="_blank"
-                            href={"/guidelines/moderation"}
-                        >
-                            PenguinMod Moderation Expectations
-                        </a> for more info.
-                    </i></p>
+                    <p>
+                        <i>
+                            NOTE: Your usage of the moderator messaging system
+                            must be appropriate.
+                            <br />
+                            View the
+                            <a target="_blank" href={"/guidelines/moderation"}>
+                                PenguinMod Moderation Expectations
+                            </a> for more info.
+                        </i>
+                    </p>
                     <p>Type message ID:</p>
                     <input
                         type="text"
@@ -1528,16 +1669,17 @@
                     </div>
                 {:else}
                     <p>Send a new moderator message to a user.</p>
-                    <p><i>
-                        NOTE: Your usage of the moderator messaging system must be appropriate.
-                        <br />
-                        View the <a
-                            target="_blank"
-                            href={"/guidelines/moderation"}
-                        >
-                            PenguinMod Moderation Expectations
-                        </a> for more info.
-                    </i></p>
+                    <p>
+                        <i>
+                            NOTE: Your usage of the moderator messaging system
+                            must be appropriate.
+                            <br />
+                            View the
+                            <a target="_blank" href={"/guidelines/moderation"}>
+                                PenguinMod Moderation Expectations
+                            </a> for more info.
+                        </i>
+                    </p>
                     <p>Type receiver username:</p>
                     <input
                         type="text"
@@ -1554,7 +1696,10 @@
                     />
                     <br />
                     <label>
-                        <input type="checkbox" bind:checked={messageReplyInfo.canBeReplied} />
+                        <input
+                            type="checkbox"
+                            bind:checked={messageReplyInfo.canBeReplied}
+                        />
                         Can the receiver reply back?
                     </label>
                     <br />
@@ -1575,13 +1720,14 @@
                     placeholder="Message ID..."
                     bind:value={messageReplyInfo.deleteId}
                 />
-                <Button color="red" on:click={deleteModMessage}>
-                    Delete
-                </Button>
+                <Button color="red" on:click={deleteModMessage}>Delete</Button>
                 <br />
                 <br />
                 <h3>Guidelines</h3>
-                <p>Send update notifications for TOS, Privacy Policy, or Uploading Guidelines.</p>
+                <p>
+                    Send update notifications for TOS, Privacy Policy, or
+                    Uploading Guidelines.
+                </p>
                 <p>Will send to all users on the website.</p>
                 <br />
                 <label>
@@ -1593,18 +1739,12 @@
                 </label>
                 <br />
                 <label>
-                    <input
-                        type="checkbox"
-                        bind:checked={guidelinesNotifs.pp}
-                    />
+                    <input type="checkbox" bind:checked={guidelinesNotifs.pp} />
                     Privacy Policy
                 </label>
                 <br />
                 <label>
-                    <input
-                        type="checkbox"
-                        bind:checked={guidelinesNotifs.ug}
-                    />
+                    <input type="checkbox" bind:checked={guidelinesNotifs.ug} />
                     Uploading Guidelines
                 </label>
                 <br />
@@ -1631,7 +1771,9 @@
                         <p>{mod.username}</p>
                     {/each}
                 {/if}
-                <Button on:click={() => showUserPerms = !showUserPerms}>{showUserPerms ? 'Hide' : 'Show'} Permited Users</Button>
+                <Button on:click={() => (showUserPerms = !showUserPerms)}
+                    >{showUserPerms ? "Hide" : "Show"} Permited Users</Button
+                >
                 <p>Type username:</p>
                 <input
                     type="text"
@@ -1646,7 +1788,8 @@
                     type="number"
                     size="50"
                     bind:value={userSelectionData.time}
-                /> (in seconds)
+                />
+                (in seconds)
                 <br />
                 <br />
                 <input
@@ -1669,22 +1812,38 @@
                 <div class="user-action-collumn">
                     <div class="user-action-row">
                         <Button color="red" on:click={banUser}>Ban User</Button>
-                        <Button color="purple" on:click={tempBanUser}>Temp-Ban User</Button>
+                        <Button color="purple" on:click={tempBanUser}
+                            >Temp-Ban User</Button
+                        >
                         <Button on:click={unbanUser}>Unban User</Button>
                     </div>
-                    <br>
+                    <br />
                     <div class="user-action-row">
-                        <Button color="red" on:click={() => ipBanUser(true)}>IP Ban User</Button>
-                        <Button on:click={() => ipBanUser(false)}>Un-IP Ban User</Button>
+                        <Button color="red" on:click={() => ipBanUser(true)}
+                            >IP Ban User</Button
+                        >
+                        <Button on:click={() => ipBanUser(false)}
+                            >Un-IP Ban User</Button
+                        >
                     </div>
-                    <br>
+                    <br />
                     <div class="user-action-row">
-                        <Button color="red" on:click={deleteAccount}>Delete User Account</Button>
+                        <Button color="red" on:click={deleteAccount}
+                            >Delete User Account</Button
+                        >
                     </div>
-                    <br>
+                    <br />
                     <div class="user-action-row">
-                        <Button color="orange" on:click={()=>putOnWatchlist(true)}>Put on watchlist</Button>
-                        <Button color="blue" on:click={()=>putOnWatchlist(false)}>Take off watchlist</Button>
+                        <Button
+                            color="orange"
+                            on:click={() => putOnWatchlist(true)}
+                            >Put on watchlist</Button
+                        >
+                        <Button
+                            color="blue"
+                            on:click={() => putOnWatchlist(false)}
+                            >Take off watchlist</Button
+                        >
                     </div>
                 </div>
                 <!-- <br>
@@ -1700,32 +1859,39 @@
                 <br> -->
                 <label>
                     New Profile Picture:
-                    <input
-                        type="file"
-                        on:change={setNewPfpInput}
-                    />
+                    <input type="file" on:change={setNewPfpInput} />
                 </label>
                 <br />
                 <br />
                 <!--<Button color="purple" on:click={renameUser}>Rename User</Button>-->
-                <Button color="purple" on:click={changePfpUser}>Change User's Profile Picture</Button>
-                <br>
-                <br>
+                <Button color="purple" on:click={changePfpUser}
+                    >Change User's Profile Picture</Button
+                >
+                <br />
+                <br />
                 <label>
-                    <input type="checkbox" bind:checked={userSelectionData.admin} />
+                    <input
+                        type="checkbox"
+                        bind:checked={userSelectionData.admin}
+                    />
                     Grant User Admin Perms
                 </label>
-                <br>
+                <br />
                 <label>
-                    <input type="checkbox" bind:checked={userSelectionData.approver} />
+                    <input
+                        type="checkbox"
+                        bind:checked={userSelectionData.approver}
+                    />
                     Grant User Moderator Perms
                 </label>
                 <div class="user-action-row">
-                    <Button color="remix" on:click={setUsersPerms}>Assign User Perms</Button>
+                    <Button color="remix" on:click={setUsersPerms}
+                        >Assign User Perms</Button
+                    >
                 </div>
             </div>
 
-            <br>
+            <br />
 
             <div class="card">
                 <h2 style="margin-block-start:0">IPs</h2>
@@ -1735,18 +1901,23 @@
                     size="50"
                     placeholder="IP Address or Username"
                     bind:value={ipBanData.input}
-                >
+                />
 
                 <textarea
-                    value={ipBanData.connectedIPs.join('\n')}
+                    value={ipBanData.connectedIPs.join("\n")}
                     style="width:80%;height:150px;font-family:monospace"
                     readonly
                 />
 
                 <div class="user-action-row">
-                    <Button on:click={getConnectedIPs}>Get Connected IPs</Button>
-                    <Button on:click={getConnectedUsers}>Get Connected Users</Button>
-                    <Button color="red" on:click={() => banIP(true)}>Ban IP</Button>
+                    <Button on:click={getConnectedIPs}>Get Connected IPs</Button
+                    >
+                    <Button on:click={getConnectedUsers}
+                        >Get Connected Users</Button
+                    >
+                    <Button color="red" on:click={() => banIP(true)}
+                        >Ban IP</Button
+                    >
                     <Button on:click={() => banIP(false)}>Unban IP</Button>
                     <Button on:click={getAlts}>Get alt accounts</Button>
                 </div>
@@ -1755,12 +1926,16 @@
             <div class="card">
                 <h2 style="margin-block-start:0">Badges</h2>
 
-                <button on:click={() => {
-                    userBadgeInfo.isEditingMulti = false;
-                }}>Specific User</button>
-                <button on:click={() => {
-                    userBadgeInfo.isEditingMulti = true;
-                }}>Multiple Users</button>
+                <button
+                    on:click={() => {
+                        userBadgeInfo.isEditingMulti = false;
+                    }}>Specific User</button
+                >
+                <button
+                    on:click={() => {
+                        userBadgeInfo.isEditingMulti = true;
+                    }}>Multiple Users</button
+                >
 
                 {#if !userBadgeInfo.isEditingMulti}
                     <p>Type username:</p>
@@ -1781,8 +1956,8 @@
                     {#if userBadgeInfo.areBadgesLoaded}
                         <p>Click a badge to toggle if it is given to a user</p>
                         <p>
-                            Dark gray badges are not added to the user or will be
-                            removed from the user
+                            Dark gray badges are not added to the user or will
+                            be removed from the user
                         </p>
                         <br />
                         <div class="user-badges-list">
@@ -1790,10 +1965,15 @@
                                 <button
                                     class="user-badge-button"
                                     on:click={() => {
-                                        userBadgeInfo.currentUserBadges[badgeName] =
-                                            !userBadgeInfo.currentUserBadges[badgeName];
+                                        userBadgeInfo.currentUserBadges[
+                                            badgeName
+                                        ] =
+                                            !userBadgeInfo.currentUserBadges[
+                                                badgeName
+                                            ];
                                     }}
-                                    data-active={userBadgeInfo.currentUserBadges[badgeName]}
+                                    data-active={userBadgeInfo
+                                        .currentUserBadges[badgeName]}
                                 >
                                     <img
                                         src={`/badges/${ProfileBadges[badgeName]}.png`}
@@ -1813,14 +1993,17 @@
                         placeholder="Paste PenguinMod usernames, seperated by new lines. Excess spaces will be trimmed."
                         bind:value={userBadgeInfo.targetUsernamesBox}
                     />
-                    
+
                     <br />
                     <label>
-                        <input type="checkbox" bind:checked={userBadgeInfo.isRemovingBadges} />
+                        <input
+                            type="checkbox"
+                            bind:checked={userBadgeInfo.isRemovingBadges}
+                        />
                         Remove Badges from Users
                     </label>
                     <br />
-                    
+
                     {#if userBadgeInfo.isRemovingBadges}
                         <p>Selected badges will be removed from each user.</p>
                     {:else}
@@ -1832,10 +2015,16 @@
                             <button
                                 class="user-badge-button"
                                 on:click={() => {
-                                    userBadgeInfo.targetFilterBadges[badgeName] =
-                                        !userBadgeInfo.targetFilterBadges[badgeName];
+                                    userBadgeInfo.targetFilterBadges[
+                                        badgeName
+                                    ] =
+                                        !userBadgeInfo.targetFilterBadges[
+                                            badgeName
+                                        ];
                                 }}
-                                data-active={userBadgeInfo.targetFilterBadges[badgeName]}
+                                data-active={userBadgeInfo.targetFilterBadges[
+                                    badgeName
+                                ]}
                             >
                                 <img
                                     src={`/badges/${ProfileBadges[badgeName]}.png`}
@@ -1855,8 +2044,8 @@
                     </Button>
                 </div>
             </div>
-            
-            <br/>
+
+            <br />
             <div class="card">
                 <h2>Profanity Filter JSON</h2>
                 <textarea bind:value={filterJSONStuff.text}></textarea>
@@ -1865,21 +2054,23 @@
                     <Button color="remix" on:click={filterJSONStuff.get}>
                         Load Current Filter JSON
                     </Button>
-                    <Button on:click={() => {
-                        let json = {};
-                        try {
-                            json = JSON.parse(filterJSONStuff.text);
-                        } catch(e) {
-                            alert("failed with error: " + e);
-                            return;
-                        }
-                        filterJSONStuff.set(json);
-                    }}>
+                    <Button
+                        on:click={() => {
+                            let json = {};
+                            try {
+                                json = JSON.parse(filterJSONStuff.text);
+                            } catch (e) {
+                                alert("failed with error: " + e);
+                                return;
+                            }
+                            filterJSONStuff.set(json);
+                        }}
+                    >
                         Update Filter
                     </Button>
                 </div>
             </div>
-            <br/>
+            <br />
 
             <p>Global Server Toggles: (applies to all users)</p>
             <Button on:click={() => setGetProjects(false)} color="red">
@@ -1943,20 +2134,16 @@
                                 Click on a project to expand details
                             </p>
                         {/if}
+                    {:else if dropdownSelectMenu.value === "user"}
+                        <p class="selection-info">No user reports currently!</p>
+                    {:else if dropdownSelectMenu.value === "removed"}
+                        <p class="selection-info">
+                            No removed projects currently!
+                        </p>
                     {:else}
-                        {#if dropdownSelectMenu.value === "user"}
-                            <p class="selection-info">
-                                No user reports currently!
-                            </p>
-                        {:else if dropdownSelectMenu.value === 'removed'}
-                            <p class="selection-info">
-                                No removed projects currently!
-                            </p>
-                        {:else}
-                            <p class="selection-info">
-                                No project reports currently!
-                            </p>
-                        {/if}
+                        <p class="selection-info">
+                            No project reports currently!
+                        </p>
                     {/if}
                     {#each unapprovedProjects as project}
                         <div>
@@ -1982,7 +2169,7 @@
                                 }}
                             >
                                 <img
-                                    src={`https://fake.penguinmod.com//api/v1/users/getpfp?username=${content.target}`}
+                                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${content.target}`}
                                     alt={content.target}
                                 />
                                 <div class="reports-user-content">
@@ -1997,20 +2184,26 @@
                                     {#if !reportDetails[content.target]}
                                         <LoadingSpinner />
                                     {:else}
-                                        <h5>By: <a href={`https://penguinmod.com/profile?user=${content.reporter}`}>{content.reporter}</a></h5>
+                                        <h5>
+                                            By: <a
+                                                href={`https://penguinmod.com/profile?user=${content.reporter}`}
+                                                >{content.reporter}</a
+                                            >
+                                        </h5>
                                         <p>
                                             {content.report}
                                         </p>
                                         <Button
                                             on:click={() =>
-                                                closeUserReport(
-                                                    content.id
-                                                )}
+                                                closeUserReport(content.id)}
                                             color="red"
                                         >
                                             Close Report
                                         </Button>
-                                        <a href={`https://penguinmod.com/profile?user=${content.target}`} target=”_blank”>go to profile</a>
+                                        <a
+                                            href={`https://penguinmod.com/profile?user=${content.target}`}
+                                            target="”_blank”">go to profile</a
+                                        >
                                         <h3>View reports by</h3>
                                         {#each reportDetails[content.target] as report}
                                             <details>
@@ -2020,7 +2213,7 @@
                                                 <Button
                                                     on:click={() =>
                                                         closeUserReport(
-                                                            report.id
+                                                            report.id,
                                                         )}
                                                     color="red"
                                                 >
@@ -2047,7 +2240,7 @@
                                 }}
                             >
                                 <img
-                                    src={`https://fake.penguinmod.com//api/v1/projects/getproject?projectID=${content.targetID}&requestType=thumbnail`}
+                                    src={`${PUBLIC_API_URL}/api/v1/projects/getproject?projectID=${content.targetID}&requestType=thumbnail`}
                                     alt={content.target}
                                 />
                                 <div
@@ -2063,7 +2256,12 @@
                             </button>
                             {#if selectedReportDetailed === idx}
                                 <div class="reports-generic-details">
-                                    <h5>By: <a href={`https://penguinmod.com/profile?user=${content.reporter}`}>{content.reporter}</a></h5>
+                                    <h5>
+                                        By: <a
+                                            href={`https://penguinmod.com/profile?user=${content.reporter}`}
+                                            >{content.reporter}</a
+                                        >
+                                    </h5>
                                     <p>
                                         {content.report}
                                     </p>
@@ -2080,7 +2278,7 @@
                                             on:click={() =>
                                                 selectProject(
                                                     content.targetID,
-                                                    content.target
+                                                    content.target,
                                                 )}
                                         >
                                             Select Project
@@ -2098,7 +2296,7 @@
                                                 <Button
                                                     on:click={() =>
                                                         closeUserReport(
-                                                            report.id
+                                                            report.id,
                                                         )}
                                                     color="red"
                                                 >
@@ -2112,9 +2310,7 @@
                                         {#if reportDetails[content.targetID].length == 0}
                                             <Button
                                                 on:click={() =>
-                                                    closeUserReport(
-                                                        content.id
-                                                    )}
+                                                    closeUserReport(content.id)}
                                                 color="red"
                                             >
                                                 Force Close Report
@@ -2349,6 +2545,4 @@
         cursor: pointer;
         margin-top: 16px;
     }
-
-    
 </style>

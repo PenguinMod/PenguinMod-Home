@@ -23,7 +23,7 @@
             day: "numeric",
             hour: "numeric",
             minute: "numeric",
-            hour12: true
+            hour12: true,
         })}`;
     }
 
@@ -44,13 +44,13 @@
     </div>
     <div class="project-author">
         <img
-            src={`https://fake.penguinmod.com//api/v1/users/getpfp?username=${author}`}
+            src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${author}`}
             alt="Project Author"
             class="project-author"
         />
     </div>
     <div class="project-meta">
-        <div class="text" title={title}>
+        <div class="text" {title}>
             {title}
         </div>
         {#if showdate}
