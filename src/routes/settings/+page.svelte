@@ -331,6 +331,7 @@
                 accountInformation.emailSet = true;
                 accountInformation.emailFull = newEmail;
                 accountInformation.emailPeek = `${newEmail.substring(0, 3)}...${newEmail.substring(newEmail.indexOf("@"))}`;
+                emailIsVerified = false;
             })
             .catch((err) => {
                 editingEmailProcessing = false;
