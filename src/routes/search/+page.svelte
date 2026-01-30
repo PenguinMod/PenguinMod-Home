@@ -55,7 +55,7 @@
         searchQuery = query ? query : "";
         const rev = params.get("reverse");
 		const base_page = params.get("page");
-		page = base_page ? base_page : 0;
+		page = base_page ? Number(base_page) : 0;
         reverse = rev ? rev : false;
 
         fetchNewProjects();
