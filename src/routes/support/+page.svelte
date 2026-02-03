@@ -126,6 +126,26 @@
                         </p>
                         <a
                             target="_blank"
+                            href="https://www.patreon.com/cw/PenguinMod"
+                            style="text-decoration: none !important;"
+                        >
+                            <button
+                                class="donation-container"
+                                title="Patreon - Empowering Creators and Building Communities"
+                            >
+                                <img src="/patreon.png" alt="Patreon" />
+                                <span>
+                                    <LocalizedText
+                                        text="Patreon"
+                                        key="payment.patreon"
+                                        lang={currentLang}
+                                    />
+                                </span>
+                            </button>
+                        </a>
+                        <br />
+                        <a
+                            target="_blank"
                             href="https://www.cash.app/$JeremyGamer13"
                             style="text-decoration: none !important;"
                         >
@@ -138,48 +158,6 @@
                                     <LocalizedText
                                         text="Cash App"
                                         key="payment.cashapp"
-                                        lang={currentLang}
-                                    />
-                                </span>
-                            </button>
-                        </a>
-                        <br />
-                        <a
-                            target="_blank"
-                            href="/error?error=410"
-                            class="donation-unavailable"
-                            style="text-decoration: none !important;"
-                        >
-                            <button
-                                class="donation-container"
-                                title="Stripe - Financial infrastructure for the internet"
-                            >
-                                <img src="/stripe.png" alt="Stripe" />
-                                <span>
-                                    <LocalizedText
-                                        text="(unavailable)"
-                                        key="project.status.unavailable"
-                                        lang={currentLang}
-                                    />
-                                </span>
-                            </button>
-                        </a>
-                        <br />
-                        <a
-                            target="_blank"
-                            href="/error?error=410"
-                            class="donation-unavailable"
-                            style="text-decoration: none !important;"
-                        >
-                            <button
-                                class="donation-container"
-                                title="PayPal - The safer, easier way to pay online!"
-                            >
-                                <img src="/paypal.png" alt="PayPal" />
-                                <span>
-                                    <LocalizedText
-                                        text="(unavailable)"
-                                        key="project.status.unavailable"
                                         lang={currentLang}
                                     />
                                 </span>
@@ -245,7 +223,7 @@
                         'en'
                     ))
                     // we serve __ projects
-                    .replace('$1', (25000).toLocaleString())}
+                    .replace('$1', (58000).toLocaleString())}
                 </div>
                 <div class="detail-card" bind:this={forceHtmlClass2} style="background: darkviolet">
                     {@html String(TranslationHandler.text(
@@ -256,7 +234,7 @@
                         'en'
                     ))
                     // we send __ gb of stuff
-                    .replace('$1', (2800).toLocaleString())}
+                    .replace('$1', (3000).toLocaleString())}
                 </div>
                 <div class="detail-card" bind:this={forceHtmlClass3} style="background: #ffb300">
                     {@html String(TranslationHandler.text(
