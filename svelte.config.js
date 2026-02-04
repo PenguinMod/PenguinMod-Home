@@ -16,6 +16,7 @@ export default {
                 // https://svelte.dev/docs/kit/configuration#prerender
                 switch (path) {
                     case "/error":
+                    case "/api/v1/projects/getproject":
                     case "/contact.html":
                         return;
                 }
