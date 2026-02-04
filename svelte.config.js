@@ -10,7 +10,20 @@ export default {
             fallback: undefined,
             precompress: false,
             strict: true
-        })
+        }),
+        prerender: {
+            handleHttpError: ({ path, referrer, message }) => {
+                // https://svelte.dev/docs/kit/configuration#prerender
+                switch (path) {
+                    case "/error":
+                    case "/contact.html":
+                        return;
+                }
+
+                // otherwise fail the build
+                throw new Error(message);
+            }
+        }
     },
     //preprocess: [vitePreprocess()]
 };
