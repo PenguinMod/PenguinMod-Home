@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { page } from "$app/stores";
+    import { browser } from '$app/environment';
 
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
@@ -33,6 +34,7 @@
     import PenguinConfusedSVG from "../resources/icons/Penguin/confused.svelte";
 
     const isAprilFools = () => {
+        if (!browser) return false;
         const date = new Date(Date.now());
         const urlParams = $page.url.searchParams;
         const isAprilFools = date.getMonth() === 3 && date.getDate() === 1; // month is 0 indexed for literally no reason

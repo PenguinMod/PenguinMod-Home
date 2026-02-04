@@ -1,5 +1,6 @@
 <script>
     import { onMount } from "svelte";
+    import { browser } from '$app/environment';
 
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
@@ -40,6 +41,8 @@
     ];
 
     function changePasswordRedirect() {
+        if (!browser) return;
+
         // get url params
         const urlParams = $page.url.searchParams;
         const method = urlParams.get("method");

@@ -1,6 +1,7 @@
 <script>
     import { page } from "$app/stores";
     import { onMount } from "svelte";
+    import { browser } from '$app/environment';
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
     import Authentication from "../../resources/authentication.js";
@@ -49,7 +50,7 @@
         currentTab = to;
     };
 
-    switch ($page.url.searchParams.get("page")) {
+    switch (browser ? $page.url.searchParams.get("page") : "login") {
         case "login":
             currentTab = "login";
             break;

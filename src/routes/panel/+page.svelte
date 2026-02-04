@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { page } from "$app/stores";
+    import { browser } from '$app/environment';
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
     import Authentication from "../../resources/authentication.js";
     import LINK from "../../resources/urls.js";
@@ -31,7 +32,7 @@
     let loggedIn = null;
     let projectIdSelection;
     let serverStats = [];
-    const selectForReject = $page.url.searchParams.get("reject");
+    const selectForReject = browser ? $page.url.searchParams.get("reject") : null;
 
     function kickOut(loggedOut) {
         const error = loggedOut ? 401 : 403;
