@@ -35,6 +35,7 @@
 
     const isAprilFools = () => {
         if (!browser) return false;
+        
         const date = new Date(Date.now());
         const urlParams = $page.url.searchParams;
         const isAprilFools = date.getMonth() === 3 && date.getDate() === 1; // month is 0 indexed for literally no reason
