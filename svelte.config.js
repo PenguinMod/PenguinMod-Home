@@ -7,7 +7,7 @@ export default {
             // these options are set automatically — see below
             pages: 'public',
             assets: 'public',
-            fallback: undefined,
+            fallback: '404.html',
             precompress: false,
             strict: true
         }),
