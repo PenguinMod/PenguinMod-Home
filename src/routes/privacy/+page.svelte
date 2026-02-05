@@ -44,7 +44,7 @@ Language.onChange((lang) => {
 
     <main>
         <!-- UPDATE THIS WHEN MAKING CONTENT CHANGES -->
-        <p><i>Updated May 24th, 2025 (Mountain Time)</i></p>
+        <p><i>Updated February 4th, 2025 (Mountain Time)</i></p>
 
         <!-- some things are intentionally not formatted as they are in the HTML file on the website -->
         <p>
@@ -244,6 +244,25 @@ Language.onChange((lang) => {
             or other third parties if we believe it is necessary to comply with legal obligations or ensure the safety of our users, developers and staff.
             Requests for PenguinMod user information are expected to be sent to us using one of our contact methods.
         </p>
+
+        <h2>YouTube Embedded Content</h2>
+        <p>
+            We embed videos on our site using YouTube's "Privacy-Enhanced Mode."
+            This means that YouTube will not store information about visitors on our website unless they choose to play the video.
+        </p>
+        <p>
+            If you are logged into a Google account, Google may be able to link watched videos to your profile once you play the video.
+        </p>
+        <p>
+            YouTube may access or modify the following information:
+        </p>
+        <ul>
+            <li>your Google account information</li>
+            <li>your full IP address (and possibly general location using your IP address)</li>
+            <li>your general location (using your IP address)</li>
+            <li>any technical information about your device</li>
+        </ul>
+        <p><a href="https://policies.google.com/privacy">Google's Privacy Policy</a></p>
         
         <h2>Other services</h2>
         <p>When using cloud variables, the project ID and your username may be logged for up to 14 days.</p>

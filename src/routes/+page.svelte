@@ -372,20 +372,35 @@
                 </Button>
             </div>
 
-            {#if !thingyActive}
+            <!-- only render video if we are definetly not logged in -->
+            {#if loggedIn === false}
+                {#if !thingyActive}
+                    <iframe
+                        width="560"
+                        height="315"
+                        src="https://www.youtube-nocookie.com/embed/g8zwb4W3G8Q"
+                        title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen
+                        class="example-video"
+                    />
+                {:else}
+                    <iframe
+                        src="/eao.html"
+                        title="The Thingy"
+                        width="426.666667"
+                        height="240"
+                        frameborder="0"
+                        class="example-video"
+                    />
+                {/if}
+            {:else}
                 <img
                     src="/penguins/frontpage.svg"
                     alt="PenguinMod"
                     style="margin-right: 8rem;"
-                />
-            {:else}
-                <iframe
-                    src="/eao.html"
-                    title="The Thingy"
-                    width="426.666667"
-                    height="240"
-                    frameborder="0"
-                    class="example-video"
                 />
             {/if}
         </div>
