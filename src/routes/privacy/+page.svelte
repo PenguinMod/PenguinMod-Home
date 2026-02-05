@@ -44,7 +44,7 @@ Language.onChange((lang) => {
 
     <main>
         <!-- UPDATE THIS WHEN MAKING CONTENT CHANGES -->
-        <p><i>Updated February 4th, 2025 (Mountain Time)</i></p>
+        <p><i>Updated February 4th, 2026 (Mountain Time)</i></p>
 
         <!-- some things are intentionally not formatted as they are in the HTML file on the website -->
         <p>
