@@ -245,7 +245,7 @@
                         'en'
                     ))
                     // we serve __ projects
-                    .replace('$1', (25000).toLocaleString())}
+                    .replace('$1', (50000).toLocaleString())}
                 </div>
                 <div class="detail-card" bind:this={forceHtmlClass2} style="background: darkviolet">
                     {@html String(TranslationHandler.text(
@@ -256,7 +256,7 @@
                         'en'
                     ))
                     // we send __ gb of stuff
-                    .replace('$1', (2800).toLocaleString())}
+                    .replace('$1', (150).toLocaleString())}
                 </div>
                 <div class="detail-card" bind:this={forceHtmlClass3} style="background: #ffb300">
                     {@html String(TranslationHandler.text(
@@ -267,7 +267,7 @@
                         'en'
                     ))
                     // we handle ___ reqs
-                    .replace('$1', (100000000).toLocaleString())}
+                    .replace('$1', (5000000).toLocaleString())}
                 </div>
             </div>
         </div>
@@ -358,7 +358,7 @@
         margin-left: 5%;
     }
     .section-details {
-        width: 35%;
+        width: 30%;
     }
     
     .donation-unavailable {
