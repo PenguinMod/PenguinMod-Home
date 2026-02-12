@@ -358,7 +358,7 @@
         margin-left: 5%;
     }
     .section-details {
-        width: 30%;
+        width: 35%;
     }
     
     .donation-unavailable {
