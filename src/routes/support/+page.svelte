@@ -136,8 +136,8 @@
                                 <img src="/patreon.png" alt="Patreon" />
                                 <span>
                                     <LocalizedText
-                                        text="Patreon"
-                                        key="payment.patreon"
+                                        text="Patreon / Card"
+                                        key="payment.patreon.card"
                                         lang={currentLang}
                                     />
                                 </span>
@@ -172,9 +172,24 @@
                     </div>
                 </div>
 
-                <!-- other stuff -->
-                <div style="height: 48px;" />
+                <p>
+                    <strong>
+                        <LocalizedText
+                            text="Please make sure to connect with us upon payment. We haven't setup any automatic systems for perks yet."
+                            key="payment.contact"
+                            lang={currentLang}
+                        />
+                    </strong>
+                    <a target="_blank" href={LINK.contact}>
+                        <LocalizedText
+                            text="Contact Us"
+                            key="home.footer.sections.info.contact"
+                            lang={currentLang}
+                        />
+                    </a>
+                </p>
 
+                <!-- other stuff -->
                 <p class="small">
                     <LocalizedText
                         text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
