@@ -1108,6 +1108,16 @@
                 key="home.footer.notaffiliated"
                 lang={currentLang}
             />
+            <br />
+            <LocalizedText
+                text="Scratch is a project of the Scratch Foundation. It is available for free."
+                key="home.footer.notaffiliated2"
+                lang={currentLang}
+                html={true}
+                replace={{
+                    "{{LINK}}": "<a href='https://scratch.org/'>https://scratch.org/</a>"
+                }}
+            />
         </p>
         <div class="footer-list">
             <div class="footer-section">
