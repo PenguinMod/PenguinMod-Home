@@ -42,14 +42,14 @@
 </script>
 
 <svelte:head>
-    <title>PenguinMod - Donate</title>
-    <meta name="title"                   content="PenguinMod - Donate" />
-    <meta property="og:title"            content="PenguinMod - Donate" />
-    <meta property="twitter:title"       content="PenguinMod - Donate">
+    <title>PenguinMod - Support Us</title>
+    <meta name="title"                   content="PenguinMod - Support Us" />
+    <meta property="og:title"            content="PenguinMod - Support Us" />
+    <meta property="twitter:title"       content="PenguinMod - Support Us">
     <meta name="description"             content="Help support PenguinMod and it's development!">
     <meta property="twitter:description" content="Help support PenguinMod and it's development!">
-    <meta property="og:url"              content="https://penguinmod.com/donate">
-    <meta property="twitter:url"         content="https://penguinmod.com/donate">
+    <meta property="og:url"              content="https://penguinmod.com/support">
+    <meta property="twitter:url"         content="https://penguinmod.com/support">
 </svelte:head>
 
 <NavigationBar />
@@ -61,7 +61,7 @@
         <div>
             <h1 style="margin-block: 0;">
                 <LocalizedText
-                    text="Donate"
+                    text="Support Us"
                     key="donate.title"
                     lang={currentLang}
                 />
@@ -126,6 +126,26 @@
                         </p>
                         <a
                             target="_blank"
+                            href="https://www.patreon.com/cw/PenguinMod"
+                            style="text-decoration: none !important;"
+                        >
+                            <button
+                                class="donation-container"
+                                title="Patreon - Empowering Creators and Building Communities"
+                            >
+                                <img src="/patreon.png" alt="Patreon" />
+                                <span>
+                                    <LocalizedText
+                                        text="Patreon / Card"
+                                        key="payment.patreon.card"
+                                        lang={currentLang}
+                                    />
+                                </span>
+                            </button>
+                        </a>
+                        <br />
+                        <a
+                            target="_blank"
                             href="https://www.cash.app/$JeremyGamer13"
                             style="text-decoration: none !important;"
                         >
@@ -143,48 +163,6 @@
                                 </span>
                             </button>
                         </a>
-                        <br />
-                        <a
-                            target="_blank"
-                            href="/error?error=410"
-                            class="donation-unavailable"
-                            style="text-decoration: none !important;"
-                        >
-                            <button
-                                class="donation-container"
-                                title="Stripe - Financial infrastructure for the internet"
-                            >
-                                <img src="/stripe.png" alt="Stripe" />
-                                <span>
-                                    <LocalizedText
-                                        text="(unavailable)"
-                                        key="project.status.unavailable"
-                                        lang={currentLang}
-                                    />
-                                </span>
-                            </button>
-                        </a>
-                        <br />
-                        <a
-                            target="_blank"
-                            href="/error?error=410"
-                            class="donation-unavailable"
-                            style="text-decoration: none !important;"
-                        >
-                            <button
-                                class="donation-container"
-                                title="PayPal - The safer, easier way to pay online!"
-                            >
-                                <img src="/paypal.png" alt="PayPal" />
-                                <span>
-                                    <LocalizedText
-                                        text="(unavailable)"
-                                        key="project.status.unavailable"
-                                        lang={currentLang}
-                                    />
-                                </span>
-                            </button>
-                        </a>
                     </div>
                     <div class="donation-images">
                         <img
@@ -194,9 +172,24 @@
                     </div>
                 </div>
 
-                <!-- other stuff -->
-                <div style="height: 48px;" />
+                <p>
+                    <strong>
+                        <LocalizedText
+                            text="Please make sure to connect with us upon payment. We haven't setup any automatic systems for perks yet."
+                            key="payment.contact"
+                            lang={currentLang}
+                        />
+                    </strong>
+                    <a target="_blank" href={LINK.contact}>
+                        <LocalizedText
+                            text="Contact Us"
+                            key="home.footer.sections.info.contact"
+                            lang={currentLang}
+                        />
+                    </a>
+                </p>
 
+                <!-- other stuff -->
                 <p class="small">
                     <LocalizedText
                         text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."

@@ -324,7 +324,7 @@
     <NavigationMargin />
 
     <Alert
-        onlyShowID={"donatee:_2"}
+        onlyShowID={"donatee:_3"}
         text={"PenguinMod is a free-to-use visual coding website. Your support can help us keep the website working!"}
         textBreakup={true}
         textColor={"white"}
@@ -332,8 +332,8 @@
         imgSrc={"/happy.svg"}
         imgAlt={":D"}
         hasButton={true}
-        buttonText={"Donate"}
-        buttonHref={"/donate"}
+        buttonText={"Support"}
+        buttonHref={"/support"}
     />
     <StatusAlert />
 
@@ -438,9 +438,9 @@
                     lang={currentLang}
                 />
             </Button>
-            <Button link={"/donate"}>
+            <Button link={"/support"}>
                 <LocalizedText
-                    text="Donate"
+                    text="Funding"
                     key="home.footer.sections.donate"
                     lang={currentLang}
                 />
@@ -1228,12 +1228,12 @@
             <div class="footer-section">
                 <p>
                     <LocalizedText
-                        text="Donate"
+                        text="Funding"
                         key="home.footer.sections.donate"
                         lang={currentLang}
                     />
                 </p>
-                <a href={"/donate"}>PenguinMod</a>
+                <a href={"/support"}>PenguinMod</a>
                 <a target="_blank" href={LINK.donate.turbowarp}>TurboWarp</a>
                 <a target="_blank" href={LINK.donate.scratch}>Scratch</a>
             </div>
