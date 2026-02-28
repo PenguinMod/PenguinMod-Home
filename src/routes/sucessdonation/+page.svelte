@@ -32,8 +32,8 @@
     property="twitter:description"
     content="Help support PenguinMod and it's development!"
   />
-  <meta property="og:url" content="https://penguinmod.com/donate" />
-  <meta property="twitter:url" content="https://penguinmod.com/donate" />
+  <meta property="og:url" content="https://penguinmod.com/support" />
+  <meta property="twitter:url" content="https://penguinmod.com/support" />
 </svelte:head>
 
 <NavigationBar />
@@ -99,7 +99,7 @@
       </b>
     </p>
     <div style="height: 8px;" />
-    <Button link="/donate">
+    <Button link="/support">
       <LocalizedText
           text="Back"
           key="generic.back"

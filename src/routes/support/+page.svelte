@@ -42,14 +42,14 @@
 </script>
 
 <svelte:head>
-    <title>PenguinMod - Donate</title>
-    <meta name="title"                   content="PenguinMod - Donate" />
-    <meta property="og:title"            content="PenguinMod - Donate" />
-    <meta property="twitter:title"       content="PenguinMod - Donate">
+    <title>PenguinMod - Support Us</title>
+    <meta name="title"                   content="PenguinMod - Support Us" />
+    <meta property="og:title"            content="PenguinMod - Support Us" />
+    <meta property="twitter:title"       content="PenguinMod - Support Us">
     <meta name="description"             content="Help support PenguinMod and it's development!">
     <meta property="twitter:description" content="Help support PenguinMod and it's development!">
-    <meta property="og:url"              content="https://penguinmod.com/donate">
-    <meta property="twitter:url"         content="https://penguinmod.com/donate">
+    <meta property="og:url"              content="https://penguinmod.com/support">
+    <meta property="twitter:url"         content="https://penguinmod.com/support">
 </svelte:head>
 
 <NavigationBar />
@@ -61,7 +61,7 @@
         <div>
             <h1 style="margin-block: 0;">
                 <LocalizedText
-                    text="Donate"
+                    text="Support Us"
                     key="donate.title"
                     lang={currentLang}
                 />
