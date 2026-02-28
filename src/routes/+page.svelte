@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { page } from "$app/stores";
+    import { browser } from '$app/environment';
 
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
@@ -33,6 +34,8 @@
     import PenguinConfusedSVG from "../resources/icons/Penguin/confused.svelte";
 
     const isAprilFools = () => {
+        if (!browser) return false;
+        
         const date = new Date(Date.now());
         const urlParams = $page.url.searchParams;
         const isAprilFools = date.getMonth() === 3 && date.getDate() === 1; // month is 0 indexed for literally no reason
@@ -369,20 +372,35 @@
                 </Button>
             </div>
 
-            {#if !thingyActive}
+            <!-- only render video if we are definetly not logged in -->
+            {#if loggedIn === false}
+                {#if !thingyActive}
+                    <iframe
+                        width="560"
+                        height="315"
+                        src="https://www.youtube-nocookie.com/embed/g8zwb4W3G8Q"
+                        title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen
+                        class="example-video"
+                    />
+                {:else}
+                    <iframe
+                        src="/eao.html"
+                        title="The Thingy"
+                        width="426.666667"
+                        height="240"
+                        frameborder="0"
+                        class="example-video"
+                    />
+                {/if}
+            {:else}
                 <img
                     src="/penguins/frontpage.svg"
                     alt="PenguinMod"
                     style="margin-right: 8rem;"
-                />
-            {:else}
-                <iframe
-                    src="/eao.html"
-                    title="The Thingy"
-                    width="426.666667"
-                    height="240"
-                    frameborder="0"
-                    class="example-video"
                 />
             {/if}
         </div>
@@ -1089,6 +1107,16 @@
                 text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
                 key="home.footer.notaffiliated"
                 lang={currentLang}
+            />
+            <br />
+            <LocalizedText
+                text="Scratch is a project of the Scratch Foundation. It is available for free."
+                key="home.footer.notaffiliated2"
+                lang={currentLang}
+                html={true}
+                replace={{
+                    "{{LINK}}": "<a href='https://scratch.org/'>https://scratch.org/</a>"
+                }}
             />
         </p>
         <div class="footer-list">

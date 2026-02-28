@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { page } from '$app/stores';
+    import { browser } from '$app/environment';
     
     // Static values
     import LINK from "../../resources/urls.js";
@@ -70,7 +71,7 @@
             }
 
             // redirect
-            const redir = $page.url.searchParams.get('redirect');
+            const redir = browser ? $page.url.searchParams.get('redirect') : null;
         
             window.location.href = redir ? redir : "/";
         }, (err) => {

@@ -181,6 +181,16 @@
                         key="home.footer.notaffiliated"
                         lang={currentLang}
                     />
+                    <br />
+                    <LocalizedText
+                        text="Scratch is a project of the Scratch Foundation. It is available for free."
+                        key="home.footer.notaffiliated2"
+                        lang={currentLang}
+                        html={true}
+                        replace={{
+                            "{{LINK}}": "<a href='https://scratch.org/'>https://scratch.org/</a>"
+                        }}
+                    />
                 </p>
                 <p class="small">
                     <LocalizedText
@@ -223,7 +233,7 @@
                         'en'
                     ))
                     // we serve __ projects
-                    .replace('$1', (58000).toLocaleString())}
+                    .replace('$1', (50000).toLocaleString())}
                 </div>
                 <div class="detail-card" bind:this={forceHtmlClass2} style="background: darkviolet">
                     {@html String(TranslationHandler.text(
@@ -234,7 +244,7 @@
                         'en'
                     ))
                     // we send __ gb of stuff
-                    .replace('$1', (3000).toLocaleString())}
+                    .replace('$1', (3790).toLocaleString())}
                 </div>
                 <div class="detail-card" bind:this={forceHtmlClass3} style="background: #ffb300">
                     {@html String(TranslationHandler.text(
@@ -245,7 +255,7 @@
                         'en'
                     ))
                     // we handle ___ reqs
-                    .replace('$1', (100000000).toLocaleString())}
+                    .replace('$1', (135000000).toLocaleString())}
                 </div>
             </div>
         </div>

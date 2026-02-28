@@ -1,6 +1,7 @@
 <script>
     import { page } from "$app/stores";
     import { onMount } from "svelte";
+    import { browser } from '$app/environment';
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
     import Authentication from "../../resources/authentication.js";
@@ -22,8 +23,8 @@
     let loggedInUsername = null;
     let token = null;
 
-    const displayAccountDeleted = $page.url.searchParams.get("deleted");
-    const deletedUsername = $page.url.searchParams.get("username");
+    const displayAccountDeleted = browser ? $page.url.searchParams.get("deleted") : null;
+    const deletedUsername = browser ? $page.url.searchParams.get("username") : null;
     let accountStanding = 1;
 
     let currentLang = "en";
