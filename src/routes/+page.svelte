@@ -1234,7 +1234,6 @@
                     />
                 </p>
                 <a href={"/support"}>PenguinMod</a>
-                <a target="_blank" href={LINK.donate.turbowarp}>TurboWarp</a>
                 <a target="_blank" href={LINK.donate.scratch}>Scratch</a>
             </div>
         </div>

@@ -226,10 +226,6 @@
                 <a class="small" target="_blank" href={LINK.donate.scratch}>
                     Scratch
                 </a>
-                <br />
-                <a class="small" target="_blank" href={LINK.donate.turbowarp}>
-                    TurboWarp
-                </a>
             </div>
             <div class="section-details">
                 <p style="text-align: center;">
