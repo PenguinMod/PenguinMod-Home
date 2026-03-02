@@ -1847,9 +1847,9 @@
                         >
                     </div>
                 </div>
-                <!-- <br>
-                <br> -->
-                <!-- <input
+                <br>
+                <br>
+                <input
                     type="text"
                     size="50"
                     minlength="3"
@@ -1857,14 +1857,14 @@
                     placeholder="New username..."
                     bind:value={userSelectionData.newUsername}
                 />
-                <br> -->
+                <br>
                 <label>
                     New Profile Picture:
                     <input type="file" on:change={setNewPfpInput} />
                 </label>
                 <br />
                 <br />
-                <!--<Button color="purple" on:click={renameUser}>Rename User</Button>-->
+                <Button color="purple" on:click={renameUser}>Rename User</Button>
                 <Button color="purple" on:click={changePfpUser}
                     >Change User's Profile Picture</Button
                 >
