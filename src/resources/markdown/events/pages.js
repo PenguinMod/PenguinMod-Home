@@ -29,6 +29,12 @@ import PenguinJamNewYears2025Es from "./es/penguinjamnewyears2025.md?raw";
 import PenguinJamNewYears2025Ja from "./ja/penguinjamnewyears2025.md?raw";
 import PenguinJamNewYears2025Ru from "./ru/penguinjamnewyears2025.md?raw";
 import PenguinJamNewYears2025Tr from "./tr/penguinjamnewyears2025.md?raw";
+// PenguinJamSpring2026
+import PenguinJamSpring2026En from "./en/penguinjamspring2026.md?raw";
+import PenguinJamSpring2026Es from "./es/penguinjamspring2026.md?raw";
+import PenguinJamSpring2026Es419 from "./es-419/penguinjamspring2026.md?raw";
+import PenguinJamSpring2026Ru from "./ru/penguinjamspring2026.md?raw";
+import PenguinJamSpring2026Ja from "./ja/penguinjamspring2026.md?raw";
 
 export default {
     "example": {
@@ -67,5 +73,12 @@ export default {
         "ja": PenguinJamNewYears2025Ja,
         "ru": PenguinJamNewYears2025Ru,
         "tr": PenguinJamNewYears2025Tr,
+    },
+    "penguinjamspring2026": {
+        "en": PenguinJamSpring2026En,
+        "es": PenguinJamSpring2026Es,
+        "es-419": PenguinJamSpring2026Es419,
+        "ru": PenguinJamSpring2026Ru,
+        "ja": PenguinJamSpring2026Ja,
     },
 };

@@ -11,13 +11,13 @@ fetch(`https://sheets.googleapis.com/v4/spreadsheets/114K0H8ZbAA5r0APKLbybgHDcEV
         // final arg will be treated as the path to save as
         const search = process.argv.slice(2, -1)
             .join(' ')
-            .split(/[^a-z]+/gi)
+            .split(/[^a-z\(\)]+/gi)
             .map(key => key.toLowerCase());
         const possible = spreadSheet.sheets
             .map(sheet => ({
                 name: sheet.properties.title,
                 id: sheet.properties.sheetId,
-                length: sheet.properties.title.split(/[^a-z]+/gi).filter(key => search.includes(key.toLowerCase())).length,
+                length: sheet.properties.title.split(/[^a-z\(\)]+/gi).filter(key => search.includes(key.toLowerCase())).length,
                 width: 3,
                 height: sheet.properties.gridProperties.rowCount
             }))

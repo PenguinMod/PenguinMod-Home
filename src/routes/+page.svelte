@@ -324,7 +324,7 @@
     <NavigationMargin />
 
     <Alert
-        onlyShowID={"donatee:_2"}
+        onlyShowID={"donatee:_3"}
         text={"PenguinMod is a free-to-use visual coding website. Your support can help us keep the website working!"}
         textBreakup={true}
         textColor={"white"}
@@ -332,8 +332,8 @@
         imgSrc={"/happy.svg"}
         imgAlt={":D"}
         hasButton={true}
-        buttonText={"Donate"}
-        buttonHref={"/donate"}
+        buttonText={"Support"}
+        buttonHref={"/support"}
     />
     <StatusAlert />
 
@@ -438,9 +438,9 @@
                     lang={currentLang}
                 />
             </Button>
-            <Button link={"/donate"}>
+            <Button link={"/support"}>
                 <LocalizedText
-                    text="Donate"
+                    text="Funding"
                     key="home.footer.sections.donate"
                     lang={currentLang}
                 />
@@ -715,29 +715,19 @@
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">
-                            New Years PenguinJam has been ranked!
-                        </h2>
+                        <h2 style="margin-block:4px;">A PenguinJam for the Spring!</h2>
                         <div style="width:100%">
                             <p>
-                                All of the projects in the New Years PenguinJam
-                                have been ranked!
+                                A new PenguinJam is starting up!
                                 <br />
-                                Thanks to everyone who participated!
-                                <br />
-                                If you got a bad score, that's not a bad thing! It
-                                means there's room to improve and you can do better
-                                next time around to try and get a higher score.
+                                See the event page for more details!
                             </p>
                             <p style="margin-block-start:4px;">
-                                <a
-                                    href="https://projects.penguinmod.com/4826108719"
-                                    >New Years PenguinJam Official Rankings</a
-                                >
+                                <a href="https://penguinmod.com/events/penguinjamspring2026">Spring PenguinJam 2026</a>
                             </p>
                             <img
-                                src="/events/news/penguinjamnewyears2025.webp"
-                                alt="New Years PenguinJam 2025"
+                                src="/events/news/penguinjamspring2026.webp"
+                                alt="Spring PenguinJam 2026"
                                 style="width:100%;"
                             />
                         </div>
@@ -1108,6 +1098,16 @@
                 key="home.footer.notaffiliated"
                 lang={currentLang}
             />
+            <br />
+            <LocalizedText
+                text="Scratch is a project of the Scratch Foundation. It is available for free."
+                key="home.footer.notaffiliated2"
+                lang={currentLang}
+                html={true}
+                replace={{
+                    "{{LINK}}": "<a href='https://scratch.org/'>https://scratch.org/</a>"
+                }}
+            />
         </p>
         <div class="footer-list">
             <div class="footer-section">
@@ -1218,13 +1218,12 @@
             <div class="footer-section">
                 <p>
                     <LocalizedText
-                        text="Donate"
+                        text="Funding"
                         key="home.footer.sections.donate"
                         lang={currentLang}
                     />
                 </p>
-                <a href={"/donate"}>PenguinMod</a>
-                <a target="_blank" href={LINK.donate.turbowarp}>TurboWarp</a>
+                <a href={"/support"}>PenguinMod</a>
                 <a target="_blank" href={LINK.donate.scratch}>Scratch</a>
             </div>
         </div>

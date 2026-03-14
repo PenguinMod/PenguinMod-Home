@@ -12,10 +12,12 @@ const sameInAll = [
     "---notes2", // translation note
     "---notes3", // translation note
     "---notes4", // translation note
-    "payment.paypal.card", // brand name
     "payment.paypal", // brand name
+    "payment.paypal.card", // brand name
     "payment.cashapp", // brand name
     "payment.stripe", // brand name
+    "payment.patreon", // brand name
+    "payment.patreon.card", // brand name
     "vr.title", // nearly every language is the same, since VR as an acronym seems to be more like a brand name
     "account.settings.parental.pin", // pin is an acronym, seems like most langs dont change that
     "profile.badge.owner", // a brand name and an acronym

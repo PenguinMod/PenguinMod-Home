@@ -27,6 +27,7 @@ import sk from '../translations/sk.json';
 import uk from '../translations/uk.json';
 import ja from '../translations/ja.json';
 import fa from '../translations/fa.json';
+import nl from '../translations/nl.json';
 
 // joke languages
 import test from '../translations/test.json';
@@ -60,6 +61,7 @@ const languages = {
     "uk": uk,                      // Ukranian
     "he": he,                      // Hebrew
     "fa": fa,                      // Persian
+    "nl": nl,                      // Dutch (Nederlands)
     
     // only visible if in the jokeLanguages array
     "test": test,                  // Test
