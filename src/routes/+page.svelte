@@ -715,29 +715,19 @@
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">
-                            New Years PenguinJam has been ranked!
-                        </h2>
+                        <h2 style="margin-block:4px;">A PenguinJam for the Spring!</h2>
                         <div style="width:100%">
                             <p>
-                                All of the projects in the New Years PenguinJam
-                                have been ranked!
+                                A new PenguinJam is starting up!
                                 <br />
-                                Thanks to everyone who participated!
-                                <br />
-                                If you got a bad score, that's not a bad thing! It
-                                means there's room to improve and you can do better
-                                next time around to try and get a higher score.
+                                See the event page for more details!
                             </p>
                             <p style="margin-block-start:4px;">
-                                <a
-                                    href="https://projects.penguinmod.com/4826108719"
-                                    >New Years PenguinJam Official Rankings</a
-                                >
+                                <a href="https://penguinmod.com/events/penguinjamspring2026">Spring PenguinJam 2026</a>
                             </p>
                             <img
-                                src="/events/news/penguinjamnewyears2025.webp"
-                                alt="New Years PenguinJam 2025"
+                                src="/events/news/penguinjamspring2026.webp"
+                                alt="Spring PenguinJam 2026"
                                 style="width:100%;"
                             />
                         </div>
