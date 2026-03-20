@@ -718,7 +718,7 @@
                         <h2 style="margin-block:4px;">A PenguinJam for the Spring!</h2>
                         <div style="width:100%">
                             <p>
-                                A new PenguinJam is starting up!
+                                The 2026 Spring PenguinJam has begun! The theme is “Storytelling.”
                                 <br />
                                 See the event page for more details!
                             </p>

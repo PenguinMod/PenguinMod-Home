@@ -5,12 +5,10 @@
 
 ---
 
-Get ready, the annual Spring PenguinJam is here! You’ll have **10 days** to **create a game around a theme.** This is your chance to make an awesome game and show off your creativity!
-
-The theme will be revealed on the day the jam starts, so don’t miss it!
+The wait is over! You have **10 days** to create a game based on the theme “Storytelling.” You have lots of freedom! You can make **any** game and **tell any story** you like! Will you write an intense epic? How about a spicy drama? Maybe a space odyssey? **Let your creative side show!**
 
 ## Submissions:
-The tag will be revealed when the jam starts. Stay tuned!
+Upload your finished game with the tag **#springjam26 in your project description** before the end date to submit!
 **(NOTE: Be aware of timezones! The time we provided may not be accurate for you. Ask a parent/guardian if you aren’t sure!)**
 
 ## Rewards:
