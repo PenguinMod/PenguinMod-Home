@@ -5,12 +5,10 @@
 
 ---
 
-¡Preparense, porque el PenguinJam de primavera está aquí! Tendran **10 dias** para crear un juego basado en un tema.** ¡Esta es tu chance para hacer un juego SUPER y mostrar tu creatividad!
-
-El tema será revelado en el dia del evento, ¡Asi que mejor no te lo pierdas!
+¡La espera terminó! Tienes **10 dias** para crear un juego basado en el tema “Narracion de historias”. ¡Tienes muchisisísima libertad! Puedes crear **cualquier** juego y contar **cualquier** historia! ¿Escribirás una epopeya intensa? ¿O que tal un drama picante? ¿O que tal una novela espacial, eh? **¡Deja fluir tu creatividad!**
 
 ## Envios:
-El hashtag sera revelado el dia de el PenguinJam, ¡Hecha un ojo a menudo!
+¡Sube tu obra maestra terminada con la etiqueta **#springjam26 en la descripcion de tu proyecto** antes de la fecha final para enviarlo!
 **(NOTA: ¡Ten en cuenta las zonas horarias! La hora que dimos puede que no sea precisa para ti, ¡Preguntale a un padre/guardian si no estas seguro!)**
 
 ## Premios:
