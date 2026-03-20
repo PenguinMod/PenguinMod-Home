@@ -715,7 +715,7 @@
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">A PenguinJam for the Spring!</h2>
+                        <h2 style="margin-block:4px;">The Spring PenguinJam has begun!</h2>
                         <div style="width:100%">
                             <p>
                                 The 2026 Spring PenguinJam has begun! The theme is “Storytelling.”
