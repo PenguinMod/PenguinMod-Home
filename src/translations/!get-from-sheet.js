@@ -1,3 +1,6 @@
+// run with
+// node src/translations/!get-from-sheet.js "(en)" src/translations/en.json
+
 import { GOOGLE_SHEETS_KEY } from "./!token.js";
 
 // replace with your api key, if your a pm dev than just ask gsa for a key
