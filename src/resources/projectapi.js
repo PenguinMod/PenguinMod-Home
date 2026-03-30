@@ -1850,8 +1850,6 @@ class ProjectApi {
             formData.append("jsonFile", protobuf);
             formData.append("thumbnail", data.image);
 
-            console.debug(formData.getAll("assets"));
-
             request.send(formData);
         });
     }
