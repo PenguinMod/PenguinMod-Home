@@ -715,15 +715,15 @@
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">The Spring PenguinJam has begun!</h2>
+                        <h2 style="margin-block:4px;">Spring PenguinJam has ended!</h2>
                         <div style="width:100%">
                             <p>
-                                The 2026 Spring PenguinJam has begun! The theme is “Storytelling.”
+                                Time's up everyone, the 2026 Spring PenguinJam has ended!
                                 <br />
-                                See the event page for more details!
-                            </p>
-                            <p style="margin-block-start:4px;">
-                                <a href="https://penguinmod.com/events/penguinjamspring2026">Spring PenguinJam 2026</a>
+                                Thanks for submitting your projects this year!
+                                <br />
+                                We're going to start ranking your projects now.
+                                Please wait until we are done with ranking!
                             </p>
                             <img
                                 src="/events/news/penguinjamspring2026.webp"
