@@ -188,6 +188,7 @@ class ProjectApi {
                 );
             case "featured":
             case "newest":
+            case "uploaddate":
             case "views":
             case "votes":
             case "loves":
