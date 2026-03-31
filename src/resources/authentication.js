@@ -46,8 +46,14 @@ class Authentication {
         });
     }
 
-    static authenticate() {
-        const url = `${window.location.origin}/signin?redirect=${window.location.pathname}&embed=true`;
+    static authenticate(iframe = true) {
+        const url = `${window.location.origin}/signin?redirect=${encodeURIComponent(window.location.pathname)}&embed=${iframe}`;
+        
+        if (!iframe) {
+            window.location.href = url;
+            return new Promise((_) => {});
+        }
+        
         return new Promise((resolve, reject) => {
             let login;
 

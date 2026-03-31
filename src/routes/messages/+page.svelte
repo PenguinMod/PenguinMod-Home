@@ -188,21 +188,7 @@
     }
 
     function askForLogin() {
-        Authentication.authenticate().then((privateCode) => {
-            loggedIn = null;
-            Authentication.usernameFromCode(privateCode)
-                .then(({ username }) => {
-                    if (username) {
-                        loggedIn = true;
-                        loggedInChange(username, privateCode);
-                        return;
-                    }
-                    loggedIn = false;
-                })
-                .catch(() => {
-                    loggedIn = false;
-                });
-        });
+        Authentication.authenticate(false);
     }
     let readMessages = [];
     function markAsRead(id) {

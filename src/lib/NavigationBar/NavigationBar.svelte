@@ -128,9 +128,7 @@
         });
     }
     function login() {
-        Authentication.authenticate().then(() => {
-            location.reload();
-        });
+        Authentication.authenticate(false);
     }
 
     function switchTheme() {

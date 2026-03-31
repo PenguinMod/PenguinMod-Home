@@ -43,8 +43,10 @@
     let showingPassword = false;
     let focused = "";
     let embed = false;
+    let redir_link = "";
     if (browser) {
         embed = $page.url.searchParams.get("embed") === "true";
+        redir_link = decodeURIComponent($page.url.searchParams.get("redirect"));
     }
 
     let apiOnlineChecking = true;
@@ -171,9 +173,7 @@
                     }
 
                     // redirect
-                    const redir = $page.url.searchParams.get("redirect");
-
-                    window.location.href = redir ? redir : "/";
+                    window.location.href = redir_link ? redir_link : "/";
                 },
                 (err) => {
                     canCreateAccount = false;
@@ -429,9 +429,7 @@
                 return;
             }
 
-            const redir = $page.url.searchParams.get("redirect");
-
-            location.href = redir ? redir : "/";
+            location.href = redir_link ? redir_link : "/";
         });
     }
 

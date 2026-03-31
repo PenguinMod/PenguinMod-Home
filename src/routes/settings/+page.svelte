@@ -1,7 +1,7 @@
 <script>
     import { page } from "$app/stores";
     import { onMount } from "svelte";
-    import { browser } from '$app/environment';
+    import { browser } from "$app/environment";
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
     import Authentication from "../../resources/authentication.js";
@@ -132,35 +132,7 @@
     });
 
     function askForLogin() {
-        Authentication.authenticate().then((privateCode) => {
-            loggedIn = null;
-            Authentication.usernameFromCode(privateCode)
-                .then(
-                    ({
-                        username,
-                        loginMethods: _loginMethods,
-                        privateProfile: _privateProfile,
-                        canFollowingSeeProfile: _cfsp,
-                        standing: _standing,
-                        isEmailVerified,
-                        email,
-                    }) => {
-                        loggedIn = true;
-                        loggedInChange(username, token);
-                        setupLoginInfo(
-                            _loginMethods,
-                            _privateProfile,
-                            _cfsp,
-                            _standing,
-                            isEmailVerified,
-                            email,
-                        );
-                    },
-                )
-                .catch(() => {
-                    loggedIn = false;
-                });
-        });
+        Authentication.authenticate(false);
     }
 
     Authentication.onLogout(() => {
