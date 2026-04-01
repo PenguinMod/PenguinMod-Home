@@ -320,7 +320,7 @@
 
 <NavigationBar />
 
-<div class="main">
+<div class="main" data-aprilfools={isAprilFools()}>
     <NavigationMargin />
 
     <Alert
@@ -1286,6 +1286,19 @@
     }
     :global(body.dark-mode) .main {
         color: white;
+    }
+    
+    .main[data-aprilfools="true"] {
+        filter: brightness(0.7) contrast(1.8) sepia(1);
+    }
+    .main[data-aprilfools="true"] :global(*) {
+        font-family: 'Times New Roman', Times, serif !important;
+    }
+    .main[data-aprilfools="true"] p,
+    .main[data-aprilfools="true"] span,
+    .main[data-aprilfools="true"] div {
+        font-size: 24px;
+        font-weight: bold;
     }
 
     .cat-button {
