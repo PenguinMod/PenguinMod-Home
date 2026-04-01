@@ -64,17 +64,17 @@
 	<body data-sveltekit-preload-data="hover" id="PAGE_BODY">
 		<script>
 			/**
-			 * Stringifies objects
-			 * @param {any} obj The object to stringify
-			 * @param {Array<[string, any]>} processed List of keys that have been processed, for circularity checking
-			 * @param {string} path The JSON path for that this call is at
-			 * @returns {string} The stringified results
-			 */
+			* Stringifies objects
+			* @param {any} obj The object to stringify
+			* @param {Array<[string, any]>} processed List of keys that have been processed, for circularity checking
+			* @param {string} path The JSON path for that this call is at
+			* @returns {string} The stringified results
+			*/
 			const stringify = (obj, processed, path = '') => {
 				try {
 					if (typeof obj !== 'object') return JSON.stringify(obj);
 					// error doesnt stringify correctly, manually include key fields like being an error
-					if (obj instanceof Error) return `{"t":"e","v":{"name":${JSON.stringify(obj.name)},"message":${JSON.stringify(obj.message)},"stack":${JSON.stringify(obj.stack)},"cause":${JSON.stringify(obj.cause)}}}`;
+					if (obj instanceof Error) return `{"t":"e","v":{"name":${JSON.stringify(obj.name) ?? 'null'},"message":${JSON.stringify(obj.message) ?? 'null'},"stack":${JSON.stringify(obj.stack) ?? 'null'},"cause":${JSON.stringify(obj.cause) ?? 'null'}}}`;
 					if (obj === null) return 'null';
 					processed ??= [];
 					processed.push([path, obj]);
@@ -97,12 +97,12 @@
 				}
 			};
 			/**
-			 * Parses the output of stringify recursively
-			 * @param {any} obj The object to process
-			 * @param {object<string,any>} processed What objects have been processed
-			 * @param {string} path The path to this object
-			 * @returns {any} The parsed result
-			 */
+			* Parses the output of stringify recursively
+			* @param {any} obj The object to process
+			* @param {object<string,any>} processed What objects have been processed
+			* @param {string} path The path to this object
+			* @returns {any} The parsed result
+			*/
 			const _parseRecursive = (obj, processed, path) => {
 				if (typeof obj !== 'object') return obj;
 				if (obj === null) return null;
@@ -125,20 +125,122 @@
 				return result;
 			};
 			/**
-			 * Parses the stringified results from stringify
-			 * @param {string} string 
-			 * @returns {any}
-			 */
+			* Parses the stringified results from stringify
+			* @param {string} string The string to parse
+			* @returns {any} The parsed result
+			*/
 			const parse = string => {
 				const json = JSON.parse(string);
 				if (!json.v) return json;
 				return _parseRecursive(json, {}, '');
 			};
 
+/**
+			* String.prototype.indexOf, but it returns NaN not -1 on failure
+			* @param {string} str The string to check in
+			* @param {string} key The vaue to search for
+			* @param {number?} offset The offset into the string to start from
+			* @returns {number} The index of the key, or NaN if no instances where found
+			*/
+			const _lastIndexNaN = (str, key, offset = Infinity) => {
+				if (!str) return NaN;
+				const val = str.lastIndexOf(key, offset);
+				if (val === -1) return NaN;
+				return val;
+			};
+			const browserHasStack = !!new Error().stack;
+			const _parseFirefoxStack = stack => stack.split('\n').slice(1)
+				.map(line => {
+					const at = line.indexOf('@');
+					const secondCol = line.lastIndexOf(':');
+					const firstCol = line.lastIndexOf(':', secondCol -1);
+					const endLine = line.length;
+					const name = line.slice(0, at);
+					let url = line.slice(at +1, firstCol);
+					let evalType = null;
+					let origin = [
+						Number(line.slice(firstCol +1, secondCol)),
+						Number(line.slice(secondCol +1, endLine))
+					];
+					let evalOrigin = null;
+					/** @type {RegExpMatchArray} */
+					let match;
+					if ((match = url.match(/^ line ([0-9]+) > /))) {
+						url = line.slice(at, match.index);
+						evalOrigin = origin;
+						evalType = line.slice(match.index + match[0].length, firstCol);
+						origin = [Number(match[1]), NaN];
+					}
+
+					return {
+						name,
+						url,
+						evalOrigin,
+						evalType,
+						origin
+					};
+				});
+			const _parseChromeStack = stack => stack.split('\n').slice(2)
+				.map(line => {
+					// we have no use for the human readable fluff
+					line = line.slice(7);
+					const firstOpenParen = line.indexOf('(');
+					const secondOpenParen = line.indexOf('(', firstOpenParen +1);
+					const firstCloseParen = line.indexOf(')');
+					const secondCloseParen = line.indexOf(')', firstCloseParen +1);
+					let fourthCol = line.lastIndexOf(':');
+					let thirdCol = line.lastIndexOf(':', (fourthCol || line.length) -1);
+					let secondCol = _lastIndexNaN(line, ':', (thirdCol || line.length) -1);
+					let firstCol = _lastIndexNaN(line, ':', (secondCol || line.length) -1);
+					if (secondOpenParen === -1) {
+						secondCol = fourthCol;
+						firstCol = thirdCol;
+						fourthCol = NaN;
+						thirdCol = NaN;
+					}
+					const name = line.slice(0, firstOpenParen -1);
+					const origin = [
+						Number(line.slice(firstCol +1, secondCol)),
+						Number(line.slice(secondCol +1, thirdCol || firstCloseParen))
+					];
+					let url = line.slice(firstOpenParen +1, firstCol);
+					let evalType = null;
+					let evalOrigin = null;
+					if (secondOpenParen !== -1) {
+						url = line.slice(secondOpenParen +1, firstCol);
+						evalType = 'anonymous';
+						evalOrigin = [
+							Number(line.slice(thirdCol +1, fourthCol)),
+							Number(line.slice(fourthCol +1, secondCloseParen))
+						];
+					}
+
+					return {
+						name,
+						url,
+						evalOrigin,
+						evalType,
+						origin
+					};
+				});
+			const parseStack = (stack, url, line, column) => {
+				if (!browserHasStack || !stack) {
+					return [{
+						name: '<inaccessible>',
+						url,
+						origin: [line, column]
+					}];
+				}
+				// firefox has a *completely* different style rule compared to chrome
+				if (stack.split('\n', 2)[0].includes('@')) return _parseFirefoxStack(stack);
+				return _parseChromeStack(stack);
+			};
+
 			class ObjectViewer extends HTMLElement {
-				static observedAttributes = ['key', 'object'];
+				static observedAttributes = ['key', 'object', 'type'];
 				/** @type {[string,any]} */
 				entries = [];
+				isError = false;
 				constructor() {
 					super();
 					this.attachShadow({ mode: 'open' });
@@ -169,6 +271,21 @@
 					proto.onclick = e => {
 						e.preventDefault();
 						e.stopPropagation();
+						if (this.isError) {
+							selectLog({
+								trace: parseStack(this.object.stack)
+									.map(trace => {
+                                        const traceType = trace.url.startsWith('webpack')
+                                            ? 'Webpack'
+                                            : 'External';
+                                        trace.text = `${trace.name} (<${traceType}> ${trace.origin[0]}:${trace.origin[1]})`;
+                                        if (trace.evalType)
+                                            trace.text += ` <${trace.evalType}> ${trace.evalOrigin[0]}:${trace.evalOrigin[1]}`;
+										return trace;
+									})
+							});
+							return;
+						}
 						entries.hidden = !entries.hidden;
 						check.style.transform = entries.hidden
 							? 'rotate(45deg)'
@@ -179,14 +296,25 @@
 							const item = new ObjectViewer();
 							item.key = key;
 							item.object = value;
+							item.isError = value instanceof Error;
 							entriesBox.appendChild(item);
 						}
 					}
 					entries.setAttribute('id', 'entries');
+					proto.setAttribute('id', 'prototype');
 					this.shadowRoot.appendChild(entries);
 				}
 				get object() { return Object.fromEntries(this.entries); }
 				set object(value) {
+					if (value instanceof Error) {
+						this.isError = true;
+						value = {
+							cause: value.cause,
+							message: value.message,
+							stack: value.stack,
+							name: value.name
+						}
+					}
 					const text = this.shadowRoot.getElementById('text');
 					text.style.color = 'inherit';
 					const check = this.shadowRoot.getElementById('check');
@@ -203,6 +331,8 @@
 					this.entries = Object.entries(value);
 					if (this.entries.length >= 1)
 						text.textContent = isArray ? '[...]' : '{...}';
+					if (this.isError) 
+						text.textContent = value.message;
 				}
 				set key(value) {
 					const keyName = this.shadowRoot.getElementById('key');
@@ -211,6 +341,10 @@
 				attributeChangedCallback(name, old, newValue) {
 					if (name !== 'object' && name !== 'key') return;
 					if (name === 'key') return this.key = newValue;
+					if (name === 'type') {
+						if (newValue === '[object Error]') this.isError = true;
+						return;
+					}
 					this.object = parse(newValue);
 				}
 			}

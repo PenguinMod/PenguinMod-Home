@@ -28,10 +28,12 @@
         id: 0,
         pickedReason: "",
         otherReason: "",
+        userDislikedReason: "",
         userSexualContentReason: "",
         userAttackReason: "",
         userIllegalReason: "",
 
+        projectDislikedReason: "",
         projectMalwareReason: "",
         projectStoreInfoReason: "",
         projectSexualContentReason: "",
@@ -42,6 +44,12 @@
 
     const reportReasons = {
         user: [
+            {
+                text: 'This project sucks!',
+                key: 'report.reason.user.dislike',
+                isFake: true,
+                pageDetail: 'userDislikedReason'
+            },
             {
                 text: "The user posts sexual content or references it",
                 key: "report.reason.user.sexual",
@@ -59,6 +67,12 @@
             },
         ],
         project: [
+            {
+                text: 'I don\'t like this person',
+                key: 'report.reason.user.dislike',
+                isFake: true,
+                pageDetail: 'userDislikedReason'
+            },
             {
                 text: "The project contains sexual content or references",
                 key: "report.reason.project.sexual",
@@ -104,15 +118,25 @@
             reportText = pageDetails.otherReason;
         } else {
             for (const reportMsg of reportGroup) {
-                if (
-                    reportMsg.pageDetail &&
-                    pageDetails.pickedReason === reportMsg.key
-                ) {
-                    reportText = `${reportMsg.text}: ${
-                        pageDetails[reportMsg.pageDetail]
-                    }`;
-                } else if (pageDetails.pickedReason === reportMsg.key) {
+                if (pageDetails.pickedReason === reportMsg.key) {
+                    if (reportMsg.isFake) {
+                        alert("Sent report.");
+                        window.close();
+                        setTimeout(() => {
+                            // ok the window was not a pop-up, just go back to main page idk
+                            window.location.pathname = "/";
+                        }, 500);
+                        pageDetails.isCurrentlyReporting = false;
+                        return;
+                    }
+                    if (reportMsg.pageDetail) {
+                        reportText = `${reportMsg.text}: ${
+                            pageDetails[reportMsg.pageDetail]
+                        }`;
+                        break;
+                    }
                     reportText = reportMsg.text;
+                    break;
                 }
             }
         }

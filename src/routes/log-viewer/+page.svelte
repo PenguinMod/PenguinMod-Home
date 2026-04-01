@@ -79,6 +79,7 @@
             .replaceAll('"', '&quot;')
             .replaceAll('\n', '<br>');
     }
+
     const matchSubstitute = /%((?<type>[oOdisfc])|\.(?<precision>[0-9]+)f)/g;
     function formatMessage(args) {
         if (!Array.isArray(args)) args = [args];
@@ -120,7 +121,7 @@
                     break;
                 }
             }
-            if (idx < (args.length -1)) out += formatMessage(args.slice(idx));
+            if (idx < args.length) out += formatMessage(args.slice(idx));
             return out;
         }
         return args
@@ -135,14 +136,16 @@
         editor.session.setValue(source);
     }
     function selectTrace(id) {
-        const log = logs.find(log => log.id === selectedLog);
+        const log = typeof selectedLog === 'object'
+            ? selectedLog
+            : logs.find(log => log.id === selectedLog);
         const trace = log.trace.find(trace => trace.id === id);
         renderCode(trace.url);
         editor.moveCursorTo(trace.origin[0], trace.origin[1]);
     }
     function selectLog(id) {
         selectedLog = id;
-        const log = logs.find(log => log.id === id);
+        const log = typeof id === 'object' ? id : logs.find(log => log.id === id);
         selector.innerHTML = '';
         for (const trace of log.trace) {
             /** @type {HTMLOptionElement} */
@@ -153,6 +156,7 @@
         }
         selectTrace(log.trace[0].id);
     }
+    if (globalThis.window) window.selectLog = selectLog; // globalize for object-viewer
 </script>
 
 <svelte:head>
@@ -205,7 +209,15 @@
                                 const index = JSON.parse(await files.file('index.json').async('text'));
                                 // hehehaw, imagine running into a recursive item
                                 logs = parse(await files.file('logs.json').async('text'));
-                                for (const log of logs) {
+                                const messages = [
+                                    ...logs, 
+                                    ...logs
+                                        .map(log => log.message)
+                                        .flat()
+                                        .filter(arg => arg instanceof Error)
+                                        .map(error => (error.trace = parseStack(error.stack), error))
+                                ];
+                                for (const log of messages) {
                                     message = 'Formating log contents';
                                     subMessage = `Rendering format of log ${log.message}`;
                                     log.message = formatMessage(log.message);
