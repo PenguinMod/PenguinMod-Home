@@ -25,7 +25,8 @@
     onMount(() => {
         Language.forceUpdate();
         embed = $page.url.searchParams.get("embed") === "true";
-        redir_link = decodeURIComponent($page.url.searchParams.get("redirect"));
+        redir_link = $page.url.searchParams.get("redirect");
+        redir_link = redir_link ? decodeURIComponent(redir_link) : null;
     });
     Language.onChange((lang) => {
         currentLang = lang;
@@ -446,7 +447,10 @@
                 lang={currentLang}
             />
 
-            <a href="/signup?embed={embed}&redirect={redir_link}" style="margin: 8px">
+            <a
+                href="/signup?embed={embed}&redirect={redir_link}"
+                style="margin: 8px"
+            >
                 <LocalizedText
                     text="Don't have an account? Sign up here!"
                     key="login.linkto.signup"
