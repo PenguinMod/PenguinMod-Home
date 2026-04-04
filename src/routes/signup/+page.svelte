@@ -46,7 +46,8 @@
     let redir_link = "";
     if (browser) {
         embed = $page.url.searchParams.get("embed") === "true";
-        redir_link = decodeURIComponent($page.url.searchParams.get("redirect"));
+        redir_link = $page.url.searchParams.get("redirect");
+        redir_link = redir_link ? decodeURIComponent(redir_link) : null;
     }
 
     let apiOnlineChecking = true;
