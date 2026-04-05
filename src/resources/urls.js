@@ -79,7 +79,7 @@ export default {
     /**
      * PenguinMod's Discord invite
      */
-    discord: "https://discord.gg/NZ9MBMYTZh",
+    discord: "https://discord.gg/penguinmod",
 
     /**
      * Scratch's website
