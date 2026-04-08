@@ -20,7 +20,7 @@
         "js-beautify": "^1.15.4",
         "jszip": "^3.10.1",
         "markdown-it": "^13.0.2",
-        "pmp-protobuf": "^1.7.3",
+        "pmp-protobuf": "^1.8.3",
         "protobufjs": "^7.3.2"
     }
 }
