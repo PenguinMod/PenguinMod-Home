@@ -1,4 +1,12 @@
 <script>
+    export let data;
+
+    $: metaName = fullProfile.real_username || data.displayName || user || "User";
+    $: rawBio = fullProfile.bio || data.bio || "";
+    $: metaBio = rawBio
+        ? rawBio.slice(0, 200).replace(/[#*_`~\[\]]/g, "") + (rawBio.length > 200 ? "…" : "")
+        : `Check out ${metaName}'s projects on PenguinMod!`;
+
     import { onMount } from "svelte";
     import { page } from "$app/stores";
     import MarkdownIt from "markdown-it";
@@ -816,26 +824,27 @@
 </script>
 
 <svelte:head>
-    <title>PenguinMod - {user ? user : "Profile"}</title>
-    <meta name="title" content="PenguinMod - {user ? user : 'User Profile'}" />
-    <meta
-        property="og:title"
-        content="PenguinMod - {user ? user : 'User Profile'}"
-    />
-    <meta
-        property="twitter:title"
-        content="PenguinMod - {user ? user : 'User Profile'}"
-    />
-    <meta
-        name="description"
-        content="View {user ? user : 'this user'}'s profile on PenguinMod."
-    />
-    <meta
-        property="twitter:description"
-        content="View {user ? user : 'this user'}'s profile on PenguinMod."
-    />
-    <meta property="og:url" content="https://penguinmod.com/profile" />
-    <meta property="twitter:url" content="https://penguinmod.com/profile" />
+    <title>PenguinMod - {metaName}</title>
+
+    <meta name="title" content="PenguinMod - {metaName}" />
+    <meta name="description" content={metaBio} />
+
+    <meta property="og:type" content="profile" />
+    <meta property="og:url" content="https://penguinmod.com/profile?user={data.resolvedUsername || user}" />
+    <meta property="og:site_name" content="PenguinMod" />
+    <meta property="og:title" content="{metaName} on PenguinMod" />
+    <meta property="og:description" content={metaBio} />
+    <meta property="og:image" content="{PUBLIC_API_URL}/api/v1/users/getpfp?username={data.resolvedUsername || user}" />
+    <meta property="og:image:width" content="256" />
+    <meta property="og:image:height" content="256" />
+    <meta property="og:image:alt" content="{metaName}'s profile picture" />
+
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:url" content="https://penguinmod.com/profile?user={data.resolvedUsername || user}" />
+    <meta property="twitter:title" content="{metaName} on PenguinMod" />
+    <meta property="twitter:description" content={metaBio} />
+    <meta property="twitter:image" content="{PUBLIC_API_URL}/api/v1/users/getpfp?username={data.resolvedUsername || user}" />
+    <meta property="twitter:image:alt" content="{metaName}'s profile picture" />
 </svelte:head>
 
 <NavigationBar />
