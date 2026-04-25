@@ -122,7 +122,12 @@ class ProjectApi {
         if (user in ProjectApi.CachedDonators) {
             return ProjectApi.CachedDonators[user];
         }
-        const badges = await ProjectApi.getUserBadges(user);
+        let badges;
+        try {
+            badges = await ProjectApi.getUserBadges(user);
+        } catch {
+            return false;
+        }
         ProjectApi.CachedDonators[user] = badges.includes("donator");
         return badges.includes("donator");
     }
@@ -1604,6 +1609,7 @@ class ProjectApi {
         });
     }
 
+    // TODO: move this or smth similar to pmp-protobuf
     resolveProjectSizes(file, imageSize = 0) {
         return JSZip.loadAsync(file).then(async (zip) => {
             const projectJSON = JSON.parse(
@@ -1637,11 +1643,19 @@ class ProjectApi {
                 projectJSON.targets[0] = target;
                 const costumes = target.costumes.map((asset) => [
                     asset.name,
-                    assets[asset.md5ext],
+                    assets[
+                        asset.md5ext
+                            ? asset.md5ext
+                            : `${asset.assetId}.${asset.dataFormat}`
+                    ],
                 ]);
                 const sounds = target.sounds.map((asset) => [
                     asset.name,
-                    assets[asset.md5ext],
+                    assets[
+                        asset.md5ext
+                            ? asset.md5ext
+                            : `${asset.assetId}.${asset.dataFormat}`
+                    ],
                 ]);
 
                 const totalCodeSize =
@@ -1700,7 +1714,10 @@ class ProjectApi {
 
                 projectJSON.targets[0] = original_target;
 
-                const costumeSize = costumes.reduce((c, v) => c + v[1].size, 0);
+                const costumeSize = costumes.reduce(
+                    (c, v) => c + (v[1] ? v[1].size : 0),
+                    0,
+                );
                 const soundSize = sounds.reduce((c, v) => c + v[1].size, 0);
                 const size = totalCodeSize + costumeSize + soundSize;
 
