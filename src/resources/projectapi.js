@@ -253,7 +253,7 @@ class ProjectApi {
 
     async getFrontPage() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/frontpage?username=${this.username}&token=${this.token}`; // so mods can see ALL!!!!!!!!!!!!!
+            const url = `${OriginApiUrl}/api/v1/projects/frontpage?token=${this.token}`;
             fetch(url)
                 .then((res) => {
                     if (res.status === 429) return reject(429);

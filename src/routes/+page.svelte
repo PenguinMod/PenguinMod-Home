@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { page } from "$app/stores";
-    import { browser } from '$app/environment';
+    import { browser } from "$app/environment";
 
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
@@ -35,7 +35,7 @@
 
     const isAprilFools = () => {
         if (!browser) return false;
-        
+
         const date = new Date(Date.now());
         const urlParams = $page.url.searchParams;
         const isAprilFools = date.getMonth() === 3 && date.getDate() === 1; // month is 0 indexed for literally no reason
@@ -152,7 +152,6 @@
     }
 
     const getAndUpdateMyFeed = async () => {
-        console.log("update feed");
         const feed = await ProjectClient.getMyFeed(0);
         if (feed.length <= 0) {
             feedIsEmpty = true;
@@ -204,9 +203,50 @@
         Language.forceUpdate();
         let username = localStorage.getItem("username");
         const token = localStorage.getItem("token");
+
+        const setFrontPage = () =>
+            ProjectClient.getFrontPage()
+                .then((results) => {
+                    projects.today = results.latest;
+                    projects.featured = results.featured;
+                    projects.voted = results.voted;
+                    projects.viewed = results.viewed;
+                    projects.tagged = results.tagged;
+                    if (results.suggested)
+                        projects.suggested = results.suggested;
+                    tagForProjects = results.selectedTag;
+                    projectsLoaded = true;
+
+                    if (results.blocked) {
+                        const blocked = results.blocked;
+
+                        const remove_blocked = (projects) =>
+                            projects.filter((p) =>
+                                blocked.every((b) => p.author.id != b),
+                            );
+
+                        projects.today = remove_blocked(projects.today);
+                        projects.featured = remove_blocked(results.featured);
+                        projects.voted = remove_blocked(results.voted);
+                        projects.viewed = remove_blocked(results.viewed);
+                        projects.tagged = remove_blocked(results.tagged);
+                        if (results.suggested)
+                            projects.suggested = remove_blocked(
+                                results.suggested,
+                            );
+                    }
+                })
+                .catch((err) => {
+                    projectsFailed = true;
+                    if (err === 429) {
+                        projectsRateLimited = true;
+                    }
+                });
+
         if (!token || !username) {
             loggedIn = false;
             loggedInAdminOrMod = false;
+            setFrontPage();
         } else {
             Authentication.usernameFromCode(username, token)
                 .then(({ username: usernameActual, isAdmin, isApprover }) => {
@@ -220,10 +260,14 @@
                     loggedIn = true;
                     loggedInAdminOrMod = isAdmin || isApprover;
                     getAndUpdateMyFeed();
+
+                    setFrontPage();
                 })
                 .catch((err) => {
                     loggedIn = false;
                     loggedInAdminOrMod = false;
+
+                    setFrontPage();
                 });
         }
 
@@ -253,24 +297,6 @@
                 updates = [updatess];
             });
         });
-
-        ProjectClient.getFrontPage()
-            .then((results) => {
-                projects.today = results.latest;
-                projects.featured = results.featured;
-                projects.voted = results.voted;
-                projects.viewed = results.viewed;
-                projects.tagged = results.tagged;
-                if (results.suggested) projects.suggested = results.suggested;
-                tagForProjects = results.selectedTag;
-                projectsLoaded = true;
-            })
-            .catch((err) => {
-                projectsFailed = true;
-                if (err === 429) {
-                    projectsRateLimited = true;
-                }
-            });
     });
 
     // login code below
@@ -279,6 +305,8 @@
     Authentication.onLogout(() => {
         loggedIn = false;
         myFeed = [];
+
+        getFrontPage();
     });
     Authentication.onAuthentication((username, token) => {
         loggedInUsername = username;
@@ -286,6 +314,7 @@
         ProjectClient.setToken(token);
         loggedIn = true;
         getAndUpdateMyFeed();
+        getFrontPage();
         return;
     });
 
@@ -715,15 +744,18 @@
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">Spring PenguinJam has ended!</h2>
+                        <h2 style="margin-block:4px;">
+                            Spring PenguinJam has ended!
+                        </h2>
                         <div style="width:100%">
                             <p>
-                                Time's up everyone, the 2026 Spring PenguinJam has ended!
+                                Time's up everyone, the 2026 Spring PenguinJam
+                                has ended!
                                 <br />
                                 Thanks for submitting your projects this year!
                                 <br />
-                                We're going to start ranking your projects now.
-                                Please wait until we are done with ranking!
+                                We're going to start ranking your projects now. Please
+                                wait until we are done with ranking!
                             </p>
                             <img
                                 src="/events/news/penguinjamspring2026.webp"
@@ -1105,7 +1137,8 @@
                 lang={currentLang}
                 html={true}
                 replace={{
-                    "{{LINK}}": "<a href='https://scratch.org/'>https://scratch.org/</a>"
+                    "{{LINK}}":
+                        "<a href='https://scratch.org/'>https://scratch.org/</a>",
                 }}
             />
         </p>
@@ -1287,12 +1320,12 @@
     :global(body.dark-mode) .main {
         color: white;
     }
-    
+
     .main[data-aprilfools="true"] {
         filter: brightness(0.7) contrast(1.8) sepia(1);
     }
     .main[data-aprilfools="true"] :global(*) {
-        font-family: 'Times New Roman', Times, serif !important;
+        font-family: "Times New Roman", Times, serif !important;
     }
     .main[data-aprilfools="true"] p,
     .main[data-aprilfools="true"] span,
