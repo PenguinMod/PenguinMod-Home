@@ -35,6 +35,8 @@ import PenguinJamSpring2026Es from "./es/penguinjamspring2026.md?raw";
 import PenguinJamSpring2026Es419 from "./es-419/penguinjamspring2026.md?raw";
 import PenguinJamSpring2026Ru from "./ru/penguinjamspring2026.md?raw";
 import PenguinJamSpring2026Ja from "./ja/penguinjamspring2026.md?raw";
+// AllTheMods2026
+import AllTheMods2026En from "./en/allthemods2026.md?raw";
 
 export default {
     "example": {
@@ -80,5 +82,8 @@ export default {
         "es-419": PenguinJamSpring2026Es419,
         "ru": PenguinJamSpring2026Ru,
         "ja": PenguinJamSpring2026Ja,
+    },
+    "allthemods2026": {
+        "en": AllTheMods2026En,
     },
 };
