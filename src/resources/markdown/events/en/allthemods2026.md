@@ -7,7 +7,7 @@ PenguinMod, TurboWarp, Warpdrive, MistWarp, NitroBolt, Scratch Everywhere!
 TurboWarp, Warpdrive, MistWarp, NitroBolt, Scratch Everywhere!
 ```
 
-# [See our itch.io page for project submissions and event information!](https://itch.io/jam/all-the-mods-game-jam)
+# [Join our itch.io page for project submissions and exact event dates!](https://itch.io/jam/all-the-mods-game-jam)
 
 <div style="display:flex;flex-direction:row">
     <!-- NOTE: For some absolutely stupid reason the allthemods_penguinmod.webp logo just refreshes constantly -->

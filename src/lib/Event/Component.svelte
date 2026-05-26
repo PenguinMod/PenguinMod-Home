@@ -3,9 +3,9 @@
     import Language from "../../resources/language.js";
     import EventPages from "../../resources/markdown/events/pages.js";
 
-    const isHavingEvent = false;
-    const eventName = "Spring PenguinJam 2026";
-    const eventPath = "penguinjamspring2026";
+    const isHavingEvent = true;
+    const eventName = "All The Mods 2026";
+    const eventPath = "allthemods2026";
     
     let currentLang = "en";
     let pageLang = "en";

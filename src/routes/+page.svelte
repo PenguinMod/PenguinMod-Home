@@ -745,21 +745,21 @@
                 <div class="category-news">
                     <div class="category-news-content">
                         <h2 style="margin-block:4px;">
-                            Spring PenguinJam has ended!
+                            All The Mods Game Jam!
                         </h2>
                         <div style="width:100%">
                             <p>
-                                Time's up everyone, the 2026 Spring PenguinJam
-                                has ended!
+                                We've partnered with many different Scratch mods (featuring PenguinMod, TurboWarp, and more)
+                                to run a game jam across multiple communities!
                                 <br />
-                                Thanks for submitting your projects this year!
-                                <br />
-                                We're going to start ranking your projects now. Please
-                                wait until we are done with ranking!
+                                Please see the event page for details on how to participate!
+                            </p>
+                            <p style="margin-block-start:4px;">
+                                <a href="https://penguinmod.com/events/allthemods2026">All The Mods 2026</a>
                             </p>
                             <img
-                                src="/events/news/penguinjamspring2026.webp"
-                                alt="Spring PenguinJam 2026"
+                                src="/events/news/allthemods2026.webp?r=1"
+                                alt="All The Mods 2026"
                                 style="width:100%;"
                             />
                         </div>
