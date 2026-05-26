@@ -24,7 +24,7 @@ Many different Scratch mods (featuring PenguinMod, TurboWarp, and more) have all
 
 This is a *shared event*, meaning you **will not be submitting on the PenguinMod website itself!**
 
-The official All The Mods Game Jam page can be found here: https://itch.io/jam/all-the-mods-game-jam
+The official All The Mods Game Jam page can be found here: [https://itch.io/jam/all-the-mods-game-jam](https://itch.io/jam/all-the-mods-game-jam)
 
 Scroll to the "What is a Game Jam?" section if you don't know what a Game Jam is.
 
@@ -36,7 +36,7 @@ The theme will be revealed on ***June 1st at 10:00 AM (Mountain Time)***.
 See the [itch.io page]((https://itch.io/jam/all-the-mods-game-jam)) for exact timings in your timezone.
 
 ## How do I submit my game?
-You need to submit your theme-related game to the [itch.io page]((https://itch.io/jam/all-the-mods-game-jam)) **as a packaged project!**
+You need to submit your theme-related game to the [itch.io page](https://itch.io/jam/all-the-mods-game-jam) **as a packaged project!**
 
 You should use the [PenguinMod Packager](https://studio.penguinmod.com/PenguinMod-Packager/) and create a **Plain HTML** package of your game. 
 
