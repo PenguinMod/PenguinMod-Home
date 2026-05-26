@@ -16,6 +16,8 @@ export default {
                 // https://svelte.dev/docs/kit/configuration#prerender
                 if (path && path.startsWith("/api")) return; // whatever bro js render
                 if (path && path.includes("https://")) return; // whatever bro js render
+                if (path && path.includes("https:.webp")) return; // whatever bro js render
+                if (path && path.includes("https:.png")) return; // whatever bro js render
                 switch (path) {
                     case "/error":
                     case "/contact.html":
