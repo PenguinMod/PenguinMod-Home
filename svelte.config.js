@@ -15,6 +15,7 @@ export default {
             handleHttpError: ({ path, referrer, message }) => {
                 // https://svelte.dev/docs/kit/configuration#prerender
                 if (path && path.startsWith("/api")) return; // whatever bro js render
+                if (path && path.includes("https://")) return; // whatever bro js render
                 switch (path) {
                     case "/error":
                     case "/contact.html":
