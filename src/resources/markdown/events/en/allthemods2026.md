@@ -1,13 +1,23 @@
 # All The Mods
 
 ```host
-PenguinMod, TurboWarp, Warpdrive, MistWarp, NitroBolt, Scratch Everywhere!, ScratchBox
+PenguinMod, TurboWarp, Warpdrive, MistWarp, NitroBolt, Scratch Everywhere!
 ```
 ```collab
-TurboWarp, Warpdrive, MistWarp, NitroBolt, Scratch Everywhere!, ScratchBox
+TurboWarp, Warpdrive, MistWarp, NitroBolt, Scratch Everywhere!
 ```
 
 # [See our itch.io page for project submissions and event information!](https://itch.io/jam/all-the-mods-game-jam)
+
+<div style="display:flex;flex-direction:row">
+    <!-- NOTE: For some absolutely stupid reason the allthemods_penguinmod.webp logo just refreshes constantly -->
+    <a href="https://penguinmod.com/" target="_blank"><img src="https://penguinmod.com/favicon.png" width="48"></img></a>
+    <a href="https://turbowarp.org/" target="_blank"><img src="https://penguinmod.com/events/assets/allthemods_turbowarp.webp" width="48"></img></a>
+    <a href="https://warpdrive.team/" target="_blank"><img src="https://penguinmod.com/events/assets/allthemods_warpdrive.webp" width="48"></img></a>
+    <a href="https://warp.mistium.com/" target="_blank"><img src="https://penguinmod.com/events/assets/allthemods_mistwarp.webp" width="48"></img></a>
+    <a href="https://nitrobolt.org/" target="_blank"><img src="https://penguinmod.com/events/assets/allthemods_nitrobolt.webp" width="48"></img></a>
+    <a href="https://scratcheverywhere.github.io/" target="_blank"><img src="https://penguinmod.com/events/assets/allthemods_se.webp" width="48"></img></a>
+</div>
 
 # What is this event?
 Many different Scratch mods (featuring PenguinMod, TurboWarp, and more) have all come together to start a game jam!
@@ -49,7 +59,7 @@ For participants 13 years or older, please contact us via [Discord](https://peng
 
 For participants under the age of 13, please contact us using [the email listed on our contact page](https://studio.penguinmod.com/contact.html).
 
-You do not have to receive a prize if you don't want to.
+You do not have to receive a prize if you don't want to. The prize will be handed off to others if so.
 
 # What is a Game Jam?
 How the All The Mods Game Jam will work is:
