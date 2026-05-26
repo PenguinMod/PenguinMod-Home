@@ -13,7 +13,7 @@ TurboWarp, Warpdrive, MistWarp, NitroBolt, Scratch Everywhere!
     <!-- NOTE: For some absolutely stupid reason the allthemods_penguinmod.webp logo just refreshes constantly -->
     <a href="https://penguinmod.com/" target="_blank"><img src="https://penguinmod.com/favicon.png" width="48"></img></a>
     <a href="https://turbowarp.org/" target="_blank"><img src="https://penguinmod.com/events/assets/allthemods_turbowarp.webp" width="48"></img></a>
-    <a href="https://warpdrive.team/" target="_blank"><img src="https://penguinmod.com/events/assets/allthemods_warpdrive.webp" width="48"></img></a>
+    <a href="https://warpdrive.team/" target="_blank"><img src="https://penguinmod.com/events/assets/allthemods_warpdrive.webp?r=1" width="48"></img></a>
     <a href="https://warp.mistium.com/" target="_blank"><img src="https://penguinmod.com/events/assets/allthemods_mistwarp.webp" width="48"></img></a>
     <a href="https://nitrobolt.org/" target="_blank"><img src="https://penguinmod.com/events/assets/allthemods_nitrobolt.webp" width="48"></img></a>
     <a href="https://scratcheverywhere.github.io/" target="_blank"><img src="https://penguinmod.com/events/assets/allthemods_se.webp" width="48"></img></a>
