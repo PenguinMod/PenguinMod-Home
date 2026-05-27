@@ -33,7 +33,7 @@ The jam will be running from ***June 1st at 10:00 AM (Mountain Time)*** to ***Ju
 
 The theme will be revealed on ***June 1st at 10:00 AM (Mountain Time)***.
 
-See the [itch.io page]((https://itch.io/jam/all-the-mods-game-jam)) for exact timings in your timezone.
+See the [itch.io page](https://itch.io/jam/all-the-mods-game-jam) for exact timings in your timezone.
 
 ## How do I submit my game?
 You need to submit your theme-related game to the [itch.io page](https://itch.io/jam/all-the-mods-game-jam) **as a packaged project!**
