@@ -1,6 +1,6 @@
 <script>
     import { onMount } from "svelte";
-    
+
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
@@ -44,19 +44,27 @@
     let passwordValid = false;
 
     const passwordRequirements = [
-        {name: "password.requirement.length", value: false},
-        {name: "password.requirement.casing", value: false},
-        {name: "password.requirement.number", value: false},
-        {name: "password.requirement.symbol", value: false},
-    ]
+        { name: "password.requirement.length", value: false },
+        { name: "password.requirement.casing", value: false },
+        { name: "password.requirement.number", value: false },
+        { name: "password.requirement.symbol", value: false },
+    ];
 
     async function checkIfValid() {
-        const passwordDoesNotMeetLength = password.length < 8 || password.length > 50;
-        const passwordMeetsTextInclude = password.match(/[a-z]/) && password.match(/[A-Z]/);
+        const passwordDoesNotMeetLength =
+            password.length < 8 || password.length > 50;
+        const passwordMeetsTextInclude =
+            password.match(/[a-z]/) && password.match(/[A-Z]/);
         const passwordHasNumber = !!password.match(/[0-9]/);
         const passwordMeetsSpecialInclude = !!password.match(/[^a-z0-9]/i);
 
-        const passwordCheck = passwordDoesNotMeetLength || !(passwordMeetsTextInclude && passwordMeetsSpecialInclude && passwordHasNumber);
+        const passwordCheck =
+            passwordDoesNotMeetLength ||
+            !(
+                passwordMeetsTextInclude &&
+                passwordMeetsSpecialInclude &&
+                passwordHasNumber
+            );
 
         passwordRequirements[0].value = !passwordDoesNotMeetLength;
         passwordRequirements[1].value = passwordMeetsTextInclude;
@@ -81,13 +89,16 @@
     function resetPassword() {
         resetingPassword = true;
         Authentication.resetPassword(email, state, password)
-            .then(() => {
+            .then((token) => {
+                localStorage.setItem("token", token);
                 resetingPassword = false;
-                alert(TranslationHandler.textSafe(
-                    "password.update.success",
-                    currentLang,
-                    "Password changed successfully!"
-                ));
+                alert(
+                    TranslationHandler.textSafe(
+                        "password.update.success",
+                        currentLang,
+                        "Password changed successfully!",
+                    ),
+                );
                 location.href = "/";
             })
             .catch((error) => {
@@ -96,18 +107,27 @@
             });
     }
 </script>
-    
+
 <svelte:head>
     <title>PenguinMod - Reset Password</title>
     <meta name="title" content="PenguinMod - Reset Password" />
     <meta property="og:title" content="PenguinMod - Reset Password" />
     <meta property="twitter:title" content="PenguinMod - Reset Password" />
-    <meta name="description" content="Reset your password for PenguinMod to regain access to your account with a new password" />
-    <meta property="twitter:description" content="Reset your password for PenguinMod to regain access to your account with a new password" />
-    <meta property="og:url" content="https://penguinmod.com/resetpassword">
-    <meta property="twitter:url" content="https://penguinmod.com/resetpassword">
+    <meta
+        name="description"
+        content="Reset your password for PenguinMod to regain access to your account with a new password"
+    />
+    <meta
+        property="twitter:description"
+        content="Reset your password for PenguinMod to regain access to your account with a new password"
+    />
+    <meta property="og:url" content="https://penguinmod.com/resetpassword" />
+    <meta
+        property="twitter:url"
+        content="https://penguinmod.com/resetpassword"
+    />
 </svelte:head>
-    
+
 <NavigationBar />
 
 <div class="main">
@@ -115,10 +135,7 @@
 
     <main>
         <div class="profile-section">
-            <img
-                src="/account/profile_sheet.png"
-                alt="Profiles"
-            />
+            <img src="/account/profile_sheet.png" alt="Profiles" />
         </div>
         <h1 style="margin-block:4px">PenguinMod</h1>
         <p>
@@ -128,7 +145,7 @@
                 lang={currentLang}
             />
         </p>
-            
+
         <span class="input-title">
             <LocalizedText
                 text="Password"
@@ -142,13 +159,13 @@
                 placeholder={TranslationHandler.textSafe(
                     "account.fields.password.placeholder",
                     currentLang,
-                    "Remember to write it down!"
+                    "Remember to write it down!",
                 )}
                 data-valid={passwordValid}
                 maxlength="50"
                 on:input={passwordInputChanged}
-                on:focusin={() => focused = true}
-                on:focusout={() => focused = false}
+                on:focusin={() => (focused = true)}
+                on:focusout={() => (focused = false)}
             />
             <button
                 class="password-show invert-on-dark"
@@ -160,7 +177,11 @@
             <ChecksBox items={passwordRequirements} />
         {/if}
 
-        <button class="create-acc" data-canReset={canResetPassword} on:click={resetPassword}>
+        <button
+            class="create-acc"
+            data-canReset={canResetPassword}
+            on:click={resetPassword}
+        >
             {#if resetingPassword}
                 <LoadingSpinner icon="/loading_white.png" />
             {:else}
@@ -173,7 +194,7 @@
         </button>
     </main>
 </div>
-    
+
 <style>
     * {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -241,7 +262,7 @@
         background: #111;
         color: white;
     }
-    
+
     main input[data-valid="true"] {
         border-color: rgb(0, 187, 0) !important;
     }
@@ -257,13 +278,13 @@
         height: calc(100% - 8px);
         border: 0;
         background: transparent;
-        background-image: url('account/showpassword.svg');
+        background-image: url("account/showpassword.svg");
         background-size: 100% 100%;
         opacity: 0.7;
         cursor: pointer;
     }
     .password-show[data-visible="true"] {
-        background-image: url('account/hidepassword.svg');
+        background-image: url("account/hidepassword.svg");
         background-size: 100% 100%;
     }
     :global(body.dark-mode) .invert-on-dark {
@@ -288,7 +309,7 @@
         padding: 4px 8px;
         width: 60%;
         margin-top: 4px;
-        
+
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -296,19 +317,19 @@
         border: 1px solid rgba(0, 0, 0, 0.2);
         font-size: 18px;
     }
-    
-    .create-acc[data-canReset=true] {
+
+    .create-acc[data-canReset="true"] {
         background: #00c3ff;
         cursor: pointer;
         color: white;
     }
 
-    :global(body.dark-mode) .create-acc[data-canReset=false] {
+    :global(body.dark-mode) .create-acc[data-canReset="false"] {
         background: #9c9c9c;
         color: rgb(255, 255, 255);
     }
 
-    .create-acc[data-canReset=false] {
+    .create-acc[data-canReset="false"] {
         background: #9c9c9c;
         color: rgb(255, 255, 255);
         cursor: not-allowed;
@@ -331,25 +352,32 @@
     }
 
     @keyframes profile-scroll {
-        0%, 10% {
+        0%,
+        10% {
             transform: translateX(0);
         }
-        15%, 25% {
+        15%,
+        25% {
             transform: translateX(-96px);
         }
-        30%, 40% {
+        30%,
+        40% {
             transform: translateX(-192px);
         }
-        45%, 55% {
+        45%,
+        55% {
             transform: translateX(-288px);
         }
-        60%, 70% {
+        60%,
+        70% {
             transform: translateX(-384px);
         }
-        75%, 85% {
+        75%,
+        85% {
             transform: translateX(-480px);
         }
-        90%, 100% {
+        90%,
+        100% {
             transform: translateX(-480px);
         }
     }
