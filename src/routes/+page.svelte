@@ -745,18 +745,15 @@
                 <div class="category-news">
                     <div class="category-news-content">
                         <h2 style="margin-block:4px;">
-                            All The Mods Game Jam!
+                            All The Mods Game Jam has ended!
                         </h2>
                         <div style="width:100%">
                             <p>
-                                We've partnered with many different Scratch mods (featuring PenguinMod, TurboWarp, and more)
-                                to run a game jam across multiple communities!
-                                <br />
-                                Please see the event page for details on how to participate!
+                                Thanks for participating in the event! Rankings will be announced on <a href="https://itch.io/jam/all-the-mods-game-jam">itch.io</a>. See you soon!
                             </p>
-                            <p style="margin-block-start:4px;">
-                                <a href="https://penguinmod.com/events/allthemods2026">All The Mods 2026</a>
-                            </p>
+                            <a href="https://itch.io/jam/all-the-mods-game-jam">
+                                All The Mods on itch.io
+                            </a>
                             <img
                                 src="/events/news/allthemods2026.webp?r=1"
                                 alt="All The Mods 2026"
