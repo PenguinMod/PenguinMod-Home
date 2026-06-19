@@ -745,21 +745,18 @@
                 <div class="category-news">
                     <div class="category-news-content">
                         <h2 style="margin-block:4px;">
-                            Spring PenguinJam has ended!
+                            All The Mods Game Jam has ended!
                         </h2>
                         <div style="width:100%">
                             <p>
-                                Time's up everyone, the 2026 Spring PenguinJam
-                                has ended!
-                                <br />
-                                Thanks for submitting your projects this year!
-                                <br />
-                                We're going to start ranking your projects now. Please
-                                wait until we are done with ranking!
+                                Thanks for participating in the event! Rankings will be announced on <a href="https://itch.io/jam/all-the-mods-game-jam">itch.io</a>. See you soon!
                             </p>
+                            <a href="https://itch.io/jam/all-the-mods-game-jam">
+                                All The Mods on itch.io
+                            </a>
                             <img
-                                src="/events/news/penguinjamspring2026.webp"
-                                alt="Spring PenguinJam 2026"
+                                src="/events/news/allthemods2026.webp?r=1"
+                                alt="All The Mods 2026"
                                 style="width:100%;"
                             />
                         </div>
