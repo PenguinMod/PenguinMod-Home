@@ -77,7 +77,7 @@
 				return val;
 			};
 			const browserHasStack = !!new Error().stack;
-			const _parseFirefoxStack = stack => stack.split('\n').slice(1)
+			const _parseFirefoxStack = stack => stack.split('\n')
 				.map(line => {
 					const at = line.indexOf('@');
 					const secondCol = line.lastIndexOf(':');
@@ -108,11 +108,11 @@
 						origin
 					};
 				});
-			const _parseChromeStack = stack => stack.split('\n').slice(2)
+			const _parseChromeStack = stack => stack.split('\n').slice(1)
 				.map(line => {
 					// we have no use for the human readable fluff
 					line = line.slice(7);
-					const firstOpenParen = line.indexOf('(');
+					let firstOpenParen = line.indexOf('(');
 					const secondOpenParen = line.indexOf('(', firstOpenParen +1);
 					const firstCloseParen = line.indexOf(')');
 					const secondCloseParen = line.indexOf(')', firstCloseParen +1);
@@ -126,12 +126,17 @@
 						fourthCol = NaN;
 						thirdCol = NaN;
 					}
+					if (firstOpenParen === -1) {
+						firstOpenParen = firstCol +1;
+						thirdCol = line.length;
+					}
 					const name = line.slice(0, firstOpenParen -1);
 					const origin = [
 						Number(line.slice(firstCol +1, secondCol)),
 						Number(line.slice(secondCol +1, thirdCol || firstCloseParen))
 					];
 					let url = line.slice(firstOpenParen +1, firstCol);
+					if (!url) url = name;
 					let evalType = null;
 					let evalOrigin = null;
 					if (secondOpenParen !== -1) {
