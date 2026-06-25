@@ -1,6 +1,6 @@
 <script>
     import { onMount } from "svelte";
-    import { browser } from '$app/environment';
+    import { browser } from "$app/environment";
 
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
@@ -40,7 +40,7 @@
         { name: "password.requirement.symbol", value: false },
     ];
 
-    function changePasswordRedirect() {
+    async function changePasswordRedirect() {
         if (!browser) return;
 
         // get url params
@@ -63,11 +63,20 @@
                 throw new Error("Invalid method");
         }
 
-        url += `?at=${accessToken}&password=${password}`;
+        const { username, token } = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ at: accessToken, password }),
+        }).then((res) => res.json());
 
-        location.href = url;
+        localStorage.setItem("token", token);
+        localStorage.setItem("username", username);
+
+        location.href = "/";
     }
-    const changePasswordRedirectSafe = () => {
+    const changePasswordRedirectSafe = async () => {
         if (!canChangePassword) {
             alert(
                 TranslationHandler.textSafe(
@@ -82,7 +91,7 @@
         if (changingPassword) return;
         changingPassword = true;
 
-        changePasswordRedirect();
+        await changePasswordRedirect();
     };
 
     async function checkIfValid() {
