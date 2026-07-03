@@ -5,6 +5,7 @@ import {
 } from "$env/static/public";
 import pmp_protobuf from "pmp-protobuf";
 import JSZip from "jszip";
+import Authentication from "./authentication";
 
 let OriginApiUrl = PUBLIC_API_URL;
 
@@ -1280,6 +1281,14 @@ class ProjectApi {
                                 reject(json.error);
                                 return;
                             }
+
+                            // clear usernamefromcode cache
+                            Authentication.usernameFromCode(
+                                this.username,
+                                this.token,
+                                true,
+                            );
+
                             resolve();
                         })
                         .catch((err) => {
@@ -1345,6 +1354,14 @@ class ProjectApi {
                                 reject(json.error);
                                 return;
                             }
+
+                            // clear cache
+                            Authentication.usernameFromCode(
+                                this.username,
+                                this.token,
+                                true,
+                            );
+
                             resolve();
                         })
                         .catch((err) => {
@@ -2057,6 +2074,14 @@ class ProjectApi {
                                 reject(json.error);
                                 return;
                             }
+
+                            // clear cache
+                            Authentication.usernameFromCode(
+                                this.username,
+                                this.token,
+                                true,
+                            );
+
                             resolve();
                         })
                         .catch((err) => {
@@ -2163,6 +2188,14 @@ class ProjectApi {
                                 reject(json.error);
                                 return;
                             }
+
+                            // clear cache
+                            Authentication.usernameFromCode(
+                                this.username,
+                                this.token,
+                                true,
+                            );
+
                             resolve();
                         })
                         .catch((err) => {
@@ -2509,6 +2542,14 @@ class ProjectApi {
                                 reject(json.error);
                                 return;
                             }
+
+                            // clear cache
+                            Authentication.usernameFromCode(
+                                this.username,
+                                this.token,
+                                true,
+                            );
+
                             resolve();
                         })
                         .catch((err) => {

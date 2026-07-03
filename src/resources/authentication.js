@@ -176,12 +176,18 @@ class Authentication {
             }
         });
     }
-    static usernameFromCode(username, token) {
+    static usernameFromCode(username, token, clear_cache = false) {
         // name is a misnomer, was just to lazy to change after new api update.
         // TODO: make this less misleading
         return new Promise((resolve, reject) => {
+            const cc = clear_cache
+                ? {
+                      cache: "reload",
+                  }
+                : {};
             fetch(
                 `${ProjectApi.OriginApiUrl}/api/v1/users/userfromcode?username=${username}&token=${token}`,
+                cc,
             )
                 .then((r) =>
                     r
@@ -321,6 +327,14 @@ class Authentication {
                         .json()
                         .then((j) => {
                             if (j.error) return reject(j.error);
+
+                            // clear userfromcode cache
+                            Authentication.usernameFromCode(
+                                username,
+                                token,
+                                true,
+                            );
+
                             resolve(j.token);
                         })
                         .catch(reject),

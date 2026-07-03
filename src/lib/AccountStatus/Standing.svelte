@@ -112,7 +112,7 @@
 
             {#if detail >= 4}
                 <h2>
-                    {#if messagecount > 9}
+                    {#if messagecount >= 9}
                         <LocalizedText
                             text="Moderator Messages (9+)"
                             key="account.settings.standing.messages.toomany"
