@@ -333,6 +333,8 @@
             }
         }
 
+        fetchProfile();
+
         page.subscribe((v) => {
             if (!v.url.searchParams.get("user") || !user) return;
             if (

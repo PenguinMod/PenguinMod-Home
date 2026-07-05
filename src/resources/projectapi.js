@@ -5,6 +5,7 @@ import {
 } from "$env/static/public";
 import pmp_protobuf from "pmp-protobuf";
 import JSZip from "jszip";
+import Authentication from "./authentication";
 
 let OriginApiUrl = PUBLIC_API_URL;
 
@@ -122,7 +123,12 @@ class ProjectApi {
         if (user in ProjectApi.CachedDonators) {
             return ProjectApi.CachedDonators[user];
         }
-        const badges = await ProjectApi.getUserBadges(user);
+        let badges;
+        try {
+            badges = await ProjectApi.getUserBadges(user);
+        } catch {
+            return false;
+        }
         ProjectApi.CachedDonators[user] = badges.includes("donator");
         return badges.includes("donator");
     }
@@ -188,6 +194,7 @@ class ProjectApi {
                 );
             case "featured":
             case "newest":
+            case "uploaddate":
             case "views":
             case "votes":
             case "loves":
@@ -247,7 +254,7 @@ class ProjectApi {
 
     async getFrontPage() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/frontpage?username=${this.username}&token=${this.token}`; // so mods can see ALL!!!!!!!!!!!!!
+            const url = `${OriginApiUrl}/api/v1/projects/frontpage?token=${this.token}`;
             fetch(url)
                 .then((res) => {
                     if (res.status === 429) return reject(429);
@@ -1274,6 +1281,14 @@ class ProjectApi {
                                 reject(json.error);
                                 return;
                             }
+
+                            // clear usernamefromcode cache
+                            Authentication.usernameFromCode(
+                                this.username,
+                                this.token,
+                                true,
+                            );
+
                             resolve();
                         })
                         .catch((err) => {
@@ -1339,6 +1354,14 @@ class ProjectApi {
                                 reject(json.error);
                                 return;
                             }
+
+                            // clear cache
+                            Authentication.usernameFromCode(
+                                this.username,
+                                this.token,
+                                true,
+                            );
+
                             resolve();
                         })
                         .catch((err) => {
@@ -1603,6 +1626,7 @@ class ProjectApi {
         });
     }
 
+    // TODO: move this or smth similar to pmp-protobuf
     resolveProjectSizes(file, imageSize = 0) {
         return JSZip.loadAsync(file).then(async (zip) => {
             const projectJSON = JSON.parse(
@@ -1636,11 +1660,19 @@ class ProjectApi {
                 projectJSON.targets[0] = target;
                 const costumes = target.costumes.map((asset) => [
                     asset.name,
-                    assets[asset.md5ext],
+                    assets[
+                        asset.md5ext
+                            ? asset.md5ext
+                            : `${asset.assetId}.${asset.dataFormat}`
+                    ],
                 ]);
                 const sounds = target.sounds.map((asset) => [
                     asset.name,
-                    assets[asset.md5ext],
+                    assets[
+                        asset.md5ext
+                            ? asset.md5ext
+                            : `${asset.assetId}.${asset.dataFormat}`
+                    ],
                 ]);
 
                 const totalCodeSize =
@@ -1699,7 +1731,10 @@ class ProjectApi {
 
                 projectJSON.targets[0] = original_target;
 
-                const costumeSize = costumes.reduce((c, v) => c + v[1].size, 0);
+                const costumeSize = costumes.reduce(
+                    (c, v) => c + (v[1] ? v[1].size : 0),
+                    0,
+                );
                 const soundSize = sounds.reduce((c, v) => c + v[1].size, 0);
                 const size = totalCodeSize + costumeSize + soundSize;
 
@@ -1849,8 +1884,6 @@ class ProjectApi {
             assets.forEach((ent) => formData.append("assets", ...ent));
             formData.append("jsonFile", protobuf);
             formData.append("thumbnail", data.image);
-
-            console.debug(formData.getAll("assets"));
 
             request.send(formData);
         });
@@ -2041,6 +2074,14 @@ class ProjectApi {
                                 reject(json.error);
                                 return;
                             }
+
+                            // clear cache
+                            Authentication.usernameFromCode(
+                                this.username,
+                                this.token,
+                                true,
+                            );
+
                             resolve();
                         })
                         .catch((err) => {
@@ -2147,6 +2188,14 @@ class ProjectApi {
                                 reject(json.error);
                                 return;
                             }
+
+                            // clear cache
+                            Authentication.usernameFromCode(
+                                this.username,
+                                this.token,
+                                true,
+                            );
+
                             resolve();
                         })
                         .catch((err) => {
@@ -2493,6 +2542,14 @@ class ProjectApi {
                                 reject(json.error);
                                 return;
                             }
+
+                            // clear cache
+                            Authentication.usernameFromCode(
+                                this.username,
+                                this.token,
+                                true,
+                            );
+
                             resolve();
                         })
                         .catch((err) => {

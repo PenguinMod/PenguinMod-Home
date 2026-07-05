@@ -188,21 +188,7 @@
     }
 
     function askForLogin() {
-        Authentication.authenticate().then((privateCode) => {
-            loggedIn = null;
-            Authentication.usernameFromCode(privateCode)
-                .then(({ username }) => {
-                    if (username) {
-                        loggedIn = true;
-                        loggedInChange(username, privateCode);
-                        return;
-                    }
-                    loggedIn = false;
-                })
-                .catch(() => {
-                    loggedIn = false;
-                });
-        });
+        Authentication.authenticate(false);
     }
     let readMessages = [];
     function markAsRead(id) {
@@ -239,7 +225,10 @@
         markPolicyAsRead("TOS");
         markPolicyAsRead("guidelines");
 
-        ProjectClient.markAllMessagesAsRead();
+        ProjectClient.markAllMessagesAsRead().then(() => {
+            // clear cache
+            Authentication.usernameFromCode(this.username, this.token, true);
+        });
 
         readMessages = readMessages.concat(
             messages.map((message) => message.id),

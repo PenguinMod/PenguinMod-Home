@@ -59,17 +59,7 @@
     });
 
     function askForLogin() {
-        Authentication.authenticate().then((privateCode) => {
-            loggedIn = null;
-            Authentication.usernameFromCode(privateCode)
-                .then(({ standing }) => {
-                    loggedIn = true;
-                    loggedInChange(username, token, standing);
-                })
-                .catch(() => {
-                    loggedIn = false;
-                });
-        });
+        Authentication.authenticate(false);
     }
 
     Authentication.onLogout(() => {

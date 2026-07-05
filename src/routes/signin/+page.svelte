@@ -25,6 +25,8 @@
     onMount(() => {
         Language.forceUpdate();
         embed = $page.url.searchParams.get("embed") === "true";
+        redir_link = $page.url.searchParams.get("redirect");
+        redir_link = redir_link ? decodeURIComponent(redir_link) : null;
     });
     Language.onChange((lang) => {
         currentLang = lang;
@@ -46,6 +48,7 @@
     let password = "";
     let loggingIn = false;
     let embed = false;
+    let redir_link = "";
 
     let showingPassword = false;
 
@@ -110,9 +113,7 @@
                         }
 
                         // redirect
-                        const redir = $page.url.searchParams.get("redirect");
-
-                        window.location.href = redir ? redir : "/";
+                        window.location.href = redir_link ? redir_link : "/";
                     } else {
                         wrongInfo = true;
                     }
@@ -154,9 +155,7 @@
                 return;
             }
 
-            const redir = $page.url.searchParams.get("redirect");
-
-            location.href = redir ? redir : "/";
+            location.href = redir_link ? redir_link : "/";
         });
     }
 
@@ -448,7 +447,10 @@
                 lang={currentLang}
             />
 
-            <a href="/signup?embed={embed}" style="margin: 8px">
+            <a
+                href="/signup?embed={embed}&redirect={redir_link}"
+                style="margin: 8px"
+            >
                 <LocalizedText
                     text="Don't have an account? Sign up here!"
                     key="login.linkto.signup"

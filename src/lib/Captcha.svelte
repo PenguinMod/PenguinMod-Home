@@ -1,12 +1,14 @@
 <script>
-    import { page } from '$app/stores';
+    import { page } from "$app/stores";
     import { browser } from "$app/environment";
     import { onMount, createEventDispatcher } from "svelte";
 
     import { PUBLIC_CAPTCHA_ENABLED } from "$env/static/public";
-    
+
     const dispatch = createEventDispatcher();
-    
+
+    let container;
+
     let mockCompleted = false;
     let mockExpired = false;
     const mockComplete = () => {
@@ -24,29 +26,34 @@
     };
 
     onMount(() => {
-        if (String(PUBLIC_CAPTCHA_ENABLED) === "false") {
-            return;
+        if (String(PUBLIC_CAPTCHA_ENABLED) === "false") return;
+
+        const renderWidget = () => {
+            widgetId = turnstile.render(container, {
+                sitekey: "0x4AAAAAAA0-uEePyt9NmTMl",
+                callback: (token) => dispatch("update", token),
+                "expired-callback": () => dispatch("update", false),
+                "error-callback": () => {
+                    turnstile.reset(widgetId);
+                    dispatch("update", false);
+                },
+            });
+        };
+
+        if (window.turnstile) {
+            renderWidget();
+        } else {
+            window.onTurnstileLoad = renderWidget;
         }
-
-        window.on_captcha_complete = (token) => {
-            dispatch("update", token);
-        };
-
-        window.on_captcha_expired = () => {
-            dispatch("update", false);
-        };
-
-        window.on_captcha_error = () => {
-            // reload the captcha
-            turnstile.reset();
-            dispatch("update", false);
-        };
     });
 </script>
 
 <svelte:head>
     {#if String(PUBLIC_CAPTCHA_ENABLED) !== "false"}
-        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        <script
+            src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad"
+            defer
+        ></script>
     {/if}
 </svelte:head>
 
@@ -58,23 +65,20 @@
             {:else if mockCompleted}
                 ✅ Success!
             {:else}
-                <button style="border: 1px solid black; padding: 14px;" on:click={mockComplete}>X</button>
+                <button
+                    style="border: 1px solid black; padding: 14px;"
+                    on:click={mockComplete}>X</button
+                >
                 I'm not a robot
             {/if}
         </span>
-        <br>
-        <br>
+        <br />
+        <br />
         <button on:click={mockExpire}>Expire</button>
         <button on:click={mockError}>Error (Reset)</button>
-        <br>
+        <br />
         Emulator, Captcha is disabled in .env, see PUBLIC_CAPTCHA_ENABLED
     </div>
 {:else}
-    <div
-        class="cf-turnstile"
-        data-sitekey="0x4AAAAAAA0-uEePyt9NmTMl"
-        data-callback="on_captcha_complete"
-        data-expired-callback="on_captcha_expired"
-        data-error-callback="on_captcha_error"
-    />
+    <div bind:this={container} />
 {/if}

@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { page } from "$app/stores";
-    import { browser } from '$app/environment';
+    import { browser } from "$app/environment";
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
     import Authentication from "../../resources/authentication.js";
     import LINK from "../../resources/urls.js";
@@ -32,7 +32,9 @@
     let loggedIn = null;
     let projectIdSelection;
     let serverStats = [];
-    const selectForReject = browser ? $page.url.searchParams.get("reject") : null;
+    const selectForReject = browser
+        ? $page.url.searchParams.get("reject")
+        : null;
 
     function kickOut(loggedOut) {
         const error = loggedOut ? 401 : 403;
@@ -158,6 +160,7 @@
     };
 
     let projectListStyle = "";
+    let reportsLoading = false;
     const refreshProjectMenu = () => {
         unapprovedProjects = [];
         contentWithReports = [];
@@ -201,8 +204,10 @@
     function openReportsMenu(type) {
         unapprovedProjects = [];
         contentWithReports = [];
+        reportsLoading = true;
         ProjectClient.getTypeWithReports(type, 0).then(
             (projectsWithReports) => {
+                reportsLoading = false;
                 contentWithReports = projectsWithReports;
                 console.log(contentWithReports);
             },
@@ -1847,9 +1852,9 @@
                         >
                     </div>
                 </div>
-                <!-- <br>
-                <br> -->
-                <!-- <input
+                <br />
+                <br />
+                <input
                     type="text"
                     size="50"
                     minlength="3"
@@ -1857,14 +1862,15 @@
                     placeholder="New username..."
                     bind:value={userSelectionData.newUsername}
                 />
-                <br> -->
+                <br />
                 <label>
                     New Profile Picture:
                     <input type="file" on:change={setNewPfpInput} />
                 </label>
                 <br />
                 <br />
-                <!--<Button color="purple" on:click={renameUser}>Rename User</Button>-->
+                <Button color="purple" on:click={renameUser}>Rename User</Button
+                >
                 <Button color="purple" on:click={changePfpUser}
                     >Change User's Profile Picture</Button
                 >
@@ -2141,10 +2147,18 @@
                         <p class="selection-info">
                             No removed projects currently!
                         </p>
+                    {:else if dropdownSelectMenu.value === "project"}
+                        {#if reportsLoading}
+                            <p class="selection-info">
+                                Project reports loading...
+                            </p>
+                        {:else}
+                            <p class="selection-info">
+                                No projects reports currently!
+                            </p>
+                        {/if}
                     {:else}
-                        <p class="selection-info">
-                            No project reports currently!
-                        </p>
+                        <p class="selection-info">how did you get here</p>
                     {/if}
                     {#each unapprovedProjects as project}
                         <div>

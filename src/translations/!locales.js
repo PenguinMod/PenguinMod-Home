@@ -27,6 +27,8 @@ import sk from '../translations/sk.json';
 import uk from '../translations/uk.json';
 import ja from '../translations/ja.json';
 import fa from '../translations/fa.json';
+import nl from '../translations/nl.json';
+import ar from '../translations/ar.json';
 
 // joke languages
 import test from '../translations/test.json';
@@ -60,6 +62,8 @@ const languages = {
     "uk": uk,                      // Ukranian
     "he": he,                      // Hebrew
     "fa": fa,                      // Persian
+    "nl": nl,                      // Dutch (Nederlands)
+    "ar": ar,                      // Arabic
     
     // only visible if in the jokeLanguages array
     "test": test,                  // Test
@@ -69,6 +73,7 @@ const languages = {
 const rtlLanguages = [
     "he",                          // Hebrew
     "fa",                          // Persian
+    "ar",                          // Arabic
 ];
 // set pairs for language codes that should be interpreted as another language code
 const autoLocale = {

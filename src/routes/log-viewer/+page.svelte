@@ -79,6 +79,7 @@
             .replaceAll('"', '&quot;')
             .replaceAll('\n', '<br>');
     }
+
     const matchSubstitute = /%((?<type>[oOdisfc])|\.(?<precision>[0-9]+)f)/g;
     function formatMessage(args) {
         if (!Array.isArray(args)) args = [args];
@@ -120,7 +121,7 @@
                     break;
                 }
             }
-            if (idx < (args.length -1)) out += formatMessage(args.slice(idx));
+            if (idx < args.length) out += formatMessage(args.slice(idx));
             return out;
         }
         return args
@@ -135,14 +136,17 @@
         editor.session.setValue(source);
     }
     function selectTrace(id) {
-        const log = logs.find(log => log.id === selectedLog);
+        const log = typeof selectedLog === 'object'
+            ? selectedLog
+            : logs.find(log => log.id === selectedLog);
         const trace = log.trace.find(trace => trace.id === id);
+        if (!trace) debugger;
         renderCode(trace.url);
         editor.moveCursorTo(trace.origin[0], trace.origin[1]);
     }
     function selectLog(id) {
         selectedLog = id;
-        const log = logs.find(log => log.id === id);
+        const log = typeof id === 'object' ? id : logs.find(log => log.id === id);
         selector.innerHTML = '';
         for (const trace of log.trace) {
             /** @type {HTMLOptionElement} */
@@ -153,6 +157,7 @@
         }
         selectTrace(log.trace[0].id);
     }
+    if (globalThis.window) window.selectLog = selectLog; // globalize for object-viewer
 </script>
 
 <svelte:head>
@@ -205,10 +210,16 @@
                                 const index = JSON.parse(await files.file('index.json').async('text'));
                                 // hehehaw, imagine running into a recursive item
                                 logs = parse(await files.file('logs.json').async('text'));
-                                for (const log of logs) {
+                                const messages = [
+                                    ...logs
+                                        .map(log => log.message)
+                                        .flat()
+                                        .filter(arg => arg instanceof Error)
+                                        .map(error => (error.trace = parseStack(error.stack), error)),
+                                    ...logs
+                                ];
+                                for (const log of messages) {
                                     message = 'Formating log contents';
-                                    subMessage = `Rendering format of log ${log.message}`;
-                                    log.message = formatMessage(log.message);
                                     log.id = ((Math.random() * 0xFFFFFFFF) & 0xFFFFFFFF).toString(16);
                                     for (const trace of log.trace) {
                                         message = 'Loading trace contents';
@@ -245,7 +256,7 @@
                                     sources[url] = beautify.js(sources[url].map(line => line.join('')).join('\n'));
                                     subMessage = `Updating trace references for ${url}`;
                                     const lines = sources[url].split('\n');
-                                    for (const log of logs) {
+                                    for (const log of messages) {
                                         for (const trace of log.trace) {
                                             if (trace.url !== url) continue;
                                             const id = `/*! line,column/${trace.origin} !*/`;
@@ -256,6 +267,12 @@
                                             trace.origin[1] = column;
                                         }
                                     }
+                                }
+                                // do log messages at the very last minute physically possible, as errors inside log messages get handled above
+                                message = 'Formating log contents';
+                                for (const log of logs) {
+                                    subMessage = `Rendering format of log ${log.message}`;
+                                    log.message = formatMessage(log.message);
                                 }
                             } catch (err) {
                                 message = 'Error while parsing file data';
