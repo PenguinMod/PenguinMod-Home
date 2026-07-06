@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { page } from "$app/stores";
-    import { browser } from '$app/environment';
+    import { browser } from "$app/environment";
 
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
@@ -121,11 +121,14 @@
 
     function logout() {
         accountMenu.style.display = "none";
-        Authentication.logout().then(() => {
-            loggedIn = false;
-            canRankUp = false;
-            messageCount = 0;
-        });
+        Authentication.logout()
+            .then(() => {
+                loggedIn = false;
+                canRankUp = false;
+                messageCount = 0;
+                location.reload();
+            })
+            .catch(() => location.reload());
     }
     function login() {
         Authentication.authenticate(false);
