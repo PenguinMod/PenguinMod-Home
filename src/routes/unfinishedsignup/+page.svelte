@@ -103,9 +103,9 @@
 
         finishSignup()
             .then(
-                () => {
+                async () => {
                     // clear cache
-                    Authentication.usernameFromCode(
+                    await Authentication.usernameFromCode(
                         this.username,
                         this.token,
                         true,
