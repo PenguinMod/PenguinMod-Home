@@ -660,6 +660,7 @@
                     lang={currentLang}
                 />
             </span>
+            <!-- TODO: (i guess for home-new), this should be a svelte element thing -->
             <input
                 type="text"
                 placeholder={TranslationHandler.textSafe(

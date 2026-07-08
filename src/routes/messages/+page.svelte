@@ -156,9 +156,11 @@
         }
     };
 
+    let username = "";
+    let token = "";
     onMount(async () => {
-        const username = localStorage.getItem("username");
-        const token = localStorage.getItem("token");
+        username = localStorage.getItem("username");
+        token = localStorage.getItem("token");
         if (!token || !username) {
             loggedIn = false;
             return;
@@ -227,7 +229,7 @@
 
         ProjectClient.markAllMessagesAsRead().then(() => {
             // clear cache
-            Authentication.usernameFromCode(this.username, this.token, true);
+            Authentication.usernameFromCode(username, token, true);
         });
 
         readMessages = readMessages.concat(

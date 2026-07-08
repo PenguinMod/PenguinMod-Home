@@ -23,6 +23,7 @@
 
     let loggedIn = null;
     let loggedInUsername = null;
+    let username = null;
     let token = null;
     let loginMethods = [];
     let emailIsVerified = false;
@@ -97,7 +98,7 @@
     }
 
     onMount(async () => {
-        const username = localStorage.getItem("username");
+        username = localStorage.getItem("username");
         token = localStorage.getItem("token");
         if (!token || !username) {
             loggedIn = false;
@@ -153,12 +154,13 @@
             }
 
             if (event.data) {
-                const username = event.data.username;
+                const _username = event.data.username;
                 const _token = event.data.token;
 
-                if (username && token) {
-                    localStorage.setItem("username", username);
+                if (_username && token) {
+                    localStorage.setItem("username", _username);
                     localStorage.setItem("token", token);
+                    username = _username;
                     token = _token;
                     // reload but add page query param set to the current tab
                     location.href = `?page=${currentTab}`;
@@ -325,11 +327,7 @@
                 localStorage.setItem("token", token);
 
                 // clear cache
-                Authentication.usernameFromCode(
-                    this.username,
-                    this.token,
-                    true,
-                );
+                Authentication.usernameFromCode(username, token, true);
 
                 resolve();
             });
@@ -365,11 +363,7 @@
             ProjectClient.removeOAuthMethod(method)
                 .then(() => {
                     // clear cache
-                    Authentication.usernameFromCode(
-                        this.username,
-                        this.token,
-                        true,
-                    );
+                    Authentication.usernameFromCode(username, token, true);
 
                     loginMethods = loginMethods.filter((m) => m !== method);
                 })

@@ -106,8 +106,8 @@
                 async () => {
                     // clear cache
                     await Authentication.usernameFromCode(
-                        this.username,
-                        this.token,
+                        username,
+                        token,
                         true,
                     );
 
@@ -145,7 +145,7 @@
         if (privateCode) ProjectClient.setToken(privateCode);
     }
     onMount(async () => {
-        const username = localStorage.getItem("username");
+        username = localStorage.getItem("username");
         token = localStorage.getItem("token");
         if (!token || !username) {
             loggedIn = false;
