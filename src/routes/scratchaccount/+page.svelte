@@ -62,6 +62,7 @@
 
         if (!data.exists) {
             stupidPersonDoesntExist.add(username);
+            return null;
         }
 
         return data.code;
