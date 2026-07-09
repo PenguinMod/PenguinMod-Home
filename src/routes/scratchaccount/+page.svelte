@@ -11,15 +11,24 @@
 
     const STAGES = {
         VALIDITY: "validity",
-        LOADING: "loading",
         CHECK_COMMENTS: "comments",
     };
 
     let stage = STAGES.VALIDITY;
+    let loading = false;
 
     let currentLang = "en";
+    let method = "";
     onMount(() => {
         Language.forceUpdate();
+        const url_params = new URLSearchParams(window.location.search);
+
+        if (!url_params.has("method")) {
+            location.href = "/";
+            return;
+        }
+
+        method = url_params.get("method");
     });
     Language.onChange((lang) => {
         currentLang = lang;
@@ -52,7 +61,7 @@
             return null;
         }
 
-        const url = `${PUBLIC_API_URL}/api/v1/users/createaccountoauth/scratchusergetcode?username=${username}`;
+        const url = `${PUBLIC_API_URL}/api/v1/users/scratchusergetcode?username=${username}`;
 
         const data = await fetch(url)
             .then((res) => res.json())
@@ -68,12 +77,11 @@
         return data.code;
     }
 
-    // shitty TODO: eventually, maybe we could find out a way to translate this? pass language to server.
-    // although that might fall ill to a man-in-the-middle attack. idk.
     let commentCode = "";
     async function continueAfterUsernameEnter() {
-        stage = STAGES.LOADING;
+        loading = true;
         commentCode = await getCode(username);
+        loading = false;
         if (!commentCode) {
             stage = STAGES.VALIDITY;
             usernameValid = false;
@@ -84,9 +92,10 @@
     }
 
     async function checkComments() {
-        stage = STAGES.LOADING;
+        loading = true;
+
         window.location.replace(
-            `${PUBLIC_API_URL}/api/v1/users/scratchcallback/createaccount?username=${username}&code=${encodeURIComponent(commentCode)}`,
+            `${PUBLIC_API_URL}/api/v1/users/scratchcallback/${method}?username=${username}&code=${encodeURIComponent(commentCode)}`,
         );
     }
 </script>
@@ -117,7 +126,7 @@
 
 <div class="main">
     <main>
-        {#if stage == STAGES.VALIDITY || stage == STAGES.LOADING}
+        {#if stage == STAGES.VALIDITY}
             pretty please put your scratch username here thank you thank you
             thank you
 
@@ -126,7 +135,7 @@
                 placeholder="TODO: TRANSLATION NEEDED"
                 data-valid={usernameValid}
                 maxlength="20"
-                disabled={stage != STAGES.VALIDITY}
+                disabled={loading}
                 on:input={usernameInputChanged}
             />
 
@@ -135,7 +144,7 @@
                 data-canContinue={usernameValid}
                 on:click={continueAfterUsernameEnter}
             >
-                {#if stage == STAGES.LOADING}
+                {#if loading}
                     <LoadingSpinner icon="/loading_white.png" />
                 {:else}
                     TODO: translation --- continue
@@ -154,7 +163,7 @@
                 data-canContinue={true}
                 on:click={checkComments}
             >
-                {#if stage == STAGES.LOADING}
+                {#if loading}
                     <LoadingSpinner icon="/loading_white.png" />
                 {:else}
                     TODO: translation --- i totally put that comment on my
