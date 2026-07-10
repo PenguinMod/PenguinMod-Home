@@ -6,7 +6,7 @@
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
     import Button from "$lib/Button/Button.svelte";
     import Language from "../../resources/language.js";
-
+	import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
     const STAGES = {
@@ -15,6 +15,7 @@
     };
 
     let stage = STAGES.VALIDITY;
+    let openedComments = false;
     let loading = false;
 
     let currentLang = "en";
@@ -44,6 +45,8 @@
         username = event.target.value;
 
         usernameValid = isValidScratchUsername(username);
+
+        openedComments = false;
     }
 
     function isValidScratchUsername(username) {
@@ -70,6 +73,7 @@
             }));
 
         if (!data.exists) {
+            // TODO: shouldnt this return null after, not data.code still
             stupidPersonDoesntExist.add(username);
             return null;
         }
@@ -80,6 +84,7 @@
     let commentCode = "";
     async function continueAfterUsernameEnter() {
         loading = true;
+        openedComments = false;
         commentCode = await getCode(username);
         loading = false;
         if (!commentCode) {
@@ -91,6 +96,9 @@
         }
     }
 
+    function profileCommentsOpened() {        
+        openedComments = true;
+    }
     async function checkComments() {
         loading = true;
 
@@ -126,13 +134,34 @@
 
 <div class="main">
     <main>
+        <div style="display:flex;flex-direction:row;height:80px;">
+            <img
+                src="/penguins/signin.svg"
+                alt="Sign in"
+                style="display:block;width:80px;height:80px;"
+            />
+            <img
+                src="/Scratch_S.svg"
+                alt="Scratch"
+                style="display:block;width:80px;height:80px;"
+            />
+        </div>
         {#if stage == STAGES.VALIDITY}
-            pretty please put your scratch username here thank you thank you
-            thank you
+            <p>
+                <LocalizedText
+                    text="Use your Scratch account to sign in to PenguinMod."
+                    key="auth.subtitle"
+                    lang={currentLang}
+                />
+            </p>
 
             <input
                 type="text"
-                placeholder="TODO: TRANSLATION NEEDED"
+                placeholder={TranslationHandler.textSafe(
+                    "account.fields.username",
+                    currentLang,
+                    "Username",
+                )}
                 data-valid={usernameValid}
                 maxlength="20"
                 disabled={loading}
@@ -144,13 +173,20 @@
                 data-canContinue={usernameValid}
                 on:click={continueAfterUsernameEnter}
             >
-                {#if loading}
-                    <LoadingSpinner icon="/loading_white.png" />
-                {:else}
-                    TODO: translation --- continue
-                {/if}
+                <LocalizedText
+                    text="Continue"
+                    key="auth.continue"
+                    lang={currentLang}
+                />
             </button>
         {:else if stage == STAGES.CHECK_COMMENTS}
+            <h3>
+                <LocalizedText
+                    text="Sign in by leaving a comment on *your* Scratch profile."
+                    key="auth.method.profile.subtitle"
+                    lang={currentLang}
+                />
+            </h3>
             <!-- jeremy please make this pretty and not just text -->
             <a href={`https://scratch.mit.edu/users/${username}`}>
                 your account
@@ -158,18 +194,21 @@
             <br />
             {commentCode}
             <br />
-            <button
-                type="submit"
-                data-canContinue={true}
-                on:click={checkComments}
-            >
-                {#if loading}
-                    <LoadingSpinner icon="/loading_white.png" />
-                {:else}
+            <Button>
+                TODO: This should pen comments
+            </Button>
+            {#if openedComments}
+                <button
+                    type="submit"
+                    data-canContinue={true}
+                    on:click={checkComments}
+                >
                     TODO: translation --- i totally put that comment on my
                     account
-                {/if}
-            </button>
+                </button>
+            {/if}
+        {:else}
+            <LoadingSpinner />
         {/if}
     </main>
 </div>
