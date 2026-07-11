@@ -1,13 +1,17 @@
 <script>
+    import { onMount } from "svelte";
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+    
+    import MarkdownIt from "markdown-it";
+
     import NavigationBar from "../../lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
-    import TranslationHandler from "../../resources/translations.js";
-    import { onMount } from "svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
-    import Button from "$lib/Button/Button.svelte";
-    import Language from "../../resources/language.js";
 	import LocalizedText from "$lib/LocalizedText/Node.svelte";
-    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+    import Button from "$lib/Button/Button.svelte";
+
+    import TranslationHandler from "../../resources/translations.js";
+    import Language from "../../resources/language.js";
 
     const STAGES = {
         VALIDITY: "validity",
@@ -128,6 +132,19 @@
             `${PUBLIC_API_URL}/api/v1/users/scratchcallback/${method}?username=${username}&code=${encodeURIComponent(commentCode)}`,
         );
     }
+
+    // translation MD
+    const md = new MarkdownIt({
+        html: false,
+        linkify: false,
+        breaks: true,
+    });
+    const env = {};
+    const generateMarkdown = (mdtext) => {
+        const tokens = md.parse(mdtext, env);
+        const bodyHTML = md.renderer.render(tokens, md.options, env);
+        return bodyHTML;
+    };
 </script>
 
 <svelte:head>
@@ -207,11 +224,15 @@
             {/if}
         {:else if stage == STAGES.CHECK_COMMENTS}
             <h3 style="margin-block-end:0px">
-                <LocalizedText
-                    text="Sign in by leaving a comment on *your* Scratch profile."
-                    key="auth.method.profile.subtitle"
-                    lang={currentLang}
-                />
+                <span class="disable-markdown-margin">
+                    {@html generateMarkdown(
+                        `${TranslationHandler.textSafe(
+                            "auth.method.profile.subtitle",
+                            currentLang,
+                            "Sign in by leaving a comment on *your* Scratch profile.",
+                        )}`,
+                    )}
+                </span>
             </h3>
             <textarea bind:this={commentCodeTextbox} readonly aria-readonly="true">{commentCode}</textarea>
             <div style="display:flex;flex-direction: row;">
@@ -379,5 +400,11 @@
         margin-block: 8px;
 
         resize: vertical;
+    }
+
+    .disable-markdown-margin :global(p) {
+        margin: 0;
+        margin-block: 0;
+        display: inline;
     }
 </style>
