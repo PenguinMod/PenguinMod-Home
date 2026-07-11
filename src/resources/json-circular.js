@@ -78,7 +78,7 @@ const _parseRecursive = (obj, processed, path) => {
  */
 export const parse = string => {
     const json = JSON.parse(string);
-    if (!json.v) return json;
+    if (!json?.v) return json;
     return _parseRecursive(json, {}, '');
 };
 
