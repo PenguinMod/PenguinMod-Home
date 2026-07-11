@@ -73,7 +73,6 @@
             }));
 
         if (!data.exists) {
-            // TODO: shouldnt this return null after, not data.code still
             stupidPersonDoesntExist.add(username);
             return null;
         }
@@ -82,10 +81,12 @@
     }
 
     let commentCode = "";
+    let commentCodeTextbox = null;
     async function continueAfterUsernameEnter() {
         loading = true;
         openedComments = false;
         commentCode = await getCode(username);
+
         loading = false;
         if (!commentCode) {
             stage = STAGES.VALIDITY;
@@ -94,10 +95,31 @@
         } else {
             stage = STAGES.CHECK_COMMENTS;
         }
+
+        setTimeout(() => {
+            copyCommentCode();
+        }, 0);
     }
 
-    function profileCommentsOpened() {        
-        openedComments = true;
+    function profileCommentsOpened() {  
+        copyCommentCode();
+
+        // small delay because we might push the button out of the way
+        setTimeout(() => {
+            openedComments = true;
+        }, 1000);      
+    }
+    async function copyCommentCode() {
+        try {
+            if (commentCodeTextbox) {
+                commentCodeTextbox.focus();
+                commentCodeTextbox.select();
+            }
+            
+            await navigator.clipboard.writeText(commentCode);
+        } catch (err) {
+            console.warn("couldnt copy to cloi0padboard;", err);
+        }
     }
     async function checkComments() {
         loading = true;
@@ -168,43 +190,72 @@
                 on:input={usernameInputChanged}
             />
 
-            <button
-                type="submit"
-                data-canContinue={usernameValid}
-                on:click={continueAfterUsernameEnter}
-            >
-                <LocalizedText
-                    text="Continue"
-                    key="auth.continue"
-                    lang={currentLang}
-                />
-            </button>
+            {#if loading}
+                <LoadingSpinner></LoadingSpinner>
+            {:else}
+                <button
+                    type="submit"
+                    data-canContinue={usernameValid}
+                    on:click={continueAfterUsernameEnter}
+                >
+                    <LocalizedText
+                        text="Continue"
+                        key="auth.continue"
+                        lang={currentLang}
+                    />
+                </button>
+            {/if}
         {:else if stage == STAGES.CHECK_COMMENTS}
-            <h3>
+            <h3 style="margin-block-end:0px">
                 <LocalizedText
                     text="Sign in by leaving a comment on *your* Scratch profile."
                     key="auth.method.profile.subtitle"
                     lang={currentLang}
                 />
             </h3>
-            <!-- jeremy please make this pretty and not just text -->
-            <a href={`https://scratch.mit.edu/users/${username}`}>
-                your account
-            </a>
-            <br />
-            {commentCode}
-            <br />
-            <Button>
-                TODO: This should pen comments
-            </Button>
-            {#if openedComments}
+            <textarea bind:this={commentCodeTextbox} readonly aria-readonly="true">{commentCode}</textarea>
+            <div style="display:flex;flex-direction: row;">
+                <Button color="remix" on:click={copyCommentCode}>
+                    <LocalizedText
+                        text="Copy"
+                        key="auth.copy"
+                        lang={currentLang}
+                    />
+                </Button>
+                <a
+                    target="_blank"
+                    style="color:inherit;text-decoration: inherit;"
+                    href={`https://scratch.mit.edu/users/${username}`}
+                    on:click={profileCommentsOpened}
+                    on:mousedown={profileCommentsOpened}
+                    on:mouseup={profileCommentsOpened}
+                    on:keydown={profileCommentsOpened}
+                    on:keypress={profileCommentsOpened}
+                    on:keyup={profileCommentsOpened}
+                    on:focus={profileCommentsOpened}
+                >
+                    <Button>
+                        <LocalizedText
+                            text="Open Profile Comments"
+                            key="auth.opencomments"
+                            lang={currentLang}
+                        />
+                    </Button>
+                </a>
+            </div>
+            {#if loading}
+                <LoadingSpinner></LoadingSpinner>
+            {:else if openedComments}
                 <button
                     type="submit"
                     data-canContinue={true}
                     on:click={checkComments}
                 >
-                    TODO: translation --- i totally put that comment on my
-                    account
+                    <LocalizedText
+                        text="Done"
+                        key="auth.done"
+                        lang={currentLang}
+                    />
                 </button>
             {/if}
         {:else}
@@ -319,5 +370,14 @@
     button :global(div) :global(img) {
         width: 18px;
         height: 18px;
+    }
+
+    textarea {
+        width: 100%;
+        height: 70px;
+        max-height: 250px;
+        margin-block: 8px;
+
+        resize: vertical;
     }
 </style>
