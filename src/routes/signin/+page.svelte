@@ -24,7 +24,6 @@
     let currentLang = "en";
     onMount(() => {
         Language.forceUpdate();
-        embed = $page.url.searchParams.get("embed") === "true";
         redir_link = $page.url.searchParams.get("redirect");
         redir_link = redir_link ? decodeURIComponent(redir_link) : null;
     });
@@ -47,7 +46,6 @@
     let username = "";
     let password = "";
     let loggingIn = false;
-    let embed = false;
     let redir_link = "";
 
     let showingPassword = false;
@@ -99,20 +97,6 @@
             .then(
                 (success) => {
                     if (success) {
-                        if (embed) {
-                            const opener = window.opener || window.parent;
-
-                            function post(data) {
-                                opener.postMessage(data, `/`);
-                            }
-
-                            post();
-
-                            window.close();
-                            return;
-                        }
-
-                        // redirect
                         window.location.href = redir_link ? redir_link : "/";
                     } else {
                         wrongInfo = true;
@@ -131,53 +115,8 @@
             });
     };
 
-    function addOAuthEventListener() {
-        window.addEventListener("message", (event) => {
-            if (event.origin !== PUBLIC_API_URL) return;
-
-            if (!event.data) return;
-
-            const { username, token } = event.data;
-
-            localStorage.setItem("username", username);
-            localStorage.setItem("token", token);
-
-            if (embed) {
-                const opener = window.opener || window.parent;
-
-                function post(data) {
-                    opener.postMessage(data, `/`);
-                }
-
-                post();
-
-                window.close();
-                return;
-            }
-
-            location.href = redir_link ? redir_link : "/";
-        });
-    }
-
     function oauthFrame(method) {
-        let iframe = window.open(
-            `${PUBLIC_API_URL}/api/v1/users/loginoauthaccount?method=${method}`,
-            `Login with ${method}`,
-            "width=500,height=500",
-        );
-
-        if (!iframe) {
-            alert(
-                TranslationHandler.textSafe(
-                    "login.oauth.nopopup",
-                    currentLang,
-                    "Please enable popups to login with {{WEBSITE}}.",
-                ).replace("{{WEBSITE}}", method),
-            );
-            return;
-        }
-
-        addOAuthEventListener();
+        location.href = `${PUBLIC_API_URL}/api/v1/users/loginoauthaccount?method=${method}`;
     }
 
     function googleOAuth() {
@@ -215,13 +154,10 @@
     <meta property="twitter:url" content="https://penguinmod.com/signin" />
 </svelte:head>
 
-{#if !embed}
-    <NavigationBar />
-{/if}
+<NavigationBar />
+
 <div class="main">
-    {#if !embed}
-        <NavigationMargin />
-    {/if}
+    <NavigationMargin />
 
     {#if !apiOnlineChecking && apiOnlineResponding}
         <main>
@@ -448,7 +384,7 @@
             />
 
             <a
-                href="/signup?embed={embed}&redirect={redir_link}"
+                href="/signup&redirect={redir_link}"
                 style="margin: 8px"
             >
                 <LocalizedText
@@ -482,26 +418,16 @@
                     lang={currentLang}
                 />
             </p>
-            {#if !embed}
-                <Button
-                    label="<img src='/tryit.svg' width='32px' style='margin-right:8px;filter:contrast(0%) brightness(999%)'></img>"
-                    link={LINK.editor}
-                >
-                    <LocalizedText
-                        text="Editor"
-                        key="home.footer.sections.website.editor"
-                        lang={currentLang}
-                    />
-                </Button>
-            {:else}
-                <a target="_blank" href={LINK.editor}>
-                    <LocalizedText
-                        text="Editor"
-                        key="home.footer.sections.website.editor"
-                        lang={currentLang}
-                    />
-                </a>
-            {/if}
+            <Button
+                label="<img src='/tryit.svg' width='32px' style='margin-right:8px;filter:contrast(0%) brightness(999%)'></img>"
+                link={LINK.editor}
+            >
+                <LocalizedText
+                    text="Editor"
+                    key="home.footer.sections.website.editor"
+                    lang={currentLang}
+                />
+            </Button>
         </main>
     {:else}
         <LoadingSpinner />

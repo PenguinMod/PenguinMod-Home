@@ -42,10 +42,8 @@
     let apiCreateRejectReason = "";
     let showingPassword = false;
     let focused = "";
-    let embed = false;
     let redir_link = "";
     if (browser) {
-        embed = $page.url.searchParams.get("embed") === "true";
         redir_link = $page.url.searchParams.get("redirect");
         redir_link = redir_link ? decodeURIComponent(redir_link) : null;
     }
@@ -160,20 +158,6 @@
         createAccount()
             .then(
                 () => {
-                    if (embed) {
-                        const opener = window.opener || window.parent;
-
-                        function post(data) {
-                            opener.postMessage(data, `/`);
-                        }
-
-                        post();
-
-                        window.close();
-                        return;
-                    }
-
-                    // redirect
                     window.location.href = redir_link ? redir_link : "/";
                 },
                 (err) => {
@@ -417,42 +401,12 @@
             localStorage.setItem("username", username);
             localStorage.setItem("token", token);
 
-            if (embed) {
-                const opener = window.opener || window.parent;
-
-                function post(data) {
-                    opener.postMessage(data, `/`);
-                }
-
-                post();
-
-                window.close();
-                return;
-            }
-
             location.href = redir_link ? redir_link : "/";
         });
     }
 
     function oauthFrame(method) {
-        let iframe = window.open(
-            `${PUBLIC_API_URL}/api/v1/users/createoauthaccount?method=${method}`,
-            `Sign up with ${method}`,
-            "width=500,height=500",
-        );
-
-        if (!iframe) {
-            alert(
-                TranslationHandler.textSafe(
-                    "signup.oauth.nopopup",
-                    currentLang,
-                    "Please enable popups to sign up with {{WEBSITE}}.",
-                ).replace("{{WEBSITE}}", method),
-            );
-            return;
-        }
-
-        addOAuthEventListener();
+        location.href = `${PUBLIC_API_URL}/api/v1/users/createoauthaccount?method=${method}`
     }
 
     function googleOAuth() {
@@ -512,14 +466,10 @@
     <meta property="twitter:url" content="https://penguinmod.com/signup" />
 </svelte:head>
 
-{#if !embed}
-    <NavigationBar />
-{/if}
+<NavigationBar />
 
 <div class="main">
-    {#if !embed}
-        <NavigationMargin />
-    {/if}
+    <NavigationMargin />
 
     {#if !apiOnlineChecking && apiOnlineResponding}
         <main>
@@ -864,7 +814,7 @@
                 {/if}
             </button>
 
-            <a href="/signin?embed={embed}" style="margin-top: 8px">
+            <a href="/signin&redir={redir_link}" style="margin-top: 8px">
                 <LocalizedText
                     text="Already have an account? Sign in here!"
                     key="signup.linkto.signin"

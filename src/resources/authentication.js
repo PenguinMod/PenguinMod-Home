@@ -176,9 +176,9 @@ class Authentication {
             }
         });
     }
-    static usernameFromCode(username, token, clear_cache = false) {
-        // name is a misnomer, was just to lazy to change after new api update.
-        // TODO: make this less misleading
+    static usernameFromCode(_username, token, clear_cache = false) {
+        // this codebase is gonna become legacy soon-ish, so im just gonna leave username as unused
+        // instead of updating all uses of this function
         return new Promise((resolve, reject) => {
             const cc = clear_cache
                 ? {
@@ -186,7 +186,7 @@ class Authentication {
                   }
                 : {};
             fetch(
-                `${ProjectApi.OriginApiUrl}/api/v1/users/userfromcode?username=${username}&token=${token}`,
+                `${ProjectApi.OriginApiUrl}/api/v1/users/userfromcode?token=${token}`,
                 cc,
             )
                 .then((r) =>
