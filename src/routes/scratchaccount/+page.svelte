@@ -1,13 +1,17 @@
 <script>
+    import { onMount } from "svelte";
+    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+
+    import MarkdownIt from "markdown-it";
+
     import NavigationBar from "../../lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
-    import TranslationHandler from "../../resources/translations.js";
-    import { onMount } from "svelte";
     import LoadingSpinner from "$lib/LoadingSpinner/Spinner.svelte";
-    import Button from "$lib/Button/Button.svelte";
-    import Language from "../../resources/language.js";
 	import LocalizedText from "$lib/LocalizedText/Node.svelte";
-    import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
+    import Button from "$lib/Button/Button.svelte";
+
+    import TranslationHandler from "../../resources/translations.js";
+    import Language from "../../resources/language.js";
 
     const STAGES = {
         VALIDITY: "validity",
@@ -82,10 +86,12 @@
         return true;
     }
 
+    let commentCodeTextbox = null;
     async function continueAfterUsernameEnter() {
         loading = true;
         openedComments = false;
         const exists = await userExists(username);
+
         loading = false;
 
         if (!exists) {
@@ -95,10 +101,31 @@
         } else {
             stage = STAGES.CHECK_COMMENTS;
         }
+
+        setTimeout(() => {
+            copyCommentCode();
+        }, 0);
     }
 
     function profileCommentsOpened() {
-        openedComments = true;
+        copyCommentCode();
+
+        // small delay because we might push the button out of the way
+        setTimeout(() => {
+            openedComments = true;
+        }, 1000);
+    }
+    async function copyCommentCode() {
+        try {
+            if (commentCodeTextbox) {
+                commentCodeTextbox.focus();
+                commentCodeTextbox.select();
+            }
+
+            await navigator.clipboard.writeText(commentCode);
+        } catch (err) {
+            console.warn("couldnt copy to cloi0padboard;", err);
+        }
     }
     async function checkComments() {
         loading = true;
@@ -107,6 +134,19 @@
             `${PUBLIC_API_URL}/api/v1/users/scratchcallback/${method}?username=${username}&code=${encodeURIComponent(commentCode)}`,
         );
     }
+
+    // translation MD
+    const md = new MarkdownIt({
+        html: false,
+        linkify: false,
+        breaks: true,
+    });
+    const env = {};
+    const generateMarkdown = (mdtext) => {
+        const tokens = md.parse(mdtext, env);
+        const bodyHTML = md.renderer.render(tokens, md.options, env);
+        return bodyHTML;
+    };
 </script>
 
 <svelte:head>
@@ -169,43 +209,76 @@
                 on:input={usernameInputChanged}
             />
 
-            <button
-                type="submit"
-                data-canContinue={usernameValid}
-                on:click={continueAfterUsernameEnter}
-            >
-                <LocalizedText
-                    text="Continue"
-                    key="auth.continue"
-                    lang={currentLang}
-                />
-            </button>
+            {#if loading}
+                <LoadingSpinner></LoadingSpinner>
+            {:else}
+                <button
+                    type="submit"
+                    data-canContinue={usernameValid}
+                    on:click={continueAfterUsernameEnter}
+                >
+                    <LocalizedText
+                        text="Continue"
+                        key="auth.continue"
+                        lang={currentLang}
+                    />
+                </button>
+            {/if}
         {:else if stage == STAGES.CHECK_COMMENTS}
-            <h3>
-                <LocalizedText
-                    text="Sign in by leaving a comment on *your* Scratch profile."
-                    key="auth.method.profile.subtitle"
-                    lang={currentLang}
-                />
+            <h3 style="margin-block-end:0px">
+                <span class="disable-markdown-margin">
+                    {@html generateMarkdown(
+                        `${TranslationHandler.textSafe(
+                            "auth.method.profile.subtitle",
+                            currentLang,
+                            "Sign in by leaving a comment on *your* Scratch profile.",
+                        )}`,
+                    )}
+                </span>
             </h3>
-            <!-- jeremy please make this pretty and not just text -->
-            <a href={`https://scratch.mit.edu/users/${username}`}>
-                your account
-            </a>
-            <br />
-            {commentCode}
-            <br />
-            <Button on:click={profileCommentsOpened}>
-                TODO: This should pen comments
-            </Button>
-            {#if openedComments}
+            <textarea bind:this={commentCodeTextbox} readonly aria-readonly="true">{commentCode}</textarea>
+            <div style="display:flex;flex-direction: row;">
+                <Button color="remix" on:click={copyCommentCode}>
+                    <LocalizedText
+                        text="Copy"
+                        key="auth.copy"
+                        lang={currentLang}
+                    />
+                </Button>
+                <a
+                    target="_blank"
+                    style="color:inherit;text-decoration: inherit;"
+                    href={`https://scratch.mit.edu/users/${username}`}
+                    on:click={profileCommentsOpened}
+                    on:mousedown={profileCommentsOpened}
+                    on:mouseup={profileCommentsOpened}
+                    on:keydown={profileCommentsOpened}
+                    on:keypress={profileCommentsOpened}
+                    on:keyup={profileCommentsOpened}
+                    on:focus={profileCommentsOpened}
+                >
+                    <Button>
+                        <LocalizedText
+                            text="Open Profile Comments"
+                            key="auth.opencomments"
+                            lang={currentLang}
+                        />
+                    </Button>
+                </a>
+            </div>
+            {#if loading}
+                <LoadingSpinner></LoadingSpinner>
+            {:else if openedComments}
                 <button
                     type="submit"
                     data-canContinue={true}
                     on:click={checkComments}
                 >
-                    TODO: translation --- i totally put that comment on my
-                    account
+                    <LocalizedText
+                        text="Done"
+                        key="auth.done"
+                        lang={currentLang}
+                    />
                 </button>
             {/if}
         {:else}
@@ -320,5 +393,20 @@
     button :global(div) :global(img) {
         width: 18px;
         height: 18px;
+    }
+
+    textarea {
+        width: 100%;
+        height: 70px;
+        max-height: 250px;
+        margin-block: 8px;
+
+        resize: vertical;
+    }
+
+    .disable-markdown-margin :global(p) {
+        margin: 0;
+        margin-block: 0;
+        display: inline;
     }
 </style>
