@@ -17,6 +17,7 @@
     let stage = STAGES.VALIDITY;
     let openedComments = false;
     let loading = false;
+    let commentCode = "";
 
     let currentLang = "en";
     let method = "";
@@ -24,12 +25,13 @@
         Language.forceUpdate();
         const url_params = new URLSearchParams(window.location.search);
 
-        if (!url_params.has("method")) {
+        if (!url_params.has("method") || !url_params.has("code")) {
             location.href = "/";
             return;
         }
 
         method = url_params.get("method");
+        commentCode = url_params.get("code");
     });
     Language.onChange((lang) => {
         currentLang = lang;
@@ -59,12 +61,12 @@
     }
 
     const stupidPersonDoesntExist = new Set();
-    async function getCode(username) {
+    async function userExists(username) {
         if (stupidPersonDoesntExist.has(username)) {
-            return null;
+            return false;
         }
 
-        const url = `${PUBLIC_API_URL}/api/v1/users/scratchusergetcode?username=${username}`;
+        const url = `${PUBLIC_API_URL}/api/v1/users/scratchuserexists?username=${username}`;
 
         const data = await fetch(url)
             .then((res) => res.json())
@@ -73,21 +75,20 @@
             }));
 
         if (!data.exists) {
-            // TODO: shouldnt this return null after, not data.code still
             stupidPersonDoesntExist.add(username);
-            return null;
+            return false;
         }
 
-        return data.code;
+        return true;
     }
 
-    let commentCode = "";
     async function continueAfterUsernameEnter() {
         loading = true;
         openedComments = false;
-        commentCode = await getCode(username);
+        const exists = await userExists(username);
         loading = false;
-        if (!commentCode) {
+
+        if (!exists) {
             stage = STAGES.VALIDITY;
             usernameValid = false;
             return;
@@ -96,7 +97,7 @@
         }
     }
 
-    function profileCommentsOpened() {        
+    function profileCommentsOpened() {
         openedComments = true;
     }
     async function checkComments() {
@@ -194,7 +195,7 @@
             <br />
             {commentCode}
             <br />
-            <Button>
+            <Button on:click={profileCommentsOpened}>
                 TODO: This should pen comments
             </Button>
             {#if openedComments}
