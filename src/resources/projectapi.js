@@ -1355,13 +1355,6 @@ class ProjectApi {
                                 return;
                             }
 
-                            // clear cache
-                            Authentication.usernameFromCode(
-                                this.username,
-                                this.token,
-                                true,
-                            );
-
                             resolve();
                         })
                         .catch((err) => {
@@ -2075,13 +2068,6 @@ class ProjectApi {
                                 return;
                             }
 
-                            // clear cache
-                            Authentication.usernameFromCode(
-                                this.username,
-                                this.token,
-                                true,
-                            );
-
                             resolve();
                         })
                         .catch((err) => {
@@ -2188,13 +2174,6 @@ class ProjectApi {
                                 reject(json.error);
                                 return;
                             }
-
-                            // clear cache
-                            Authentication.usernameFromCode(
-                                this.username,
-                                this.token,
-                                true,
-                            );
 
                             resolve();
                         })
@@ -2542,13 +2521,6 @@ class ProjectApi {
                                 reject(json.error);
                                 return;
                             }
-
-                            // clear cache
-                            Authentication.usernameFromCode(
-                                this.username,
-                                this.token,
-                                true,
-                            );
 
                             resolve();
                         })

@@ -176,35 +176,30 @@ class Authentication {
             }
         });
     }
-    static usernameFromCode(username, token, clear_cache = false) {
+    static async usernameFromCode(_username, token) {
         // name is a misnomer, was just to lazy to change after new api update.
         // TODO: make this less misleading
-        return new Promise((resolve, reject) => {
-            const cc = clear_cache
-                ? {
-                      cache: "reload",
-                  }
-                : {};
-            fetch(
-                `${ProjectApi.OriginApiUrl}/api/v1/users/userfromcode?username=${username}&token=${token}`,
-                cc,
-            )
-                .then((r) =>
-                    r
-                        .json()
-                        .then((j) => {
-                            if (j.error) return reject(j.error);
-                            resolve({
-                                username: j.username,
-                                isAdmin: j.admin,
-                                isApprover: j.approver,
-                                ...j,
-                            });
-                        })
-                        .catch(reject),
-                )
-                .catch(reject);
-        });
+        const j = await fetch(
+            `${ProjectApi.OriginApiUrl}/api/v1/users/userfromcode?token=${token}`,
+        ).then((r) => r.json());
+
+        if (j.error) throw j.error;
+
+        if (!j.birthdayEntered || !j.countryEntered || !j.isEmailVerified) {
+            const extra = await fetch(
+                `${ProjectApi.OriginApiUrl}/api/v1/users/extrainfostatus?token=${token}`,
+            ).then((r) => r.json());
+
+            j.birthdayEntered = extra.birthdayEntered;
+            j.countryEntered = extra.countryEntered;
+            j.isEmailVerified = extra.isEmailVerified;
+        }
+
+        return {
+            isAdmin: j.admin,
+            isApprover: j.approver,
+            ...j,
+        };
     }
 
     static changePassword(username, token, oldPassword, newPassword) {

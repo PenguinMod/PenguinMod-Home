@@ -104,13 +104,6 @@
         finishSignup()
             .then(
                 async () => {
-                    // clear cache
-                    await Authentication.usernameFromCode(
-                        this.username,
-                        this.token,
-                        true,
-                    );
-
                     if (embed) {
                         const opener = window.opener || window.parent;
 

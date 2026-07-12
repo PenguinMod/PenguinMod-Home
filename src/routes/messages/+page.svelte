@@ -225,10 +225,7 @@
         markPolicyAsRead("TOS");
         markPolicyAsRead("guidelines");
 
-        ProjectClient.markAllMessagesAsRead().then(() => {
-            // clear cache
-            Authentication.usernameFromCode(this.username, this.token, true);
-        });
+        ProjectClient.markAllMessagesAsRead();
 
         readMessages = readMessages.concat(
             messages.map((message) => message.id),

@@ -324,13 +324,6 @@
                 localStorage.setItem("username", username);
                 localStorage.setItem("token", token);
 
-                // clear cache
-                Authentication.usernameFromCode(
-                    this.username,
-                    this.token,
-                    true,
-                );
-
                 resolve();
             });
         });
@@ -364,13 +357,6 @@
             if (!remove) return;
             ProjectClient.removeOAuthMethod(method)
                 .then(() => {
-                    // clear cache
-                    Authentication.usernameFromCode(
-                        this.username,
-                        this.token,
-                        true,
-                    );
-
                     loginMethods = loginMethods.filter((m) => m !== method);
                 })
                 .catch(alert);
