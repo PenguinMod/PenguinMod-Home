@@ -195,13 +195,17 @@ class ProjectApi {
             case "featured":
             case "newest":
             case "uploaddate":
-            case "sort":
             case "views":
             case "votes":
             case "loves":
                 const actual_query = searchQuery.split(":");
                 actual_query.shift();
                 api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
+                break;
+            case "sort":
+                const actual_query = searchQuery.split(":");
+                actual_query.shift();
+                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${query}&type=${encodeURIComponent(actual_query.join())}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
                 break;
             default:
                 break;
