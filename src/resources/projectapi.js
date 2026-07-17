@@ -203,9 +203,9 @@ class ProjectApi {
                 api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
                 break;
             case "sort":
-                const actual_query = searchQuery.split(":");
-                actual_query.shift();
-                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${query}&type=${encodeURIComponent(actual_query.join())}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
+                const actualFuck = searchQuery.split(":");
+                actualFuck.shift();
+                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${query}&type=${encodeURIComponent(actualFuck.join())}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
                 break;
             default:
                 break;
