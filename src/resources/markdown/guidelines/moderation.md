@@ -94,11 +94,14 @@ Projects with just C2A do not need to be removed unless you know or are informed
 - No user punishment until they've uploaded 3-5 of these.
 - 12hr temp ban (1st), 24hr temp ban (2nd) 48hrs after that (3rd+)
 - If it's been a month or so, you should just ignore any previous offenses of this rule and start from first offense
-## "Chatroom" Projects or Projects based around online chatting + Projects with an online chat feature + Limits on Audio/Sound + Money + Copyright
+## "Chatroom" Projects or Projects based around online chatting + Projects with an online chat feature + Limits on Audio/Sound + Money
 Concise (but opinion-based) ruling on Loud Audio:
 - You cannot play Loud (above editor boundary) or Distorted (really high pitched & loud, crunchy) audio for prolonged periods of time (3-5+ seconds).
 
-Non-PM related Copyright is not enforced at the moment. We will let you know if it ever does.
+Copyrighted/protected content to remove on PenguinMod:
+- "MINECRAFT trademark" protected by "Microsoft Corporation"
+
+Actions for projects violating these rules
 - Remove the project (soft-delete) and use the quick reject for these.
 - No user punishment until they've uploaded two of these.
 - 1hr temp ban (1st), 1hr temp ban (2nd), 12hr temp ban (3rd), 24hr temp ban (4th) 48hrs after that (5th+)

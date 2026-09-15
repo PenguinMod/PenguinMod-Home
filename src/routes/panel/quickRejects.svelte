@@ -27,6 +27,10 @@
     <details><summary>Credit & Ownership</summary>
         <button on:click={() => event("Your project was removed because it uses someone else's work without giving them proper credit in the notes. “Credit to all” is not enough—please list names specifically if possible.")}>
         Missing Credit</button>
+        <button on:click={() => event("Your project was removed for using content you don't appear to have rights to (e.g., music, logos, or code). Please only use content you have permission for.")}>
+        Individual Content Removal Request (Informal)</button>
+        <button data-template on:click={() => event(`In response to a copyright notice, your project has been removed because it contains content claimed to infringe on: "(PROTECTED CONTENT/TRADEMARK)"; this content is owned by "(ORGANIZATION/CORPORATION)" and is protected by copyright or trademark rights. Please edit your project to remove all infringing content, or remove the project.`)}>
+        PenguinMod-Enforced Copyright/DMCA <b>(Template)</b></button>
     </details>
 
     <details><summary>Respect & Safety</summary>
@@ -34,11 +38,11 @@
         Harassment or Bullying</button>
         <button on:click={() => event("Your project was removed because it contained disrespectful or inappropriate language. Please avoid using slurs or hate speech of any kind.")}>
         Derogatory Language or Slurs</button>
-        <button on:click={() => event("Your project was removed because it discriminates to a certain group or groups. PenguinMod would like to stay inclusive of all groups on our platform, and we may punish your account for breaking this guideline.")}>
+        <button data-serious on:click={() => event("Your project was removed because it discriminates to a certain group or groups. PenguinMod would like to stay inclusive of all groups on our platform, and we may punish your account for breaking this guideline.")}>
         Discriminatory Content</button>
         <button on:click={() => event("Your project was removed for referencing or promoting violence, self-harm, or other dangerous behaviors. Projects that contain this kind of content are not allowed on PenguinMod.")}>
         Violence or Harmful Behavior</button>
-        <button on:click={() => event("Your project was removed because it threatens other users or a group of people. PenguinMod does not allow this behavior, and we may punish your account if severe enough.")}>
+        <button data-serious on:click={() => event("Your project was removed because it threatens other users or a group of people. PenguinMod does not allow this behavior, and we may punish your account if severe enough.")}>
         Threat</button>
         <button on:click={() => event("Your project was removed for making light of a real-world event that harmed others. Please do not reference real-world tragedies.")}>
         Sensitive Real-World Events</button>
@@ -65,11 +69,11 @@
     <details><summary>Privacy & Security</summary>
         <button on:click={() => event("Your project was removed because it shared personal information like your name, age, or location. Please don't share this to help keep you safe.")}>
         Personal Information (Yourself)</button>
-        <button on:click={() => event("Your project was removed for sharing private or personal information about someone else. This is a serious violation and could result in a ban.")}>
+        <button data-serious on:click={() => event("Your project was removed for sharing private or personal information about someone else. This is a serious violation and could result in a ban.")}>
         Personal Information (Others)</button>
-        <button on:click={() => event("Your project was removed because it may have linked to or encouraged downloading unsafe or malicious material. This is not allowed and could result in a ban.")}>
+        <button data-serious on:click={() => event("Your project was removed because it may have linked to or encouraged downloading unsafe or malicious material. This is not allowed and could result in a ban.")}>
         Malicious or Dangerous Links/Files</button>
-        <button on:click={() => event("Your project was removed because it either abuses blocks to act like malware, or shares malware in any way. Your account may be punished if this is severe.")}>
+        <button data-serious on:click={() => event("Your project was removed because it either abuses blocks to act like malware, or shares malware in any way. Your account may be punished if this is severe.")}>
         Malware</button>
     </details>
 
@@ -91,11 +95,9 @@
         Political Project</button>
         <button on:click={() => event("Your project was removed because it included profanity in its title, instructions, notes, or thumbnail. Please keep explicit language out of those areas.")}>
         Profanity in Title/Notes</button>
-        <button on:click={() => event("Your project was removed for using content you don't appear to have rights to (e.g., music, logos, or code). Please only use content you have permission for.")}>
-        Copyright Violation</button>
-        <button on:click={() => event("Your project was removed for encouraging others to break PenguinMod rules or exploit the system. Your account may be punished.")}>
+        <button data-serious on:click={() => event("Your project was removed for encouraging others to break PenguinMod rules or exploit the system. Your account may be punished.")}>
         Encouraging Rule-Breaking or Exploits</button>
-        <button on:click={() => event("Your project was removed because it contains or enables downloading of stolen copyrighted or paid content. This is a serious offense and you may get your account banned or limited.")}>
+        <button data-serious on:click={() => event("Your project was removed because it contains or enables downloading of stolen copyrighted or paid content. This is a serious offense and you may get your account banned or limited.")}>
         Pirating Paid Music, Video or Other Media</button>
     </details>
 
@@ -119,6 +121,9 @@
     }
     button[data-serious] {
         background-color: rgb(255, 114, 114);
+    }
+    button[data-template] {
+        background-color: rgb(255, 241, 114);
     }
 
     details,
