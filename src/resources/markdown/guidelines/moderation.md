@@ -94,7 +94,7 @@ Projects with just C2A do not need to be removed unless you know or are informed
 - No user punishment until they've uploaded 3-5 of these.
 - 12hr temp ban (1st), 24hr temp ban (2nd) 48hrs after that (3rd+)
 - If it's been a month or so, you should just ignore any previous offenses of this rule and start from first offense
-## "Chatroom" Projects or Projects based around online chatting + Projects with an online chat feature + Limits on Audio/Sound + Money
+## "Chatroom" Projects or Projects based around online chatting + Projects with an online chat feature + Limits on Audio/Sound + Money + Copyright
 Concise (but opinion-based) ruling on Loud Audio:
 - You cannot play Loud (above editor boundary) or Distorted (really high pitched & loud, crunchy) audio for prolonged periods of time (3-5+ seconds).
 
