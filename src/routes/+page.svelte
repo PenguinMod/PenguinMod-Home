@@ -745,20 +745,27 @@
                 <div class="category-news">
                     <div class="category-news-content">
                         <h2 style="margin-block:4px;">
-                            All The Mods Game Jam has ended!
+                            Upcoming PenguinMod 4th Anniversary!!
                         </h2>
                         <div style="width:100%">
                             <p>
-                                Thanks for participating in the event! Rankings will be announced on <a href="https://itch.io/jam/all-the-mods-game-jam">itch.io</a>. See you soon!
+                                Hello everyone! We are making another anniversary video!
+                                <b>If you would like to submit a project for a chance of being
+                                featured in the video</b>, please fill out this Google Form!
                             </p>
-                            <a href="https://itch.io/jam/all-the-mods-game-jam">
-                                All The Mods on itch.io
+                            <a href="https://forms.gle/yQ7PmRYwGnTG9kRL6">
+                                https://forms.gle/yQ7PmRYwGnTG9kRL6
                             </a>
-                            <img
-                                src="/events/news/allthemods2026.webp?r=1"
-                                alt="All The Mods 2026"
-                                style="width:100%;"
-                            />
+                            <p><i>The form closes on September 7 at 12AM EST</i></p>
+                            <p><b>Rules:</b></p>
+                            <ul>
+                                <li>1 Project per PenguinMod user (Alt accounts not allowed)</li>
+                                <li>Project must follow the PM guidelines</li>
+                                <li>Project must have been made between October 17, 2025 to October 17, 2026</li>
+                            </ul>
+                            <p><b>If you spam this form, you will be disqualified from this event and your account may face punishment.</b></p>
+                            <p><i>The form closes on September 7 at 12AM EST</i></p>
+                            <p><i>(Note: You do not need to sign in to Google to fill out this form)</i></p>
                         </div>
                     </div>
                     <div class="category-footer">
