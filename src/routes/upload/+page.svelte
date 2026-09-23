@@ -44,8 +44,10 @@
     });
 
     let loggedIn = null;
+    let isMod = false;
     let loadingExternal = false;
 
+    let priv;
     let projectImage;
     let projectImageURL;
     let projectData;
@@ -308,10 +310,11 @@
             loggedIn = false;
         }
         Authentication.usernameFromCode(username, token)
-            .then(() => {
+            .then(({ isAdmin, isApprover }) => {
                 ProjectClient.setUsername(username);
                 ProjectClient.setToken(token);
                 loggedIn = true;
+                isMod = isAdmin || isApprover;
             })
             .catch(() => {
                 loggedIn = false;
@@ -447,6 +450,7 @@
             image: projectImage,
             remix: remixProjectId,
             project: projectData,
+            priv,
         })
             .then((projectId) => open(`${PUBLIC_STUDIO_URL}/#${projectId}`))
             .catch((err) => {
@@ -510,6 +514,8 @@
         username = _username;
         ProjectClient.setUsername(_username);
         ProjectClient.setToken(privateCode);
+        // TODO (maybe - or not bc newhome): make this work (get the data from somewhere)
+        // isMod = isAdmin || isApprover;
     });
 
     let otherProjects = [];
@@ -1191,7 +1197,12 @@
                             lang={currentLang}
                         />
                     </label>
-
+                    {#if isMod}
+                        i have been given permission to make this project
+                        private (i.e. ian has told you that you have
+                        permission):
+                        <input bind:checked={priv} type="checkbox" />
+                    {/if}
                     <p>
                         <a
                             class="guidelines-link"

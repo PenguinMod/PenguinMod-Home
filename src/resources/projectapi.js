@@ -1882,6 +1882,7 @@ class ProjectApi {
             assets.forEach((ent) => formData.append("assets", ...ent));
             formData.append("jsonFile", protobuf);
             formData.append("thumbnail", data.image);
+            formData.append("private", data.priv);
 
             request.send(formData);
         });
