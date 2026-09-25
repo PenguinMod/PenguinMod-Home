@@ -214,7 +214,7 @@
             console.log(err);
             err = JSON.parse(err);
             err = err.error;
-            if (err === "NotFound" || err === "UserNotFound") {
+            if (err === "User not found") {
                 wasNotFound = true;
             }
             if (err === "PrivateProfile") {
