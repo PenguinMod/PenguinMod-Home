@@ -3,12 +3,20 @@
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
     import EmojiList from "../../resources/emojis.js";
-    import { PUBLIC_STUDIO_URL, PUBLIC_MAX_UPLOAD_SIZE } from "$env/static/public";
+    import MatureFS from "../../resources/maturefs.js";
+    import {
+        PUBLIC_STUDIO_URL,
+        PUBLIC_MAX_UPLOAD_SIZE,
+    } from "$env/static/public";
 
     const ProjectClient = new ProjectApi();
 
     // Static values
     import LINK from "../../resources/urls.js";
+
+    const fileAccepts = MatureFS.isTypeFilterAvailable()
+        ? { accept: ".pmp,.pm,.sb3,.sb2,.sb,.goobert" }
+        : {};
 
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
@@ -34,7 +42,7 @@
         if (projectName === "") {
             projectName = TranslationHandler.text(
                 "uploading.project.title.default",
-                currentLang
+                currentLang,
             );
         }
     });
@@ -51,13 +59,21 @@
     let newProjectData;
     let projectSizes = { name: `0/${PUBLIC_MAX_UPLOAD_SIZE}MB`, value: [] };
     function updateSize() {
-        if (newProjectData) 
-            ProjectClient.resolveProjectSizes(newProjectData, newProjectImage?.size ?? 0, true)
-                .then(([sizes, toLarge]) => {
-                    projectSizes = sizes;
-                    if (toLarge) 
-                        alert(TranslationHandler.text('uploading.error.projecttoolarge', currentLang));
-                });
+        if (newProjectData)
+            ProjectClient.resolveProjectSizes(
+                newProjectData,
+                newProjectImage?.size ?? 0,
+                true,
+            ).then(([sizes, toLarge]) => {
+                projectSizes = sizes;
+                if (toLarge)
+                    alert(
+                        TranslationHandler.text(
+                            "uploading.error.projecttoolarge",
+                            currentLang,
+                        ),
+                    );
+            });
     }
     function dataURLtoBlob(dataurl) {
         var arr = dataurl.split(","),
@@ -78,14 +94,14 @@
         projectInstructions: null,
         projectNotes: null,
     };
-    
+
     let tagsAreTooMany = false;
     const tagsCalculateTooMany = () => {
         const combinedText = `${String(components.projectName.value)} ${String(components.projectInstructions.value)} ${String(components.projectNotes.value)}`;
         const hashtags = combinedText.match(/#([\w-]+)/g) || [];
         tagsAreTooMany = hashtags.length > 6;
     };
-    
+
     const updateDescription = () => {
         tagsCalculateTooMany();
     };
@@ -115,7 +131,7 @@
             return;
         }
 
-        const username = localStorage.getItem("username")
+        const username = localStorage.getItem("username");
         const token = localStorage.getItem("token");
         if (!token || !username) {
             loggedIn = false;
@@ -157,7 +173,7 @@
                 // exit if not found
                 loadingExternal = false;
                 console.warn(
-                    "External import stopped; parent window not found"
+                    "External import stopped; parent window not found",
                 );
                 return;
             }
@@ -168,7 +184,7 @@
                         {
                             p4: data,
                         },
-                        importLocation
+                        importLocation,
                     );
                 } catch (e) {
                     console.warn("Cannot post message", e);
@@ -194,24 +210,30 @@
                 if (data.type === "image") {
                     newProjectURL = data.uri;
 
-                    var arr = data.uri.split(','), mime = arr[0].match(/:(.*?);/)[1],
-                        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-                    while(n--){
+                    var arr = data.uri.split(","),
+                        mime = arr[0].match(/:(.*?);/)[1],
+                        bstr = atob(arr[1]),
+                        n = bstr.length,
+                        u8arr = new Uint8Array(n);
+                    while (n--) {
                         u8arr[n] = bstr.charCodeAt(n);
                     }
 
-                    newProjectImage = new Blob([u8arr], {type:mime});
+                    newProjectImage = new Blob([u8arr], { type: mime });
                     updateSize();
                 }
                 // project: uri of project data
                 if (data.type === "project") {
-                    newProjectData = (data.uri instanceof Blob) ? data.uri : dataURLtoBlob(data.uri);
+                    newProjectData =
+                        data.uri instanceof Blob
+                            ? data.uri
+                            : dataURLtoBlob(data.uri);
                     if (projectInputName) {
                         projectInputName.innerText = String(
                             TranslationHandler.text(
                                 "uploading.project.ownfile.imported",
-                                currentLang
-                            )
+                                currentLang,
+                            ),
                         ).replace("$1", data.name);
                     }
                     updateSize();
@@ -241,9 +263,12 @@
             post({ type: "validate" });
         }
 
-        projectSizes = { name: `0/${PUBLIC_MAX_UPLOAD_SIZE*(await ProjectClient.isDonator()?1.75:1)}MB`, value: [] };
+        projectSizes = {
+            name: `0/${PUBLIC_MAX_UPLOAD_SIZE * ((await ProjectClient.isDonator()) ? 1.75 : 1)}MB`,
+            value: [],
+        };
     });
-    
+
     let isBusyUploading = false;
     async function updateProject() {
         if (isBusyUploading) return;
@@ -267,7 +292,8 @@
 
         if (tagsAreTooMany) {
             // TODO: Translation
-            const message = "You can only use up to 6 hashtags in your project's information.";
+            const message =
+                "You can only use up to 6 hashtags in your project's information.";
             alert(message);
             isBusyUploading = false;
             return;
@@ -276,7 +302,7 @@
         const newMetadata = {};
         const data = {
             newMeta: newMetadata,
-        }
+        };
         newMetadata.title = projectName;
         newMetadata.instructions = components.projectInstructions.value;
         newMetadata.notes = components.projectNotes.value;
@@ -298,28 +324,28 @@
                         message = TranslationHandler.textSafe(
                             "uploading.error.toomanyrequests",
                             currentLang,
-                            "You can only upload projects every 8 minutes."
+                            "You can only upload projects every 8 minutes.",
                         );
                         break;
                     case "Uploading is disabled":
                         message = TranslationHandler.textSafe(
                             "uploading.error.publishdisabled",
                             currentLang,
-                            "We are undergoing maintenance, so you are not able to upload projects at this time."
+                            "We are undergoing maintenance, so you are not able to upload projects at this time.",
                         );
                         break;
                     case "Missing json file, thumbnail, or assets":
                         message = TranslationHandler.textSafe(
                             "uploading.error.formaterror",
                             currentLang,
-                            "Some values are not right. Check that all required fields are filled."
+                            "Some values are not right. Check that all required fields are filled.",
                         );
                         break;
                     case "IllegalWordsUsed":
                         message = TranslationHandler.textSafe(
                             "uploading.error.illegalwordsused",
                             currentLang,
-                            "Words or phrases were used that are not allowed in PenguinMod. Please check through your project's details for any inappropriate words or phrases."
+                            "Words or phrases were used that are not allowed in PenguinMod. Please check through your project's details for any inappropriate words or phrases.",
                         );
                         break;
                     default:
@@ -334,14 +360,14 @@
                     message = TranslationHandler.textSafe(
                         "uploading.error.cannotusethisextensionforthisrank",
                         currentLang,
-                        "You cannot upload this project yet as it contains custom extensions or certain blocked extensions. Upload a few other projects and wait a few days to rank up before you can post this project."
+                        "You cannot upload this project yet as it contains custom extensions or certain blocked extensions. Upload a few other projects and wait a few days to rank up before you can post this project.",
                     );
                 }
                 alert(message);
             })
             .finally(() => {
                 isBusyUploading = false;
-            });;
+            });
     }
 
     function filePicked(input) {
@@ -371,7 +397,7 @@
         newProjectData = file;
         projectInputName.innerText = TranslationHandler.text(
             "uploading.project.ownfile.picked",
-            currentLang
+            currentLang,
         )
             .replace("$2", floatTo2Decimals(file.size / 1250000))
             .replace("$1", file.name);
@@ -395,47 +421,49 @@
     // EMOJIS eae
 
     const emojiPickerRandomEmojis = [
-        'angel',
-        'angry',
-        'annoyed',
-        'bigsad',
-        'disappointed',
-        'happy',
-        'idk',
-        'meh',
-        'salute',
-        'shocked',
-        'sobbing',
-        'worried',
-        'investigate',
-        'grimacing',
-        'confusedthinking',
-        'cool',
+        "angel",
+        "angry",
+        "annoyed",
+        "bigsad",
+        "disappointed",
+        "happy",
+        "idk",
+        "meh",
+        "salute",
+        "shocked",
+        "sobbing",
+        "worried",
+        "investigate",
+        "grimacing",
+        "confusedthinking",
+        "cool",
     ];
-    let emojiPickerRandomEmoji = '';
-    let emojiSearchQuery = '';
+    let emojiPickerRandomEmoji = "";
+    let emojiSearchQuery = "";
     let emojiSearchBar;
     let lastSelectedFormArea;
     const pickRandomEmojiPickerDisplay = () => {
-        emojiPickerRandomEmoji = emojiPickerRandomEmojis
-            [Math.round(Math.random() * (emojiPickerRandomEmojis.length - 1))];
+        emojiPickerRandomEmoji =
+            emojiPickerRandomEmojis[
+                Math.round(Math.random() * (emojiPickerRandomEmojis.length - 1))
+            ];
     };
     pickRandomEmojiPickerDisplay();
 
     let emojiPickerListUpdate = 0;
     const allowEmojiDrop = (ev) => {
         const data = ev.dataTransfer.getData("emoji");
-        if (data && typeof data === 'string') {
+        if (data && typeof data === "string") {
             ev.preventDefault();
         }
-    }
+    };
     const useEmojiDrag = (ev, name) => {
         ev.dataTransfer.setData("emoji", name);
-    }
+    };
     const handleEmojiDrop = (ev) => {
         const data = ev.dataTransfer.getData("emoji");
-        if (data && typeof data === 'string') {
-            ev.dataTransfer.setData("emoji", '');
+        if (data && typeof data === "string") {
+            ev.dataTransfer.setData("emoji", "");
             ev.preventDefault();
         } else {
             return;
@@ -446,7 +474,7 @@
             emojiSearchQuery = emojiSearchBar.value;
         }
         emojiPickerListUpdate++;
-    }
+    };
     const placeEmojiInTextbox = (emoji) => {
         if (!lastSelectedFormArea) return;
         lastSelectedFormArea.value += `:${emoji}:`;
@@ -458,13 +486,13 @@
 
     let emojiPickerOpened = false;
     onMount(() => {
-        components.projectName.addEventListener('click', (e) => {
+        components.projectName.addEventListener("click", (e) => {
             lastSelectedFormArea = e.target;
         });
-        components.projectInstructions.addEventListener('click', (e) => {
+        components.projectInstructions.addEventListener("click", (e) => {
             lastSelectedFormArea = e.target;
         });
-        components.projectNotes.addEventListener('click', (e) => {
+        components.projectNotes.addEventListener("click", (e) => {
             lastSelectedFormArea = e.target;
         });
         EmojiList.fetch().finally(() => {
@@ -475,13 +503,13 @@
 
 <svelte:head>
     <title>PenguinMod - Edit {projectName}</title>
-    <meta name="title"                   content="PenguinMod - Edit" />
-    <meta property="og:title"            content="PenguinMod - Edit" />
-    <meta property="twitter:title"       content="PenguinMod - Edit">
-    <meta name="description"             content="Edit your project.">
-    <meta property="twitter:description" content="Edit your project.">
-    <meta property="og:url"              content="https://penguinmod.com/edit">
-    <meta property="twitter:url"         content="https://penguinmod.com/edit">
+    <meta name="title" content="PenguinMod - Edit" />
+    <meta property="og:title" content="PenguinMod - Edit" />
+    <meta property="twitter:title" content="PenguinMod - Edit" />
+    <meta name="description" content="Edit your project." />
+    <meta property="twitter:description" content="Edit your project." />
+    <meta property="og:url" content="https://penguinmod.com/edit" />
+    <meta property="twitter:url" content="https://penguinmod.com/edit" />
 </svelte:head>
 
 <NavigationBar />
@@ -497,7 +525,7 @@
             <p style="text-align: center;">
                 {@html TranslationHandler.text(
                     "project.importing",
-                    currentLang
+                    currentLang,
                 )}
             </p>
         </div>
@@ -577,8 +605,8 @@
                 {String(
                     TranslationHandler.text(
                         "editing.header.detail",
-                        currentLang
-                    )
+                        currentLang,
+                    ),
                 ).replace("$1", projectName)}
             </p>
         </div>
@@ -602,7 +630,7 @@
                     on:dragstart={(ev) => {
                         useEmojiDrag(ev, emojiPickerRandomEmoji);
                     }}
-                >
+                />
             </button>
             <div class="emoji-picker-list" data-opened={emojiPickerOpened}>
                 <div class="emoji-picker-search-container">
@@ -622,7 +650,7 @@
                         placeholder="..."
                         bind:value={emojiSearchQuery}
                         bind:this={emojiSearchBar}
-                    >
+                    />
                 </div>
                 <div class="emoji-picker-emoji-container">
                     {#key emojiPickerListUpdate}
@@ -638,17 +666,13 @@
                             </p>
                         {:else if emojiPickerOpened}
                             {#each EmojiList.emojis as emoji}
-                                {#if
-                                    !emojiSearchQuery
-                                    || String(emoji).includes(
-                                        emojiSearchQuery
+                                {#if !emojiSearchQuery || String(emoji).includes(emojiSearchQuery
                                             .toLowerCase()
-                                            .replace(/[^a-z]+/gmi, '')
-                                    )
-                                }
+                                            .replace(/[^a-z]+/gim, ""))}
                                     <button
                                         class="emoji-picker-emoji"
-                                        on:click={() => placeEmojiInTextbox(emoji)}
+                                        on:click={() =>
+                                            placeEmojiInTextbox(emoji)}
                                     >
                                         <img
                                             src={`https://library.penguinmod.com/files/emojis/${emoji}.png`}
@@ -656,7 +680,7 @@
                                             title={`:${emoji}:`}
                                             loading="lazy"
                                             draggable="false"
-                                        >
+                                        />
                                     </button>
                                 {/if}
                             {/each}
@@ -679,7 +703,7 @@
                         type="text"
                         placeholder={TranslationHandler.text(
                             "uploading.project.title.default",
-                            currentLang
+                            currentLang,
                         )}
                         bind:this={components.projectName}
                         on:input={updateDescription}
@@ -697,7 +721,7 @@
                     <textarea
                         placeholder={TranslationHandler.text(
                             "uploading.project.instructions.default",
-                            currentLang
+                            currentLang,
                         )}
                         bind:this={components.projectInstructions}
                         on:input={updateDescription}
@@ -717,7 +741,7 @@
                     <textarea
                         placeholder={TranslationHandler.text(
                             "uploading.project.notes.default",
-                            currentLang
+                            currentLang,
                         )}
                         bind:this={components.projectNotes}
                         on:input={updateDescription}
@@ -729,7 +753,7 @@
                         id="FILERI"
                         type="file"
                         class="hidden-picker"
-                        accept=".pmp,.pm,.sb3,.sb2,.sb,.goobert"
+                        {...fileAccepts}
                         on:change={projectFilePicked}
                     />
                     <label
@@ -764,8 +788,8 @@
                         src={newProjectImage
                             ? newProjectURL
                             : projectId
-                            ? `${LINK.projects}api/v1/projects/getproject?projectID=${projectId}&requestType=thumbnail`
-                            : "/empty-project.png"}
+                              ? `${LINK.projects}api/v1/projects/getproject?projectID=${projectId}&requestType=thumbnail`
+                              : "/empty-project.png"}
                         style="border-width:1px;border-style:solid;border-color:rgba(0, 0, 0, 0.1);width:100%;"
                         alt="Project Thumbnail"
                     />
@@ -783,7 +807,7 @@
                             lang={currentLang}
                         />
                     </label>
-                    <hr>
+                    <hr />
                     <Stats stats_data={[projectSizes]} render={true}></Stats>
                 </div>
             </div>

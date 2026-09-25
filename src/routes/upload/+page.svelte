@@ -3,6 +3,7 @@
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
     import EmojiList from "../../resources/emojis.js";
+    import MatureFS from "../../resources/maturefs.js";
     import {
         PUBLIC_STUDIO_URL,
         PUBLIC_MAX_UPLOAD_SIZE,
@@ -12,6 +13,10 @@
 
     // Static values
     import LINK from "../../resources/urls.js";
+
+    const fileAccepts = MatureFS.isTypeFilterAvailable()
+        ? { accept: ".pmp,.pm,.sb3,.sb2,.sb,.goobert" }
+        : {};
 
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
@@ -1182,7 +1187,7 @@
                         id="FILERI"
                         type="file"
                         class="hidden-picker"
-                        accept=".pmp,.pm,.sb3,.sb2,.sb,.goobert"
+                        {...fileAccepts}
                         on:change={projectFilePicked}
                     />
                     <label
