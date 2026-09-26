@@ -19,37 +19,51 @@
     let forceHtmlClass3;
     onMount(() => {
         Language.forceUpdate();
-        forceHtmlClass.classList.add('donate-card-html');
-        forceHtmlClass2.classList.add('donate-card-html');
-        forceHtmlClass3.classList.add('donate-card-html');
+        forceHtmlClass.classList.add("donate-card-html");
+        forceHtmlClass2.classList.add("donate-card-html");
+        forceHtmlClass3.classList.add("donate-card-html");
     });
     Language.onChange((lang) => {
         currentLang = lang;
     });
-    
+
     const md = new MarkdownIt({
         html: false,
         linkify: false,
         breaks: true,
     });
-    
+
     const env = {};
     const generateMarkdown = (mdtext) => {
         const tokens = md.parse(mdtext, env);
         const bodyHTML = md.renderer.render(tokens, md.options, env);
         return bodyHTML;
     };
+
+    const monthlyData = {
+        requests: 385_000_000,
+        contentSize: 8_000,
+        totalProjects: 100_000,
+        newPeople: 70_000,
+        returningPeople: 100_000,
+    };
 </script>
 
 <svelte:head>
     <title>PenguinMod - Support Us</title>
-    <meta name="title"                   content="PenguinMod - Support Us" />
-    <meta property="og:title"            content="PenguinMod - Support Us" />
-    <meta property="twitter:title"       content="PenguinMod - Support Us">
-    <meta name="description"             content="Help support PenguinMod and it's development!">
-    <meta property="twitter:description" content="Help support PenguinMod and it's development!">
-    <meta property="og:url"              content="https://penguinmod.com/support">
-    <meta property="twitter:url"         content="https://penguinmod.com/support">
+    <meta name="title" content="PenguinMod - Support Us" />
+    <meta property="og:title" content="PenguinMod - Support Us" />
+    <meta property="twitter:title" content="PenguinMod - Support Us" />
+    <meta
+        name="description"
+        content="Help support PenguinMod and it's development!"
+    />
+    <meta
+        property="twitter:description"
+        content="Help support PenguinMod and it's development!"
+    />
+    <meta property="og:url" content="https://penguinmod.com/support" />
+    <meta property="twitter:url" content="https://penguinmod.com/support" />
 </svelte:head>
 
 <NavigationBar />
@@ -90,19 +104,29 @@
                     />
                 </p>
                 <p>
-                    {@html generateMarkdown(`${TranslationHandler.textSafe(
-                        "donate.people1",
-                        currentLang,
-                        "In the last month, ***$1 new people found PenguinMod*** and we sent our website to ***$2*** returning users."
-                    )
-                    .replace('$1', (25000).toLocaleString())
-                    .replace('$2', (55000).toLocaleString())}`)}
+                    {@html generateMarkdown(
+                        `${TranslationHandler.textSafe(
+                            "donate.people1",
+                            currentLang,
+                            "In the last month, ***$1 new people found PenguinMod*** and we sent our website to ***$2*** returning users.",
+                        )
+                            .replace(
+                                "$1",
+                                monthlyData.newPeople.toLocaleString(),
+                            )
+                            .replace(
+                                "$2",
+                                monthlyData.returningPeople.toLocaleString(),
+                            )}`,
+                    )}
 
-                    {@html generateMarkdown(`${TranslationHandler.textSafe(
-                        "donate.people2",
-                        currentLang,
-                        "Some people even use PenguinMod from the **United Kingdom**, **Japan**, **Brazil**, **Russia**, and more."
-                    )}`)}
+                    {@html generateMarkdown(
+                        `${TranslationHandler.textSafe(
+                            "donate.people2",
+                            currentLang,
+                            "Some people even use PenguinMod from the **United Kingdom**, **Japan**, **Brazil**, **Russia**, and more.",
+                        )}`,
+                    )}
                 </p>
                 <p>
                     <LocalizedText
@@ -203,7 +227,8 @@
                         lang={currentLang}
                         html={true}
                         replace={{
-                            "{{LINK}}": "<a href='https://scratch.org/'>https://scratch.org/</a>"
+                            "{{LINK}}":
+                                "<a href='https://scratch.org/'>https://scratch.org/</a>",
                         }}
                     />
                 </p>
@@ -235,38 +260,62 @@
                         lang={currentLang}
                     />
                 </p>
-                <div class="detail-card" bind:this={forceHtmlClass} style="background: dodgerblue">
-                    {@html String(TranslationHandler.text(
-                        "donate.served.projects",
-                        currentLang
-                    ) || TranslationHandler.text(
-                        "donate.served.projects",
-                        'en'
-                    ))
-                    // we serve __ projects
-                    .replace('$1', (100000).toLocaleString())}
+                <div
+                    class="detail-card"
+                    bind:this={forceHtmlClass}
+                    style="background: dodgerblue"
+                >
+                    {@html String(
+                        TranslationHandler.text(
+                            "donate.served.projects",
+                            currentLang,
+                        ) ||
+                            TranslationHandler.text(
+                                "donate.served.projects",
+                                "en",
+                            ),
+                    )
+                        // we serve __ projects
+                        .replace(
+                            "$1",
+                            monthlyData.totalProjects.toLocaleString(),
+                        )}
                 </div>
-                <div class="detail-card" bind:this={forceHtmlClass2} style="background: darkviolet">
-                    {@html String(TranslationHandler.text(
-                        "donate.served.size",
-                        currentLang
-                    ) || TranslationHandler.text(
-                        "donate.served.size",
-                        'en'
-                    ))
-                    // we send __ gb of stuff
-                    .replace('$1', (6000).toLocaleString())}
+                <div
+                    class="detail-card"
+                    bind:this={forceHtmlClass2}
+                    style="background: darkviolet"
+                >
+                    {@html String(
+                        TranslationHandler.text(
+                            "donate.served.size",
+                            currentLang,
+                        ) ||
+                            TranslationHandler.text("donate.served.size", "en"),
+                    )
+                        // we send __ gb of stuff
+                        .replace(
+                            "$1",
+                            monthlyData.contentSize.toLocaleString(),
+                        )}
                 </div>
-                <div class="detail-card" bind:this={forceHtmlClass3} style="background: #ffb300">
-                    {@html String(TranslationHandler.text(
-                        "donate.served.requests",
-                        currentLang
-                    ) || TranslationHandler.text(
-                        "donate.served.requests",
-                        'en'
-                    ))
-                    // we handle ___ reqs
-                    .replace('$1', (283000000).toLocaleString())}
+                <div
+                    class="detail-card"
+                    bind:this={forceHtmlClass3}
+                    style="background: #ffb300"
+                >
+                    {@html String(
+                        TranslationHandler.text(
+                            "donate.served.requests",
+                            currentLang,
+                        ) ||
+                            TranslationHandler.text(
+                                "donate.served.requests",
+                                "en",
+                            ),
+                    )
+                        // we handle ___ reqs
+                        .replace("$1", monthlyData.requests.toLocaleString())}
                 </div>
             </div>
         </div>
@@ -359,7 +408,7 @@
     .section-details {
         width: 35%;
     }
-    
+
     .donation-unavailable {
         filter: grayscale(1);
         opacity: 0.5;
