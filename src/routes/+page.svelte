@@ -745,20 +745,23 @@
                 <div class="category-news">
                     <div class="category-news-content">
                         <h2 style="margin-block:4px;">
-                            Watch our YouTube Premiere!
+                            A Game Jam for 4 Years of PenguinMod!
                         </h2>
                         <div style="width:100%">
                             <p>
-                                PenguinMod's Fourth anniversary is on October 17th, 2026!
+                                Welcome to PenguinMod's Fourth anniversary!
                             </p>
                             <p>
-                                Catch the YouTube premiere live at 6:00 PM (Eastern Standard Time).
-                                You can check the page on YouTube to see the countdown.
+                                We're running another PenguinJam on the site for this special event.
+                                The theme is Retro Remix,” fittingly for the Retro Remix PenguinJam!
+                                <br />
+                                <br />
+                                Submit your project by October 24th, 2026 at 6:00 PM EST.
+                                <br />
+                                See the event page for more details!
                             </p>
-                            <p>
-                                <a href="https://youtu.be/AVIaR7Fn9d4">
-                                    https://youtu.be/AVIaR7Fn9d4
-                                </a>
+                            <p style="margin-block-start:4px;">
+                                <a href="https://penguinmod.com/events/penguinmodfourthanniversary">Retro Remix PenguinJam</a>
                             </p>
                             <img
                                 src="/events/news/penguinmodfourthanniversary.webp"

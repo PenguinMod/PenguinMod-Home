@@ -37,6 +37,8 @@ import PenguinJamSpring2026Ru from "./ru/penguinjamspring2026.md?raw";
 import PenguinJamSpring2026Ja from "./ja/penguinjamspring2026.md?raw";
 // AllTheMods2026
 import AllTheMods2026En from "./en/allthemods2026.md?raw";
+// PenguinModFourthAnniversary
+import PenguinModFourthAnniversaryEn from "./en/penguinmodfourthanniversary.md?raw";
 
 export default {
     "example": {
@@ -85,5 +87,8 @@ export default {
     },
     "allthemods2026": {
         "en": AllTheMods2026En,
+    },
+    "penguinmodfourthanniversary": {
+        "en": PenguinModFourthAnniversaryEn,
     },
 };
