@@ -745,27 +745,26 @@
                 <div class="category-news">
                     <div class="category-news-content">
                         <h2 style="margin-block:4px;">
-                            Upcoming PenguinMod 4th Anniversary!!
+                            Watch our YouTube Premiere!
                         </h2>
                         <div style="width:100%">
                             <p>
-                                Hello everyone! We are making another anniversary video!
-                                <b>If you would like to submit a project for a chance of being
-                                featured in the video</b>, please fill out this Google Form!
+                                PenguinMod's Fourth anniversary is on October 17th, 2026!
                             </p>
-                            <a href="https://forms.gle/yQ7PmRYwGnTG9kRL6">
-                                https://forms.gle/yQ7PmRYwGnTG9kRL6
-                            </a>
-                            <p><i>The form closes on September 7 at 12AM EST</i></p>
-                            <p><b>Rules:</b></p>
-                            <ul>
-                                <li>1 Project per PenguinMod user (Alt accounts not allowed)</li>
-                                <li>Project must follow the PM guidelines</li>
-                                <li>Project must have been made between October 17, 2025 to October 17, 2026</li>
-                            </ul>
-                            <p><b>If you spam this form, you will be disqualified from this event and your account may face punishment.</b></p>
-                            <p><i>The form closes on September 7 at 12AM EST</i></p>
-                            <p><i>(Note: You do not need to sign in to Google to fill out this form)</i></p>
+                            <p>
+                                Catch the YouTube premiere live at 6:00 PM (Eastern Standard Time).
+                                You can check the page on YouTube to see the countdown.
+                            </p>
+                            <p>
+                                <a href="https://youtu.be/AVIaR7Fn9d4">
+                                    https://youtu.be/AVIaR7Fn9d4
+                                </a>
+                            </p>
+                            <img
+                                src="/events/news/penguinmodfourthanniversary.webp"
+                                alt="PenguinMod Fourth Anniversary"
+                                style="width:100%;"
+                            />
                         </div>
                     </div>
                     <div class="category-footer">
