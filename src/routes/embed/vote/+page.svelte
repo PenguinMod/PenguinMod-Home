@@ -37,6 +37,9 @@
                     .then(({isAdmin, isApprover}) => {
                         loggedIn = true;
                         loggedInAdmin = isAdmin || isApprover;
+                        ProjectClient.setUsername(username);
+                        ProjectClient.setToken(token);
+                        registerView();
                         vote();
                         return;
                     })
@@ -61,6 +64,7 @@
                         loggedInAdmin = isAdmin || isApprover;
                         ProjectClient.setUsername(username);
                         ProjectClient.setToken(token);
+                        registerView();
                         love();
                         return;
                     })
@@ -127,6 +131,8 @@
                 updateVoteStates();
                 loggedIn = true;
                 loggedInAdmin = isAdmin || isApprover;
+
+                registerView();
             })
             .catch((e) => {
                 console.log("err", e)
@@ -146,6 +152,11 @@
             loggedInAdmin = isAdmin || isApprover;
         });
     });
+
+    // used for algorithm
+    function registerView() {
+        ProjectClient.registerView(projectId);
+    }
 </script>
 
 <div class="main">

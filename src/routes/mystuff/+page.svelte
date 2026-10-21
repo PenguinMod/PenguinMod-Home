@@ -19,7 +19,7 @@
     import Language from "../../resources/language.js";
 
     // Icons
-    import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
+    import PenguinConfusedSVG from "../../resources/icons/Penguin/confused.svelte";
 
     let projects = [];
     let error = null;
@@ -104,7 +104,7 @@
         const correctCode = Math.round((Math.random() * 500000) + 100000);
         const code = prompt(
             String(
-                TranslationHandler.text("mystuff.confirm.delete", currentLang)
+                TranslationHandler.textSafe("mystuff.confirm.delete", currentLang)
             )
                 .replace("$2", correctCode)
                 .replace("$1", name)
@@ -135,21 +135,7 @@
     });
 
     function askForLogin() {
-        Authentication.authenticate().then((privateCode) => {
-            loggedIn = null;
-            Authentication.usernameFromCode(privateCode)
-                .then(({username}) => {
-                    if (username) {
-                        loggedIn = true;
-                        loggedInChange(username, privateCode);
-                        return;
-                    }
-                    loggedIn = false;
-                })
-                .catch(() => {
-                    loggedIn = false;
-                });
-        });
+        Authentication.authenticate(false);
     }
 
     Authentication.onLogout(() => {
@@ -246,11 +232,11 @@
                     <button class="dots-menu" on:click={(pointer) => showEditProjectDropdown(pointer, [
                         {
                             name: String(project.remix) !== "0"
-                                ? TranslationHandler.text(
+                                ? TranslationHandler.textSafe(
                                       "project.menu.remix.edit",
                                       currentLang
                                   )
-                                : TranslationHandler.text(
+                                : TranslationHandler.textSafe(
                                       "project.menu.project.edit",
                                       currentLang
                                   ),
@@ -259,16 +245,16 @@
                         },
                         {
                             name: String(project.remix) !== "0"
-                                ? TranslationHandler.text(
+                                ? TranslationHandler.textSafe(
                                       "project.menu.remix.delete",
                                       currentLang
                                   )
-                                : TranslationHandler.text(
+                                : TranslationHandler.textSafe(
                                       "project.menu.project.delete",
                                       currentLang
                                   ),
                             callback: () => {
-                                deleteProject(project.id, project.name);
+                                deleteProject(project.id, project.title);
                             },
                             color: "red",
                         },
@@ -342,7 +328,7 @@
             <div style="height: 16px;" />
             <div class="more-projects-wrapper">
                 <Button
-                    label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
+                    label="<img alt='More' src='/dropdown-caret-hd.png' width='20'></img>"
                     on:click={() => {
                         page += 1;
                         fetchNewProjects();

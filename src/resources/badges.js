@@ -6,7 +6,6 @@ export default {
 
     // admin
     admin: "admin",
-    discordadmin: "discord_mod",
     
     // "official" stuff
     verifiedofficial: "verifiedofficial",
@@ -14,14 +13,21 @@ export default {
     partner: "partner",
 
     // event
+    // penguinmodanniversary3
+    penguinmodanniversary3: "penguinmodanniversary3",
+    penguinmodanniversary3qualifiers: "penguinmodanniversary3qualifiers",
+    penguinmodanniversary3winners: "penguinmodanniversary3winners",
+    // penguinjamsuper
+    penguinjamsupersuperhero: "superhero",
+    penguinjamsupersupervillain: "supervillain",
     // penguinjam
     studiojam: "studiopenguinjamwinner",
+    // penguinjamdiamond: "penguinjamdiamond", // no translation
     penguinjamplatinum: "penguinjamplatinum",
     penguinjamobsidian: "penguinjamobsidian",
     penguinjamgold: "penguinjamgold",
     penguinjamsilver: "penguinjamsilver",
     penguinjambronze: "penguinjambronze",
-    // penguinjamdiamond: "penguinjamdiamond", // no translation
     // generic
     event: "eventwinner",
     participant: "participant",

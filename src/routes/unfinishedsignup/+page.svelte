@@ -1,6 +1,6 @@
 <script>
     import { onMount } from "svelte";
-    import { page } from '$app/stores';
+    import { page } from "$app/stores";
     import { browser } from "$app/environment";
     import MarkdownIt from "markdown-it";
 
@@ -18,7 +18,7 @@
 
     // Static values
     import LINK from "../../resources/urls.js";
-    
+
     const ProjectClient = new ProjectApi();
 
     let currentLang = "en";
@@ -28,13 +28,13 @@
     Language.onChange((lang) => {
         currentLang = lang;
     });
-    
+
     const md = new MarkdownIt({
         html: false,
         linkify: false,
         breaks: true,
     });
-    
+
     const env = {};
     const generateMarkdown = (mdtext) => {
         const tokens = md.parse(mdtext, env);
@@ -45,14 +45,14 @@
     let username = "";
     let token = "";
     let loggedIn = null;
-    
+
     let embed = false;
     if (browser) {
-        embed = $page.url.searchParams.get('embed') === "true";
+        embed = $page.url.searchParams.get("embed") === "true";
     }
     let specificFilloutForm = "";
     if (browser) {
-        specificFilloutForm = $page.url.searchParams.get('fillout');
+        specificFilloutForm = $page.url.searchParams.get("fillout");
     }
 
     let country = "";
@@ -74,53 +74,65 @@
         if (!canFinishSignup) {
             // TODO: Translate the error messages.
             if (apiProcessFailReason) {
-                alert('Failed to update account:', apiProcessFailReason);
+                alert("Failed to update account:", apiProcessFailReason);
                 return;
             }
 
             if (!consentedToDataUsage || !accurateDataAgreement) {
-                return alert("Not all agreements have been checked.");
+                return alert(
+                    TranslationHandler.textSafe(
+                        "agreement.requirement.all",
+                        currentLang,
+                        "Not all agreements have been checked.",
+                    ),
+                );
             }
 
-            alert("Not all fields have been filled out.");
+            alert(
+                TranslationHandler.textSafe(
+                    "generic.requirement.notmet",
+                    currentLang,
+                    "Not all fields have been filled out.",
+                ),
+            );
             return;
         }
 
         if (processingSignupFinish) return;
         processingSignupFinish = true;
-        
+
         finishSignup()
-        .then(() => {
-            if (embed) {
-                const opener = window.opener || window.parent;
+            .then(
+                async () => {
+                    if (embed) {
+                        const opener = window.opener || window.parent;
 
-                function post(data) {
-                    opener.postMessage(
-                        data,
-                        `/`
-                    );
-                }
+                        function post(data) {
+                            opener.postMessage(data, `/`);
+                        }
 
-                post();
+                        post();
 
-                window.close();
-                return;
-            }
+                        window.close();
+                        return;
+                    }
 
-            // redirect
-            const redir = $page.url.searchParams.get('redirect');
-            window.location.href = redir ? redir : "/";
-        }, (err) => {
-            canFinishSignup = false;
-            apiProcessFailReason = err;
-            alert(`Failed to create account: ${err}`);
-            console.error(err);
-        })
-        .finally(() => {
-            processingSignupFinish = false;
-        });
+                    // redirect
+                    const redir = $page.url.searchParams.get("redirect");
+                    window.location.href = redir ? redir : "/";
+                },
+                (err) => {
+                    canFinishSignup = false;
+                    apiProcessFailReason = err;
+                    alert(`Failed to create account: ${err}`);
+                    console.error(err);
+                },
+            )
+            .finally(() => {
+                processingSignupFinish = false;
+            });
     };
-    
+
     function loggedInChange(username, privateCode) {
         if (username) ProjectClient.setUsername(username);
         if (privateCode) ProjectClient.setToken(privateCode);
@@ -148,7 +160,7 @@
         loggedIn = true;
         loggedInChange(username, privateCode);
     });
-    
+
     const parseBirthday = (birthday) => {
         if (!birthday) return;
         if (typeof birthday !== "string") return;
@@ -186,7 +198,10 @@
                 if (birthYear > currentDate.getFullYear()) {
                     birthdayValid = false;
                 }
-                if (birthYear === currentDate.getFullYear() && parsedBirthday.getDate() > currentDate.getDate()) {
+                if (
+                    birthYear === currentDate.getFullYear() &&
+                    parsedBirthday.getDate() > currentDate.getDate()
+                ) {
                     birthdayValid = false;
                 }
             }
@@ -201,28 +216,38 @@
         if (specificFilloutForm === "birthday") {
             countryValid = true;
         }
-        canFinishSignup = countryValid && birthdayValid && consentedToDataUsage && accurateDataAgreement;
+        canFinishSignup =
+            countryValid &&
+            birthdayValid &&
+            consentedToDataUsage &&
+            accurateDataAgreement;
     };
-    
+
     const birthdayInputChanged = (event) => {
         birthday = event.target.value;
         checkIfValid();
-    }
+    };
     const countryInputChanged = (event) => {
         country = event.target.value;
         checkIfValid();
-    }
+    };
 </script>
 
 <svelte:head>
     <title>PenguinMod - Sign Up</title>
     <meta name="title" content="PenguinMod - Sign Up" />
     <meta property="og:title" content="PenguinMod - Sign Up" />
-    <meta property="twitter:title" content="PenguinMod - Sign Up">
-    <meta name="description" content="Sign up for PenguinMod to start sharing your projects!">
-    <meta property="twitter:description" content="Sign up for PenguinMod to start sharing your projects!">
-    <meta property="og:url" content="https://penguinmod.com/signup">
-    <meta property="twitter:url" content="https://penguinmod.com/signup">
+    <meta property="twitter:title" content="PenguinMod - Sign Up" />
+    <meta
+        name="description"
+        content="Sign up for PenguinMod to start sharing your projects!"
+    />
+    <meta
+        property="twitter:description"
+        content="Sign up for PenguinMod to start sharing your projects!"
+    />
+    <meta property="og:url" content="https://penguinmod.com/signup" />
+    <meta property="twitter:url" content="https://penguinmod.com/signup" />
 </svelte:head>
 
 {#if !embed}
@@ -250,7 +275,11 @@
         </main>
     {:else}
         <main>
-            <img src="/penguins/frontpage.svg" alt="Finish your child's account" style="width:40%" />
+            <img
+                src="/penguins/frontpage.svg"
+                alt="Finish your child's account"
+                style="width:40%"
+            />
             <!-- Only accounts from pre-server shutdown will need to view this page. -->
             <!-- In this case, I think it's fine if this doesn't exactly say that it's completing sign up. -->
             <!-- Also I forgot to add the original text to the translation sheets and most people already did their whole sheet so.... -->
@@ -283,11 +312,13 @@
                         />
                     </option>
                     {#each CountryLookup.countryCodes as countryCode}
-                        <option value={countryCode}>{CountryLookup.countryNames[countryCode]}</option>
+                        <option value={countryCode}
+                            >{CountryLookup.countryNames[countryCode]}</option
+                        >
                     {/each}
                 </select>
             {/if}
-            
+
             {#if specificFilloutForm !== "country"}
                 <span class="input-title">
                     <LocalizedText
@@ -310,7 +341,7 @@
                             key="birthday.requirement.faked.line1"
                             lang={currentLang}
                         />
-                        <br>
+                        <br />
                         <LocalizedText
                             text="That seems like you're trying to secretly make an account without them knowing."
                             key="birthday.requirement.faked.line2"
@@ -327,11 +358,13 @@
                     on:change={checkIfValid}
                 />
                 <span class="disable-markdown-margin">
-                    {@html generateMarkdown(`${TranslationHandler.textSafe(
-                        "account.fields.agreements.personalinfo",
-                        currentLang,
-                        "I agree to allow PenguinMod to collect and use my country and date of birth (or my child's if I am registering on their behalf) in accordance with the [Privacy Policy](/privacy)."
-                    )}`)}
+                    {@html generateMarkdown(
+                        `${TranslationHandler.textSafe(
+                            "account.fields.agreements.personalinfo",
+                            currentLang,
+                            "I agree to allow PenguinMod to collect and use my country and date of birth (or my child's if I am registering on their behalf) in accordance with the [Privacy Policy](/privacy).",
+                        )}`,
+                    )}
                 </span>
             </label>
             <label style="width:60%">
@@ -341,23 +374,31 @@
                     on:change={checkIfValid}
                 />
                 <span class="disable-markdown-margin">
-                    {@html generateMarkdown(`${TranslationHandler.textSafe(
-                        "account.fields.agreements.accurate",
-                        currentLang,
-                        "I confirm that the information I have provided is accurate, and I understand that my date of birth and country cannot be changed after account creation without contacting support."
-                    )}`)}
+                    {@html generateMarkdown(
+                        `${TranslationHandler.textSafe(
+                            "account.fields.agreements.accurate",
+                            currentLang,
+                            "I confirm that the information I have provided is accurate, and I understand that my date of birth and country cannot be changed after account creation without contacting support.",
+                        )}`,
+                    )}
                 </span>
             </label>
 
             <p>
-                {@html generateMarkdown(`${TranslationHandler.textSafe(
-                    "signup.confirm.legal.alt",
-                    currentLang,
-                    "By creating a PenguinMod account through any means provided on this page, you agree to abide by the [Terms of Service](/terms) and [Uploading Guidelines](/guidelines/uploading) and confirm that you have read the [Privacy Policy](/privacy) in its entirety. If you are a parent or guardian creating an account for a child, you agree to these terms on their behalf. If you are legally an adult, you confirm that you are creating this account for yourself."
-                )}`)}
+                {@html generateMarkdown(
+                    `${TranslationHandler.textSafe(
+                        "signup.confirm.legal.alt",
+                        currentLang,
+                        "By creating a PenguinMod account through any means provided on this page, you agree to abide by the [Terms of Service](/terms) and [Uploading Guidelines](/guidelines/uploading) and confirm that you have read the [Privacy Policy](/privacy) in its entirety. If you are a parent or guardian creating an account for a child, you agree to these terms on their behalf. If you are legally an adult, you confirm that you are creating this account for yourself.",
+                    )}`,
+                )}
             </p>
-        
-            <button class="create-acc" data-canCreate={canFinishSignup} on:click={finishSignupSafe}>
+
+            <button
+                class="create-acc"
+                data-canCreate={canFinishSignup}
+                on:click={finishSignupSafe}
+            >
                 {#if processingSignupFinish}
                     <LoadingSpinner icon="/loading_white.png" />
                 {:else}
@@ -437,13 +478,13 @@
     :global(body.dark-mode) .birthday-warning {
         color: #ff6363;
     }
-    
+
     .create-acc {
         border-radius: 1024px;
         padding: 4px 8px;
         width: 60%;
         margin-top: 4px;
-        
+
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -451,14 +492,14 @@
         border: 1px solid rgba(0, 0, 0, 0.2);
         font-size: 18px;
     }
-    
-    .create-acc[data-canCreate=true] {
+
+    .create-acc[data-canCreate="true"] {
         background: #00c3ff;
         cursor: pointer;
         color: white;
     }
 
-    :global(body.dark-mode) .create-acc[data-canCreate=false] {
+    :global(body.dark-mode) .create-acc[data-canCreate="false"] {
         background: #9c9c9c;
         color: rgb(255, 255, 255);
     }
@@ -467,7 +508,7 @@
         color: rgb(73, 164, 255);
     }
 
-    .create-acc[data-canCreate=false] {
+    .create-acc[data-canCreate="false"] {
         background: #9c9c9c;
         color: rgb(255, 255, 255);
         cursor: not-allowed;
@@ -513,7 +554,7 @@
     main input[data-valid="false"] {
         border-color: rgb(187, 0, 0) !important;
     }
-    
+
     .footer-links {
         width: 100%;
         display: flex;

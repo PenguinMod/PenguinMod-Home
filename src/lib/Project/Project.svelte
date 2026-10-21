@@ -23,13 +23,18 @@
 
     // let isDonator = false;
     const xmlEscape = function (unsafe) {
-        return unsafe.replace(/[<>&'"]/g, c => {
+        return unsafe.replace(/[<>&'"]/g, (c) => {
             switch (c) {
-            case '<': return '&lt;';
-            case '>': return '&gt;';
-            case '&': return '&amp;';
-            case '\'': return '&apos;';
-            case '"': return '&quot;';
+                case "<":
+                    return "&lt;";
+                case ">":
+                    return "&gt;";
+                case "&":
+                    return "&amp;";
+                case "'":
+                    return "&apos;";
+                case '"':
+                    return "&quot;";
             }
         });
     };
@@ -37,12 +42,13 @@
         const title = xmlEscape(String(_title));
         const emojiRegex = /:(\w+):/g;
         return title.replace(emojiRegex, (match) => {
-            const emojiName = match.replace(/\:/gmi, "");
+            const emojiName = match.replace(/\:/gim, "");
             return `<img
                 src="https://library.penguinmod.com/files/emojis/${emojiName}.png"
                 alt=":${emojiName}:"
                 title=":${emojiName}:"
                 style="width:1.2rem;vertical-align: middle;"
+                loading="lazy"
             >`;
         });
     };
@@ -53,7 +59,7 @@
         if (typeof author === "string") {
             author = {
                 username: localStorage.getItem("username"),
-                id: author
+                id: author,
             };
         }
         Language.forceUpdate();
@@ -70,7 +76,7 @@
             day: "numeric",
             hour: "numeric",
             minute: "numeric",
-            hour12: true
+            hour12: true,
         })}`;
     }
 
@@ -108,7 +114,7 @@
             href={projectLink}
             target={openNewtab ? "_blank" : "_self"}
             class="text project-title"
-            title={title}
+            {title}
         >
             {@html formatProjectTitle(title)}
         </a>
@@ -134,7 +140,7 @@
                         height="16"
                         title={Translations.text(
                             "profile.badge.donator",
-                            currentLang
+                            currentLang,
                         )}
                     />
                 {/if}

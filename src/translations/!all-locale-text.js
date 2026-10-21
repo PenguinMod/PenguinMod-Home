@@ -8,14 +8,52 @@ import en from '../translations/en.json';
 const logWhenLangMissingTranslation = false;
 
 const sameInAll = [
-    "payment.paypal.card", // brand name
+    "---notes1", // translation note
+    "---notes2", // translation note
+    "---notes3", // translation note
+    "---notes4", // translation note
     "payment.paypal", // brand name
+    "payment.paypal.card", // brand name
     "payment.cashapp", // brand name
     "payment.stripe", // brand name
+    "payment.patreon", // brand name
+    "payment.patreon.card", // brand name
     "vr.title", // nearly every language is the same, since VR as an acronym seems to be more like a brand name
     "account.settings.parental.pin", // pin is an acronym, seems like most langs dont change that
+    "profile.badge.owner", // a brand name and an acronym
+    "licensing.license.gpl", // license name
+    "licensing.license.gpl.long", // license name
+    "licensing.license.gplv3", // license name
+    "licensing.license.gplv3.long", // license name
+    "licensing.license.mit", // license name
+    "licensing.license.mite", // license name
+    "licensing.license.mite.long", // license name
+    "licensing.license.cco", // license name
+    "licensing.license.cc.long", // license name
+    "licensing.license.ccbysa", // license name
+    "licensing.license.ccbysa.long", // license name
+    "licensing.license.ccbyncnd", // license name
+    "licensing.license.ccbyncnd.long", // license name
 ];
 const sameInLocale = {
+    "da": [
+        "generic.ok",
+        "generic.info",
+        "avatar.name1",
+        "avatar.name2",
+        "avatar.title",
+        "home.footer.sections.website",
+        "home.footer.sections.info",
+        "profile.badge.admin",
+        "profile.badge.donator",
+        "profile.badge.discordadmin",
+        "profile.badge.partner",
+        "uploading.type.upload",
+        "uploading.type.remix",
+        "uploading.remix.selected",
+        "account.settings.cookies.title",
+        "profile.badge.moderator",
+    ],
     "es": [
         "generic.errortitle",
         "home.footer.sections.website.editor",
@@ -44,6 +82,13 @@ const sameInLocale = {
     ],
     "ru": [
         "region.sub.micronesia",
+    ],
+    "tr": [
+        "home.footer.sections.website",
+        "avatar.title",
+        "profile.badge.partner",
+        "account.settings.account.email",
+        "account.fields.email",
     ],
 };
 

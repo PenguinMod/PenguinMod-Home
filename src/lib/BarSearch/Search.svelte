@@ -7,7 +7,7 @@
     let searchBar;
 
     // Icons
-    import SearchSVG from "../../icons/Search/icon.svelte";
+    import SearchSVG from "../../resources/icons/Search/icon.svelte";
 
     // Functions
     function search(query) {

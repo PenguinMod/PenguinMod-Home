@@ -1,6 +1,6 @@
 import { mockRequest } from "./emojis-compat";
 
-const emojiHtmlUrl = 'https://gextapi.penguinmod.com/emojis';
+const emojiHtmlUrl = 'https://gextapi.derpygamer2142.com/emojis';
 const useLocalCopy = true;
 
 class EmojiHandler {

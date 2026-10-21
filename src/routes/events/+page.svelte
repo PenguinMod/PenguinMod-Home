@@ -1,5 +1,5 @@
 <script>
-    import EventsPages from "../../events/pages";
+    import EventsPages from "../../resources/markdown/events/pages";
     const pages = Object.keys(EventsPages);
     const amount = pages.length;
 </script>

@@ -44,7 +44,7 @@
     
         <main>
             <!-- UPDATE THIS WHEN MAKING CONTENT CHANGES -->
-            <p><i>Updated November 17th, 2024 (Mountain Time)</i></p>
+            <p><i>Updated April 26th, 2025 (Mountain Time)</i></p>
 
             <!-- some things are intentionally not formatted as they are in the HTML file on the website -->
             <p>
@@ -102,6 +102,13 @@
                 circumventing bans or deletions, or incentivizing others to break PenguinMod's rules, is strictly prohibited.
                 <br>
                 Violations may lead to limiting your account's access to certain features, account deletion, or permanent loss of access to PenguinMod's services.
+            </p>
+            <p>
+                Using PenguinMod's services to engage in, promote, or facilitate illegal activities, including but not limited to breaking laws in your country, region, or area, is strictly prohibited.
+                <br>
+                Violations may lead to limiting your account's access to certain features, account deletion, or permanent loss of access to PenguinMod's services.
+                <br>
+                Serious offenses may result in your account information being shared with law enforcement authorities.
             </p>
 
             <h2>Copyright</h2>
@@ -169,6 +176,15 @@
 
             <p>Email us at <a href="mailto:penguinmodhelp@gmail.com">penguinmodhelp@gmail.com</a></p>
             <p>Join <a href="https://discord.gg/NZ9MBMYTZh">our Discord Server</a></p>
+
+            <div style="width: 100%; height: 32px;"></div>
+
+            <p>
+                <a href="/privacy">Privacy Policy</a>
+            </p>
+            <p>
+                <a href="{PUBLIC_STUDIO_URL}/contact.html">Contact Us</a>
+            </p>
 
             <div style="width: 100%; height: 32px;"></div>
         </main>

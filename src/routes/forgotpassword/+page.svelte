@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { page } from '$app/stores';
+    import { browser } from '$app/environment';
     
     // Static values
     import LINK from "../../resources/urls.js";
@@ -32,7 +33,11 @@
 
     async function sendEmail() {
         await Authentication.sendResetPasswordEmail(email, captcha_token);
-        alert("Check your email.");
+        alert(TranslationHandler.textSafe(
+            "login.confirm.email.title",
+            currentLang,
+            "Check your email!"
+        ));
     }
     const sendEmailSafe = () => {
         if (!emailValid) {
@@ -66,7 +71,7 @@
             }
 
             // redirect
-            const redir = $page.url.searchParams.get('redirect');
+            const redir = browser ? $page.url.searchParams.get('redirect') : null;
         
             window.location.href = redir ? redir : "/";
         }, (err) => {
@@ -80,7 +85,7 @@
 
     const validateEmail = (email) => {
         return email.match(
-            /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            /^([a-z0-9\-\._~!$&'()*+,=:]|%[0-9a-f]{2})+@[a-z0-9\-\._~!$&'()*+,=]+$/i
         ) ? true : false;
     };
 
@@ -99,11 +104,11 @@
     
 <svelte:head>
     <title>PenguinMod - Sign Up</title>
-    <meta name="title" content="PenguinMod - Sign Up" />
-    <meta property="og:title" content="PenguinMod - Sign Up" />
-    <meta property="twitter:title" content="PenguinMod - Sign Up">
-    <meta name="description" content="Sign up for PenguinMod to start sharing your projects!">
-    <meta property="twitter:description" content="Sign up for PenguinMod to start sharing your projects!">
+    <meta name="title" content="PenguinMod - Forgot Password" />
+    <meta property="og:title" content="PenguinMod - Forgot Password" />
+    <meta property="twitter:title" content="PenguinMod - Forgot Password">
+    <meta name="description" content="Reset your password on PenguinMod.">
+    <meta property="twitter:description" content="Reset your password on PenguinMod.">
     <meta property="og:url" content="https://penguinmod.com/forgotpassword">
     <meta property="twitter:url" content="https://penguinmod.com/forgotpassword">
 </svelte:head>

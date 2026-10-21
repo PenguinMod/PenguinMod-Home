@@ -23,7 +23,7 @@
             day: "numeric",
             hour: "numeric",
             minute: "numeric",
-            hour12: true
+            hour12: true,
         })}`;
     }
 
@@ -50,7 +50,7 @@
         />
     </div>
     <div class="project-meta">
-        <div class="text" title={title}>
+        <div class="text" {title}>
             {title}
         </div>
         {#if showdate}

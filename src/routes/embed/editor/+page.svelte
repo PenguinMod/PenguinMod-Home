@@ -26,7 +26,6 @@
 
     onMount(async () => {
         const loginDetails = await getLoginDetails();
-        console.log(loginDetails);
 
         const params = new URLSearchParams(location.search);
         const importLocation = params.get("external");
@@ -37,6 +36,7 @@
         const urlObject = new URL(importLocation);
         if (
             !(
+                urlObject.host.startsWith("dev-studio.penguinmod.com") ||
                 urlObject.host.startsWith("dev.penguinmod.com") ||
                 urlObject.host.startsWith(stripped) ||
                 urlObject.host.startsWith("penguinmod.com") ||

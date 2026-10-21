@@ -15,9 +15,10 @@
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
     import Language from "../../resources/language.js";
+    import ProjectApi from "../../resources/projectapi.js";
 
     // Icons
-    import PenguinConfusedSVG from "../../icons/Penguin/confused.svelte";
+    import PenguinConfusedSVG from "../../resources/icons/Penguin/confused.svelte";
 
     let searchQuery = "...";
     let projects = [];
@@ -25,46 +26,23 @@
     let page = 0;
     let pageIsLast = false;
     let searchType = "project";
+    let reverse = false;
 
     const fetchNewProjects = () => {
-        let api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(searchQuery)}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
-        const query = searchQuery.split(":", 1)[0];
-        switch (query) {
-            case "user":
-                const userQuery = searchQuery.split(":");
-                searchType = "user";
-                userQuery.shift();
-                api = `${LINK.projects}api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
-                break;
-            case "featured":
-            case "newest":
-            case "views":
-            case "votes":
-            case "loves":
-                const actual_query = searchQuery.split(":");
-                actual_query.shift();
-                api = `${LINK.projects}api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
-                break;
-        }
-
-        fetch(api)
-            .then((response) => {
-                response
-                    .json()
-                    .then((result) => {
-                        projects.push(...result);
-                        projects = projects;
-                        if (projects.length <= 0) {
-                            projects = ["notfound"];
-                            pageIsLast = true;
-                        }
-                        if (result.length < 20) {
-                            pageIsLast = true;
-                        }
-                    })
-                    .catch(() => {
-                        requestFailed = true;
-                    });
+        ProjectApi.searchProjects(page, searchQuery, localStorage.getItem("username"), localStorage.getItem("token"), true, reverse)
+            .then((result) => {
+                if (searchQuery.startsWith("user:")) {
+                    searchType = "user"
+                }
+                projects.push(...result);
+                projects = projects;
+                if (projects.length <= 0) {
+                    projects = ["notfound"];
+                    pageIsLast = true;
+                }
+                if (result.length < 20) {
+                    pageIsLast = true;
+                }
             })
             .catch(() => {
                 requestFailed = true;
@@ -75,6 +53,10 @@
         const params = new URLSearchParams(location.search);
         const query = params.get("q");
         searchQuery = query ? query : "";
+        const rev = params.get("reverse");
+		const base_page = params.get("page");
+		page = base_page ? Number(base_page) : 0;
+        reverse = rev ? rev : false;
 
         fetchNewProjects();
     });
@@ -185,7 +167,7 @@
             <div style="height: 16px;" />
             <div class="more-projects-wrapper">
                 <Button
-                    label="<img alt='More' src='dropdown-caret-hd.png' width='20'></img>"
+                    label="<img alt='More' src='/dropdown-caret-hd.png' width='20'></img>"
                     on:click={() => {
                         page += 1;
                         fetchNewProjects();

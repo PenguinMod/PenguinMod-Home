@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
-    import { browser } from '$app/environment'; 
-    import { page } from '$app/stores';
+    import { page } from "$app/stores";
+    import { browser } from "$app/environment";
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
     import Authentication from "../../resources/authentication.js";
     import LINK from "../../resources/urls.js";
@@ -10,7 +10,7 @@
     import ProjectApi from "../../resources/projectapi.js";
     import * as FileSaver from "file-saver";
     import JSZip from "jszip";
-    import BlobAndDataUrl from "./blobanddataurl.js";
+    import BlobAndDataUrl from "../../resources/blobanddataurl.js";
     import FileTypes from "./filetypes.js";
 
     const ProjectClient = new ProjectApi();
@@ -25,7 +25,7 @@
 
     function unixToDisplayDate(unix) {
         return `${new Date(Number(unix)).toDateString()} at ${new Date(
-            Number(unix)
+            Number(unix),
         ).toLocaleTimeString()}`;
     }
 
@@ -124,13 +124,23 @@
 
 <svelte:head>
     <title>PenguinMod - Admin Panel</title>
+    <meta
+        name="robots"
+        content="noindex,nofollow,noarchive,nosnippet,noimageindex,nocache,none"
+    />
     <meta name="title" content="PenguinMod - Home" />
     <meta property="og:title" content="PenguinMod - Home" />
-    <meta property="twitter:title" content="PenguinMod - Home">
-    <meta name="description" content="The area where featured projects and community stuff & info is shown.">
-    <meta property="twitter:description" content="The area where featured projects and community stuff & info is shown.">
-    <meta property="og:url" content="https://penguinmod.com/">
-    <meta property="twitter:url" content="https://penguinmod.com/">
+    <meta property="twitter:title" content="PenguinMod - Home" />
+    <meta
+        name="description"
+        content="The area where featured projects and community stuff & info is shown."
+    />
+    <meta
+        property="twitter:description"
+        content="The area where featured projects and community stuff & info is shown."
+    />
+    <meta property="og:url" content="https://penguinmod.com/" />
+    <meta property="twitter:url" content="https://penguinmod.com/" />
 </svelte:head>
 
 <NavigationBar />
