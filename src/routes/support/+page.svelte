@@ -19,37 +19,51 @@
     let forceHtmlClass3;
     onMount(() => {
         Language.forceUpdate();
-        forceHtmlClass.classList.add('donate-card-html');
-        forceHtmlClass2.classList.add('donate-card-html');
-        forceHtmlClass3.classList.add('donate-card-html');
+        forceHtmlClass.classList.add("donate-card-html");
+        forceHtmlClass2.classList.add("donate-card-html");
+        forceHtmlClass3.classList.add("donate-card-html");
     });
     Language.onChange((lang) => {
         currentLang = lang;
     });
-    
+
     const md = new MarkdownIt({
         html: false,
         linkify: false,
         breaks: true,
     });
-    
+
     const env = {};
     const generateMarkdown = (mdtext) => {
         const tokens = md.parse(mdtext, env);
         const bodyHTML = md.renderer.render(tokens, md.options, env);
         return bodyHTML;
     };
+
+    const monthlyData = {
+        requests: 385_000_000,
+        contentSize: 8_000,
+        totalProjects: 100_000,
+        newPeople: 70_000,
+        returningPeople: 100_000,
+    };
 </script>
 
 <svelte:head>
-    <title>PenguinMod - Donate</title>
-    <meta name="title"                   content="PenguinMod - Donate" />
-    <meta property="og:title"            content="PenguinMod - Donate" />
-    <meta property="twitter:title"       content="PenguinMod - Donate">
-    <meta name="description"             content="Help support PenguinMod and it's development!">
-    <meta property="twitter:description" content="Help support PenguinMod and it's development!">
-    <meta property="og:url"              content="https://penguinmod.com/donate">
-    <meta property="twitter:url"         content="https://penguinmod.com/donate">
+    <title>PenguinMod - Support Us</title>
+    <meta name="title" content="PenguinMod - Support Us" />
+    <meta property="og:title" content="PenguinMod - Support Us" />
+    <meta property="twitter:title" content="PenguinMod - Support Us" />
+    <meta
+        name="description"
+        content="Help support PenguinMod and it's development!"
+    />
+    <meta
+        property="twitter:description"
+        content="Help support PenguinMod and it's development!"
+    />
+    <meta property="og:url" content="https://penguinmod.com/support" />
+    <meta property="twitter:url" content="https://penguinmod.com/support" />
 </svelte:head>
 
 <NavigationBar />
@@ -61,7 +75,7 @@
         <div>
             <h1 style="margin-block: 0;">
                 <LocalizedText
-                    text="Donate"
+                    text="Support Us"
                     key="donate.title"
                     lang={currentLang}
                 />
@@ -90,19 +104,29 @@
                     />
                 </p>
                 <p>
-                    {@html generateMarkdown(`${TranslationHandler.textSafe(
-                        "donate.people1",
-                        currentLang,
-                        "In the last month, ***$1 new people found PenguinMod*** and we sent our website to ***$2*** returning users."
-                    )
-                    .replace('$1', (25000).toLocaleString())
-                    .replace('$2', (55000).toLocaleString())}`)}
+                    {@html generateMarkdown(
+                        `${TranslationHandler.textSafe(
+                            "donate.people1",
+                            currentLang,
+                            "In the last month, ***$1 new people found PenguinMod*** and we sent our website to ***$2*** returning users.",
+                        )
+                            .replace(
+                                "$1",
+                                monthlyData.newPeople.toLocaleString(),
+                            )
+                            .replace(
+                                "$2",
+                                monthlyData.returningPeople.toLocaleString(),
+                            )}`,
+                    )}
 
-                    {@html generateMarkdown(`${TranslationHandler.textSafe(
-                        "donate.people2",
-                        currentLang,
-                        "Some people even use PenguinMod from the **United Kingdom**, **Japan**, **Brazil**, **Russia**, and more."
-                    )}`)}
+                    {@html generateMarkdown(
+                        `${TranslationHandler.textSafe(
+                            "donate.people2",
+                            currentLang,
+                            "Some people even use PenguinMod from the **United Kingdom**, **Japan**, **Brazil**, **Russia**, and more.",
+                        )}`,
+                    )}
                 </p>
                 <p>
                     <LocalizedText
@@ -126,6 +150,26 @@
                         </p>
                         <a
                             target="_blank"
+                            href="https://www.patreon.com/cw/PenguinMod"
+                            style="text-decoration: none !important;"
+                        >
+                            <button
+                                class="donation-container"
+                                title="Patreon - Empowering Creators and Building Communities"
+                            >
+                                <img src="/patreon.png" alt="Patreon" />
+                                <span>
+                                    <LocalizedText
+                                        text="Patreon / Card"
+                                        key="payment.patreon.card"
+                                        lang={currentLang}
+                                    />
+                                </span>
+                            </button>
+                        </a>
+                        <br />
+                        <a
+                            target="_blank"
                             href="https://www.cash.app/$JeremyGamer13"
                             style="text-decoration: none !important;"
                         >
@@ -143,48 +187,6 @@
                                 </span>
                             </button>
                         </a>
-                        <br />
-                        <a
-                            target="_blank"
-                            href="/error?error=410"
-                            class="donation-unavailable"
-                            style="text-decoration: none !important;"
-                        >
-                            <button
-                                class="donation-container"
-                                title="Stripe - Financial infrastructure for the internet"
-                            >
-                                <img src="/stripe.png" alt="Stripe" />
-                                <span>
-                                    <LocalizedText
-                                        text="(unavailable)"
-                                        key="project.status.unavailable"
-                                        lang={currentLang}
-                                    />
-                                </span>
-                            </button>
-                        </a>
-                        <br />
-                        <a
-                            target="_blank"
-                            href="/error?error=410"
-                            class="donation-unavailable"
-                            style="text-decoration: none !important;"
-                        >
-                            <button
-                                class="donation-container"
-                                title="PayPal - The safer, easier way to pay online!"
-                            >
-                                <img src="/paypal.png" alt="PayPal" />
-                                <span>
-                                    <LocalizedText
-                                        text="(unavailable)"
-                                        key="project.status.unavailable"
-                                        lang={currentLang}
-                                    />
-                                </span>
-                            </button>
-                        </a>
                     </div>
                     <div class="donation-images">
                         <img
@@ -194,14 +196,40 @@
                     </div>
                 </div>
 
-                <!-- other stuff -->
-                <div style="height: 48px;" />
+                <p>
+                    <strong>
+                        <LocalizedText
+                            text="Please make sure to connect with us upon payment. We haven't setup any automatic systems for perks yet."
+                            key="payment.contact"
+                            lang={currentLang}
+                        />
+                    </strong>
+                    <a target="_blank" href={LINK.contact}>
+                        <LocalizedText
+                            text="Contact Us"
+                            key="home.footer.sections.info.contact"
+                            lang={currentLang}
+                        />
+                    </a>
+                </p>
 
+                <!-- other stuff -->
                 <p class="small">
                     <LocalizedText
                         text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
                         key="home.footer.notaffiliated"
                         lang={currentLang}
+                    />
+                    <br />
+                    <LocalizedText
+                        text="Scratch is a project of the Scratch Foundation. It is available for free."
+                        key="home.footer.notaffiliated2"
+                        lang={currentLang}
+                        html={true}
+                        replace={{
+                            "{{LINK}}":
+                                "<a href='https://scratch.org/'>https://scratch.org/</a>",
+                        }}
                     />
                 </p>
                 <p class="small">
@@ -223,10 +251,6 @@
                 <a class="small" target="_blank" href={LINK.donate.scratch}>
                     Scratch
                 </a>
-                <br />
-                <a class="small" target="_blank" href={LINK.donate.turbowarp}>
-                    TurboWarp
-                </a>
             </div>
             <div class="section-details">
                 <p style="text-align: center;">
@@ -236,38 +260,62 @@
                         lang={currentLang}
                     />
                 </p>
-                <div class="detail-card" bind:this={forceHtmlClass} style="background: dodgerblue">
-                    {@html String(TranslationHandler.text(
-                        "donate.served.projects",
-                        currentLang
-                    ) || TranslationHandler.text(
-                        "donate.served.projects",
-                        'en'
-                    ))
-                    // we serve __ projects
-                    .replace('$1', (10000).toLocaleString())}
+                <div
+                    class="detail-card"
+                    bind:this={forceHtmlClass}
+                    style="background: dodgerblue"
+                >
+                    {@html String(
+                        TranslationHandler.text(
+                            "donate.served.projects",
+                            currentLang,
+                        ) ||
+                            TranslationHandler.text(
+                                "donate.served.projects",
+                                "en",
+                            ),
+                    )
+                        // we serve __ projects
+                        .replace(
+                            "$1",
+                            monthlyData.totalProjects.toLocaleString(),
+                        )}
                 </div>
-                <div class="detail-card" bind:this={forceHtmlClass2} style="background: darkviolet">
-                    {@html String(TranslationHandler.text(
-                        "donate.served.size",
-                        currentLang
-                    ) || TranslationHandler.text(
-                        "donate.served.size",
-                        'en'
-                    ))
-                    // we send __ gb of stuff
-                    .replace('$1', (2000).toLocaleString())}
+                <div
+                    class="detail-card"
+                    bind:this={forceHtmlClass2}
+                    style="background: darkviolet"
+                >
+                    {@html String(
+                        TranslationHandler.text(
+                            "donate.served.size",
+                            currentLang,
+                        ) ||
+                            TranslationHandler.text("donate.served.size", "en"),
+                    )
+                        // we send __ gb of stuff
+                        .replace(
+                            "$1",
+                            monthlyData.contentSize.toLocaleString(),
+                        )}
                 </div>
-                <div class="detail-card" bind:this={forceHtmlClass3} style="background: #ffb300">
-                    {@html String(TranslationHandler.text(
-                        "donate.served.requests",
-                        currentLang
-                    ) || TranslationHandler.text(
-                        "donate.served.requests",
-                        'en'
-                    ))
-                    // we handle ___ reqs
-                    .replace('$1', (75000000).toLocaleString())}
+                <div
+                    class="detail-card"
+                    bind:this={forceHtmlClass3}
+                    style="background: #ffb300"
+                >
+                    {@html String(
+                        TranslationHandler.text(
+                            "donate.served.requests",
+                            currentLang,
+                        ) ||
+                            TranslationHandler.text(
+                                "donate.served.requests",
+                                "en",
+                            ),
+                    )
+                        // we handle ___ reqs
+                        .replace("$1", monthlyData.requests.toLocaleString())}
                 </div>
             </div>
         </div>
@@ -358,9 +406,9 @@
         margin-left: 5%;
     }
     .section-details {
-        width: 30%;
+        width: 35%;
     }
-    
+
     .donation-unavailable {
         filter: grayscale(1);
         opacity: 0.5;

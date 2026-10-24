@@ -3,6 +3,7 @@
     import Authentication from "../../resources/authentication.js";
     import ProjectApi from "../../resources/projectapi.js";
     import EmojiList from "../../resources/emojis.js";
+    import MatureFS from "../../resources/maturefs.js";
     import {
         PUBLIC_STUDIO_URL,
         PUBLIC_MAX_UPLOAD_SIZE,
@@ -12,6 +13,10 @@
 
     // Static values
     import LINK from "../../resources/urls.js";
+
+    const fileAccepts = MatureFS.isTypeFilterAvailable()
+        ? { accept: ".pmp,.pm,.sb3,.sb2,.sb,.goobert" }
+        : {};
 
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
@@ -38,14 +43,16 @@
         if (projectName === "") {
             projectName = TranslationHandler.text(
                 "uploading.project.title.default",
-                currentLang
+                currentLang,
             );
         }
     });
 
     let loggedIn = null;
+    let isMod = false;
     let loadingExternal = false;
 
+    let priv;
     let projectImage;
     let projectImageURL;
     let projectData;
@@ -56,15 +63,15 @@
             ProjectClient.resolveProjectSizes(
                 projectData,
                 projectImage?.size ?? 0,
-                true
+                true,
             ).then(([sizes, tooLarge]) => {
                 projectSizes = sizes;
                 if (tooLarge)
                     alert(
                         TranslationHandler.text(
                             "uploading.error.projecttoolarge",
-                            currentLang
-                        )
+                            currentLang,
+                        ),
                     );
             });
     }
@@ -236,7 +243,7 @@
         // remove recommended tags present inside the text
         for (const hashtag of hashtags) {
             recommendedTagList = recommendedTagList.filter(
-                (recommendedTag) => `#${recommendedTag}` !== hashtag
+                (recommendedTag) => `#${recommendedTag}` !== hashtag,
             );
         }
         // remove duplicate tags
@@ -308,10 +315,11 @@
             loggedIn = false;
         }
         Authentication.usernameFromCode(username, token)
-            .then(() => {
+            .then(({ isAdmin, isApprover }) => {
                 ProjectClient.setUsername(username);
                 ProjectClient.setToken(token);
                 loggedIn = true;
+                isMod = isAdmin || isApprover;
             })
             .catch(() => {
                 loggedIn = false;
@@ -327,7 +335,7 @@
                 // exit if not found
                 loadingExternal = false;
                 console.warn(
-                    "External import stopped; parent window not found"
+                    "External import stopped; parent window not found",
                 );
                 return;
             }
@@ -338,7 +346,7 @@
                         {
                             p4: data,
                         },
-                        "*" // now really you should never do this but im lazy and this shit is refusing to work
+                        "*", // now really you should never do this but im lazy and this shit is refusing to work
                     );
                 } catch (e) {
                     console.warn("Cannot post message", e);
@@ -382,7 +390,10 @@
             post({ type: "validate" });
         }
 
-        projectSizes = { name: `0/${PUBLIC_MAX_UPLOAD_SIZE*(await ProjectClient.isDonator()?1.75:1)}MB`, value: [] };
+        projectSizes = {
+            name: `0/${PUBLIC_MAX_UPLOAD_SIZE * ((await ProjectClient.isDonator()) ? 1.75 : 1)}MB`,
+            value: [],
+        };
     });
 
     function filePicked(file) {
@@ -410,7 +421,7 @@
         projectData = file;
         projectInputName.innerText = TranslationHandler.text(
             "uploading.project.ownfile.picked",
-            currentLang
+            currentLang,
         )
             .replace("$2", floatTo2Decimals(file.size / 1250000))
             .replace("$1", file.name);
@@ -424,7 +435,8 @@
 
         if (tagsAreTooMany) {
             // TODO: Translation
-            const message = "You can only use up to 6 hashtags in your project's information.";
+            const message =
+                "You can only use up to 6 hashtags in your project's information.";
             alert(message);
             isBusyUploading = false;
             return;
@@ -432,7 +444,7 @@
 
         if (!projectImage) {
             projectImage = await fetch("/empty-project.png").then((res) =>
-                res.blob()
+                res.blob(),
             );
         }
 
@@ -443,6 +455,7 @@
             image: projectImage,
             remix: remixProjectId,
             project: projectData,
+            priv,
         })
             .then((projectId) => open(`${PUBLIC_STUDIO_URL}/#${projectId}`))
             .catch((err) => {
@@ -452,35 +465,35 @@
                         message = TranslationHandler.textSafe(
                             "uploading.error.toomanyrequests",
                             currentLang,
-                            "You can only upload projects every 8 minutes."
+                            "You can only upload projects every 8 minutes.",
                         );
                         break;
                     case "Uploading is disabled":
                         message = TranslationHandler.textSafe(
                             "uploading.error.publishdisabled",
                             currentLang,
-                            "We are undergoing maintenance, so you are not able to upload projects at this time."
+                            "We are undergoing maintenance, so you are not able to upload projects at this time.",
                         );
                         break;
                     case "Missing json file, thumbnail, or assets":
                         message = TranslationHandler.textSafe(
                             "uploading.error.formaterror",
                             currentLang,
-                            "Some values are not right. Check that all required fields are filled."
+                            "Some values are not right. Check that all required fields are filled.",
                         );
                         break;
                     case "IllegalWordsUsed":
                         message = TranslationHandler.textSafe(
                             "uploading.error.illegalwordsused",
                             currentLang,
-                            "Words or phrases were used that are not allowed in PenguinMod. Please check through your project's details for any inappropriate words or phrases."
+                            "Words or phrases were used that are not allowed in PenguinMod. Please check through your project's details for any inappropriate words or phrases.",
                         );
                         break;
                     default:
                         message = TranslationHandler.textSafe(
                             "uploading.error.unknown",
                             currentLang,
-                            "Unknown error. The file may be too large or something unexpected happened. Full error: $1"
+                            "Unknown error. The file may be too large or something unexpected happened. Full error: $1",
                         ).replace("$1", err);
                         break;
                 }
@@ -488,7 +501,7 @@
                     message = TranslationHandler.textSafe(
                         "uploading.error.cannotusethisextensionforthisrank",
                         currentLang,
-                        "You cannot upload this project yet as it contains custom extensions or certain blocked extensions. Upload a few other projects and wait a few days to rank up before you can post this project."
+                        "You cannot upload this project yet as it contains custom extensions or certain blocked extensions. Upload a few other projects and wait a few days to rank up before you can post this project.",
                     );
                 }
                 alert(message);
@@ -506,6 +519,8 @@
         username = _username;
         ProjectClient.setUsername(_username);
         ProjectClient.setToken(privateCode);
+        // TODO (maybe - or not bc newhome): make this work (get the data from somewhere)
+        // isMod = isAdmin || isApprover;
     });
 
     let otherProjects = [];
@@ -528,10 +543,10 @@
                     projectPageSearch ?? 0,
                     projectRemixSearchQuery.trim(),
                     ProjectClient.username,
-                    ProjectClient.token
+                    ProjectClient.token,
                 ).then((meta) => {
                     let projectss = meta.filter(
-                        (p) => !canRemix.some((i) => i.id === p.id)
+                        (p) => !canRemix.some((i) => i.id === p.id),
                     );
                     canRemix = [...projectss, ...canRemix];
                     canRemix = canRemix;
@@ -541,7 +556,12 @@
             } else {
                 projectPageSearch = 0;
                 projectPage += 1;
-                ProjectApi.getProjects(projectPage, false, username, ProjectClient.token).then((projectss) => {
+                ProjectApi.getProjects(
+                    projectPage,
+                    false,
+                    username,
+                    ProjectClient.token,
+                ).then((projectss) => {
                     canRemix.push(...projectss);
                     canRemix = canRemix;
                     lastProjectPage = projectss.length <= 0;
@@ -564,9 +584,11 @@
         projectPageType = "remix";
         remixPageOpen = true;
 
-        ProjectApi.getProjects(projectPage, false, ProjectClient.token).then((projects) => {
-            canRemix = projects;
-        });
+        ProjectApi.getProjects(projectPage, false, ProjectClient.token).then(
+            (projects) => {
+                canRemix = projects;
+            },
+        );
     }
     function openUpdateMenu() {
         otherProjects = [];
@@ -601,11 +623,11 @@
                 0,
                 projectRemixSearchQuery.trim(),
                 ProjectClient.username,
-                ProjectClient.token
+                ProjectClient.token,
             )
                 .then((meta) => {
                     let filteredMeta = meta.filter(
-                        (p) => !canRemix.some((i) => i.id === p.id)
+                        (p) => !canRemix.some((i) => i.id === p.id),
                     );
                     canRemix = [...filteredMeta, ...canRemix];
                     canRemix = canRemix;
@@ -639,7 +661,7 @@
                             uri: projectImage,
                         },
                     },
-                    e.origin
+                    e.origin,
                 );
                 e.source.postMessage(
                     {
@@ -649,7 +671,7 @@
                             name: projectName,
                         },
                     },
-                    e.origin
+                    e.origin,
                 );
                 e.source.postMessage(
                     {
@@ -663,7 +685,7 @@
                             },
                         },
                     },
-                    e.origin
+                    e.origin,
                 );
                 e.source.postMessage(
                     {
@@ -671,7 +693,7 @@
                             type: "finished",
                         },
                     },
-                    e.origin
+                    e.origin,
                 );
             }
         });
@@ -805,7 +827,7 @@
             <p style="text-align: center;">
                 {@html TranslationHandler.text(
                     "project.importing",
-                    currentLang
+                    currentLang,
                 )}
             </p>
         </div>
@@ -834,7 +856,7 @@
                             showdate={true}
                             on:click={window.open(
                                 generateExportEditPageForId(project.id),
-                                "_blank"
+                                "_blank",
                             )}
                         />
                     {/each}
@@ -882,7 +904,7 @@
                         placeholder={TranslationHandler.textSafe(
                             "navigation.search",
                             currentLang,
-                            "Search for projects..."
+                            "Search for projects...",
                         )}
                         on:paste={() => {
                             projectRemixSearchInputFnc();
@@ -924,7 +946,7 @@
                         <Button
                             label="<img alt='More' src='/dropdown-caret-hd.png' width='20'></img>"
                             on:click={() => {
-                                incrementPageAndAddToMenu(projectPageType); 
+                                incrementPageAndAddToMenu(projectPageType);
                             }}
                         />
                     {/if}
@@ -1108,7 +1130,7 @@
                         type="text"
                         placeholder={TranslationHandler.text(
                             "uploading.project.title.default",
-                            currentLang
+                            currentLang,
                         )}
                         bind:this={components.projectName}
                         on:input={updateDescription}
@@ -1126,7 +1148,7 @@
                     <textarea
                         placeholder={TranslationHandler.text(
                             "uploading.project.instructions.default",
-                            currentLang
+                            currentLang,
                         )}
                         bind:this={components.projectInstructions}
                         on:input={updateDescription}
@@ -1143,7 +1165,7 @@
                     <textarea
                         placeholder={TranslationHandler.text(
                             "uploading.project.notes.default",
-                            currentLang
+                            currentLang,
                         )}
                         bind:this={components.projectNotes}
                         on:input={updateDescription}
@@ -1165,7 +1187,7 @@
                         id="FILERI"
                         type="file"
                         class="hidden-picker"
-                        accept=".pmp,.pm,.sb3,.sb2,.sb,.goobert"
+                        {...fileAccepts}
                         on:change={projectFilePicked}
                     />
                     <label
@@ -1180,7 +1202,12 @@
                             lang={currentLang}
                         />
                     </label>
-                    <div style="height:16px" />
+                    {#if isMod}
+                        i have been given permission to make this project
+                        private (i.e. ian has told you that you have
+                        permission):
+                        <input bind:checked={priv} type="checkbox" />
+                    {/if}
                     <p>
                         <a
                             class="guidelines-link"
@@ -1221,7 +1248,7 @@
                     <Stats stats_data={[projectSizes]} render={true}></Stats>
                 </div>
             </div>
-            <div style="display:flex;flex-direction:row;margin-top:48px">
+            <div style="display:flex;flex-direction:row">
                 {#if loggedIn && projectData}
                     <div>
                         {#if remixingProjectName}
@@ -1229,8 +1256,8 @@
                                 {String(
                                     TranslationHandler.text(
                                         "uploading.remix.selected",
-                                        currentLang
-                                    )
+                                        currentLang,
+                                    ),
                                 ).replace("$1", remixingProjectName)}
                             </p>
                         {/if}
@@ -1388,7 +1415,7 @@
 
     .section-info {
         background: #00c3ffad;
-        height: 6rem;
+        height: 5rem;
         color: white;
         display: flex;
         flex-direction: row;
@@ -1567,7 +1594,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-top: 32px;
+        margin-top: 16px;
     }
     :global(body.dark-mode) .card {
         border-color: rgba(255, 255, 255, 0.3);

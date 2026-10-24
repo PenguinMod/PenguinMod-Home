@@ -16,7 +16,7 @@
     import Language from "../../../resources/language.js";
 
     const eventPath = data.slug;
-    const language = $page.url.searchParams.get('l');
+    const language = browser ? $page.url.searchParams.get('l') : "en";
     if (!EventPages[eventPath] && browser) {
         location.href = location.origin + '/error?error=404';
     }

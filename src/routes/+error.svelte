@@ -1,6 +1,7 @@
 <script>
     import { page } from "$app/stores";
     import { onMount } from "svelte";
+    import { browser } from '$app/environment';
 
     // Components
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
@@ -20,7 +21,7 @@
         currentLang = lang;
     });
 
-    let pageStatus = Number($page.url.searchParams.get("error")) || $page.status;
+    let pageStatus = Number(browser ? $page.url.searchParams.get("error") : 404) || $page.status;
 
     let displayGame = false;
     let showGameVignette = false;

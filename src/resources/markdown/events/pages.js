@@ -20,6 +20,25 @@ import PenguinJamSuper2025En from "./en/penguinjamsuper2025.md?raw";
 import PenguinJamSuper2025Ja from "./ja/penguinjamsuper2025.md?raw";
 import PenguinJamSuper2025Es from "./es/penguinjamsuper2025.md?raw";
 import PenguinJamSuper2025Tr from "./tr/penguinjamsuper2025.md?raw";
+// PenguinModThirdAnniversary
+import PenguinModThirdAnniversaryEn from "./en/penguinmodthirdanniversary.md?raw";
+// PenguinJamNewYears2025
+import PenguinJamNewYears2025En from "./en/penguinjamnewyears2025.md?raw";
+import PenguinJamNewYears2025Cs from "./cs/penguinjamnewyears2025.md?raw";
+import PenguinJamNewYears2025Es from "./es/penguinjamnewyears2025.md?raw";
+import PenguinJamNewYears2025Ja from "./ja/penguinjamnewyears2025.md?raw";
+import PenguinJamNewYears2025Ru from "./ru/penguinjamnewyears2025.md?raw";
+import PenguinJamNewYears2025Tr from "./tr/penguinjamnewyears2025.md?raw";
+// PenguinJamSpring2026
+import PenguinJamSpring2026En from "./en/penguinjamspring2026.md?raw";
+import PenguinJamSpring2026Es from "./es/penguinjamspring2026.md?raw";
+import PenguinJamSpring2026Es419 from "./es-419/penguinjamspring2026.md?raw";
+import PenguinJamSpring2026Ru from "./ru/penguinjamspring2026.md?raw";
+import PenguinJamSpring2026Ja from "./ja/penguinjamspring2026.md?raw";
+// AllTheMods2026
+import AllTheMods2026En from "./en/allthemods2026.md?raw";
+// PenguinModFourthAnniversary
+import PenguinModFourthAnniversaryEn from "./en/penguinmodfourthanniversary.md?raw";
 
 export default {
     "example": {
@@ -47,5 +66,29 @@ export default {
         "ja": PenguinJamSuper2025Ja,
         "es": PenguinJamSuper2025Es,
         "tr": PenguinJamSuper2025Tr,
+    },
+    "penguinmodthirdanniversary": {
+        "en": PenguinModThirdAnniversaryEn,
+    },
+    "penguinjamnewyears2025": {
+        "en": PenguinJamNewYears2025En,
+        "cs": PenguinJamNewYears2025Cs,
+        "es": PenguinJamNewYears2025Es,
+        "ja": PenguinJamNewYears2025Ja,
+        "ru": PenguinJamNewYears2025Ru,
+        "tr": PenguinJamNewYears2025Tr,
+    },
+    "penguinjamspring2026": {
+        "en": PenguinJamSpring2026En,
+        "es": PenguinJamSpring2026Es,
+        "es-419": PenguinJamSpring2026Es419,
+        "ru": PenguinJamSpring2026Ru,
+        "ja": PenguinJamSpring2026Ja,
+    },
+    "allthemods2026": {
+        "en": AllTheMods2026En,
+    },
+    "penguinmodfourthanniversary": {
+        "en": PenguinModFourthAnniversaryEn,
     },
 };

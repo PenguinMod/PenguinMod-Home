@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { page } from '$app/stores';
+    import { browser } from '$app/environment';
     
     // Static values
     import LINK from "../../resources/urls.js";
@@ -70,7 +71,7 @@
             }
 
             // redirect
-            const redir = $page.url.searchParams.get('redirect');
+            const redir = browser ? $page.url.searchParams.get('redirect') : null;
         
             window.location.href = redir ? redir : "/";
         }, (err) => {
@@ -103,11 +104,11 @@
     
 <svelte:head>
     <title>PenguinMod - Sign Up</title>
-    <meta name="title" content="PenguinMod - Sign Up" />
-    <meta property="og:title" content="PenguinMod - Sign Up" />
-    <meta property="twitter:title" content="PenguinMod - Sign Up">
-    <meta name="description" content="Sign up for PenguinMod to start sharing your projects!">
-    <meta property="twitter:description" content="Sign up for PenguinMod to start sharing your projects!">
+    <meta name="title" content="PenguinMod - Forgot Password" />
+    <meta property="og:title" content="PenguinMod - Forgot Password" />
+    <meta property="twitter:title" content="PenguinMod - Forgot Password">
+    <meta name="description" content="Reset your password on PenguinMod.">
+    <meta property="twitter:description" content="Reset your password on PenguinMod.">
     <meta property="og:url" content="https://penguinmod.com/forgotpassword">
     <meta property="twitter:url" content="https://penguinmod.com/forgotpassword">
 </svelte:head>

@@ -1,6 +1,7 @@
-<script> 
+<script>
     import { onMount } from "svelte";
     import { page } from "$app/stores";
+    import { browser } from "$app/environment";
 
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
@@ -33,10 +34,14 @@
     import PenguinConfusedSVG from "../resources/icons/Penguin/confused.svelte";
 
     const isAprilFools = () => {
+        if (!browser) return false;
+
         const date = new Date(Date.now());
         const urlParams = $page.url.searchParams;
         const isAprilFools = date.getMonth() === 3 && date.getDate() === 1; // month is 0 indexed for literally no reason
-        const runningLocal = String(urlParams.get('forceaprilfools')) === 'true' && $page.url.hostname === 'localhost';
+        const runningLocal =
+            String(urlParams.get("forceaprilfools")) === "true" &&
+            $page.url.hostname === "localhost";
 
         return isAprilFools || runningLocal;
     };
@@ -53,11 +58,12 @@
     let ghcommitsLoaded = false;
     let projectsLoaded = false;
     let projectsFailed = false;
+    let projectsRateLimited = false;
 
-    let catText = '⠀';
+    let catText = "⠀";
     let existingInterval;
     const catAudio = () => {
-        const audio = new Audio('./cat/speak.mp3');
+        const audio = new Audio("./cat/speak.mp3");
         audio.currentTime = 0;
         audio.volume = 0.5;
 
@@ -73,7 +79,7 @@
         }
 
         const randomText = (() => {
-	    	const catEmotions = [
+            const catEmotions = [
                 "/ᐠ.ꞈ.ᐟ\\",
                 "(^・x・^)",
                 "ฅ^•ﻌ•^ฅ",
@@ -83,12 +89,14 @@
                 "(^人^)",
                 "ヾ(=^・^=)丿",
                 "ヽ(^◇^*)/",
-                "ฅ(=･ω･=)ฅ"
+                "ฅ(=･ω･=)ฅ",
             ];
-	    	return catEmotions[Math.round(Math.random() * (catEmotions.length - 1))];
-	    })();
+            return catEmotions[
+                Math.round(Math.random() * (catEmotions.length - 1))
+            ];
+        })();
         let index = 0;
-        catText = '⠀';
+        catText = "⠀";
 
         existingInterval = setInterval(() => {
             catText += randomText.charAt(index);
@@ -110,9 +118,7 @@
         suggested: null,
     };
     function formatNumber(num) {
-        return Math.abs(num) >= 0.01 && num % 1 !== 0
-            ? num.toFixed(2)
-            : num
+        return Math.abs(num) >= 0.01 && num % 1 !== 0 ? num.toFixed(2) : num;
     }
     function unixToDisplayDate(unix) {
         unix = Number(unix);
@@ -122,13 +128,13 @@
             day: "numeric",
             hour: "numeric",
             minute: "numeric",
-            hour12: true
+            hour12: true,
         })}`;
     }
     function rateChance(max, thresh) {
         const randomNumber = Math.random();
         const underThresh = randomNumber * max <= thresh;
-        return [underThresh]
+        return [underThresh];
     }
     let thingyActive = false;
     // do the thingy
@@ -137,16 +143,15 @@
             // 1:9000 chance that we will play the video imediatly rather then after four hours
             // we use 9000 because thats roughly how many users we have, so there will now
             // only be like onr or two people who actually get this :Trol
-            let message
+            let message;
             [thingyActive, message] = rateChance(9000, 1);
             setTimeout(() => {
                 thingyActive = true;
             }, 1.44e7);
-        };
+        }
     }
 
     const getAndUpdateMyFeed = async () => {
-        console.log("update feed");
         const feed = await ProjectClient.getMyFeed(0);
         if (feed.length <= 0) {
             feedIsEmpty = true;
@@ -157,11 +162,14 @@
     const getFeedText = (type, author, content) => {
         switch (type) {
             case "follow":
-                return TranslationHandler.text(
-                    "feed.following",
-                    currentLang
-                ).replace("$1", author)
-                .replace("$2", content.username === localStorage.getItem("username") ? "you" : content.username)
+                return TranslationHandler.text("feed.following", currentLang)
+                    .replace("$1", author)
+                    .replace(
+                        "$2",
+                        content.username === localStorage.getItem("username")
+                            ? "you"
+                            : content.username,
+                    );
             case "upload":
                 return TranslationHandler.text("feed.uploaded", currentLang)
                     .replace("$1", author)
@@ -173,7 +181,7 @@
             case "posted":
                 return TranslationHandler.text(
                     "feed.posted",
-                    currentLang
+                    currentLang,
                 ).replace("$1", author);
         }
     };
@@ -193,24 +201,74 @@
     let loggedInAdminOrMod = false;
     onMount(async () => {
         Language.forceUpdate();
-        const username = localStorage.getItem("username")
-        const token = localStorage.getItem("token")
+        let username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+
+        const setFrontPage = () =>
+            ProjectClient.getFrontPage()
+                .then((results) => {
+                    projects.today = results.latest;
+                    projects.featured = results.featured;
+                    projects.voted = results.voted;
+                    projects.viewed = results.viewed;
+                    projects.tagged = results.tagged;
+                    if (results.suggested)
+                        projects.suggested = results.suggested;
+                    tagForProjects = results.selectedTag;
+                    projectsLoaded = true;
+
+                    if (results.blocked) {
+                        const blocked = results.blocked;
+
+                        const remove_blocked = (projects) =>
+                            projects.filter((p) =>
+                                blocked.every((b) => p.author.id != b),
+                            );
+
+                        projects.today = remove_blocked(projects.today);
+                        projects.featured = remove_blocked(results.featured);
+                        projects.voted = remove_blocked(results.voted);
+                        projects.viewed = remove_blocked(results.viewed);
+                        projects.tagged = remove_blocked(results.tagged);
+                        if (results.suggested)
+                            projects.suggested = remove_blocked(
+                                results.suggested,
+                            );
+                    }
+                })
+                .catch((err) => {
+                    projectsFailed = true;
+                    if (err === 429) {
+                        projectsRateLimited = true;
+                    }
+                });
+
         if (!token || !username) {
             loggedIn = false;
             loggedInAdminOrMod = false;
+            setFrontPage();
         } else {
-            const {isAdmin, isApprover} = Authentication.usernameFromCode(username, token)
+            Authentication.usernameFromCode(username, token)
+                .then(({ username: usernameActual, isAdmin, isApprover }) => {
+                    // oh my god bruh
+                    username = usernameActual;
+                    localStorage.setItem("username", usernameActual);
+
+                    loggedInUsername = username;
+                    ProjectClient.setUsername(username);
+                    ProjectClient.setToken(token);
+                    loggedIn = true;
+                    loggedInAdminOrMod = isAdmin || isApprover;
+                    getAndUpdateMyFeed();
+
+                    setFrontPage();
+                })
                 .catch((err) => {
                     loggedIn = false;
                     loggedInAdminOrMod = false;
-                });
 
-            loggedInUsername = username;
-            ProjectClient.setUsername(username);
-            ProjectClient.setToken(token);
-            loggedIn = true;
-            loggedInAdminOrMod = isAdmin || isApprover;
-            getAndUpdateMyFeed();
+                    setFrontPage();
+                });
         }
 
         const projectId = Number(location.hash.replace("#", ""));
@@ -239,22 +297,6 @@
                 updates = [updatess];
             });
         });
-
-        ProjectClient.getFrontPage()
-            .then(results => {
-                projects.today = results.latest;
-                projects.featured = results.featured;
-                projects.voted = results.voted;
-                projects.viewed = results.viewed;
-                projects.tagged = results.tagged;
-                if (results.suggested)
-                    projects.suggested = results.suggested;
-                tagForProjects = results.selectedTag;
-                projectsLoaded = true;
-            })
-            .catch(() => {
-                projectsFailed = true;
-            });
     });
 
     // login code below
@@ -263,6 +305,8 @@
     Authentication.onLogout(() => {
         loggedIn = false;
         myFeed = [];
+
+        getFrontPage();
     });
     Authentication.onAuthentication((username, token) => {
         loggedInUsername = username;
@@ -270,6 +314,7 @@
         ProjectClient.setToken(token);
         loggedIn = true;
         getAndUpdateMyFeed();
+        getFrontPage();
         return;
     });
 
@@ -285,21 +330,30 @@
     <title>PenguinMod - Home</title>
     <meta name="title" content="PenguinMod - Home" />
     <meta property="og:title" content="PenguinMod - Home" />
-    <meta property="twitter:title" content="PenguinMod - Home">
-    <meta name="description" content="The area where featured projects and community stuff & info is shown.">
-    <meta property="twitter:description" content="The area where featured projects and community stuff & info is shown.">
-    <meta property="og:url" content="https://penguinmod.com/">
-    <meta property="twitter:url" content="https://penguinmod.com/">
-    <meta name="google-site-verification" content="07oAYybKa_CH2le7AvPJkNNtwhZSq_G0V4d9P7AIZYE" />
+    <meta property="twitter:title" content="PenguinMod - Home" />
+    <meta
+        name="description"
+        content="The area where featured projects and community stuff & info is shown."
+    />
+    <meta
+        property="twitter:description"
+        content="The area where featured projects and community stuff & info is shown."
+    />
+    <meta property="og:url" content="https://penguinmod.com/" />
+    <meta property="twitter:url" content="https://penguinmod.com/" />
+    <meta
+        name="google-site-verification"
+        content="07oAYybKa_CH2le7AvPJkNNtwhZSq_G0V4d9P7AIZYE"
+    />
 </svelte:head>
 
 <NavigationBar />
 
-<div class="main">
+<div class="main" data-aprilfools={isAprilFools()}>
     <NavigationMargin />
 
     <Alert
-        onlyShowID={"donatee:_2"}
+        onlyShowID={"donatee:_3"}
         text={"PenguinMod is a free-to-use visual coding website. Your support can help us keep the website working!"}
         textBreakup={true}
         textColor={"white"}
@@ -307,8 +361,8 @@
         imgSrc={"/happy.svg"}
         imgAlt={":D"}
         hasButton={true}
-        buttonText={"Donate"}
-        buttonHref={"/donate"}
+        buttonText={"Support"}
+        buttonHref={"/support"}
     />
     <StatusAlert />
 
@@ -347,20 +401,35 @@
                 </Button>
             </div>
 
-            {#if !thingyActive}
+            <!-- only render video if we are definetly not logged in -->
+            {#if loggedIn === false}
+                {#if !thingyActive}
+                    <iframe
+                        width="560"
+                        height="315"
+                        src="https://www.youtube-nocookie.com/embed/g8zwb4W3G8Q"
+                        title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen
+                        class="example-video"
+                    />
+                {:else}
+                    <iframe
+                        src="/eao.html"
+                        title="The Thingy"
+                        width="426.666667"
+                        height="240"
+                        frameborder="0"
+                        class="example-video"
+                    />
+                {/if}
+            {:else}
                 <img
                     src="/penguins/frontpage.svg"
                     alt="PenguinMod"
                     style="margin-right: 8rem;"
-                />
-            {:else}
-                <iframe
-                    src="/eao.html"
-                    title="The Thingy"
-                    width="426.666667"
-                    height="240"
-                    frameborder="0"
-                    class="example-video"
                 />
             {/if}
         </div>
@@ -398,9 +467,9 @@
                     lang={currentLang}
                 />
             </Button>
-            <Button link={"/donate"}>
+            <Button link={"/support"}>
                 <LocalizedText
-                    text="Donate"
+                    text="Funding"
                     key="home.footer.sections.donate"
                     lang={currentLang}
                 />
@@ -418,11 +487,7 @@
 
     {#if langDecided && currentLang != "en" && loggedIn}
         <div class="section-language-warning">
-            <img
-                src="/warning.png"
-                draggable="false"
-                alt="Warning"
-            />
+            <img src="/warning.png" draggable="false" alt="Warning" />
             <p>
                 <LocalizedText
                     text="PenguinMod is made by English-speaking developers. Expect minor issues and sorry for any translation errors."
@@ -448,7 +513,7 @@
             <ContentCategory
                 header={TranslationHandler.text(
                     "home.sections.whatsnew",
-                    currentLang
+                    currentLang,
                 )}
                 seemore={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
             >
@@ -488,8 +553,8 @@
                 <h1>
                     {TranslationHandler.text(
                         "home.welcome",
-                        currentLang
-                    ).replace('$1', loggedInUsername)}
+                        currentLang,
+                    ).replace("$1", loggedInUsername)}
                 </h1>
                 <div class="welcome-back-row">
                     <a href={LINK.editor} class="welcome-back-no-underline">
@@ -550,7 +615,7 @@
             <ContentCategory
                 header={TranslationHandler.textSafe(
                     "home.sections.feed",
-                    currentLang
+                    currentLang,
                 )}
             >
                 <div class="category-content">
@@ -561,13 +626,13 @@
                                     link={getFeedUrl(
                                         message.type,
                                         message.username,
-                                        message.data
+                                        message.data,
                                     )}
                                     userLink={`/profile?user=${message.username}`}
                                     text={getFeedText(
                                         message.type,
                                         message.username,
-                                        message.data
+                                        message.data,
                                     )}
                                     author={message.username}
                                     image={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${message.username}`}
@@ -592,7 +657,7 @@
             <ContentCategory
                 header={TranslationHandler.textSafe(
                     "home.sections.githubcommits",
-                    currentLang
+                    currentLang,
                 )}
                 seemore={LINK.github}
             >
@@ -640,7 +705,7 @@
             <ContentCategory
                 header={TranslationHandler.textSafe(
                     "home.sections.whatsnew",
-                    currentLang
+                    currentLang,
                 )}
                 seemore={`https://discord.com/channels/1033551490331197462/1038252360184643674`}
             >
@@ -673,27 +738,36 @@
             <ContentCategory
                 header={TranslationHandler.textSafe(
                     "home.sections.informational",
-                    currentLang
+                    currentLang,
                 )}
             >
                 <!-- NOTE: This section is entirely hard-coded for time-relevant stuff, but avoid making new classes for a topic. -->
                 <div class="category-news">
                     <div class="category-news-content">
-                        <h2 style="margin-block:4px;">PenguinJam Super has been ranked!</h2>
+                        <h2 style="margin-block:4px;">
+                            The Retro Remix PenguinJam has ended!
+                        </h2>
                         <div style="width:100%">
                             <p>
-                                Sorry for missing this news post, but PenguinJam Super has been ranked!
+                                Time's up everyone, the Retro Remix PenguinJam has ended!
                                 <br />
-                                We've ranked all 18 entries! See the project below to see all of the projects.
+                                Thanks for submitting your projects for the 4th Anniversary of PenguinMod!
                                 <br />
-                                Remember, projects that used both tags or didn't follow the theme were ignored.
-                            </p>
-                            <p style="margin-block-start:4px;">
-                                <a href="https://projects.penguinmod.com/5992257996">PenguinJam Super 2025 Official Rankings</a>
+                                <br />
+                                We're going to start ranking your projects now.
+                                Please wait until we are done with ranking!
+                                <br />
+                                <br />
+                                <i>
+                                    Missed the celebration?
+                                    <a href="https://www.youtube.com/watch?v=AVIaR7Fn9d4">
+                                        Watch everything we announced here!
+                                    </a>
+                                </i>
                             </p>
                             <img
-                                src="/events/news/penguinjamsuper2025.png"
-                                alt="PenguinJam Super 2025"
+                                src="/events/news/penguinmodfourthanniversary.webp"
+                                alt="PenguinMod Fourth Anniversary"
                                 style="width:100%;"
                             />
                         </div>
@@ -701,7 +775,12 @@
                     <div class="category-footer">
                         <p>
                             {#if currentLang === "en"}
-                                {LoadingTips[Math.round(Math.random() * (LoadingTips.length - 1))]}
+                                {LoadingTips[
+                                    Math.round(
+                                        Math.random() *
+                                            (LoadingTips.length - 1),
+                                    )
+                                ]}
                             {:else}
                                 <LocalizedText
                                     text="PenguinNews is not translated in your language. Sorry! :("
@@ -774,7 +853,7 @@
             </div>
         </div>
     {/if}
-    
+
     <div style="width:80%; margin:0 10%;">
         <EventComponent />
     </div>
@@ -783,7 +862,7 @@
         <ContentCategory
             header={TranslationHandler.text(
                 "home.sections.weeklyfeatured",
-                currentLang
+                currentLang,
             )}
             seemore={`/search?q=featured%3A`}
             style="width:65%;"
@@ -811,18 +890,33 @@
                     <div
                         style="display:flex;flex-direction:column;align-items: center;width: 100%;"
                     >
-                        <img
-                            src="/penguins/server.svg"
-                            alt="Server Penguin"
-                            style="width: 15rem"
-                        />
-                        <p>
-                            <LocalizedText
-                                text="Whoops! Our server's having some problems. Try again later."
-                                key="home.server.error"
-                                lang={currentLang}
+                        {#if projectsRateLimited}
+                            <img
+                                src="/errors/429.svg"
+                                alt="Ratelimit Error"
+                                style="width: 12rem"
                             />
-                        </p>
+                            <p>
+                                <LocalizedText
+                                    text="Please wait before trying to access this page again."
+                                    key="navigation.error.429"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        {:else}
+                            <img
+                                src="/penguins/server.svg"
+                                alt="Server Penguin"
+                                style="width: 15rem"
+                            />
+                            <p>
+                                <LocalizedText
+                                    text="Whoops! Our server's having some problems. Try again later."
+                                    key="home.server.error"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        {/if}
                     </div>
                 {:else}
                     <LoadingSpinner />
@@ -832,7 +926,7 @@
         <ContentCategory
             header={TranslationHandler.text(
                 "home.sections.mostvoted",
-                currentLang
+                currentLang,
             )}
             seemore={`/search?q=sort%3Avotes%20featured%3Aexclude`}
             style="width:65%;"
@@ -860,18 +954,33 @@
                     <div
                         style="display:flex;flex-direction:column;align-items: center;width: 100%;"
                     >
-                        <img
-                            src="/penguins/server.svg"
-                            alt="Server Penguin"
-                            style="width: 15rem"
-                        />
-                        <p>
-                            <LocalizedText
-                                text="Whoops! Our server's having some problems. Try again later."
-                                key="home.server.error"
-                                lang={currentLang}
+                        {#if projectsRateLimited}
+                            <img
+                                src="/errors/429.svg"
+                                alt="Ratelimit Error"
+                                style="width: 12rem"
                             />
-                        </p>
+                            <p>
+                                <LocalizedText
+                                    text="Please wait before trying to access this page again."
+                                    key="navigation.error.429"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        {:else}
+                            <img
+                                src="/penguins/server.svg"
+                                alt="Server Penguin"
+                                style="width: 15rem"
+                            />
+                            <p>
+                                <LocalizedText
+                                    text="Whoops! Our server's having some problems. Try again later."
+                                    key="home.server.error"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        {/if}
                     </div>
                 {:else}
                     <LoadingSpinner />
@@ -882,7 +991,7 @@
             <ContentCategory
                 header={TranslationHandler.text(
                     "home.sections.suggestedforyou",
-                    currentLang
+                    currentLang,
                 )}
                 style="width:65%;"
                 stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
@@ -909,18 +1018,33 @@
                         <div
                             style="display:flex;flex-direction:column;align-items: center;width: 100%;"
                         >
-                            <img
-                                src="/penguins/server.svg"
-                                alt="Server Penguin"
-                                style="width: 15rem"
-                            />
-                            <p>
-                                <LocalizedText
-                                    text="Whoops! Our server's having some problems. Try again later."
-                                    key="home.server.error"
-                                    lang={currentLang}
+                            {#if projectsRateLimited}
+                                <img
+                                    src="/errors/429.svg"
+                                    alt="Ratelimit Error"
+                                    style="width: 12rem"
                                 />
-                            </p>
+                                <p>
+                                    <LocalizedText
+                                        text="Please wait before trying to access this page again."
+                                        key="navigation.error.429"
+                                        lang={currentLang}
+                                    />
+                                </p>
+                            {:else}
+                                <img
+                                    src="/penguins/server.svg"
+                                    alt="Server Penguin"
+                                    style="width: 15rem"
+                                />
+                                <p>
+                                    <LocalizedText
+                                        text="Whoops! Our server's having some problems. Try again later."
+                                        key="home.server.error"
+                                        lang={currentLang}
+                                    />
+                                </p>
+                            {/if}
                         </div>
                     {:else}
                         <LoadingSpinner />
@@ -930,10 +1054,12 @@
         {/if}
         {#if projects.tagged.length > 7}
             <ContentCategory
-                header={String(TranslationHandler.text(
-                    "home.sections.sortedbytag",
-                    currentLang
-                )).replace('$1', tagForProjects.slice(1))}
+                header={String(
+                    TranslationHandler.text(
+                        "home.sections.sortedbytag",
+                        currentLang,
+                    ),
+                ).replace("$1", tagForProjects.slice(1))}
                 seemore={`/search?q=%23${tagForProjects.slice(1)}`}
                 style="width:65%;"
                 stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
@@ -948,7 +1074,7 @@
         <ContentCategory
             header={TranslationHandler.text(
                 "home.sections.todaysprojects",
-                currentLang
+                currentLang,
             )}
             seemore={`/search?q=newest%3A`}
             style="width:65%;"
@@ -963,28 +1089,43 @@
                     <div
                         style="display:flex;flex-direction:column;align-items: center;width: 100%;"
                     >
-                        <img
-                            src="/penguins/server.svg"
-                            alt="Server Penguin"
-                            style="width: 15rem"
-                        />
-                        <p>
-                            <LocalizedText
-                                text="Whoops! Our server's having some problems. Try again later."
-                                key="home.server.error"
-                                lang={currentLang}
+                        {#if projectsRateLimited}
+                            <img
+                                src="/errors/429.svg"
+                                alt="Ratelimit Error"
+                                style="width: 12rem"
                             />
-                        </p>
+                            <p>
+                                <LocalizedText
+                                    text="Please wait before trying to access this page again."
+                                    key="navigation.error.429"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        {:else}
+                            <img
+                                src="/penguins/server.svg"
+                                alt="Server Penguin"
+                                style="width: 15rem"
+                            />
+                            <p>
+                                <LocalizedText
+                                    text="Whoops! Our server's having some problems. Try again later."
+                                    key="home.server.error"
+                                    lang={currentLang}
+                                />
+                            </p>
+                        {/if}
                     </div>
                 {:else}
                     <LoadingSpinner />
                 {/if}
             </div>
         </ContentCategory>
-        
+
         {#if isAprilFools()}
             <button class="cat-button" on:click={catSpeak}>
-                <img src="/cat/dave.png" alt="cat">
+                <img src="/cat/dave.png" alt="cat" />
                 <p>{catText}</p>
             </button>
         {/if}
@@ -996,6 +1137,17 @@
                 text="PenguinMod is not affiliated with Scratch, TurboWarp, the Scratch Team, or the Scratch Foundation."
                 key="home.footer.notaffiliated"
                 lang={currentLang}
+            />
+            <br />
+            <LocalizedText
+                text="Scratch is a project of the Scratch Foundation. It is available for free."
+                key="home.footer.notaffiliated2"
+                lang={currentLang}
+                html={true}
+                replace={{
+                    "{{LINK}}":
+                        "<a href='https://scratch.org/'>https://scratch.org/</a>",
+                }}
             />
         </p>
         <div class="footer-list">
@@ -1044,7 +1196,10 @@
                         lang={currentLang}
                     />
                 </p>
-                <a target="_blank" href={"https://github.com/PenguinMod/PenguinMod-Home/issues"}>
+                <a
+                    target="_blank"
+                    href={"https://github.com/PenguinMod/PenguinMod-Home/issues"}
+                >
                     <LocalizedText
                         text="Report an issue"
                         key="home.footer.sections.info.reportissue"
@@ -1058,7 +1213,11 @@
                         lang={currentLang}
                     />
                 </a>
-                <a target="_blank" href={`https://penguinmod.com/redirect?t=${encodeURIComponent(btoa(LINK.discord))}`}>Discord</a>
+                <a
+                    target="_blank"
+                    href={`https://penguinmod.com/redirect?t=${encodeURIComponent(btoa(LINK.discord))}`}
+                    >Discord</a
+                >
             </div>
             <div class="footer-section">
                 <p>
@@ -1100,13 +1259,12 @@
             <div class="footer-section">
                 <p>
                     <LocalizedText
-                        text="Donate"
+                        text="Funding"
                         key="home.footer.sections.donate"
                         lang={currentLang}
                     />
                 </p>
-                <a href={"/donate"}>PenguinMod</a>
-                <a target="_blank" href={LINK.donate.turbowarp}>TurboWarp</a>
+                <a href={"/support"}>PenguinMod</a>
                 <a target="_blank" href={LINK.donate.scratch}>Scratch</a>
             </div>
         </div>
@@ -1171,13 +1329,26 @@
         color: white;
     }
 
+    .main[data-aprilfools="true"] {
+        filter: brightness(0.7) contrast(1.8) sepia(1);
+    }
+    .main[data-aprilfools="true"] :global(*) {
+        font-family: "Times New Roman", Times, serif !important;
+    }
+    .main[data-aprilfools="true"] p,
+    .main[data-aprilfools="true"] span,
+    .main[data-aprilfools="true"] div {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
     .cat-button {
         background: none;
         border: 0;
     }
     .cat-button p {
         font-size: 20px;
-        font-family: 'Comic Sans MS', 'Arial', sans-serif;
+        font-family: "Comic Sans MS", "Arial", sans-serif;
         color: black;
         height: 20px;
     }
@@ -1302,14 +1473,15 @@
     .welcome-back-button:active .welcome-back-icon-container {
         background: rgba(0, 0, 0, 0.2);
     }
-    .welcome-back-row >
-    a:first-child .welcome-back-icon-container {
+    .welcome-back-row > a:first-child .welcome-back-icon-container {
         border-top-left-radius: 36px;
         border-bottom-left-radius: 36px;
         padding-left: 8px;
     }
-    :global(html[dir="rtl"]) .welcome-back-row >
-    a:first-child .welcome-back-icon-container {
+    :global(html[dir="rtl"])
+        .welcome-back-row
+        > a:first-child
+        .welcome-back-icon-container {
         border-top-left-radius: initial;
         border-bottom-left-radius: initial;
         padding-left: initial;
@@ -1317,14 +1489,15 @@
         border-bottom-right-radius: 36px;
         padding-right: 8px;
     }
-    .welcome-back-row >
-    a:last-child .welcome-back-icon-container {
+    .welcome-back-row > a:last-child .welcome-back-icon-container {
         border-top-right-radius: 36px;
         border-bottom-right-radius: 36px;
         padding-right: 8px;
     }
-    :global(html[dir="rtl"]) .welcome-back-row >
-    a:last-child .welcome-back-icon-container {
+    :global(html[dir="rtl"])
+        .welcome-back-row
+        > a:last-child
+        .welcome-back-icon-container {
         border-top-right-radius: initial;
         border-bottom-right-radius: initial;
         padding-right: initial;

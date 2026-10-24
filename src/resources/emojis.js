@@ -1,7 +1,7 @@
 import { mockRequest } from "./emojis-compat";
 
 const emojiHtmlUrl = 'https://gextapi.derpygamer2142.com/emojis';
-const useLocalCopy = false;
+const useLocalCopy = true;
 
 class EmojiHandler {
     static emojis = [];

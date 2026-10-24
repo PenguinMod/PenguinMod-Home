@@ -1,6 +1,7 @@
 <script>
-    import { page } from '$app/stores';
+    import { page } from "$app/stores";
     import { onMount } from "svelte";
+    import { browser } from "$app/environment";
     import { PUBLIC_API_URL, PUBLIC_STUDIO_URL } from "$env/static/public";
 
     import Authentication from "../../resources/authentication.js";
@@ -36,7 +37,8 @@
         standing: 0, // 0 for good, 1 for limited, 2 for tempban, 3 for banned (ideally returned by api because of temp ban)
         tempBanExpire: 0, // a timestamp when the ban expires
 
-        settings: { // change to match what the api internally calls these props - mmmmmm no
+        settings: {
+            // change to match what the api internally calls these props - mmmmmm no
             private: false,
             privateToNonFollowers: false,
             showCubesOnProfile: false,
@@ -48,8 +50,8 @@
     const changeTab = (to) => {
         currentTab = to;
     };
-    
-    switch ($page.url.searchParams.get("page")) {
+
+    switch (browser ? $page.url.searchParams.get("page") : "login") {
         case "login":
             currentTab = "login";
             break;
@@ -71,14 +73,21 @@
         if (privateCode) ProjectClient.setToken(privateCode);
         loggedInUsername = username;
     }
-    function setupLoginInfo(_loginMethods, _privateProfile, _cfsp, _standing, isEmailVerified, email) {
+    function setupLoginInfo(
+        _loginMethods,
+        _privateProfile,
+        _cfsp,
+        _standing,
+        isEmailVerified,
+        email,
+    ) {
         loginMethods = _loginMethods;
-                
+
         accountInformation.settings.private = _privateProfile;
         accountInformation.settings.privateToNonFollowers = _cfsp;
 
         email = email || "";
-        let emailPeek = `${email.substring(0, 3)}...${email.substring(email.indexOf("@"))}`
+        let emailPeek = `${email.substring(0, 3)}...${email.substring(email.indexOf("@"))}`;
 
         accountInformation.emailSet = !!email;
         accountInformation.emailFull = email || "";
@@ -96,11 +105,27 @@
             return;
         }
         Authentication.usernameFromCode(username, token)
-            .then(({ loginMethods: _loginMethods, privateProfile: _privateProfile, canFollowingSeeProfile: _cfsp, standing: _standing, isEmailVerified, email }) => {
-                loggedIn = true;
-                loggedInChange(username, token);
-                setupLoginInfo(_loginMethods, _privateProfile, _cfsp, _standing, isEmailVerified, email);
-            })
+            .then(
+                ({
+                    loginMethods: _loginMethods,
+                    privateProfile: _privateProfile,
+                    canFollowingSeeProfile: _cfsp,
+                    standing: _standing,
+                    isEmailVerified,
+                    email,
+                }) => {
+                    loggedIn = true;
+                    loggedInChange(username, token);
+                    setupLoginInfo(
+                        _loginMethods,
+                        _privateProfile,
+                        _cfsp,
+                        _standing,
+                        isEmailVerified,
+                        email,
+                    );
+                },
+            )
             .catch((e) => {
                 console.log("AAAAAAAAAAAAa", e);
                 loggedIn = false;
@@ -108,18 +133,7 @@
     });
 
     function askForLogin() {
-        Authentication.authenticate().then((privateCode) => {
-            loggedIn = null;
-            Authentication.usernameFromCode(privateCode)
-                .then(({ username, loginMethods: _loginMethods, privateProfile: _privateProfile, canFollowingSeeProfile: _cfsp, standing: _standing, isEmailVerified, email }) => {
-                    loggedIn = true;
-                    loggedInChange(username, token);
-                    setupLoginInfo(_loginMethods, _privateProfile, _cfsp, _standing, isEmailVerified, email);
-                })
-                .catch(() => {
-                    loggedIn = false;
-                });
-        });
+        Authentication.authenticate(false);
     }
 
     Authentication.onLogout(() => {
@@ -158,33 +172,41 @@
         login = window.open(
             url,
             "Login",
-            `scrollbars=yes,resizable=yes,status=no,location=yes,toolbar=no,menubar=no,width=1024,height=512,left=200,top=200`
+            `scrollbars=yes,resizable=yes,status=no,location=yes,toolbar=no,menubar=no,width=1024,height=512,left=200,top=200`,
         );
 
         if (!login) {
             window.removeEventListener("message", handleMessageReciever);
-            alert(TranslationHandler.textSafe(
-                "account.settings.nopopup",
-                currentLang,
-                "Please allow popups for this site."
-            ));
-        };
+            alert(
+                TranslationHandler.textSafe(
+                    "account.settings.nopopup",
+                    currentLang,
+                    "Please allow popups for this site.",
+                ),
+            );
+        }
     }
 
     async function verifyEmail() {
         await Authentication.verifyEmail(loggedInUsername, token);
-        alert(TranslationHandler.textSafe(
-            "login.confirm.email.title",
-            currentLang,
-            "Check your email!"
-        ));
+        alert(
+            TranslationHandler.textSafe(
+                "login.confirm.email.title",
+                currentLang,
+                "Check your email!",
+            ),
+        );
     }
 
     function updatePrivateProfile() {
         const privateProfile = accountInformation.settings.private || false;
-        const privateToNonFollowers = accountInformation.settings.privateToNonFollowers || false;
+        const privateToNonFollowers =
+            accountInformation.settings.privateToNonFollowers || false;
 
-        ProjectClient.updatePrivateProfile(privateProfile, privateToNonFollowers);
+        ProjectClient.updatePrivateProfile(
+            privateProfile,
+            privateToNonFollowers,
+        );
     }
     function updatePrivateFollowing() {
         const hideFollowing = accountInformation.settings.profileHideFollowing || false;
@@ -208,9 +230,12 @@
                 const blob = reader.result;
 
                 // upload the file
-                ProjectClient.setPFP(blob).then((() => {
-                    pfpReload = !pfpReload;
-                }).bind(this))
+                ProjectClient.setPFP(blob)
+                    .then(
+                        (() => {
+                            pfpReload = !pfpReload;
+                        }).bind(this),
+                    )
                     .catch((err) => alert(err));
             };
             // get it as a blob
@@ -248,10 +273,12 @@
                         newChangedUsernameError = "username.requirement.length";
                         return;
                     case "InvalidUsername":
-                        newChangedUsernameError = "username.requirement.letters";
+                        newChangedUsernameError =
+                            "username.requirement.letters";
                         return;
                     case "UsernameTaken":
-                        newChangedUsernameError = "account.fields.username.taken";
+                        newChangedUsernameError =
+                            "account.fields.username.taken";
                         return;
                 }
 
@@ -282,6 +309,7 @@
                 accountInformation.emailSet = true;
                 accountInformation.emailFull = newEmail;
                 accountInformation.emailPeek = `${newEmail.substring(0, 3)}...${newEmail.substring(newEmail.indexOf("@"))}`;
+                emailIsVerified = false;
             })
             .catch((err) => {
                 editingEmailProcessing = false;
@@ -293,7 +321,7 @@
         return new Promise((resolve) => {
             window.addEventListener("message", (event) => {
                 if (event.origin !== PUBLIC_API_URL) return;
-                
+
                 if (!event.data) return;
 
                 const { username, token } = event.data;
@@ -305,26 +333,28 @@
             });
         });
     }
-    
+
     function oauthFrame(method) {
         let iframe = window.open(
             `${PUBLIC_API_URL}/api/v1/users/addoauthmethod?method=${method}&username=${ProjectClient.username}&token=${ProjectClient.token}`,
             `Sign in with ${method}`,
-            "width=500,height=500"
+            "width=500,height=500",
         );
 
         if (!iframe) {
-            alert(TranslationHandler.textSafe(
-                "login.oauth.nopopup",
-                currentLang,
-                "Please enable popups to login with {{WEBSITE}}."
-            ).replace('{{WEBSITE}}', method));
+            alert(
+                TranslationHandler.textSafe(
+                    "login.oauth.nopopup",
+                    currentLang,
+                    "Please enable popups to login with {{WEBSITE}}.",
+                ).replace("{{WEBSITE}}", method),
+            );
             return;
         }
 
         addOAuthEventListener().then(() => {
             location.href = `?page=${currentTab}`;
-        })
+        });
     }
     function loginMethodToggled(method, name) {
         if (loginMethods.includes(method)) {
@@ -344,13 +374,16 @@
 
 <svelte:head>
     <title>PenguinMod - Settings</title>
-    <meta name="title"                   content="PenguinMod - Settings" />
-    <meta property="og:title"            content="PenguinMod - Settings" />
-    <meta property="twitter:title"       content="PenguinMod - Settings">
-    <meta name="description"             content="View your account settings.">
-    <meta property="twitter:description" content="View your account settings.">
-    <meta property="og:url"              content="https://penguinmod.com/settings">
-    <meta property="twitter:url"         content="https://penguinmod.com/settings">
+    <meta name="title" content="PenguinMod - Settings" />
+    <meta property="og:title" content="PenguinMod - Settings" />
+    <meta property="twitter:title" content="PenguinMod - Settings" />
+    <meta name="description" content="View your account settings." />
+    <meta
+        property="twitter:description"
+        content="View your account settings."
+    />
+    <meta property="og:url" content="https://penguinmod.com/settings" />
+    <meta property="twitter:url" content="https://penguinmod.com/settings" />
 </svelte:head>
 
 <NavigationBar bind:pfpkey={pfpReload} />
@@ -415,17 +448,17 @@
                         alt={loggedInUsername}
                     />
                     <div class="profile-section-image-edit">
-                        <img
-                            src="/pencil.png"
-                            alt="Edit"
-                        />
+                        <img src="/pencil.png" alt="Edit" />
                     </div>
                 </button>
                 <div class="profile-section-display">
                     {#if !changingUsername}
                         <h1 style="margin-block:0;font-size:40px">
                             {loggedInUsername}
-                            <button class="change-username" on:click={toggleUsernameMenu}>
+                            <button
+                                class="change-username"
+                                on:click={toggleUsernameMenu}
+                            >
                                 <img
                                     src="/pencil.png"
                                     alt="Edit"
@@ -446,9 +479,15 @@
                                 class="change-username-field"
                                 maxlength="20"
                             />
-                            <button class="change-username" on:click={toggleUsernameMenu}>
+                            <button
+                                class="change-username"
+                                on:click={toggleUsernameMenu}
+                            >
                                 {#if changingUsernameProcessing}
-                                    <LoadingSpinner style="width:32px;height:32px;" single={true} />
+                                    <LoadingSpinner
+                                        style="width:32px;height:32px;"
+                                        single={true}
+                                    />
                                 {:else}
                                     <img
                                         src="/badges/approver.png"
@@ -490,13 +529,13 @@
                     </button>
                 </div>
             </div>
-    
+
             <div class="settings-area">
                 <div class="settings-area-sections">
                     <button
                         class="settings-section"
-                        data-selected={currentTab === 'account'}
-                        on:click={() => changeTab('account')}
+                        data-selected={currentTab === "account"}
+                        on:click={() => changeTab("account")}
                     >
                         <LocalizedText
                             text="Account"
@@ -506,8 +545,8 @@
                     </button>
                     <button
                         class="settings-section"
-                        data-selected={currentTab === 'login'}
-                        on:click={() => changeTab('login')}
+                        data-selected={currentTab === "login"}
+                        on:click={() => changeTab("login")}
                     >
                         <LocalizedText
                             text="Login"
@@ -517,8 +556,8 @@
                     </button>
                     <button
                         class="settings-section"
-                        data-selected={currentTab === 'standing'}
-                        on:click={() => changeTab('standing')}
+                        data-selected={currentTab === "standing"}
+                        on:click={() => changeTab("standing")}
                     >
                         <LocalizedText
                             text="Standing"
@@ -528,7 +567,7 @@
                     </button>
                 </div>
                 <div class="settings-area-content">
-                    {#if currentTab === 'account'}
+                    {#if currentTab === "account"}
                         <h1>
                             <LocalizedText
                                 text="Account"
@@ -543,9 +582,13 @@
                                     key="account.settings.account.email"
                                     lang={currentLang}
                                     replace={{
-                                        "{{EMAIL_PEEK}}": `${accountInformation.emailSet ? 
-                                            (emailIsVisible ? accountInformation.emailFull : accountInformation.emailPeek) :
-                                            ""}`
+                                        "{{EMAIL_PEEK}}": `${
+                                            accountInformation.emailSet
+                                                ? emailIsVisible
+                                                    ? accountInformation.emailFull
+                                                    : accountInformation.emailPeek
+                                                : ""
+                                        }`,
                                     }}
                                 />
                                 {#if !accountInformation.emailSet}
@@ -557,7 +600,12 @@
                                         />
                                     </span>
                                 {:else}
-                                    <button class="show-email-link" on:click={() => {emailIsVisible = !emailIsVisible}}>
+                                    <button
+                                        class="show-email-link"
+                                        on:click={() => {
+                                            emailIsVisible = !emailIsVisible;
+                                        }}
+                                    >
                                         {#if !emailIsVisible}
                                             <img
                                                 src="/account/showpassword.svg"
@@ -573,7 +621,10 @@
                                         {/if}
                                     </button>
                                 {/if}
-                                <button class="edit-email-link" on:click={() => editingEmail = true}>
+                                <button
+                                    class="edit-email-link"
+                                    on:click={() => (editingEmail = true)}
+                                >
                                     <img
                                         src="/pencil.png"
                                         alt="Edit"
@@ -597,15 +648,21 @@
                                             currentLang,
                                             "Type here...",
                                         )}
+                                    />
+                                    <button
+                                        on:click={() => (editingEmail = false)}
+                                        class="email-edit-cancel"
                                     >
-                                    <button on:click={() => editingEmail = false} class="email-edit-cancel">
                                         <LocalizedText
                                             text="Cancel"
                                             key="generic.cancel"
                                             lang={currentLang}
                                         />
                                     </button>
-                                    <button on:click={saveEmail} class="email-edit-save">
+                                    <button
+                                        on:click={saveEmail}
+                                        class="email-edit-save"
+                                    >
                                         <LocalizedText
                                             text="Save"
                                             key="generic.save"
@@ -640,9 +697,11 @@
                             <label>
                                 <input
                                     type="checkbox"
-                                    bind:checked={accountInformation.settings.private}
+                                    bind:checked={
+                                        accountInformation.settings.private
+                                    }
                                     on:change={updatePrivateProfile}
-                                >
+                                />
                                 <LocalizedText
                                     text="Make my profile private"
                                     key="account.settings.account.toggles.private"
@@ -654,10 +713,14 @@
                             <label>
                                 <input
                                     type="checkbox"
-                                    disabled={!accountInformation.settings.private}
-                                    bind:checked={accountInformation.settings.privateToNonFollowers}
+                                    disabled={!accountInformation.settings
+                                        .private}
+                                    bind:checked={
+                                        accountInformation.settings
+                                            .privateToNonFollowers
+                                    }
                                     on:change={updatePrivateProfile}
-                                >
+                                />
                                 <LocalizedText
                                     text="Allow people I follow to view my profile"
                                     key="account.settings.account.toggles.privatenonfollowers"
@@ -702,7 +765,7 @@
                         <p class="small">
                             <i>(Moderators can always see your Ice Cube count, ignoring these settings.)</i>
                         </p> -->
-                    {:else if currentTab === 'standing'}
+                    {:else if currentTab === "standing"}
                         <h1>
                             <LocalizedText
                                 text="Standing"
@@ -717,7 +780,7 @@
                             status={standing}
                             detail={4}
                         />
-                    {:else if currentTab === 'login'}
+                    {:else if currentTab === "login"}
                         <h1>
                             <LocalizedText
                                 text="Login"
@@ -732,65 +795,47 @@
                                 lang={currentLang}
                             />
                         </p>
-                        <button class="login-method-selector" on:click={() => loginMethodToggled("google", "Google")}>
-                            <img
-                                src="/google.svg"
-                                alt="Google"
-                            />
-                            <span>
-                                Google
-                            </span>
+                        <button
+                            class="login-method-selector"
+                            on:click={() =>
+                                loginMethodToggled("google", "Google")}
+                        >
+                            <img src="/google.svg" alt="Google" />
+                            <span> Google </span>
                             {#if loginMethods.includes("google")}
-                                <img
-                                    src="/account/remove.svg"
-                                    alt="Remove"
-                                />
+                                <img src="/account/remove.svg" alt="Remove" />
                             {:else}
-                                <img
-                                    src="/account/add.svg"
-                                    alt="Add"
-                                />
+                                <img src="/account/add.svg" alt="Add" />
                             {/if}
                         </button>
-                        <button class="login-method-selector" on:click={() => loginMethodToggled("github", "GitHub")}>
+                        <button
+                            class="login-method-selector"
+                            on:click={() =>
+                                loginMethodToggled("github", "GitHub")}
+                        >
                             <img
                                 src="/github-mark/github-mark.svg"
                                 class="invert-on-dark"
                                 alt="GitHub"
                             />
-                            <span>
-                                GitHub
-                            </span>
+                            <span> GitHub </span>
                             {#if loginMethods.includes("github")}
-                                <img
-                                    src="/account/remove.svg"
-                                    alt="Remove"
-                                />
+                                <img src="/account/remove.svg" alt="Remove" />
                             {:else}
-                                <img
-                                    src="/account/add.svg"
-                                    alt="Add"
-                                />
+                                <img src="/account/add.svg" alt="Add" />
                             {/if}
                         </button>
-                        <button class="login-method-selector" on:click={() => loginMethodToggled("scratch", "Scratch")}>
-                            <img
-                                src="/Scratch_S.svg"
-                                alt="Scratch"
-                            />
-                            <span>
-                                Scratch
-                            </span>
+                        <button
+                            class="login-method-selector"
+                            on:click={() =>
+                                loginMethodToggled("scratch", "Scratch")}
+                        >
+                            <img src="/Scratch_S.svg" alt="Scratch" />
+                            <span> Scratch </span>
                             {#if loginMethods.includes("scratch")}
-                                <img
-                                    src="/account/remove.svg"
-                                    alt="Remove"
-                                />
+                                <img src="/account/remove.svg" alt="Remove" />
                             {:else}
-                                <img
-                                    src="/account/add.svg"
-                                    alt="Add"
-                                />
+                                <img src="/account/add.svg" alt="Add" />
                             {/if}
                         </button>
                     {/if}
@@ -856,7 +901,7 @@
         height: 16px;
         display: inline-block;
         content: "";
-        background-image: url('/pencil.png');
+        background-image: url("/pencil.png");
         background-size: 16px 16px;
         background-repeat: no-repeat;
         margin-left: 4px;
@@ -938,7 +983,7 @@
     .change-username img {
         height: 32px;
     }
-    
+
     .change-username-field {
         font-size: 40px;
         width: 70%;
@@ -1057,12 +1102,12 @@
         padding: 8px;
         overflow-y: auto;
     }
-    
+
     :global(body.dark-mode) .settings-area-sections,
     :global(body.dark-mode) .settings-area-content {
         border-color: rgba(255, 255, 255, 0.35);
     }
-    
+
     :global(html[dir="rtl"]) .settings-area-sections {
         border-right: 1px solid rgba(0, 0, 0, 0.35);
         border-left: none;
@@ -1092,7 +1137,7 @@
         background: #008cff;
         color: white;
     }
-    
+
     :global(html[dir="rtl"]) .settings-section {
         text-align: right;
     }

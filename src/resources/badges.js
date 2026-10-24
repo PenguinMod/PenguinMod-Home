@@ -13,6 +13,10 @@ export default {
     partner: "partner",
 
     // event
+    // penguinmodanniversary3
+    penguinmodanniversary3: "penguinmodanniversary3",
+    penguinmodanniversary3qualifiers: "penguinmodanniversary3qualifiers",
+    penguinmodanniversary3winners: "penguinmodanniversary3winners",
     // penguinjamsuper
     penguinjamsupersuperhero: "superhero",
     penguinjamsupersupervillain: "supervillain",
