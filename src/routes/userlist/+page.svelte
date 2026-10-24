@@ -189,6 +189,23 @@
     <div style="height:24px"></div>
     {#if pageLoading}
         <LoadingSpinner enableTips={true}></LoadingSpinner>
+    {:else if loggedIn === false}
+        <div class="login-prompt">
+            <p>
+                <LocalizedText
+                    text="You were logged out. Please log-in again."
+                    key="uploading.error.reauthenticate"
+                    lang={currentLang}
+                />
+            </p>
+            <Button on:click={askForLogin}>
+                <LocalizedText
+                    text="Sign In"
+                    key="navigation.login"
+                    lang={currentLang}
+                />
+            </Button>
+        </div>
     {:else if pageError}
         <div class="error-penguin">
             <PenguinConfusedSVG height="15rem"></PenguinConfusedSVG>
@@ -325,6 +342,15 @@
 
     .error-message {
         width: 100%;
+        text-align: center;
+    }
+    .login-prompt {
+        width: 100%;
+        
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        
         text-align: center;
     }
     .error-penguin {
