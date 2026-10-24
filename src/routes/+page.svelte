@@ -745,23 +745,25 @@
                 <div class="category-news">
                     <div class="category-news-content">
                         <h2 style="margin-block:4px;">
-                            A Game Jam for 4 Years of PenguinMod!
+                            The Retro Remix PenguinJam has ended!
                         </h2>
                         <div style="width:100%">
                             <p>
-                                Welcome to PenguinMod's Fourth anniversary!
-                            </p>
-                            <p>
-                                We're running another PenguinJam on the site for this special event.
-                                The theme is Retro Remix,” fittingly for the Retro Remix PenguinJam!
+                                Time's up everyone, the Retro Remix PenguinJam has ended!
+                                <br />
+                                Thanks for submitting your projects for the 4th Anniversary of PenguinMod!
                                 <br />
                                 <br />
-                                Submit your project by October 24th, 2026 at 6:00 PM EST.
+                                We're going to start ranking your projects now.
+                                Please wait until we are done with ranking!
                                 <br />
-                                See the event page for more details!
-                            </p>
-                            <p style="margin-block-start:4px;">
-                                <a href="https://penguinmod.com/events/penguinmodfourthanniversary">Retro Remix PenguinJam</a>
+                                <br />
+                                <i>
+                                    Missed the celebration?
+                                    <a href="https://www.youtube.com/watch?v=AVIaR7Fn9d4">
+                                        Watch everything we announced here!
+                                    </a>
+                                </i>
                             </p>
                             <img
                                 src="/events/news/penguinmodfourthanniversary.webp"
