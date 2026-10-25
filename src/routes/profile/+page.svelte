@@ -51,6 +51,7 @@
     let wasNotFound = false;
     let isForceView = false;
     let followerCount = null;
+    let followingCount = null;
     let fullProfile = {};
     let isRankingUpMenu = false;
     let isAttemptingRankUp = false;
@@ -58,6 +59,7 @@
 
     let isProfilePrivate = false;
     let isProfilePublicToFollowers = false;
+    let isProfileFollowingVisible = false;
     let isFollowedByUser = false;
 
     const profileEditingData = {
@@ -179,9 +181,11 @@
                 badges = fullProfile.badges;
                 isDonator = fullProfile.donator;
                 followerCount = fullProfile.followers;
+                followingCount = fullProfile.following;
 
                 isProfilePrivate = fullProfile.privateProfile;
                 isProfilePublicToFollowers = fullProfile.canFollowingSeeProfile;
+                isProfileFollowingVisible = !fullProfile.profileHideFollowing;
 
                 isFollowedByUser = fullProfile.isFollowing;
 
@@ -1015,17 +1019,32 @@
                                 </div>
                                 {#if ((!isBlocked || showAnyways) && !isProfilePrivate) || String(user).toLowerCase() === String(loggedInUser).toLowerCase() || (isProfilePublicToFollowers && isFollowedByUser) || loggedInAdmin}
                                     <div class="follower-section">
-                                        <p class="follower-count">
-                                            {TranslationHandler.text(
-                                                "profile.followers",
-                                                currentLang,
-                                            ).replace(
-                                                "$1",
-                                                followerCount -
-                                                    Number(followOnLoad) +
-                                                    Number(isFollowingUser),
-                                            )}
-                                        </p>
+                                        <div class="follower-counts">
+                                            <p class="follower-count">
+                                                <a href={`/userlist?type=followers&target=${encodeURIComponent(user)}`}>
+                                                    {TranslationHandler.text(
+                                                        "profile.followers",
+                                                        currentLang,
+                                                    ).replace(
+                                                        "$1",
+                                                        followerCount -
+                                                            Number(followOnLoad) +
+                                                            Number(isFollowingUser),
+                                                    )}
+                                                </a>
+                                            </p>
+                                            {#if isProfileFollowingVisible || (!isProfileFollowingVisible && ((String(user).toLowerCase() === String(loggedInUser).toLowerCase()) || loggedInAdmin))}
+                                                <p class="following-count">
+                                                    <a href={`/userlist?type=following&target=${encodeURIComponent(user)}`}>
+                                                        {TranslationHandler.textSafe(
+                                                            "profile.following",
+                                                            currentLang,
+                                                            "following",
+                                                        ).replace("$1", followingCount)}
+                                                    </a>
+                                                </p>
+                                            {/if}
+                                        </div>
                                         <div>
                                             {#if !(loggedIn && String(user).toLowerCase() === String(loggedInUser).toLowerCase())}
                                                 {#key isFollowingUser}
@@ -2318,11 +2337,28 @@
         flex-direction: row;
         align-items: center;
     }
-    .follower-count {
+    .follower-count,
+    .following-count {
         font-size: medium;
         text-align: center;
         font-weight: bold;
         margin: 0 6px;
+    }
+
+    .follower-counts {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .follower-count a,
+    .following-count a {
+        color: black;
+    }
+
+    :global(body.dark-mode) .follower-count a,
+    :global(body.dark-mode) .following-count a {
+        color: white;
     }
     .follower-button {
         min-width: 100px;

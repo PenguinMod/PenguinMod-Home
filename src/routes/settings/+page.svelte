@@ -42,6 +42,7 @@
             private: false,
             privateToNonFollowers: false,
             showCubesOnProfile: false,
+            profileHideFollowing: false,
         },
     };
 
@@ -206,6 +207,10 @@
             privateProfile,
             privateToNonFollowers,
         );
+    }
+    function updatePrivateFollowing() {
+        const hideFollowing = accountInformation.settings.profileHideFollowing || false;
+        ProjectClient.updatePrivateFollowing(hideFollowing);
     }
 
     function setPFP() {
@@ -731,6 +736,21 @@
                                     lang={currentLang}
                                 />
                             </i>
+                        </p>
+                        <br>
+                        <!-- TODO: Translations. -->
+                        <p>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    bind:checked={accountInformation.settings.profileHideFollowing}
+                                    on:change={updatePrivateFollowing}
+                                >
+                                Hide who I am following to others
+                            </label>
+                        </p>
+                        <p class="small">
+                            <i>(Moderators can always see who you are following, ignoring these settings.)</i>
                         </p>
                         <!-- <br>
                         <p>
