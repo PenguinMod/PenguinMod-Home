@@ -110,7 +110,7 @@
     };
 
     function toOAuthPage(method) {
-        const url = `${PUBLIC_API_URL}/api/v1/users/addpasswordtooauth?method=${method}&username=${username}&token=${token}`;
+        const url = `${PUBLIC_API_URL}/api/v1/users/addpasswordtooauth?method=${method}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
         location.href = url;
     }
 

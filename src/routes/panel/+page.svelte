@@ -447,6 +447,14 @@
                                         "(Core Extension)";
                                     continue;
                                 }
+
+                                const shouldFetch = await confirm("Do you want to connect to: " + extensionData[extensionId]);
+                                if (!shouldFetch) {
+                                    extensionData[extensionId] =
+                                        "(Denied connection)";
+                                    resetInspectMenu();
+                                    continue;
+                                }
                                 fetch(extensionData[extensionId]).then(
                                     (res) => {
                                         res.text().then((code) => {
@@ -1251,12 +1259,7 @@
                             <p>
                                 {extensionId}:
                                 {#if inspectMenuDetails.extensionUrls[extensionId]}
-                                    <a
-                                        href={inspectMenuDetails.extensionUrls[
-                                            extensionId
-                                        ]}
-                                        target="_blank"
-                                    >
+                                    <span><i>
                                         {String(
                                             inspectMenuDetails.extensionUrls[
                                                 extensionId
@@ -1269,7 +1272,7 @@
                                                       extensionId
                                                   ],
                                               )}
-                                    </a>
+                                    </i></span>
 
                                     <textarea
                                         value={inspectMenuDetails.extensionData[

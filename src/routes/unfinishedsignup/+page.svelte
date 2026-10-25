@@ -18,6 +18,8 @@
 
     // Static values
     import LINK from "../../resources/urls.js";
+    
+    import validateRedirect from "../../resources/validate-redirect.js";
 
     const ProjectClient = new ProjectApi();
 
@@ -118,7 +120,7 @@
                     }
 
                     // redirect
-                    const redir = $page.url.searchParams.get("redirect");
+                    const redir = validateRedirect($page.url.searchParams.get("redirect"));
                     window.location.href = redir ? redir : "/";
                 },
                 (err) => {

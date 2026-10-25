@@ -76,7 +76,13 @@ class Authentication {
     }
 
     static authenticate(iframe = true) {
-        const url = `${window.location.origin}/signin?redirect=${encodeURIComponent(window.location.pathname)}&embed=${iframe}`;
+        const currentUrl = new URL(window.location.href);
+        const redirect = currentUrl.searchParams.get("redirect");
+        const url = `${window.location.origin}/signin?${redirect ? `redirect=${encodeURIComponent(redirect)}&`
+            : (window.location.pathname !== "/signin" && window.location.pathname !== "/signup")
+                    ? `redirect=${encodeURIComponent(currentUrl.href)}&`
+                    : ""
+            }embed=${iframe}`;
 
         if (!iframe) {
             window.location.href = url;

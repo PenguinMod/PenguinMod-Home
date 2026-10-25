@@ -22,6 +22,8 @@
     import TranslationHandler from "../../resources/translations.js";
     import Authentication from "../../resources/authentication.js";
     import CountryLookup from "../../resources/country-lookup.json";
+    
+    import validateRedirect from "../../resources/validate-redirect.js";
 
     let currentLang = "en";
     onMount(() => {
@@ -174,7 +176,7 @@
                     }
 
                     // redirect
-                    window.location.href = redir_link ? redir_link : "/";
+                    window.location.href = validateRedirect(redir_link ? redir_link : "/");
                 },
                 (err) => {
                     canCreateAccount = false;
@@ -430,7 +432,7 @@
                 return;
             }
 
-            location.href = redir_link ? redir_link : "/";
+            location.href = validateRedirect(redir_link ? redir_link : "/");
         });
     }
 

@@ -271,9 +271,9 @@
                 });
         }
 
-        const projectId = Number(location.hash.replace("#", ""));
-        if (!isNaN(projectId) && projectId != 0) {
-            location.href = `${PUBLIC_STUDIO_URL}/#${projectId}`;
+        const projectHash = location.hash.replace("#", "");
+        if (projectHash.length > 0) {
+            location.href = `${PUBLIC_STUDIO_URL}/#${projectHash}`;
             return;
         }
 
