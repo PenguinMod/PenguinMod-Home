@@ -599,7 +599,7 @@ class ProjectApi {
 
     isFollowing(username, target, raw) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/isfollowing?username=${username}&target=${target}`;
+            const url = `${OriginApiUrl}/api/v1/users/isfollowing?username=${encodeURIComponent(username)}&target=${encodeURIComponent(target)}&token=${encodeURIComponent(this.token)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {

@@ -185,7 +185,7 @@
 
                 isProfilePrivate = fullProfile.privateProfile;
                 isProfilePublicToFollowers = fullProfile.canFollowingSeeProfile;
-                isProfileFollowingVisible = fullProfile.canSeeFollowing;
+                isProfileFollowingVisible = !fullProfile.profileHideFollowing;
 
                 isFollowedByUser = fullProfile.isFollowing;
 
