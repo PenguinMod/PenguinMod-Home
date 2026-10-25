@@ -359,7 +359,98 @@
         </div>
     {:else if tab === 'messages'}
         <div class="card-chunk">
-            <input type="">
+            <div class="inputs-inline">
+                <input 
+                    placeholder={messageToUser ? "Username" : "Message ID"} 
+                    type="text" 
+                    bind:value={messageTarget}
+                >
+                <div>
+                    <input type="checkbox" name="checkIp" bind:checked={messageToUser}>
+                    <label for="checkIp">Send Directly</label>
+                </div>
+            </div>
+            {#if messageTarget}
+                <div style="display: flex; flex-direction: row;">
+                    <textarea
+                        bind:value={messageContent}
+                        placeholder="Message Content..."
+                        style="width: 100%; box-sizing: border-box; min-height: 25%"
+                    />
+                    <div style="display: flex; flex-direction: column;">
+                        {#if messageToUser}
+                            <div style="width: max-content">
+                                <input type="checkbox" name="canReply" bind:checked={messageRepliable}>
+                                <label for="canReply">Allow Replies</label>
+                            </div>
+                        {/if}
+                        <Button
+                            label="Send"
+                            style="width: 100%; height: 100%"
+                            on:click={() => {
+                                const promise = messageToUser
+                                    ? ProjectClient.sendModeratorMessage(messageTarget, messageContent, messageRepliable)
+                                    : ProjectClient.respondToDispute(messageTarget, messageContent);
+                                promise
+                                    .then(() => alert('Message Sent!'))
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert(err);
+                                    })
+                            
+                            }}
+                        />
+                    </div>
+                </div>
+                {#if !messageToUser}
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        OR
+                        <Button
+                            color="red"
+                            label="Delete Message"
+                            on:click={() => ProjectClient.deleteModeratorMessage(messageTarget)
+                                .then(() => messageTarget = '')
+                                .catch(err => {
+                                    console.error(err);
+                                    alert(err);
+                                })}
+                        />
+                    </div>
+                {/if}
+            {/if}
+            <div class="misc-members">
+                <div class="misc-member">
+                    Broadcast Messages
+                    <div>
+                        <input type="checkbox" name="updateTOS" bind:checked={broadcastTOSChange}>
+                        <label for="updateTOS">Terms of Service</label>
+                        <input type="checkbox" name="updatePrivacy" bind:checked={broadcastPolicyChange}>
+                        <label for="canReply">Privacy Policy</label>
+                        <input type="checkbox" name="updateGuidelines" bind:checked={broadcastGuidelinesChange}>
+                        <label for="canReply">Uploading Guidelines</label>
+                        <button
+                            on:click={() => {
+                                const list = [];
+                                if (broadcastTOSChange) list.push('tos');
+                                if (broadcastPolicyChange) list.push('privacyPolicy');
+                                if (broadcastGuidelinesChange) list.push('guidelines');
+                                if (list.length <= 0) return alert('Nothing to send!!');
+
+                                ProjectClient.setLastPolicyUpdate(list)
+                                    .then(() => {
+                                        broadcastTOSChange = false;
+                                        broadcastPolicyChange = false;
+                                        broadcastGuidelinesChange = false;
+                                    })
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert(err);
+                                    })
+                            }}
+                        >Send Broadcasts</button>
+                    </div>
+                </div>
+            </div>
         </div>
     {:else if tab === 'users'}
         <div class="projects-control">
@@ -892,7 +983,7 @@
                         User IP Lookup
                         <div class="text-controlable">
                             <div class="text-box-wrapper">
-                                <div style="display: grid; grid-template-columns: minmax(auto, 1fr) max-content">
+                                <div class="inputs-inline">
                                     <input 
                                         placeholder={"IP/Username"} 
                                         type="text" 
@@ -1034,6 +1125,11 @@
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
 
+    .inputs-inline {
+        display: grid;
+        grid-template-columns: minmax(auto, 1fr) max-content;
+        margin-bottom: 5px;
+    }
     .title { margin-top: .5rem; }
     .main {
         position: absolute;

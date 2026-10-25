@@ -6,6 +6,7 @@
     export let toggled = false;
     export let label = "";
     export let noredirect = false;
+    export let style = '';
 
     // extras
     export let icon = false;
@@ -22,7 +23,7 @@
     <a
         href={link}
         target={noredirect ? "_blank" : "_self"}
-        style="text-decoration: none;"
+        style="text-decoration: none; {style}"
     >
         <button
             class={(highlighted ? "button button-highlight" : "button") +
@@ -42,6 +43,7 @@
         class={(highlighted ? "button button-highlight" : "button") +
             (color ? ` ${color}` : "") +
             (toggled ? " button-toggled" : "")}
+        {style}
         on:click={event}
     >
         {#if icon}
