@@ -35,9 +35,11 @@
     let url = '';
     let urlOrigin = '';
     try {
-        const path = atob(browser ? $page.url.searchParams.get('t') : "");
+        const path = atob($page.url.searchParams.get('t'));
         const urlObj = new URL(path);
-        url = path;
+        urlObj.protocol = "https:";
+        
+        url = urlObj.href;
         urlOrigin = urlObj.hostname;
     } catch {
         if (!browser) {
