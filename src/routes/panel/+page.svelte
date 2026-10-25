@@ -36,6 +36,8 @@
     let tab = '';
     let admin = false;
     let loggedIn = null;
+    /** @type {HTMLInputElement} */
+    let fileSelector;
     let codeArea;
     /** @type {import('brace').Editor} */
     let editor;
@@ -141,6 +143,16 @@
 
     $: if (browser && loggedIn) location.hash = tab;
 
+    /* --- Projects category --- */
+    let rejectionReason = '';
+    let isRejectHard = false; // heh
+    let rejectionPageOpen = false;
+    let rejectingName = '';
+    let rejectingId;
+
+    /* --- Messages Category --- */
+
+
     /* --- Users category --- */
     let userReportsLoaded = false;
     let userReports = [];
@@ -150,6 +162,28 @@
     let changingUsernameProcessing = false;
     let newChangedUsername;
     let newChangedUsernameError = null;
+    let reloadPFP = false;
+    let adminsList = [];
+    let modsList = [];
+    let banReason = '';
+    let banUserOpen = false;
+    let userBanned = false;
+    let userIPBanned = false;
+    let userWatchlisted = false;
+    let profileBadges = [];
+    let addBadgesSelectorOpen = false;
+    let selectedAddingBadges = [];
+    function onSelectedUserChange(username) {
+        profileBadges = [];
+        ProjectApi.getUserBadges(username)
+            .then(badges => profileBadges = badges)
+            .catch(err => {
+                if (err === '{"error":"NotFound"}') return;
+                console.error(err);
+                alert(err);
+            })
+    }
+    $: onSelectedUserChange(selectedUsername);
 
     /* --- Admin category --- */
     let connections = '';
@@ -166,11 +200,14 @@
     let profanityChanged = false;
 
     /* --- Preloaders --- */
-    $: {
+    function onTabChange(tab) {
         switch (tab) {
         case 'projects': break;
-        case 'messages': break;
+        case 'messages':
+
+            break;
         case 'users':
+            addBadgesSelectorOpen = false;
             userReportsLoaded = false;
             selectedUserReport = null;
             ProjectClient.getTypeWithReports('user', 0)
@@ -179,8 +216,16 @@
                     userReports = reports;
                 })
                 .catch(err => console.error(err));
+            ProjectClient.getAllPermitedUsers()
+                .then(lists => {
+                    adminsList = lists.admins.map(permit => permit.username);
+                    modsList = lists.mods.map(permit => permit.username);
+                })
+                .catch(err => console.error(err));
             break;
         case 'misc': 
+            // steal the selected username 
+            connectionCheck = selectedUsername;
             ProjectApi.getServerInfo()
                 .then(stats => serverStats = Flatten(stats))
                 .catch(err => console.error(err));
@@ -198,6 +243,7 @@
             break;
         }
     }
+    $: onTabChange(tab);
 </script>
 
 <svelte:head>
@@ -231,14 +277,72 @@
 <div class="main" style={loggedIn ? "" : "display:none"}>
     <NavigationMargin />
 
-    
+    <div
+        class="front-card-page"
+        style="z-index: 20000;{rejectionPageOpen ? '' : 'display:none;'}"
+    >
+        <div class="card-page big-card-page">
+            <div class="card-header">
+                <h1>Reject Project</h1>
+            </div>
+            <div class="card-reject" style="display:block">
+                <p>Rejecting <b>{rejectingName}</b></p>
+                <img
+                    src={`${LINK.projects}api/v1/projects/getproject?projectID=${rejectingId}&requestType=thumbnail`}
+                    alt="Image of {rejectingName}"
+                    width="240"
+                    height="180"
+                />
+                <!-- svelte-ignore a11y-autofocus -->
+                <textarea
+                    bind:value={rejectionReason}
+                    placeholder="Reason for rejecting..."
+                    style="width: 95%;"
+                    autofocus
+                />
+                <details>
+                    <summary>Dangerous options</summary>
+                    <label style="color:red">
+                        <input type="checkbox" bind:checked={isRejectHard} />
+                        Don't allow the uploader to edit the project after reject
+                        (hard reject)
+                    </label>
+                </details>
+                <br />
+                <br />
+                <h2><b>Quick-Reject</b></h2>
+                <QuickRejectComponent
+                    on:select={(arg) => {
+                        rejectionReason = arg.detail;
+                    }}
+                />
+            </div>
+            <div style="display:flex;flex-direction:row;padding:1em">
+                <Button
+                    label="Reject"
+                    color="red"
+                    on:click={() => {
+                        rejectProject(rejectingId);
+                    }}
+                />
+                <Button
+                    label="Cancel"
+                    on:click={() => {
+                        rejectionPageOpen = false;
+                    }}
+                />
+            </div>
+        </div>
+    </div>
+
+    <input type="file" hidden bind:this={fileSelector}>
+
     <div class="section-category-toggles">
         <div class="category-toggle-section">
             <button active={tab === 'projects'} on:click={() => tab = 'projects'}>Projects</button>
             <button active={tab === 'messages'} on:click={() => tab = 'messages'}>Messages</button>
             <button active={tab === 'users'} on:click={() => tab = 'users'}>Users</button>
-            <button active={tab === 'admin'} admin={!admin} on:click={() => tab = 'admin'}>Admin</button>
-            <button active={tab === 'misc'} admin={!admin} on:click={() => tab = 'misc'}>Misc</button>
+            <button active={tab === 'misc'} on:click={() => tab = 'misc'}>Misc</button>
         </div>
     </div>
     {#if tab === 'projects'}
@@ -280,7 +384,7 @@
                             />
                             <div class="reports-user-content">
                                 <p style="font-weight: bold;">{content.target}</p>
-                                <p>{content.target} reports</p>
+                                <p>{content.report}</p>
                             </div>
                         </button>
                         {#if selectedUserReport === idx}
@@ -303,6 +407,9 @@
                                         <details open={report.reporter === content.reporter}>
                                             <summary>
                                                 {report.reporter}
+                                                <button on:click={() => selectedUsername = report.reporter}>
+                                                    Select user
+                                                </button>
                                             </summary>
                                             <p style="white-space:pre-wrap">
                                                 {report.report}
@@ -327,217 +434,396 @@
                 {/if}
             </div>
             <div class="card-chunk" style="grid-column: 2;">
-                <input class="user-selector" type="text" placeholder="Username" bind:value={selectedUsername}>
-                <div class="profile-section">
-                    <button class="profile-section-image" on:click={() => {}}>
-                        <img
-                            src="{PUBLIC_API_URL}/api/v1/users/getpfp?username={selectedUsername}"
-                            alt={selectedUsername}
-                        />
-                        <div class="profile-section-image-edit">
-                            <img src="/pencil.png" alt="Edit" />
-                        </div>
-                    </button>
-                    <div class="profile-section-display">
-                        {#if !changingUsername}
-                            <h1 style="margin-block:0;font-size:40px">
-                                {selectedUsername}
-                                <button
-                                    class="change-username"
-                                    on:click={() => changingUsername = true}
-                                >
-                                    <img
-                                        src="/pencil.png"
-                                        alt="Edit"
-                                        title="Edit"
-                                    />
-                                </button>
-                            </h1>
-                        {:else}
-                            <h1 style="margin-block:0;font-size:40px">
-                                <input
-                                    type="text"
-                                    placeholder={"Type here..."}
-                                    bind:value={newChangedUsername}
-                                    class="change-username-field"
-                                    maxlength="20"
-                                />
-                                <button
-                                    class="change-username"
-                                    on:click={() => {
-                                        if (changingUsernameProcessing) return;
-                                        if (newChangedUsername === selectedUsername) return;
-                                        if (newChangedUsername.length <= 0) return;
-                                        changingUsernameProcessing = true;
-                                        ProjectClient.setNewUsername(newChangedUsername)
-                                            .then(() => changingUsername = false)
-                                            .catch(err => {
+                <input
+                    class="user-selector"
+                    type="text"
+                    placeholder="Username"
+                    bind:value={selectedUsername}
+                >
+                {#if !selectedUsername}
+                    Select a user!!
+                {:else}
+                    <div class="profile-section">
+                        <button class="profile-section-image" on:click={() => {
+                            fileSelector.type = "file";
+                            fileSelector.accept = "image/*";
+                            fileSelector.click();
 
-                                                switch (err) {
-                                                case "InvalidLengthUsername":
-                                                    newChangedUsernameError = "username.requirement.length";
-                                                    break;
-                                                case "InvalidUsername":
-                                                    newChangedUsernameError = "username.requirement.letters";
-                                                    break;
-                                                case "UsernameTaken":
-                                                    newChangedUsernameError = "account.fields.username.taken";
-                                                    break;
-                                                default:
-                                                    alert(err);
-                                                    console.error(err);
-                                                    break;
-                                                }
-                                            })
-                                            .finally(() => changingUsernameProcessing = false)
-                                    }}
-                                >
-                                    {#if changingUsernameProcessing}
-                                        <LoadingSpinner
-                                            style="width:32px;height:32px;"
-                                            single={true}
-                                        />
-                                    {:else}
-                                        <img
-                                            src="/badges/approver.png"
-                                            alt="Save"
-                                            title="Save"
-                                        />
-                                    {/if}
-                                </button>
-                            </h1>
-                            {#if newChangedUsernameError}
-                                <p class="change-username-error">
-                                    <img
-                                        src="/notallowed.png"
-                                        alt="Error"
-                                        title="Error"
-                                    />
-                                    <LocalizedText
-                                        text={newChangedUsernameError}
-                                        key={newChangedUsernameError}
-                                        lang={currentLang}
-                                    />
-                                </p>
-                            {/if}
-                        {/if}
-                    </div>
-                </div>
-            </div>
-        </div>
-    {:else if tab === 'admin'}
-        <div class="card-chunk">
-            <div class="misc-members">
-                <div class="misc-member">
-                    User IP Lookup
-                    <div class="text-controlable">
-                        <div class="text-box-wrapper">
-                            <div style="display: grid; grid-template-columns: minmax(auto, 1fr) max-content">
-                                <input 
-                                    placeholder={"IP/Username"} 
-                                    type="text" 
-                                    bind:value={connectionCheck}
-                                >
-                                <div>
-                                    <input type="checkbox" name="checkIp" bind:checked={isCheckIP}>
-                                    <label for="checkIp">Get IPs</label>
-                                </div>
-                            </div>
-                            <div class="text-box-wrapper-wrapper"><textarea class="text-box" bind:value={connections}></textarea></div>
-                        </div>
-                        <div>
-                            <Button on:click={() => {
-                                if (!isCheckIP) {
-                                    ProjectClient.getAlts(connectionCheck)
-                                        .then(user => connections = user.join('\n'))
-                                        .catch(err => {
-                                            console.error(err);
-                                            connections = `Failed to get connections: ${err}`
-                                        })
-                                    return;
-                                }
-                                const isIp = connectionCheck.includes(':') || connectionCheck.includes('.');
-                                (isIp
-                                    ? ProjectClient.getConnectedUsers(connectionCheck)
-                                    : ProjectClient.getConnectedIPs(connectionCheck)
-                                )
-                                    .then(res => {
-                                        if (res.length <= 0) return connections = 'No connections';
-                                        connections = res
-                                            .map(ip => isIp
-                                                ? ip.username
-                                                : `IP: ${ip.ip}, banned: ${ip.banned}, last login: ${unixToDisplayDate(ip.lastLogin)}`)
-                                            .join('\n');
-                                    })
+                            const onceSelected = async () => {
+                                fileSelector.removeEventListener('change', onceSelected);
+                                const data = await fileSelector.files[0].arrayBuffer();
+
+                                ProjectClient.setPFPOfUser(selectedUsername, data)
+                                    .then(() => reloadPFP = !reloadPFP)
                                     .catch(err => {
                                         console.error(err);
-                                        connections = `Failed to get connections: ${err}`
-                                    })
-                            }}>Get Connections</Button>
-                            <br>
-                            <Button on:click={() => ProjectClient.banIP(connectionCheck, true)
-                                .then(() => alert(`Banned IP ${connectionCheck}`))
-                                .catch(err => {
-                                    console.error(err);
-                                    alert(err);
-                                })} color="red">Ban IP</Button>
-                            <Button on:click={() => ProjectClient.banIP(connectionCheck, false)
-                                .then(() => alert(`Banned IP ${connectionCheck}`))
-                                .catch(err => {
-                                    console.error(err);
-                                    alert(err);
-                                })} color="red">Unban IP</Button>
+                                        alert(err);
+                                    });
+                            }
+                            fileSelector.addEventListener('change', onceSelected);
+                        }}>
+                            <img
+                                src="{PUBLIC_API_URL}/api/v1/users/getpfp?username={selectedUsername}&reload={reloadPFP}"
+                                alt={selectedUsername}
+                            />
+                            <div class="profile-section-image-edit">
+                                <img src="/pencil.png" alt="Edit" />
+                            </div>
+                        </button>
+                        <div class="profile-section-display">
+                            {#if !changingUsername}
+                                <h1 style="margin-block:0;font-size:40px">
+                                    {selectedUsername}
+                                    <button
+                                        class="change-username"
+                                        on:click={() => {
+                                            changingUsername = true;
+                                            newChangedUsername = selectedUsername;
+                                        }}
+                                    >
+                                        <img
+                                            src="/pencil.png"
+                                            alt="Edit"
+                                            title="Edit"
+                                        />
+                                    </button>
+                                </h1>
+                            {:else}
+                                <h1 style="margin-block:0;font-size:40px">
+                                    <input
+                                        type="text"
+                                        placeholder={"Type here..."}
+                                        bind:value={newChangedUsername}
+                                        class="change-username-field"
+                                        maxlength="20"
+                                    />
+                                    <button
+                                        class="change-username"
+                                        on:click={() => {
+                                            if (changingUsernameProcessing) return;
+                                            if (newChangedUsername === selectedUsername) {
+                                                changingUsername = false;
+                                                return;
+                                            }
+                                            if (newChangedUsername.length <= 0) return;
+                                            changingUsernameProcessing = true;
+                                            ProjectClient.setUsernameOfUser(selectedUsername, newChangedUsername)
+                                                .then(() => {
+                                                    selectedUsername = newChangedUsername;
+                                                    changingUsername = false;
+                                                })
+                                                .catch(err => {
+                                                    switch (err) {
+                                                    case "InvalidLengthUsername":
+                                                        newChangedUsernameError = "username.requirement.length";
+                                                        break;
+                                                    case "InvalidUsername":
+                                                        newChangedUsernameError = "username.requirement.letters";
+                                                        break;
+                                                    case "UsernameTaken":
+                                                        newChangedUsernameError = "account.fields.username.taken";
+                                                        break;
+                                                    default:
+                                                        alert(err);
+                                                        console.error(err);
+                                                        break;
+                                                    }
+                                                })
+                                                .finally(() => changingUsernameProcessing = false)
+                                        }}
+                                    >
+                                        {#if changingUsernameProcessing}
+                                            <LoadingSpinner
+                                                style="width:32px;height:32px;"
+                                                single={true}
+                                            />
+                                        {:else}
+                                            <img
+                                                src="/badges/approver.png"
+                                                alt="Save"
+                                                title="Save"
+                                            />
+                                        {/if}
+                                    </button>
+                                </h1>
+                                {#if newChangedUsernameError}
+                                    <p class="change-username-error">
+                                        <img
+                                            src="/notallowed.png"
+                                            alt="Error"
+                                            title="Error"
+                                        />
+                                        <LocalizedText
+                                            text={newChangedUsernameError}
+                                            key={newChangedUsernameError}
+                                            lang={currentLang}
+                                        />
+                                    </p>
+                                {/if}
+                            {/if}
+                        </div>
+                        <div class="user-profile-controls">
+                            {#each profileBadges as badge, idx}
+                                {#if ProfileBadges[badge]}
+                                    <button
+                                        class="permited-user-profile-button"
+                                        on:click={() => {
+                                            profileBadges.splice(idx, 1)
+                                            ProjectClient.setUserBadges(selectedUsername, profileBadges)
+                                                .then(() => profileBadges = profileBadges)
+                                                .catch(err => {
+                                                    console.error(err);
+                                                    alert(err);
+                                                })
+                                        }}
+                                    >
+                                        <img
+                                            class="profile-badge"
+                                            src={`/badges/${ProfileBadges[badge]}.png`}
+                                            alt="Badge"
+                                        />
+                                        <div class="profile-section-image-edit">
+                                            <img 
+                                                src="/account/remove.svg" 
+                                                alt="Remove Badge {TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        currentLang
+                                                    ) || TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        'en'
+                                                    )}"
+                                            />
+                                        </div>
+                                    </button>
+                                {/if}
+                            {:else}
+                                <p
+                                    style="font-size: initial; font-weight: normal; width: 100%; text-align: center;"
+                                >No Badges!</p>
+                            {/each}
+                            <button
+                                class="add-profile-badge"
+                                on:click={() => addBadgesSelectorOpen = true}
+                            >
+                                <img src="/account/add.svg" alt="Add Badge">
+                                <div
+                                    class="pop-under"
+                                    style="z-index: 20000;{addBadgesSelectorOpen ? '' : 'display:none;'}"
+                                >
+                                    <div class="full-badge-list">
+                                        {#each Object.keys(ProfileBadges) as badge}
+                                            {#if !profileBadges.includes(badge)}
+                                                <input
+                                                    type="checkbox"
+                                                    class="profile-badge-selector"
+                                                    style="background-image: url('/badges/{ProfileBadges[badge]}.png')"
+                                                    alt={TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        currentLang
+                                                    ) || TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        'en'
+                                                    )}
+                                                    title={TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        currentLang
+                                                    ) || TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        'en'
+                                                    )}
+                                                    on:change={e => {
+                                                        console.log(selectedAddingBadges);
+                                                        if (e.target.checked) return selectedAddingBadges.push(badge);
+                                                        selectedAddingBadges = selectedAddingBadges.filter(toAdd => toAdd !== badge);
+                                                    }}
+                                                />
+                                            {/if}
+                                        {/each}
+                                    </div>
+                                    <button
+                                        on:click={() => {
+                                            profileBadges.push(...selectedAddingBadges);
+                                            ProjectClient.setUserBadges(selectedUsername, profileBadges)
+                                                .then(() => { profileBadges = profileBadges; addBadgesSelectorOpen = false; })
+                                                .catch(err => {
+                                                    console.error(err);
+                                                    alert(err);
+                                                })
+                                        }}
+                                    >Add</button>
+                                    <button
+                                        on:click={e => {
+                                            e.stopPropagation();
+                                            addBadgesSelectorOpen = false;
+                                        }}
+                                    >Cancel</button>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="user-profile-controls">
+                            {#if userIPBanned}
+                                <Button
+                                    label="Un IP ban"
+                                    on:click={() => {}}
+                                />
+                            {:else if userBanned}
+                                <Button
+                                    label="Unban"
+                                    on:click={() => {}}
+                                />
+                            {/if}
                         </div>
                     </div>
-                </div>
-                <div class="misc-member access-toggles">
-                    <div class="can-upload-toggle">
-                        <Button 
-                            color={canUploadProjects ? 'red' : 'remix'} 
-                            on:click={() => {
-                                if (!confirm("Are you sure?")) return;
-                                ProjectClient.setErrorAllUploadProjects(!canUploadProjects)
-                                    .then(() => canUploadProjects = !canUploadProjects)
-                                    .catch((err) => {
+                    <div class="profile-access">
+                        <Button
+                            link="/profile?user={selectedUsername}"
+                            label="View Profile"
+                        />
+                        <Button
+                            link="/search?q=by%3A{selectedUsername}"
+                            label="View Projects"
+                        />
+                        {#if !userWatchlisted}
+                            <Button
+                                color="orange"
+                                label="Watchlist"
+                                on:click={ProjectClient.putOnWatchlist(selectedUsername, true)
+                                    .then(() => userWatchlisted = true)
+                                    .catch(err => {
                                         console.error(err);
                                         alert(err);
-                                    });
-                            }}
-                        >
-                            {!canUploadProjects ? 'Enable' : 'Dissable'} project uploading
-                        </Button>
+                                    })}
+                            />
+                        {:else}
+                            <Button
+                                label="Unwatchlist"
+                                on:click={ProjectClient.putOnWatchlist(selectedUsername, false)
+                                    .then(() => userWatchlisted = true)
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert(err);
+                                    })}
+                            />
+                        {/if}
                     </div>
-                    <div class="can-sign-up-toggle">
-                        <Button 
-                            color={canSignUp ? 'red' : 'remix'} 
+                    <details bind:open={banUserOpen}>
+                        <summary>User bans</summary>
+                        <!-- svelte-ignore a11y-autofocus -->
+                        <textarea
+                            bind:value={banReason}
+                            placeholder="Ban reason..."
+                            style="width: 100%; box-sizing: border-box;"
+                            autofocus
+                        />
+                        <div style="display:flex;flex-direction:row;padding:1em">
+                            <Button
+                                label="Temp Ban"
+                                color="purple"
+                                on:click={() => {}}
+                            />
+                            <Button
+                                label="Ban"
+                                color="red"
+                                on:click={() => {}}
+                            />
+                            <Button
+                                label="IP Ban"
+                                color="red"
+                                on:click={() => {}}
+                            />
+                            <Button
+                                label="Delete Account"
+                                color="red"
+                                on:click={() => {}}
+                            />
+                        </div>
+                    </details>
+                {/if}
+                <div class="misc-member">
+                    Permitted Users
+                    <strong class="title">Admins</strong>
+                    <div class="permited-users-grid">
+                        {#each adminsList as permitted}
+                            <div class="permited-user-tile">
+                                <button
+                                    class="permited-user-profile-button"
+                                    on:click={() => 
+                                        ProjectClient.assingUsersPermisions(permitted, false, modsList.includes(permitted))
+                                            .then(() => { adminsList.splice(adminsList.indexOf(permitted), 1); adminsList = adminsList; })
+                                            .catch(err => {
+                                                console.error(err);
+                                                alert(err);
+                                            })}
+                                >
+                                    <img
+                                        class="permited-user-profile"
+                                        src="{PUBLIC_API_URL}/api/v1/users/getpfp?username={permitted}"
+                                        alt={permitted}
+                                    />
+                                    <div class="profile-section-image-edit">
+                                        <img src="/account/remove.svg" alt="Remove Perms" />
+                                    </div>
+                                </button>
+                                <span>{permitted}</span>
+                            </div>
+                        {/each}
+                        <button
+                            class="add-permited-user"
                             on:click={() => {
-                                if (!confirm("Are you sure?")) return;
-                                ProjectClient.setErrorAccountCreation(!canSignUp)
-                                    .then(() => canSignUp = !canSignUp)
-                                    .catch((err) => {
+                                const username = prompt('Please enter there username below', selectedUsername);
+                                if (!username) return;
+                                ProjectClient.assingUsersPermisions(username, true, modsList.includes(username))
+                                    .then(() => { adminsList.push(username); adminsList = adminsList; })
+                                    .catch(err => {
                                         console.error(err);
                                         alert(err);
                                     });
                             }}
                         >
-                            {!canSignUp ? 'Enable' : 'Dissable'} account creation
-                        </Button>
+                            <img src="/account/add.svg" alt="Add User">
+                        </button>
                     </div>
-                    <div class="can-view-toggle">
-                        <Button 
-                            color={canViewProjects ? 'red' : 'remix'} 
+                    <strong class="title">Mods</strong>
+                    <div class="permited-users-grid">
+                        {#each modsList as permitted}
+                            <div class="permited-user-tile">
+                                <button
+                                    class="permited-user-profile-button"
+                                    on:click={() => 
+                                        ProjectClient.assingUsersPermisions(permitted, adminsList.includes(permitted), false)
+                                            .then(() => { modsList.splice(modsList.indexOf(permitted), 1); modsList = modsList; })
+                                            .catch(err => {
+                                                console.error(err);
+                                                alert(err);
+                                            })}
+                                >
+                                    <img
+                                        class="permited-user-profile"
+                                        src="{PUBLIC_API_URL}/api/v1/users/getpfp?username={permitted}"
+                                        alt={permitted}
+                                    />
+                                    <div class="profile-section-image-edit">
+                                        <img src="/account/remove.svg" alt="Remove Perms" />
+                                    </div>
+                                </button>
+                                <span>{permitted}</span>
+                            </div>
+                        {/each}
+                        <button
+                            class="add-permited-user"
                             on:click={() => {
-                                if (!confirm("Are you sure?")) return;
-                                ProjectClient.setErrorAllGetProjects(!canViewProjects)
-                                    .then(() => canViewProjects = !canViewProjects)
-                                    .catch((err) => {
+                                const username = prompt('Please enter there username below', selectedUsername);
+                                if (!username) return;
+                                ProjectClient.assingUsersPermisions(username, adminsList.includes(username), true)
+                                    .then(() => { modsList.push(username); modsList = modsList; })
+                                    .catch(err => {
                                         console.error(err);
                                         alert(err);
                                     });
                             }}
                         >
-                            {!canViewProjects ? 'Enable' : 'Dissable'} project viewing
-                        </Button>
+                            <img src="/account/add.svg" alt="Add User">
+                        </button>
                     </div>
                 </div>
             </div>
@@ -548,8 +834,70 @@
             <div class="card-chunk" style="grid-column: 2;">
                 <div class="misc-members">
                     <div class="misc-member">
+                        User IP Lookup
+                        <div class="text-controlable">
+                            <div class="text-box-wrapper">
+                                <div style="display: grid; grid-template-columns: minmax(auto, 1fr) max-content">
+                                    <input 
+                                        placeholder={"IP/Username"} 
+                                        type="text" 
+                                        bind:value={connectionCheck}
+                                    >
+                                    <div>
+                                        <input type="checkbox" name="checkIp" bind:checked={isCheckIP}>
+                                        <label for="checkIp">Get IPs</label>
+                                    </div>
+                                </div>
+                                <div class="text-box-wrapper-wrapper"><textarea class="text-box" bind:value={connections}></textarea></div>
+                            </div>
+                            <div>
+                                <Button on:click={() => {
+                                    if (!isCheckIP) {
+                                        ProjectClient.getAlts(connectionCheck)
+                                            .then(user => connections = user.join('\n'))
+                                            .catch(err => {
+                                                console.error(err);
+                                                connections = `Failed to get connections: ${err}`
+                                            })
+                                        return;
+                                    }
+                                    const isIp = connectionCheck.includes(':') || connectionCheck.includes('.');
+                                    (isIp
+                                        ? ProjectClient.getConnectedUsers(connectionCheck)
+                                        : ProjectClient.getConnectedIPs(connectionCheck)
+                                    )
+                                        .then(res => {
+                                            if (res.length <= 0) return connections = 'No connections';
+                                            connections = res
+                                                .map(ip => isIp
+                                                    ? ip.username
+                                                    : `IP: ${ip.ip}, banned: ${ip.banned}, last login: ${unixToDisplayDate(ip.lastLogin)}`)
+                                                .join('\n');
+                                        })
+                                        .catch(err => {
+                                            console.error(err);
+                                            connections = `Failed to get connections: ${err}`
+                                        })
+                                }}>Get Connections</Button>
+                                <br>
+                                <Button on:click={() => ProjectClient.banIP(connectionCheck, true)
+                                    .then(() => alert(`Banned IP ${connectionCheck}`))
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert(err);
+                                    })} color="red">Ban IP</Button>
+                                <Button on:click={() => ProjectClient.banIP(connectionCheck, false)
+                                    .then(() => alert(`Banned IP ${connectionCheck}`))
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert(err);
+                                    })} color="red">Unban IP</Button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="misc-member">
                         Profanity List
-                        <div class="code-controlable" style="height:100%;">
+                        <div class="code-controlable" style="height: 400px;">
                             <div style="width: 100%; height: 100%">
                                 <div class="code-box" bind:this={codeArea}></div>
                             </div>
@@ -570,6 +918,56 @@
                             </div>
                         </div>
                     </div>
+                    <div class="misc-member access-toggles">
+                        <div class="can-upload-toggle">
+                            <Button 
+                                color={canUploadProjects ? 'red' : 'remix'} 
+                                on:click={() => {
+                                    if (!confirm("Are you sure?")) return;
+                                    ProjectClient.setErrorAllUploadProjects(!canUploadProjects)
+                                        .then(() => canUploadProjects = !canUploadProjects)
+                                        .catch((err) => {
+                                            console.error(err);
+                                            alert(err);
+                                        });
+                                }}
+                            >
+                                {!canUploadProjects ? 'Enable' : 'Dissable'} project uploading
+                            </Button>
+                        </div>
+                        <div class="can-sign-up-toggle">
+                            <Button 
+                                color={canSignUp ? 'red' : 'remix'} 
+                                on:click={() => {
+                                    if (!confirm("Are you sure?")) return;
+                                    ProjectClient.setErrorAccountCreation(!canSignUp)
+                                        .then(() => canSignUp = !canSignUp)
+                                        .catch((err) => {
+                                            console.error(err);
+                                            alert(err);
+                                        });
+                                }}
+                            >
+                                {!canSignUp ? 'Enable' : 'Dissable'} account creation
+                            </Button>
+                        </div>
+                        <div class="can-view-toggle">
+                            <Button 
+                                color={canViewProjects ? 'red' : 'remix'} 
+                                on:click={() => {
+                                    if (!confirm("Are you sure?")) return;
+                                    ProjectClient.setErrorAllGetProjects(!canViewProjects)
+                                        .then(() => canViewProjects = !canViewProjects)
+                                        .catch((err) => {
+                                            console.error(err);
+                                            alert(err);
+                                        });
+                                }}
+                            >
+                                {!canViewProjects ? 'Enable' : 'Dissable'} project viewing
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -581,6 +979,7 @@
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
 
+    .title { margin-top: .5rem; }
     .main {
         position: absolute;
         left: 0px;
@@ -592,7 +991,62 @@
     :global(body.dark-mode) .main {
         color: white;
     }
-    
+    .pop-under {
+        position: absolute;
+        top: 36px;
+        left: 0;
+        width: 128px;
+        padding: 8px 16px;
+        border: solid 1px rgba(255, 255, 255, .3);
+        border-radius: 8px 0px 8px 8px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        transform-origin: middle right;
+        transform: translateX(calc(-100% + 16px));
+        z-index: 5000;
+    }
+    .front-card-page {
+        background: rgba(0, 0, 0, 0.5);
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 5000;
+    }
+    .card-page {
+        box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.25);
+        background: white;
+        border-radius: 16px;
+        width: 85%;
+        height: 80%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .big-card-page {
+        width: 95%;
+        height: 89.25%;
+    }
+    :global(body.dark-mode) .card-page {
+        background: #1f1f1f;
+    }
+    .card-header {
+        width: 97.5%;
+        border-bottom: #00000030 1px solid;
+        text-align: center;
+    }
+    .card-reject {
+        width: calc(100% - 32px);
+        height: 100%;
+        padding: 16px;
+        overflow: auto;
+    }
+
     .text-box {
         max-width: 100%;
         box-sizing: border-box;
@@ -676,7 +1130,6 @@
     .user-selector {
         width: 100%;
         box-sizing: border-box;
-        margin-bottom: 5px;
     }
     .reports-user-button {
         margin: 4px;
@@ -723,6 +1176,120 @@
         color: white;
     }
 
+    .profile-badge {
+        width: 24px;
+        height: 24px;
+    }
+    .full-badge-list {
+        overflow-x: scroll;
+        display: flex;
+        flex-direction: row;
+        padding-bottom: 10px;
+        gap: 3px;
+    }
+    .add-profile-badge {
+        position: relative;
+        cursor: pointer;
+        margin: 4px;
+        padding: 2px;
+        border-radius: 4px;
+        border: rgba(0, 0, 0, 0.25) 1px solid;
+        background: none;
+        width: 32px;
+        height: 32px;
+        box-sizing: border-box;
+        cursor: pointer;
+    }
+    :global(body.dark-mode) .add-profile-badge { border: rgba(255, 255, 255, 0.35) 1px solid; }
+    .add-profile-badge img {
+        width: 24px;
+        height: 24px;
+    }
+    .profile-badge-selector {
+        width: 24px;
+        height: 24px;
+        margin: 0;
+        appearance: none;
+        background-size: contain;
+        filter: saturate(0);
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .profile-badge-selector:checked {
+        filter: none;
+        border-bottom: rgba(0, 0, 0, 0.25) 1px solid;
+    }
+    :global(body.dark-mode) .profile-badge-selector:checked { border-bottom: rgba(255, 255, 255, 0.35) 1px solid; }
+
+    .profile-access {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 32px;
+    }
+    .permited-users-grid {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: center;
+        gap: 4px;
+    }
+    :global(body.dark-mode) .permited-user-tile {
+        border: rgba(255, 255, 255, 0.35) 1px solid;
+        background: #111;
+        color: white;
+    }
+    .add-permited-user {
+        cursor: pointer;
+        padding: 4px;
+        border: none;
+        background: none;
+    }
+    .add-permited-user img {
+        width: 32px;
+        height: 32px;
+    }
+    .permited-user-tile {
+        padding: 4px;
+        border: rgba(0, 0, 0, 0.25) 1px solid;
+        border-radius: 4px;
+        background: white;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+    .permited-user-profile {
+        width: 32px;
+        height: 32px;
+    }
+    .permited-user-profile-button {
+        width: 32px;
+        height: 32px;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+        padding: 0px;
+        border: none;
+        background: none;
+        border-radius: 4px;
+        margin-right: 4px;
+    }
+    .permited-user-profile-button:focus .profile-section-image-edit,
+    .permited-user-profile-button:active .profile-section-image-edit,
+    .permited-user-profile-button:hover .profile-section-image-edit {
+        opacity: 1;
+        transition-duration: 0.1s;
+        transition-property: opacity;
+    }
+
+    .user-profile-controls {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap-reverse;
+        height: 128px;
+        align-items: end;
+        justify-content: center;
+    }
     .change-username {
         overflow: hidden;
         background: none;
@@ -738,7 +1305,8 @@
         flex-direction: row;
         align-items: center;
 
-        width: 65%;
+        margin: 10px 0px;
+        width: 100%;
     }
     .profile-section-image {
         position: relative;
@@ -797,6 +1365,7 @@
         display: flex;
         align-items: flex-start;
         flex-direction: column;
+        flex-grow: 2;
     }
 
 
@@ -848,7 +1417,7 @@
     }
     .category-toggle-section {
         display: grid;
-        grid-template-columns: repeat(5, 20%);
+        grid-template-columns: repeat(4, calc(calc(100% / 4) - 4px));
         align-items: flex-end;
         justify-content: center;
         width: 100%;
