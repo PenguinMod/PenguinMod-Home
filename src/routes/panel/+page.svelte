@@ -151,7 +151,13 @@
     let rejectingId;
 
     /* --- Messages Category --- */
-
+    let messageTarget = '';
+    let messageToUser = true;
+    let messageContent = '';
+    let messageRepliable = true;
+    let broadcastTOSChange = false;
+    let broadcastPolicyChange = false;
+    let broadcastGuidelinesChange = false;
 
     /* --- Users category --- */
     let userReportsLoaded = false;
@@ -204,7 +210,7 @@
         switch (tab) {
         case 'projects': break;
         case 'messages':
-
+            if (messageToUser) messageTarget = selectedUsername;
             break;
         case 'users':
             addBadgesSelectorOpen = false;
@@ -352,7 +358,9 @@
             <div class="card-chunk" style="grid-column: 2;">project management</div>
         </div>
     {:else if tab === 'messages'}
-        <div class="card-chunk">messages</div>
+        <div class="card-chunk">
+            <input type="">
+        </div>
     {:else if tab === 'users'}
         <div class="projects-control">
             <div class="card-chunk" style="grid-column: 1;">
@@ -660,19 +668,6 @@
                                 </div>
                             </button>
                         </div>
-                        <div class="user-profile-controls">
-                            {#if userIPBanned}
-                                <Button
-                                    label="Un IP ban"
-                                    on:click={() => {}}
-                                />
-                            {:else if userBanned}
-                                <Button
-                                    label="Unban"
-                                    on:click={() => {}}
-                                />
-                            {/if}
-                        </div>
                     </div>
                     <div class="profile-access">
                         <Button
@@ -708,35 +703,95 @@
                     </div>
                     <details bind:open={banUserOpen}>
                         <summary>User bans</summary>
-                        <!-- svelte-ignore a11y-autofocus -->
-                        <textarea
-                            bind:value={banReason}
-                            placeholder="Ban reason..."
-                            style="width: 100%; box-sizing: border-box;"
-                            autofocus
-                        />
-                        <div style="display:flex;flex-direction:row;padding:1em">
+                        {#if userIPBanned}
                             <Button
-                                label="Temp Ban"
-                                color="purple"
-                                on:click={() => {}}
+                                label="Un IP ban"
+                                on:click={() => ProjectClient.ipBanUser(selectedUsername, false)
+                                    .then(() => userIPBanned = false)
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert(err);
+                                    })}
                             />
+                        {:else if userBanned}
                             <Button
-                                label="Ban"
-                                color="red"
-                                on:click={() => {}}
+                                label="Unban"
+                                on:click={() => ProjectClient.banUser(selectedUsername, banReason, 0, false)
+                                    .then(() => userBanned = false)
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert(err);
+                                    })}
                             />
-                            <Button
-                                label="IP Ban"
-                                color="red"
-                                on:click={() => {}}
+                        {:else}
+                            <!-- svelte-ignore a11y-autofocus -->
+                            <textarea
+                                bind:value={banReason}
+                                placeholder="Ban reason..."
+                                style="width: 100%; box-sizing: border-box;"
+                                autofocus
                             />
-                            <Button
-                                label="Delete Account"
-                                color="red"
-                                on:click={() => {}}
-                            />
-                        </div>
+                            <div style="display:flex;flex-direction:row;padding:1em;justify-content:center;">
+                                <Button
+                                    label="Temp Ban"
+                                    color="purple"
+                                    on:click={() => {
+                                        const time = prompt('For how long should they be banned?', '24h');
+                                        let seconds = 0;
+                                        for (const [_,digits,unit] of time.matchAll(/([0-9]+(?:\.[0-9]+)?)(?:\s*([hmsyd]))?/gi)) {
+                                            switch (unit.toUpperCase()) {
+                                            case 'Y': seconds += digits * 365 * 24 * 60 * 60; break;
+                                            case 'D': seconds += digits * 24 * 60 * 60; break;
+                                            case 'H': seconds += digits * 60 * 60; break;
+                                            case 'M': seconds += digits * 60; break;
+                                            case 'S': seconds += Number(digits); break;
+                                            }
+                                        }
+                                        if (isNaN(seconds)) return alert('Time kinda needs to use valid numbers!');
+                                        if (!isFinite(seconds)) return alert('Just ban them normally! infinite time isnt good.');
+                                        if (seconds === 0) return alert('Are you sure you want to permanently ban them?');
+                                        if (seconds < 0) return alert('Cant ban for negative time!!');
+
+                                        ProjectClient.banUser(selectedUsername, banReason, seconds, true)
+                                            .then(() => userBanned = true)
+                                            .catch(err => {
+                                                console.error(err);
+                                                alert(err);
+                                            });
+                                    }}
+                                />
+                                <Button
+                                    label="Ban"
+                                    color="red"
+                                    on:click={() => ProjectClient.banUser(selectedUsername, banReason, 0, true)
+                                        .then(() => userBanned = true)
+                                        .catch(err => {
+                                            console.error(err);
+                                            alert(err);
+                                        })}
+                                />
+                                <Button
+                                    label="IP Ban"
+                                    color="red"
+                                    on:click={() => ProjectClient.ipBanUser(selectedUsername, true)
+                                        .then(() => userIPBanned = true)
+                                        .catch(err => {
+                                            console.error(err);
+                                            alert(err);
+                                        })}
+                                />
+                                <Button
+                                    label="Delete Account"
+                                    color="red"
+                                    on:click={() => ProjectClient.deleteUserAccount(selectedUsername, banReason)
+                                        .then(() => selectedUsername = '')
+                                        .catch(err => {
+                                            console.error(err);
+                                            alert(err);
+                                        })}
+                                />
+                            </div>
+                        {/if}
                     </details>
                 {/if}
                 <div class="misc-member">
