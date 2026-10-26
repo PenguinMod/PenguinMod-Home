@@ -78,11 +78,14 @@ class Authentication {
     static authenticate(iframe = true) {
         const currentUrl = new URL(window.location.href);
         const redirect = currentUrl.searchParams.get("redirect");
-        const url = `${window.location.origin}/signin?${redirect ? `redirect=${encodeURIComponent(redirect)}&`
-            : (window.location.pathname !== "/signin" && window.location.pathname !== "/signup")
-                    ? `redirect=${encodeURIComponent(currentUrl.href)}&`
-                    : ""
-            }embed=${iframe}`;
+        const url = `${window.location.origin}/signin?${
+            redirect
+                ? `redirect=${encodeURIComponent(redirect)}&`
+                : window.location.pathname !== "/signin" &&
+                    window.location.pathname !== "/signup"
+                  ? `redirect=${encodeURIComponent(currentUrl.href)}&`
+                  : ""
+        }embed=${iframe}`;
 
         if (!iframe) {
             window.location.href = url;
@@ -183,14 +186,21 @@ class Authentication {
         });
     }
     static async usernameFromCode(_username, token) {
-        // name is a misnomer, was just to lazy to change after new api update.
-        // TODO: make this less misleading
+        // name is a misnomer, was just too lazy to change after new api update.
+        // doesn't really matter now bc of newhome
         const j = await fetch(
-            `${ProjectApi.OriginApiUrl}/api/v1/users/userfromcode?token=${token}`,
+            `${ProjectApi.OriginApiUrl}/api/v1/users/userfromcode`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            },
         ).then((r) => r.json());
 
         if (j.error) throw j.error;
 
+        // this is stupid - basically if any of these are false, we bypass the cache.
+        // its stupid but also easy. so i won't be changing it for now.
         if (!j.birthdayEntered || !j.countryEntered || !j.isEmailVerified) {
             const extra = await fetch(
                 `${ProjectApi.OriginApiUrl}/api/v1/users/extrainfostatus?token=${token}`,
