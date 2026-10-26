@@ -22,5 +22,10 @@
         "markdown-it": "^13.0.2",
         "pmp-protobuf": "^1.8.8",
         "protobufjs": "^7.3.2"
+    },
+    "allowScripts": {
+        "@sveltejs/kit@1.30.4": true,
+        "esbuild@0.18.20": true,
+        "protobufjs@7.6.6": true
     }
 }
