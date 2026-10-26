@@ -8,10 +8,11 @@
         "preview": "vite preview"
     },
     "devDependencies": {
-        "@sveltejs/adapter-static": "^2.0.3",
-        "@sveltejs/kit": "^1.30.4",
-        "svelte": "^3.54.0",
-        "vite": "^4.3.0"
+        "@sveltejs/adapter-static": "^3.0.10",
+        "@sveltejs/kit": "^2.70.3",
+        "@sveltejs/vite-plugin-svelte": "^3.1.2",
+        "svelte": "^4.2.20",
+        "vite": "^5.4.21"
     },
     "type": "module",
     "dependencies": {
@@ -19,13 +20,13 @@
         "file-saver": "^2.0.5",
         "js-beautify": "^1.15.4",
         "jszip": "^3.10.1",
-        "markdown-it": "^13.0.2",
+        "markdown-it": "^14.3.3",
         "pmp-protobuf": "^1.8.8",
         "protobufjs": "^7.3.2"
     },
     "allowScripts": {
-        "@sveltejs/kit@1.30.4": true,
-        "esbuild@0.18.20": true,
-        "protobufjs@7.6.6": true
+        "protobufjs@7.6.6": true,
+        "esbuild@0.21.5": true,
+        "@sveltejs/kit@2.5.25": true
     }
 }
