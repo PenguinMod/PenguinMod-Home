@@ -488,7 +488,7 @@
             const typedBlob = new Blob([await blob.arrayBuffer()], {
                 type: mimeType,
             });
-            const properURL = URL.createObjectURL(typedBlob);
+            const properURL = await BlobAndDataUrl.blobToDataURL(typedBlob);
             array.push({ name: asset.name, url: properURL, file: assetFile });
         } catch (e) {
             console.warn("asset", asset.name, assetFile, "failed to load", e);
