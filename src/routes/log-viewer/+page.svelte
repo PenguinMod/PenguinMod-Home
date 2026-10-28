@@ -125,11 +125,16 @@
             return out;
         }
         return args
-            .map(arg => (typeof arg !== 'object'
-                ? (arg = xmlEscape(String(arg)).length > 400 
-                    ? arg.slice(0, 400) + '...' 
-                    : arg)
-                : `<object-viewer object="${xmlEscape(stringify(arg))}"></object-viewer>`)).join(' ');
+            .map(arg => {
+                if (typeof arg !== 'object' || arg === null) {
+                    const s = xmlEscape(String(arg));
+                    return s.length > 400
+                        ? s.slice(0, 400) + '...'
+                        : s;
+                }
+
+                return `<object-viewer object="${xmlEscape(stringify(arg))}"></object-viewer>`;
+            }).join(' ');
     }
     function renderCode(url) {
         const source = sources[url];

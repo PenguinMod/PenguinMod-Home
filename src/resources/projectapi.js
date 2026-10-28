@@ -67,7 +67,7 @@ class ProjectApi {
 
     static getUsernameById(id) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/getusername?ID=${id}`;
+            const url = `${OriginApiUrl}/api/v1/users/getusername?ID=${encodeURIComponent(id)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -85,7 +85,7 @@ class ProjectApi {
     }
     static getUserBadges(user) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/getBadges?username=${user}`;
+            const url = `${OriginApiUrl}/api/v1/users/getBadges?username=${encodeURIComponent(user)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -103,7 +103,7 @@ class ProjectApi {
     }
     static getFollowerCount(user) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/meta/getfollowercount?username=${user}`;
+            const url = `${OriginApiUrl}/api/v1/users/meta/getfollowercount?username=${encodeURIComponent(user)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -121,7 +121,7 @@ class ProjectApi {
     }
     static getProfile(user, includeBio) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/profile?target=${user}${includeBio ? "&bio=true" : ""}&username=${localStorage.getItem("username")}&token=${localStorage.getItem("token")}`;
+            const url = `${OriginApiUrl}/api/v1/users/profile?target=${encodeURIComponent(user)}${includeBio ? "&bio=true" : ""}&username=${encodeURIComponent(localStorage.getItem("username"))}&token=${encodeURIComponent(localStorage.getItem("token"))}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -153,7 +153,7 @@ class ProjectApi {
     static getProjects(page, oldFirst = false, username = "", token = "") {
         return new Promise((resolve, reject) => {
             const reverseParam = oldFirst ? "&reverse=true" : "";
-            const url = `${OriginApiUrl}/api/v1/projects/getprojects?page=${page}${reverseParam}&username=${username}&token=${token}`;
+            const url = `${OriginApiUrl}/api/v1/projects/getprojects?page=${page}${reverseParam}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -218,12 +218,12 @@ class ProjectApi {
             case "loves":
                 const actual_query = searchQuery.split(":");
                 actual_query.shift();
-                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${query}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
+                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${encodeURIComponent(query)}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
                 break;
             case "sort":
-                const actualFuck = searchQuery.split(":");
-                actualFuck.shift();
-                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${query}&type=${encodeURIComponent(actualFuck.join())}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
+                const actualSorts = searchQuery.split(":");
+                actualSorts.shift();
+                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(query)}&type=${encodeURIComponent(actualSorts.join())}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
                 break;
             default:
                 break;
@@ -258,7 +258,7 @@ class ProjectApi {
      */
     static getUserProjects(user, page) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${user}`;
+            const url = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(user)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -277,7 +277,7 @@ class ProjectApi {
 
     async getFrontPage() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/frontpage?token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/projects/frontpage?token=${encodeURIComponent(this.token)}`;
             fetch(url)
                 .then((res) => {
                     if (res.status === 429) return reject(429);
@@ -297,7 +297,7 @@ class ProjectApi {
 
     static getProjectMeta(id) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getproject?projectID=${id}&requestType=metadata`;
+            const url = `${OriginApiUrl}/api/v1/projects/getproject?projectID=${encodeURIComponent(id)}&requestType=metadata`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -316,7 +316,7 @@ class ProjectApi {
 
     static getProjectThumbnail(id) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getproject?projectID=${id}&requestType=thumbnail`;
+            const url = `${OriginApiUrl}/api/v1/projects/getproject?projectID=${encodeURIComponent(id)}&requestType=thumbnail`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -333,7 +333,7 @@ class ProjectApi {
 
     static getProjectRemixes(id, page = 0, username, token) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getremixes?projectID=${id}&page=${page}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
+            const url = `${OriginApiUrl}/api/v1/projects/getremixes?projectID=${encodeURIComponent(id)}&page=${page}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -352,7 +352,7 @@ class ProjectApi {
 
     static getProjectFile(id) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getprojectwrapper?projectId=${id}`;
+            const url = `${OriginApiUrl}/api/v1/projects/getprojectwrapper?projectId=${encodeURIComponent(id)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -384,7 +384,7 @@ class ProjectApi {
     async downloadHardRejectedProject(id) {
         return new Promise(
             ((resolve, reject) => {
-                const params = `project=${id}&username=${this.username}&token=${this.token}`;
+                const params = `project=${encodeURIComponent(id)}&username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
                 const url = `${OriginApiUrl}/api/v1/projects/downloadHardReject?${params}`;
                 fetch(url)
                     .then((res) => {
@@ -430,7 +430,7 @@ class ProjectApi {
 
     getAllPermitedUsers() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/getmods?username=${this.username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/users/getmods?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -439,7 +439,7 @@ class ProjectApi {
                     }
                     res.json().then((users) => {
                         const mods = users.mods;
-                        const url = `${OriginApiUrl}/api/v1/users/getadmins?username=${this.username}&token=${this.token}`;
+                        const url = `${OriginApiUrl}/api/v1/users/getadmins?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
                         fetch(url)
                             .then((res) => {
                                 if (!res.ok) {
@@ -471,7 +471,7 @@ class ProjectApi {
 
     getMyProjects(page) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getmyprojects?page=${page}&username=${this.username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/projects/getmyprojects?page=${page}&username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -489,7 +489,7 @@ class ProjectApi {
     }
     getUserProjects(user, page) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${user}&username=${this.username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(user)}&username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -507,7 +507,7 @@ class ProjectApi {
     }
     getMyFeed(page) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/getMyFeed?page=${page}&username=${this.username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/users/getMyFeed?page=${page}&username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -526,7 +526,7 @@ class ProjectApi {
     }
     getMyMessages(page) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/getmessages?page=${page}&username=${this.username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/users/getmessages?page=${page}&username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -544,7 +544,7 @@ class ProjectApi {
     }
     getMessageCount() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/getmessagecount?username=${this.username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/users/getmessagecount?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -563,7 +563,7 @@ class ProjectApi {
 
     getUnreadMessageCount() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/getunreadmessagecount?username=${this.username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/users/getunreadmessagecount?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -582,7 +582,7 @@ class ProjectApi {
 
     isFollowing(username, target, raw) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/isfollowing?username=${username}&target=${target}`;
+            const url = `${OriginApiUrl}/api/v1/users/isfollowing?username=${encodeURIComponent(username)}&target=${encodeURIComponent(target)}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -724,7 +724,7 @@ class ProjectApi {
         if (type !== "project" && type !== "user")
             throw new Error("Invalid reporting type");
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/reports/getReportsByTarget?target=${userOrId}&username=${this.username}&token=${this.token}&page=${page}`;
+            const url = `${OriginApiUrl}/api/v1/reports/getReportsByTarget?target=${encodeURIComponent(userOrId)}&username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}&page=${page}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -744,7 +744,7 @@ class ProjectApi {
         if (type !== "project" && type !== "user")
             throw new Error("Invalid reporting type");
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/reports/getReports?username=${this.username}&token=${this.token}&type=${type}&page=${page}`;
+            const url = `${OriginApiUrl}/api/v1/reports/getReports?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}&type=${encodeURIComponent(type)}&page=${page}`;
             fetch(url)
                 .then((res) => {
                     if (!res.ok) {
@@ -838,7 +838,7 @@ class ProjectApi {
     }
     getProfanityFilter() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/misc/getProfanityList?username=${this.username}&token=${this.token}`;
+            const url = `${OriginApiUrl}/api/v1/misc/getProfanityList?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
             fetch(url)
                 .then((res) => {
                     res.json()
@@ -1907,7 +1907,7 @@ class ProjectApi {
     }
 
     approveProject(id, webhook) {
-        const url = `${OriginApiUrl}/api/projects/approve?token=${this.token}&approver=${this.username}&webhook=${webhook}&id=${id}`;
+        const url = `${OriginApiUrl}/api/projects/approve?token=${encodeURIComponent(this.token)}&approver=${encodeURIComponent(this.username)}&webhook=${encodeURIComponent(webhook)}&id=${encodeURIComponent(id)}`;
         return new Promise((resolve, reject) => {
             fetch(url)
                 .then((res) => {
@@ -2045,7 +2045,7 @@ class ProjectApi {
         });
     }
     getVoteStates(id) {
-        const url = `${OriginApiUrl}/api/v1/projects/getuserstatewrapper?username=${this.username}&token=${this.token}&projectId=${id}`;
+        const url = `${OriginApiUrl}/api/v1/projects/getuserstatewrapper?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}&projectId=${encodeURIComponent(id)}`;
         return new Promise((resolve, reject) => {
             fetch(url)
                 .then((res) => {
@@ -2288,7 +2288,7 @@ class ProjectApi {
     getConnectedIPs(username) {
         const url = `${OriginApiUrl}/api/v1/users/getAllIPs`;
 
-        const query = `?username=${this.username}&token=${this.token}&target=${username}`;
+        const query = `?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}&target=${encodeURIComponent(username)}`;
 
         return new Promise((resolve, reject) => {
             fetch(url + query)
@@ -2314,7 +2314,7 @@ class ProjectApi {
     getConnectedUsers(ip) {
         const url = `${OriginApiUrl}/api/v1/users/getAllAccountsWithIP`;
 
-        const query = `?username=${this.username}&token=${this.token}&target=${ip}`;
+        const query = `?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}&target=${encodeURIComponent(ip)}`;
 
         return new Promise((resolve, reject) => {
             fetch(url + query)
@@ -2340,7 +2340,7 @@ class ProjectApi {
     getAlts(target_username) {
         const url = `${OriginApiUrl}/api/v1/users/getAlts`;
 
-        const query = `?username=${this.username}&token=${this.token}&target=${target_username}`;
+        const query = `?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}&target=${encodeURIComponent(target_username)}`;
 
         return new Promise((resolve, reject) => {
             fetch(url + query)
@@ -2473,7 +2473,7 @@ class ProjectApi {
     }
     setPFP(file) {
         return new Promise((resolve, reject) => {
-            const API_ENDPOINT = `${OriginApiUrl}/api/v1/users/setpfp?username=${this.username}&token=${this.token}`;
+            const API_ENDPOINT = `${OriginApiUrl}/api/v1/users/setpfp?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
             const request = new XMLHttpRequest();
             const formData = new FormData();
 
@@ -2628,7 +2628,7 @@ class ProjectApi {
     }
 
     checkIfBlocked(user) {
-        const url = `${OriginApiUrl}/api/v1/users/hasblocked?username=${this.username}&token=${this.token}&target=${user}`;
+        const url = `${OriginApiUrl}/api/v1/users/hasblocked?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}&target=${encodeURIComponent(user)}`;
 
         return new Promise((resolve, reject) => {
             fetch(url)
@@ -2650,7 +2650,7 @@ class ProjectApi {
     registerView(projectID) {
         const url = `${OriginApiUrl}/api/v1/projects/interactions/registerView`;
 
-        // ?username=${this.username}&token=${this.token}&projectID=${projectID}
+        // ?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}&projectID=${encodeURIComponent(projectID)}
 
         const body = JSON.stringify({
             username: this.username,

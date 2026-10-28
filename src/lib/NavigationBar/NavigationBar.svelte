@@ -133,6 +133,16 @@
     function login() {
         Authentication.authenticate(false);
     }
+    function signup() {
+        const currentUrl = new URL(window.location.href);
+        const redirect = currentUrl.searchParams.get("redirect");
+        const url = `${window.location.origin}/signup?${redirect ? `redirect=${encodeURIComponent(redirect)}`
+            : (window.location.pathname !== "/signin" && window.location.pathname !== "/signup")
+                    ? `redirect=${encodeURIComponent(currentUrl.href)}`
+                    : ""
+            }`;
+        location.href = url;
+    }
 
     function switchTheme() {
         let prefersDarkMode = false;
@@ -451,7 +461,7 @@
                 lang={currentLang}
             />
         </BarPage>
-        <BarPage on:click={() => (location.href = "/signup")}>
+        <BarPage on:click={signup}>
             <LocalizedText
                 text="Sign up"
                 key="navigation.signup"

@@ -161,7 +161,7 @@
                     localStorage.setItem("token", token);
                     token = _token;
                     // reload but add page query param set to the current tab
-                    location.href = `?page=${currentTab}`;
+                    location.href = `?page=${encodeURIComponent(currentTab)}`;
                 }
             }
         };
@@ -348,7 +348,7 @@
         }
 
         addOAuthEventListener().then(() => {
-            location.href = `?page=${currentTab}`;
+            location.href = `?page=${encodeURIComponent(currentTab)}`;
         });
     }
     function loginMethodToggled(method, name) {

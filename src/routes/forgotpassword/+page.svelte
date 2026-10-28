@@ -17,6 +17,8 @@
     import TranslationHandler from "../../resources/translations.js";
     import Authentication from "../../resources/authentication.js";
 
+    import validateRedirect from "../../resources/validate-redirect.js";
+
     let currentLang = "en";
     onMount(() => {
         Language.forceUpdate();
@@ -71,8 +73,8 @@
             }
 
             // redirect
-            const redir = browser ? $page.url.searchParams.get('redirect') : null;
-        
+            const redir = validateRedirect(browser ? $page.url.searchParams.get("redirect") : null);
+            
             window.location.href = redir ? redir : "/";
         }, (err) => {
             emailValid = false;

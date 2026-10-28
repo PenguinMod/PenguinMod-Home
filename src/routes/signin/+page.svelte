@@ -20,12 +20,14 @@
     import Language from "../../resources/language.js";
     import TranslationHandler from "../../resources/translations.js";
     import Authentication from "../../resources/authentication.js";
+    
+    import validateRedirect from "../../resources/validate-redirect.js";
 
     let currentLang = "en";
     onMount(() => {
         Language.forceUpdate();
         embed = $page.url.searchParams.get("embed") === "true";
-        redir_link = $page.url.searchParams.get("redirect");
+        redir_link = validateRedirect($page.url.searchParams.get("redirect"));
         redir_link = redir_link ? decodeURIComponent(redir_link) : null;
     });
     Language.onChange((lang) => {
@@ -113,7 +115,7 @@
                         }
 
                         // redirect
-                        window.location.href = redir_link ? redir_link : "/";
+                        window.location.href = validateRedirect(redir_link ? redir_link : "/");
                     } else {
                         wrongInfo = true;
                     }
@@ -155,7 +157,7 @@
                 return;
             }
 
-            location.href = redir_link ? redir_link : "/";
+            location.href = validateRedirect(redir_link ? redir_link : "/");
         });
     }
 
