@@ -20,6 +20,8 @@
     import NavigationBar from "$lib/NavigationBar/NavigationBar.svelte";
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import ClickableProject from "$lib/ClickableProject/Project.svelte";
+    import ContentCategory from "$lib/ContentCategory/Component.svelte";
+    import Project from "$lib/Project/Project.svelte";
     import Stats from "$lib/statsComponent/stats.svelte";
     import Button from "$lib/Button/Button.svelte";
     // translations
@@ -42,6 +44,14 @@
     /** @type {import('brace').Editor} */
     let editor;
     let ace;
+    let linkedState = new URLSearchParams();
+    function invalidate() {
+        if (!browser) return;
+        if (!tab) return;
+        
+        location.hash = `#${tab}`;
+        if (linkedState.size > 0) location.hash += `&${linkedState.toString()}`;
+    }
 
     function kickOut(loggedOut) {
         const error = loggedOut ? 401 : 403;
@@ -112,9 +122,16 @@
                 ProjectClient.setToken(token);
                 loggedIn = true;
 
-                tab = browser 
-                    ? location.hash.slice(1) || 'projects'
-                    : 'projects'
+                const firstAnd = Math.max(location.hash.indexOf('&'), 0) || null;
+                linkedState = new URLSearchParams(location.hash.slice(firstAnd +1));
+                tab = location.hash.slice(1, firstAnd) || 'projects';
+
+                selectedUsername = linkedState.get('username');
+                selectedProjectId = linkedState.get('project');
+                if (linkedState.has('reject')) {
+                    rejectionPageOpen = true;
+                    selectedProjectId = linkedState.get('reject');
+                }
             })
             .catch(() => {
                 loggedIn = false;
@@ -124,7 +141,7 @@
         let lastDarkMode = null;
         const loop = () => {
             const darkmode = isEmbed ?
-                location.hash.replace(/#/gmi, "") === "dark=true"
+                linkedState.get('dark')
                 : String(localStorage.getItem('darkmode') || prefersDarkMode) === 'true';
             if (darkmode === lastDarkMode) return;
             lastDarkMode = darkmode;
@@ -141,14 +158,35 @@
         location.href = location.origin;
     });
 
-    $: if (browser && loggedIn) location.hash = tab;
+    $: if (loggedIn) invalidate(tab);
 
     /* --- Projects category --- */
     let rejectionReason = '';
     let isRejectHard = false; // heh
     let rejectionPageOpen = false;
-    let rejectingName = '';
-    let rejectingId;
+    let reloadProject = false;
+    let projectReportsLoaded = false;
+    let projectReports = [];
+    let projectTitle = '';
+    let projectAuthor = '';
+    let projectInstructions = '';
+    let projectNotes = '';
+    let selectedProjectReport = null;
+    let selectedProjectId = linkedState.get('project');
+    let editingProjectTitle = false;
+    function onSelectedProjectChanged(project) {
+        reloadProject = !reloadProject;
+        ProjectApi.getProjectMeta(project)
+            .then(project => {
+                projectTitle = project.title;
+                projectAuthor = project.author.username;
+                projectInstructions = project.instructions;
+                projectNotes = project.notes;
+            })
+            .catch(() => {});
+    }
+    $: onSelectedProjectChanged(selectedProjectId);
+    $: invalidate(linkedState.set('project', selectedProjectId));
 
     /* --- Messages Category --- */
     let messageTarget = '';
@@ -163,7 +201,7 @@
     let userReportsLoaded = false;
     let userReports = [];
     let selectedUserReport = null;
-    let selectedUsername = '';
+    let selectedUsername = linkedState.get('username');
     let changingUsername = false;
     let changingUsernameProcessing = false;
     let newChangedUsername;
@@ -179,10 +217,30 @@
     let profileBadges = [];
     let addBadgesSelectorOpen = false;
     let selectedAddingBadges = [];
+    let bioContent = '';
+    let featuredProjectId = null;
+    let featuredProjectTitle = null;
+    let profileProjects = [];
+    let bioChanged = false;
+    let sourceBio = '';
     function onSelectedUserChange(username) {
+        if (!loggedIn) return;
+
         profileBadges = [];
-        ProjectApi.getUserBadges(username)
-            .then(badges => profileBadges = badges)
+        ProjectApi.getProfile(username)
+            .then(profile => {
+                profileBadges = profile.badges;
+                bioContent = profile.bio;
+                sourceBio = profile.bio;
+                featuredProjectId = profile.myFeaturedProject;
+                featuredProjectTitle = null;
+                ProjectApi.getProjectMeta(featuredProjectId)
+                    .then(project => featuredProjectTitle = project.title)
+                    .catch(() => {});
+                ProjectApi.getUserProjects(username, 0)
+                    .then(projects => profileProjects = projects)
+                    .catch(() => {});
+            })
             .catch(err => {
                 if (err === '{"error":"NotFound"}') return;
                 console.error(err);
@@ -190,6 +248,7 @@
             })
     }
     $: onSelectedUserChange(selectedUsername);
+    $: invalidate(linkedState.set('username', selectedUsername));
 
     /* --- Admin category --- */
     let connections = '';
@@ -208,7 +267,16 @@
     /* --- Preloaders --- */
     function onTabChange(tab) {
         switch (tab) {
-        case 'projects': break;
+        case 'projects':
+            projectReportsLoaded = false;
+            selectedProjectReport = null;
+            ProjectClient.getTypeWithReports('project', 0)
+                .then(reports => {
+                    projectReportsLoaded = true;
+                    projectReports = reports;
+                })
+                .catch(err => console.error(err));
+            break;
         case 'messages':
             if (messageToUser) messageTarget = selectedUsername;
             break;
@@ -244,7 +312,10 @@
             if (profanityLoaded) {
                 ProjectClient.getProfanityFilter()
                     .then(json => editor.setValue(profanityFilter = JSON.stringify(json, null, 4)))
-                    .catch(err => console.error(err));
+                    .catch(err => {
+                        console.error(err);
+                        alert(err);
+                    });
             }
             break;
         }
@@ -292,10 +363,10 @@
                 <h1>Reject Project</h1>
             </div>
             <div class="card-reject" style="display:block">
-                <p>Rejecting <b>{rejectingName}</b></p>
+                <p>Rejecting <b>{projectTitle}</b></p>
                 <img
-                    src={`${LINK.projects}api/v1/projects/getproject?projectID=${rejectingId}&requestType=thumbnail`}
-                    alt="Image of {rejectingName}"
+                    src={`${LINK.projects}api/v1/projects/getproject?projectID=${selectedProjectId}&requestType=thumbnail`}
+                    alt="Image of {projectTitle}"
                     width="240"
                     height="180"
                 />
@@ -328,14 +399,12 @@
                     label="Reject"
                     color="red"
                     on:click={() => {
-                        rejectProject(rejectingId);
+                        rejectProject(selectedProjectId);
                     }}
                 />
                 <Button
                     label="Cancel"
-                    on:click={() => {
-                        rejectionPageOpen = false;
-                    }}
+                    on:click={() => rejectionPageOpen = false}
                 />
             </div>
         </div>
@@ -354,8 +423,165 @@
     {#if tab === 'projects'}
         <div class="projects-control">
             <div class="card-chunk" style="grid-column: 1;">
+                {#if projectReportsLoaded}
+                    {#each projectReports as content, idx}
+                        <button
+                            class="reports-user-button reports-project-button"
+                            on:click={() => {
+                                if (selectedProjectReport === idx) return selectedProjectReport = null;
+                                selectedProjectId = content.targetID;
+                                selectedProjectReport = idx;
+                                selectedUsername = content.author;
+                                if (content.details) return;
+                                ProjectClient.getReports('project', content.targetID)
+                                    .then(details => content.details = details)
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert(err);
+                                    });
+                            }}
+                        >
+                            <img
+                                src={`${PUBLIC_API_URL}/api/v1/projects/getproject?projectID=${content.targetID}&requestType=thumbnail`}
+                                alt={content.target}
+                            />
+                            <div
+                                class="reports-user-content reports-project-content"
+                            >
+                                <p style="font-weight: bold;">
+                                    {content.target}
+                                </p>
+                                <p>
+                                    by {content.author}
+                                </p>
+                            </div>
+                        </button>
+                        {#if selectedProjectReport === idx}
+                            <div class="reports-generic-details">
+                                {#if !content.details}
+                                    <LoadingSpinner />
+                                {:else}
+                                    <button
+                                        on:click={() => ProjectClient.closeReport(content.id)
+                                            .then(() => userReports.splice(selectedUserReport, 1))
+                                            .catch(err => {
+                                                console.error(err);
+                                                alert(err);
+                                            })}
+                                        color="red"
+                                    >
+                                        Close Reports
+                                    </button>
+                                    {#each content.details as report}
+                                        <details open={report.reporter === content.reporter}>
+                                            <summary>
+                                                {report.reporter}
+                                                <button
+                                                    on:click={() => {
+                                                        tab = 'users';
+                                                        selectedUsername = report.reporter;
+                                                    }}
+                                                >Select user</button>
+                                            </summary>
+                                            <p style="white-space:pre-wrap">
+                                                {report.report}
+                                                <button
+                                                    on:click={() => ProjectClient.closeReport(report.id)
+                                                        .then(() => projectReports.splice(selectedProjectReport, 1))
+                                                        .catch(err => {
+                                                            console.error(err);
+                                                            alert(err);
+                                                        })}
+                                                    color="red"
+                                                >
+                                                    Close Report
+                                                </button>
+                                            </p>
+                                        </details>
+                                    {/each}
+                                    {#if content.details.length == 0}
+                                        <button
+                                            on:click={() => ProjectClient.closeReport(content.id)
+                                                .then(() => projectReports.splice(selectedProjectReport, 1))
+                                                .catch(err => {
+                                                    console.error(err);
+                                                    alert(err);
+                                                })}
+                                            color="red"
+                                        >
+                                            Force Close Report
+                                        </button>
+                                    {/if}
+                                {/if}
+                            </div>
+                        {/if}
+                    {/each}
+                {:else}
+                    <LoadingSpinner></LoadingSpinner>
+                {/if }
             </div>
-            <div class="card-chunk" style="grid-column: 2;">project management</div>
+            <div class="card-chunk" style="grid-column: 2;">
+                <input
+                    class="user-selector"
+                    type="text"
+                    placeholder="Project ID"
+                    bind:value={selectedProjectId}
+                >
+                <div class="yet-another-selected-project-wrapper">
+                    <div class="selected-project">
+                        <div class="project-header">
+                            <img
+                                src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${projectAuthor}`}
+                                alt={projectAuthor}
+                            />
+                            <div class="project-header-text">
+                                <h2>{projectTitle}</h2>
+                                <button class="href-button" on:click={() => { tab = 'users'; selectedUsername = projectAuthor; }}>{projectAuthor}</button>
+                            </div>
+                        </div>
+                        <button
+                            class="profile-section-image project-thumbnail"
+                            on:click={() => {
+                                fileSelector.type = "file";
+                                fileSelector.accept = "image/*";
+                                fileSelector.click();
+
+                                const onceSelected = async () => {
+                                    fileSelector.removeEventListener('change', onceSelected);
+                                    const data = await fileSelector.files[0].arrayBuffer();
+
+                                    ProjectClient.setPFPOfUser(selectedUsername, data)
+                                        .then(() => reloadPFP = !reloadPFP)
+                                        .catch(err => {
+                                            console.error(err);
+                                            alert(err);
+                                        });
+                                }
+                                fileSelector.addEventListener('change', onceSelected);
+                            }}
+                        >
+                            <img
+                                src={`${PUBLIC_API_URL}/api/v1/projects/getproject?projectID=${selectedProjectId}&requestType=thumbnail`}
+                                alt={projectTitle}
+                            />
+                            <div class="profile-section-image-edit">
+                                <img src="/pencil.png" alt="Change Thumbnail" />
+                            </div>
+                        </button>
+                    </div>
+                    <div class="project-texts">
+                        <button>Save changes</button>
+                        <div class="project-text-field">
+                            <h3>Instructions</h3>
+                            <textarea bind:value={projectInstructions}/>
+                        </div>
+                        <div class="project-text-field">
+                            <h3>Notes & Credits</h3>
+                            <textarea bind:value={projectNotes}/>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     {:else if tab === 'messages'}
         <div class="card-chunk">
@@ -695,10 +921,6 @@
                                         </div>
                                     </button>
                                 {/if}
-                            {:else}
-                                <p
-                                    style="font-size: initial; font-weight: normal; width: 100%; text-align: center;"
-                                >No Badges!</p>
                             {/each}
                             <button
                                 class="add-profile-badge"
@@ -758,40 +980,72 @@
                                     >Cancel</button>
                                 </div>
                             </button>
+                            {#if !userWatchlisted}
+                                <Button
+                                    color="orange"
+                                    label="Watchlist"
+                                    on:click={ProjectClient.putOnWatchlist(selectedUsername, true)
+                                        .then(() => userWatchlisted = true)
+                                        .catch(err => {
+                                            console.error(err);
+                                            alert(err);
+                                        })}
+                                />
+                            {:else}
+                                <Button
+                                    label="Unwatchlist"
+                                    on:click={ProjectClient.putOnWatchlist(selectedUsername, false)
+                                        .then(() => userWatchlisted = true)
+                                        .catch(err => {
+                                            console.error(err);
+                                            alert(err);
+                                        })}
+                                />
+                            {/if}
                         </div>
                     </div>
-                    <div class="profile-access">
-                        <Button
-                            link="/profile?user={selectedUsername}"
-                            label="View Profile"
-                        />
-                        <Button
-                            link="/search?q=by%3A{selectedUsername}"
-                            label="View Projects"
-                        />
-                        {#if !userWatchlisted}
-                            <Button
-                                color="orange"
-                                label="Watchlist"
-                                on:click={ProjectClient.putOnWatchlist(selectedUsername, true)
-                                    .then(() => userWatchlisted = true)
-                                    .catch(err => {
-                                        console.error(err);
-                                        alert(err);
-                                    })}
+                    <div class="profile-featured-wrapper">
+                        <div class="code-controlable">
+                            <textarea
+                                class="profile-bio"
+                                bind:value={bioContent}
+                                on:input={() => bioChanged = bioContent !== sourceBio}
                             />
-                        {:else}
-                            <Button
-                                label="Unwatchlist"
-                                on:click={ProjectClient.putOnWatchlist(selectedUsername, false)
-                                    .then(() => userWatchlisted = true)
-                                    .catch(err => {
-                                        console.error(err);
-                                        alert(err);
-                                    })}
-                            />
-                        {/if}
+                            <div class="save-button">
+                                <button
+                                    style={!bioChanged ? 'display: none; float: right;' : ''}
+                                    on:click={() => ProjectClient.setBio(sourceBio = bioContent, true, selectedUsername)
+                                        .then(() => bioChanged = false)
+                                        .catch(err => {
+                                            console.error(err);
+                                            alert(err);
+                                        })}
+                                >Save</button>
+                            </div>
+                        </div>
+                        <a class="featured-project" href="https://studio.penguinmod.com/#{featuredProjectId}">
+                            <img
+                                src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectID=${featuredProjectId}&requestType=thumbnail`}
+                                alt={featuredProjectTitle}
+                            >
+                            <h2>{featuredProjectTitle}</h2>
+                        </a>
                     </div>
+                    <ContentCategory
+                        header={TranslationHandler.text(
+                            "profile.projects.all",
+                            currentLang,
+                        )}
+                        style="width:calc(100% - 20px); box-sizing: border-box;"
+                        stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
+                        seemore={`/search?q=by%3A${selectedUsername}`}
+                    >
+                        <div class="project-list">
+                            {#each profileProjects as project}
+                                <Project {...project} />
+                            {/each}
+                        </div>
+                    </ContentCategory>
                     <details bind:open={banUserOpen}>
                         <summary>User bans</summary>
                         {#if userIPBanned}
@@ -1047,19 +1301,30 @@
                             <div style="width: 100%; height: 100%">
                                 <div class="code-box" bind:this={codeArea}></div>
                             </div>
-                            <div class="save-button" >
+                            <div class="save-button">
                                 <Button
-                                    style={profanityLoaded ? 'display: none' : ''}
+                                    style={!profanityLoaded ? 'display: none' : ''}
                                     color={profanityChanged ? '' : 'gray'}
-                                    on:click={() => {
-                                        ProjectClient.setProfanityFilter(profanityFilter = editor.getValue())
-                                            .then(() => { alert('Done'); profanityChanged = false; })
-                                            .catch(err => alert(err))
-                                    }}
+                                    on:click={() => ProjectClient.setProfanityFilter(profanityFilter = editor.getValue())
+                                        .then(() => { alert('Done'); profanityChanged = false; })
+                                        .catch(err => {
+                                            console.error(err);
+                                            alert(err);
+                                        })}
                                 >Save filter</Button>
                                 <Button 
-                                    style={profanityLoaded ? '' : 'display: none'}
-                                    on:click={() => profanityLoaded = true}
+                                    style={!profanityLoaded ? '' : 'display: none'}
+                                    on:click={() => ProjectClient.getProfanityFilter()
+                                        .then(filter => {
+                                            profanityFilter = JSON.stringify(filter, null, 4);
+                                            editor.setValue(profanityFilter);
+                                            profanityLoaded = true;
+                                            profanityChanged = false;
+                                        })
+                                        .catch(err => {
+                                            console.error(err);
+                                            alert(err);
+                                        })}
                                 >Load filter</Button>
                             </div>
                         </div>
@@ -1123,6 +1388,15 @@
 <style>
     * {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    .href-button {
+        padding: 0;
+        border: none;
+        background: none;
+        color: #008cff;
+        font-size: inherit;
+        cursor: pointer;
     }
 
     .inputs-inline {
@@ -1256,8 +1530,8 @@
 
     .save-button {
         position: absolute;
-        top: 0;
-        right: 0;
+        top: 5px;
+        right: 5px;
     }
 
     .can-upload-toggle {
@@ -1278,6 +1552,39 @@
         width: 100%;
     }
 
+    .profile-bio {
+        resize: none;
+        border-radius: 10px;
+        padding: 5px;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+    }
+    .profile-featured-wrapper {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 50% 50%;
+    }
+    .featured-project {
+        text-align: center;
+        background-color: #00c3ff22;
+        border-radius: 10px;
+        padding: 5px;
+    }
+    .featured-project:visited
+    .featured-project:link {
+        color: white;
+    }
+    .featured-project img {
+        aspect-ratio: 4 / 3;
+        background-color: white;
+        border-radius: 10px;
+    }
+    .featured-project h2 { margin: 0; }
+    .project-list {
+        display: flex;
+        flex-direction: row;
+    }
     .user-selector {
         width: 100%;
         box-sizing: border-box;
@@ -1542,6 +1849,69 @@
     :global(body.dark-mode) .change-username-error {
         color: rgb(255, 130, 130);
     }
+
+    .project-text-field {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+    .project-text-field h3 {
+        margin: 0;
+        margin-top: 10px;
+    }
+    .project-text-field textarea {
+        resize: none;
+        width: 100%;
+        box-sizing: border-box;
+        flex-grow: 1;
+    }
+    .project-texts {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+    }
+    .yet-another-selected-project-wrapper {
+        display: grid;
+        grid-template-columns: auto 1fr;
+    }
+    .selected-project {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .project-thumbnail {
+        width: 480px;
+        height: 360px;
+        border-radius: 10px;
+    }
+    .project-thumbnail > img {
+        width: 480px;
+        height: 360px;
+        border-radius: 10px;
+    }
+    .project-header {
+        box-sizing: border-box;
+        margin-bottom: 4px;
+        padding: 4px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 480px;
+    }
+    .project-header img {
+        width: 64px;
+        height: 64px;
+        border-radius: 6px;
+        margin-right: 5px;
+    }
+    .project-header-text {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-left: 4px;
+    }
+    .project-header-text h2 { margin-block: 0; }
 
     .projects-control {
         display: grid;
