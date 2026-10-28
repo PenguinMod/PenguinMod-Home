@@ -162,28 +162,46 @@
 
     /* --- Projects category --- */
     let rejectionReason = '';
-    let isRejectHard = false; // heh
+    let rejectionMode = 'soft';
     let rejectionPageOpen = false;
     let reloadProject = false;
     let projectReportsLoaded = false;
     let projectReports = [];
+    let originalTitle = null;
     let projectTitle = '';
     let projectAuthor = '';
+    let originalInstructions = null;
     let projectInstructions = '';
+    let originalNotes = null;
     let projectNotes = '';
     let selectedProjectReport = null;
     let selectedProjectId = linkedState.get('project');
-    let editingProjectTitle = false;
+    let replacementThumbnail = null;
+    let projectFeatured = false;
+    let projectCanFeature = true;
+    let projectRejected = false;
+    let projectRejectionHard = false;
+    let projectExists = false;
     function onSelectedProjectChanged(project) {
+        replacementThumbnail = null;
         reloadProject = !reloadProject;
+        projectExists = false;
         ProjectApi.getProjectMeta(project)
             .then(project => {
                 projectTitle = project.title;
+                originalTitle = project.title;
                 projectAuthor = project.author.username;
                 projectInstructions = project.instructions;
+                originalInstructions = project.instructions;
                 projectNotes = project.notes;
+                originalNotes = project.notes;
+                projectFeatured = project.featured;
+                projectCanFeature = !project.noFeature;
+                projectRejected = project.softRejected || project.hardRejected;
+                projectRejectionHard = project.hardRejected;
+                projectExists = true;
             })
-            .catch(() => {});
+            .catch(() => projectRejected = projectRejectionHard = true);
     }
     $: onSelectedProjectChanged(selectedProjectId);
     $: invalidate(linkedState.set('project', selectedProjectId));
@@ -374,24 +392,20 @@
                 <textarea
                     bind:value={rejectionReason}
                     placeholder="Reason for rejecting..."
-                    style="width: 95%;"
+                    style="width: 100%;"
                     autofocus
                 />
-                <details>
-                    <summary>Dangerous options</summary>
-                    <label style="color:red">
-                        <input type="checkbox" bind:checked={isRejectHard} />
-                        Don't allow the uploader to edit the project after reject
-                        (hard reject)
-                    </label>
-                </details>
-                <br />
-                <br />
+
+                <br>
+                <input type="radio" bind:group={rejectionMode} value="soft" id="soft-reject" name="reject-type"/>
+                <label for="soft-reject">Soft reject</label>
+                <input type="radio" bind:group={rejectionMode} value="hard" id="hard-reject" name="reject-type"/>
+                <label for="hard-reject" style="color:red">Hard reject</label>
+                <input type="radio" bind:group={rejectionMode} value="delete" id="delete-project" name="reject-type"/>
+                <label for="delete-project" style="color:red">Delete project</label>
                 <h2><b>Quick-Reject</b></h2>
                 <QuickRejectComponent
-                    on:select={(arg) => {
-                        rejectionReason = arg.detail;
-                    }}
+                    on:select={arg => rejectionReason = arg.detail}
                 />
             </div>
             <div style="display:flex;flex-direction:row;padding:1em">
@@ -399,7 +413,21 @@
                     label="Reject"
                     color="red"
                     on:click={() => {
-                        rejectProject(selectedProjectId);
+                        let promise;
+                        switch (rejectionMode) {
+                        case 'delete': promise = ProjectClient.deleteProject(selectedProjectId, rejectionReason); break;
+                        case 'hard': promise = ProjectClient.hardRejectProject(selectedProjectId, rejectionReason); break;
+                        case 'soft': promise = ProjectClient.rejectProject(selectedProjectId, rejectionReason); break;
+                        }
+                        promise
+                            .then(() => {
+                                rejectionPageOpen = false;
+                                onSelectedProjectChanged(selectedProjectId);
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                alert(err);
+                            });
                     }}
                 />
                 <Button
@@ -461,31 +489,33 @@
                                 {#if !content.details}
                                     <LoadingSpinner />
                                 {:else}
-                                    <button
+                                    <Button
                                         on:click={() => ProjectClient.closeReport(content.id)
-                                            .then(() => userReports.splice(selectedUserReport, 1))
+                                            .then(() => projectReports.splice(selectedProjectReport, 1))
                                             .catch(err => {
                                                 console.error(err);
                                                 alert(err);
                                             })}
                                         color="red"
-                                    >
-                                        Close Reports
-                                    </button>
+                                        label="Close reports"
+                                        small
+                                    />
                                     {#each content.details as report}
                                         <details open={report.reporter === content.reporter}>
                                             <summary>
                                                 {report.reporter}
-                                                <button
+                                                <Button
                                                     on:click={() => {
                                                         tab = 'users';
                                                         selectedUsername = report.reporter;
                                                     }}
-                                                >Select user</button>
+                                                    label="Select user"
+                                                    small
+                                                />
                                             </summary>
                                             <p style="white-space:pre-wrap">
                                                 {report.report}
-                                                <button
+                                                <Button
                                                     on:click={() => ProjectClient.closeReport(report.id)
                                                         .then(() => projectReports.splice(selectedProjectReport, 1))
                                                         .catch(err => {
@@ -493,25 +523,12 @@
                                                             alert(err);
                                                         })}
                                                     color="red"
-                                                >
-                                                    Close Report
-                                                </button>
+                                                    label="Close report"
+                                                    small
+                                                />
                                             </p>
                                         </details>
                                     {/each}
-                                    {#if content.details.length == 0}
-                                        <button
-                                            on:click={() => ProjectClient.closeReport(content.id)
-                                                .then(() => projectReports.splice(selectedProjectReport, 1))
-                                                .catch(err => {
-                                                    console.error(err);
-                                                    alert(err);
-                                                })}
-                                            color="red"
-                                        >
-                                            Force Close Report
-                                        </button>
-                                    {/if}
                                 {/if}
                             </div>
                         {/if}
@@ -527,60 +544,174 @@
                     placeholder="Project ID"
                     bind:value={selectedProjectId}
                 >
-                <div class="yet-another-selected-project-wrapper">
-                    <div class="selected-project">
-                        <div class="project-header">
-                            <img
-                                src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${projectAuthor}`}
-                                alt={projectAuthor}
+                {#if projectRejected}
+                    <div class="rejection-message">
+                        {#if !projectRejectionHard}
+                            <img src="/account/status_warn.svg" alt="Project Soft Rejected">
+                            <span>Project is currently soft rejected.</span>
+                            <Button
+                                color="red" small
+                                on:click={() => ProjectClient.restoreRejectedProject(selectedProjectId)
+                                    .then(() => projectRejected = false)
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert(err);
+                                    })}
+                                label="Unreject"
                             />
-                            <div class="project-header-text">
-                                <h2>{projectTitle}</h2>
-                                <button class="href-button" on:click={() => { tab = 'users'; selectedUsername = projectAuthor; }}>{projectAuthor}</button>
+                        {:else}
+                            <img src="/account/status_banned.svg" alt="Project Hard Rejected">
+                            <span>Project cant be found. Maybe is hard rejected?</span>
+                            <Button
+                                small
+                                label="Download project"
+                                on:click={() => ProjectClient.downloadHardRejectedProject(selectedProjectId)
+                                    .then(data => FileSaver.saveAs(new Blob([data]), `Project_${selectedProjectId}.pmp`))
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert(err);
+                                    })}
+                            />
+                        {/if}
+                    </div>
+                {/if}
+                {#if projectExists}
+                    <div class="yet-another-selected-project-wrapper" project-rejected={projectRejected}>
+                        <div class="selected-project">
+                            <div class="project-header">
+                                <img
+                                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${projectAuthor}`}
+                                    alt={projectAuthor}
+                                />
+                                <div class="project-header-text">
+                                    <input class="project-title-editable" type="text" bind:value={projectTitle}>
+                                    <button class="href-button" on:click={() => { tab = 'users'; selectedUsername = projectAuthor; }}>{projectAuthor}</button>
+                                </div>
+                            </div>
+                            <button
+                                class="profile-section-image project-thumbnail"
+                                on:click={() => {
+                                    fileSelector.type = "file";
+                                    fileSelector.accept = "image/*";
+                                    fileSelector.click();
+
+                                    const onceSelected = async () => {
+                                        fileSelector.removeEventListener('change', onceSelected);
+                                        replacementThumbnail = fileSelector.files[0];
+                                    }
+                                    fileSelector.addEventListener('change', onceSelected);
+                                }}
+                            >
+                                <img
+                                    src={replacementThumbnail
+                                        ? URL.createObjectURL(replacementThumbnail)
+                                        : `${PUBLIC_API_URL}/api/v1/projects/getproject?projectID=${selectedProjectId}&requestType=thumbnail`}
+                                    alt={projectTitle}
+                                />
+                                <div class="profile-section-image-edit">
+                                    <img src="/pencil.png" alt="Change Thumbnail" />
+                                </div>
+                            </button>
+                        </div>
+                        <div class="project-texts">
+                            <Button
+                                color={(originalTitle !== projectTitle || originalInstructions !== projectInstructions || originalNotes !== projectNotes || replacementThumbnail) || 'gray'}
+                                on:click={() => ProjectClient.updateProject(selectedProjectId, {
+                                    image: replacementThumbnail,
+                                    newMeta: {
+                                        title: projectTitle,
+                                        instructions: projectInstructions,
+                                        notes: projectNotes
+                                    }
+                                })
+                                    .then(() => onSelectedProjectChanged(selectedProjectId))
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert(err);
+                                    })}
+                                small
+                                label="Save changes"
+                            />
+                            <div class="project-text-field">
+                                <h3>Instructions</h3>
+                                <textarea bind:value={projectInstructions}/>
+                            </div>
+                            <div class="project-text-field">
+                                <h3>Notes & Credits</h3>
+                                <textarea bind:value={projectNotes}/>
                             </div>
                         </div>
-                        <button
-                            class="profile-section-image project-thumbnail"
-                            on:click={() => {
-                                fileSelector.type = "file";
-                                fileSelector.accept = "image/*";
-                                fileSelector.click();
-
-                                const onceSelected = async () => {
-                                    fileSelector.removeEventListener('change', onceSelected);
-                                    const data = await fileSelector.files[0].arrayBuffer();
-
-                                    ProjectClient.setPFPOfUser(selectedUsername, data)
-                                        .then(() => reloadPFP = !reloadPFP)
-                                        .catch(err => {
-                                            console.error(err);
-                                            alert(err);
-                                        });
-                                }
-                                fileSelector.addEventListener('change', onceSelected);
-                            }}
-                        >
-                            <img
-                                src={`${PUBLIC_API_URL}/api/v1/projects/getproject?projectID=${selectedProjectId}&requestType=thumbnail`}
-                                alt={projectTitle}
+                    </div>
+                    <div style="display:grid;grid-template-columns: 1fr 1fr 1fr 1fr; gap: 2px; margin-top: 2px;">
+                        <Button
+                            small
+                            color="red"
+                            label="Remove thumbnail"
+                            on:click={() => ProjectClient.removeProjectThumbnail(selectedProjectId, false)
+                                .then(() => selectedProjectId = selectedProjectId)
+                                .catch(err => {
+                                    console.error(err);
+                                    alert(err);
+                                })}
+                        />
+                        <Button
+                            small
+                            color="red"
+                            label="Remove project"
+                            on:click={() => rejectionPageOpen = true}
+                        />
+                        {#if projectFeatured}
+                            <Button
+                                small
+                                color="red"
+                                label="Unfeature"
+                                on:click={() => ProjectClient.featureProject(selectedProjectId, false)
+                                    .then(() => projectFeatured = false)
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert(err);
+                                    })}
                             />
-                            <div class="profile-section-image-edit">
-                                <img src="/pencil.png" alt="Change Thumbnail" />
-                            </div>
-                        </button>
+                        {:else}
+                            <Button
+                                small
+                                color="orange"
+                                label="Feature"
+                                on:click={() => ProjectClient.featureProject(selectedProjectId, true)
+                                    .then(() => projectFeatured = true)
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert(err);
+                                    })}
+                            />
+                        {/if}
+                        {#if projectCanFeature}
+                            <Button
+                                small
+                                color="red"
+                                label="Block featuring"
+                                on:click={() => ProjectClient.setCanBeFeatured(selectedProjectId, false)
+                                    .then(() => projectCanFeature = false)
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert(err);
+                                    })}
+                            />
+                        {:else}
+                            <Button
+                                small
+                                color="remix"
+                                label="Allow featuring"
+                                on:click={() => ProjectClient.setCanBeFeatured(selectedProjectId, true)
+                                    .then(() => projectCanFeature = true)
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert(err);
+                                    })}
+                            />
+                        {/if}
                     </div>
-                    <div class="project-texts">
-                        <button>Save changes</button>
-                        <div class="project-text-field">
-                            <h3>Instructions</h3>
-                            <textarea bind:value={projectInstructions}/>
-                        </div>
-                        <div class="project-text-field">
-                            <h3>Notes & Credits</h3>
-                            <textarea bind:value={projectNotes}/>
-                        </div>
-                    </div>
-                </div>
+                {/if}
             </div>
         </div>
     {:else if tab === 'messages'}
@@ -654,7 +785,9 @@
                         <label for="canReply">Privacy Policy</label>
                         <input type="checkbox" name="updateGuidelines" bind:checked={broadcastGuidelinesChange}>
                         <label for="canReply">Uploading Guidelines</label>
-                        <button
+                    </div>
+                    <div style="display: flex; justify-content: center;">
+                        <Button
                             on:click={() => {
                                 const list = [];
                                 if (broadcastTOSChange) list.push('tos');
@@ -673,7 +806,8 @@
                                         alert(err);
                                     })
                             }}
-                        >Send Broadcasts</button>
+                            label="Send broadcast"
+                        />
                     </div>
                 </div>
             </div>
@@ -717,7 +851,7 @@
                                 {#if !content.details}
                                     <LoadingSpinner />
                                 {:else}
-                                    <button
+                                    <Button
                                         on:click={() => ProjectClient.closeReport(content.id)
                                             .then(() => userReports.splice(selectedUserReport, 1))
                                             .catch(err => {
@@ -725,20 +859,22 @@
                                                 alert(err);
                                             })}
                                         color="red"
-                                    >
-                                        Close Reports
-                                    </button>
+                                        small
+                                        label="Close reports"
+                                    />
                                     {#each content.details as report}
                                         <details open={report.reporter === content.reporter}>
                                             <summary>
                                                 {report.reporter}
-                                                <button on:click={() => selectedUsername = report.reporter}>
-                                                    Select user
-                                                </button>
+                                                <Button
+                                                    small
+                                                    on:click={() => selectedUsername = report.reporter}
+                                                    label="Select user"
+                                                />
                                             </summary>
                                             <p style="white-space:pre-wrap">
                                                 {report.report}
-                                                <button
+                                                <Button
                                                     on:click={() => ProjectClient.closeReport(report.id)
                                                         .then(() => userReports.splice(selectedUserReport, 1))
                                                         .catch(err => {
@@ -746,9 +882,9 @@
                                                             alert(err);
                                                         })}
                                                     color="red"
-                                                >
-                                                    Close Report
-                                                </button>
+                                                    small
+                                                    label="Close report"
+                                                />
                                             </p>
                                         </details>
                                     {/each}
@@ -961,7 +1097,8 @@
                                             {/if}
                                         {/each}
                                     </div>
-                                    <button
+                                    <Button
+                                        small
                                         on:click={() => {
                                             profileBadges.push(...selectedAddingBadges);
                                             ProjectClient.setUserBadges(selectedUsername, profileBadges)
@@ -971,13 +1108,16 @@
                                                     alert(err);
                                                 })
                                         }}
-                                    >Add</button>
-                                    <button
+                                        label="Add"
+                                    />
+                                    <Button
+                                        small
                                         on:click={e => {
                                             e.stopPropagation();
                                             addBadgesSelectorOpen = false;
                                         }}
-                                    >Cancel</button>
+                                        label="Cancel"
+                                    />
                                 </div>
                             </button>
                             {#if !userWatchlisted}
@@ -1012,15 +1152,17 @@
                                 on:input={() => bioChanged = bioContent !== sourceBio}
                             />
                             <div class="save-button">
-                                <button
+                                <Button
                                     style={!bioChanged ? 'display: none; float: right;' : ''}
+                                    small
                                     on:click={() => ProjectClient.setBio(sourceBio = bioContent, true, selectedUsername)
                                         .then(() => bioChanged = false)
                                         .catch(err => {
                                             console.error(err);
                                             alert(err);
                                         })}
-                                >Save</button>
+                                    label="Save"
+                                />
                             </div>
                         </div>
                         <a class="featured-project" href="https://studio.penguinmod.com/#{featuredProjectId}">
@@ -1570,15 +1712,14 @@
         background-color: #00c3ff22;
         border-radius: 10px;
         padding: 5px;
-    }
-    .featured-project:visited
-    .featured-project:link {
         color: white;
     }
+    .featured-project:visited { color: white; }
     .featured-project img {
         aspect-ratio: 4 / 3;
         background-color: white;
         border-radius: 10px;
+        height: 180px;
     }
     .featured-project h2 { margin: 0; }
     .project-list {
@@ -1679,12 +1820,6 @@
     }
     :global(body.dark-mode) .profile-badge-selector:checked { border-bottom: rgba(255, 255, 255, 0.35) 1px solid; }
 
-    .profile-access {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        gap: 32px;
-    }
     .permited-users-grid {
         display: flex;
         flex-wrap: wrap;
@@ -1871,9 +2006,15 @@
         width: 100%;
         height: 100%;
     }
+    .yet-another-selected-project-wrapper[project-rejected=true] {
+        filter: saturate(0) opacity(70%);
+        pointer-events: none;
+        cursor: pointer;
+    }
     .yet-another-selected-project-wrapper {
         display: grid;
         grid-template-columns: auto 1fr;
+        margin: 5px 0px;
     }
     .selected-project {
         display: flex;
@@ -1910,8 +2051,34 @@
         flex-direction: column;
         align-items: flex-start;
         margin-left: 4px;
+        width: 100%;
     }
-    .project-header-text h2 { margin-block: 0; }
+    .project-title-editable {
+        background: none;
+        border: none;
+        color: white;
+        font-weight: bold;
+        font-size: larger;
+        box-sizing: border-box;
+        width: 100%;
+        text-overflow: ellipsis;
+    }
+    .project-title-editable:focus-within {
+        background: revert;
+        border: revert;
+        color: revert;
+    }
+    .rejection-message {
+        height: 24px;
+        margin: 5px 0px;
+        gap: 5px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+    .rejection-message img {
+        height: 24px;
+    }
 
     .projects-control {
         display: grid;
@@ -1965,12 +2132,5 @@
     }
     .category-toggle-section button[admin="true"] {
         background: #215a8a;
-    }
-
-    button[color="red"] {
-        color: white;
-        background-color: #ff5151;
-        border-color: rgba(255, 81, 81, 0.35);
-        border-radius: 4px;
     }
 </style>

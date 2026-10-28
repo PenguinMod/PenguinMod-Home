@@ -118,6 +118,8 @@
     button {
         padding: 8px;
         font-size: large;
+        border-radius: 4px;
+        border-color: rgb(0,0,0, .25);
     }
     button[data-serious] {
         background-color: rgb(255, 114, 114);
