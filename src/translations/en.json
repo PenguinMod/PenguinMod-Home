@@ -986,5 +986,6 @@
     "profile.donator.css.title": "Custom CSS",
     "profile.donator.css.description1": "CSS is a programming language that allows for full customization of your profile.",
     "profile.donator.css.description2": "Do not abuse the custom CSS feature for any malicious or misleading purposes, or your account may receive punishment.",
-    "profile.donator.css.approvalnote": "Any custom CSS code here must be approved before being displayed to all users."
+    "profile.donator.css.approvalnote": "Any custom CSS code here must be approved before being displayed to all users.",
+    "profile.badge.penguinmodanniversary4": "PenguinMod's Fourth Anniversary: Event Participant"
 }
