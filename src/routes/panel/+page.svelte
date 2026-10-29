@@ -1421,21 +1421,30 @@
                             <h2>{featuredProjectTitle}</h2>
                         </a>
                     </div>
-                    <ContentCategory
-                        header={TranslationHandler.text(
-                            "profile.projects.all",
-                            currentLang,
-                        )}
-                        style="width:calc(100% - 20px); box-sizing: border-box;"
-                        stylec="height: 244px;overflow-x:auto;overflow-y:hidden;"
-                        seemore={`/search?q=by%3A${selectedUsername}`}
-                    >
-                        <div class="project-list">
-                            {#each profileProjects as project}
-                                <Project {...project} />
-                            {/each}
-                        </div>
-                    </ContentCategory>
+                    <div class="project-list">
+                        {#each profileProjects as project}
+                            <button
+                                class="project-tile"
+                                on:click={() => { tab = 'projects'; selectedProjectId = project.id; }}
+                            >
+                                <img
+                                    src={`${LINK.projects}api/v1/projects/getproject?projectID=${project.id}&requestType=thumbnail`}
+                                    alt="Project Thumbnail"
+                                    class="project-image"
+                                />
+                                <img
+                                    src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${project.author.username}`}
+                                    alt="Project Author"
+                                    class="project-author"
+                                />
+                                <span class="project-title">{project.title}</span>
+                            </button>
+                        {/each}
+                        <Button
+                            link="/search?q=by%3A{selectedUsername}"
+                            label="See more"
+                        />
+                    </div>
                     <details bind:open={banUserOpen}>
                         <summary>User bans</summary>
                         {#if userIPBanned}
@@ -1973,6 +1982,9 @@
     .project-list {
         display: flex;
         flex-direction: row;
+        align-items: center;
+        overflow: scroll;
+        padding: 10px 0px;
     }
     .user-selector {
         width: 100%;
@@ -2023,6 +2035,40 @@
         color: white;
     }
 
+    .project-tile {
+        color: inherit;
+        font-size: inherit;
+        text-overflow: ellipsis;
+        word-break: keep-all;
+        padding: 5px;
+        margin: 4px;
+        background: none;
+        border: 1px solid grey;
+        border-radius: 5px;
+        display: grid;
+        gap: 4px;
+        grid-template-rows: 180px 32px;
+        grid-template-columns: 32px 204px;
+        cursor: pointer;
+    }
+    .project-image {
+        border-radius: 5px;
+        grid-column: 1 / 3;
+    }
+    .project-author {
+        border-radius: 5px;
+        width: 32px;
+        height: 32px;
+        grid-column: 1;
+        grid-row: 2;
+    }
+    .project-title {
+        text-overflow: ellipsis;
+        align-content: center;
+        text-align: start;
+        white-space: nowrap;
+        overflow: hidden;
+    }
     .profile-badge {
         width: 24px;
         height: 24px;
