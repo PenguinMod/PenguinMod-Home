@@ -761,6 +761,15 @@
                             <p style="margin-block-start:4px;">
                                 <a href="https://projects.penguinmod.com/6973390909">4th Anniversary Retro Remix PenguinJam Official Rankings</a>
                             </p>
+                            <p>
+                                <i>
+                                    Missed the 4th anniversary celebration?
+                                    <br/>
+                                    <a href="https://www.youtube.com/watch?v=AVIaR7Fn9d4">
+                                        Watch everything we announced here!
+                                    </a>
+                                </i>
+                            </p>
                             <img
                                 src="/events/news/penguinmodfourthanniversary.webp"
                                 alt="PenguinMod Fourth Anniversary"
