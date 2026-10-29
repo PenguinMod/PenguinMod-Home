@@ -12,6 +12,7 @@
     import JSZip from "jszip";
     import BlobAndDataUrl from "../../resources/blobanddataurl.js";
     import FileTypes from "./filetypes.js";
+    import pmp_protobuf from "pmp-protobuf";
 
     const ProjectClient = new ProjectApi();
 
@@ -35,6 +36,8 @@
         ).toLocaleTimeString()}`;
     }
 
+    let censorCostume;
+    let censorAudio;
     let tab = '';
     let admin = false;
     let loggedIn = null;
@@ -79,6 +82,7 @@
         if (!globalThis.window) return;
         ace = await import('brace');
         await import('brace/mode/json');
+        await import('brace/mode/javascript');
         await import('brace/theme/twilight');
         await import('brace/theme/dawn'); 
         if (editor) editor.destroy();
@@ -103,6 +107,9 @@
         currentLang = lang;
     });
     onMount(async () => {
+        fetch('/censor/costume.svg').then(req => req.blob()).then(res => censorCostume = res);
+        fetch('/censor/sound.mp3').then(req => req.blob()).then(res => censorAudio = res);
+
         Language.forceUpdate();
         const username = localStorage.getItem("username");
         const token = localStorage.getItem("token");
@@ -182,9 +189,17 @@
     let projectRejected = false;
     let projectRejectionHard = false;
     let projectExists = false;
+    let projectFileLoading = false;
+    let progressLabel = '';
+    let totalProgress = 0;
+    let projectJson = null;
+    let projectContentView = null;
+    let unorderedStrings = '';
     function onSelectedProjectChanged(project) {
         replacementThumbnail = null;
         reloadProject = !reloadProject;
+        projectContentView = null;
+        projectJson = null;
         projectExists = false;
         ProjectApi.getProjectMeta(project)
             .then(project => {
@@ -202,6 +217,21 @@
                 projectExists = true;
             })
             .catch(() => projectRejected = projectRejectionHard = true);
+    }
+    async function getProject() {
+        projectFileLoading = true;
+        totalProgress = 0;
+        progressLabel = 'Loading project JSON...';
+        if (!projectJson) {
+            const req = new XMLHttpRequest();
+            req.responseType = 'arraybuffer';
+            req.onprogress = e => totalProgress = Math.min(e.loaded / e.total, 1);
+            req.open('GET', `${PUBLIC_API_URL}/api/v1/projects/getProject?requestType=protobuf&projectID=${selectedProjectId}`);
+            req.send();
+            await new Promise((resolve, reject) => { req.onloadend = resolve; req.onerror = reject; });
+            projectJson = pmp_protobuf.protobufToJson(new Uint8Array(req.response));
+        }
+        projectFileLoading = false;
     }
     $: onSelectedProjectChanged(selectedProjectId);
     $: invalidate(linkedState.set('project', selectedProjectId));
@@ -561,7 +591,7 @@
                             />
                         {:else}
                             <img src="/account/status_banned.svg" alt="Project Hard Rejected">
-                            <span>Project cant be found. Maybe is hard rejected?</span>
+                            <span>Project cant be found. Maybe its hard rejected?</span>
                             <Button
                                 small
                                 label="Download project"
@@ -642,7 +672,7 @@
                             </div>
                         </div>
                     </div>
-                    <div style="display:grid;grid-template-columns: 1fr 1fr 1fr 1fr; gap: 2px; margin-top: 2px;">
+                    <div style="display:grid;grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 2px; margin-top: 2px;">
                         <Button
                             small
                             color="red"
@@ -659,6 +689,12 @@
                             color="red"
                             label="Remove project"
                             on:click={() => rejectionPageOpen = true}
+                        />
+                        <Button
+                            small
+                            label="Goto project page"
+                            noredirect
+                            link="{PUBLIC_STUDIO_URL}/#{selectedProjectId}"
                         />
                         {#if projectFeatured}
                             <Button
@@ -711,6 +747,218 @@
                             />
                         {/if}
                     </div>
+                    <div style="display:grid;grid-template-columns: 1fr 1fr 1fr; gap: 2px; margin-top: 2px;">
+                        <Button
+                            small
+                            label="Inspect extensions"
+                            on:click={() => getProject(false)
+                                .then(() => projectContentView = 'extensions')
+                                .catch(err => {
+                                    console.error(err);
+                                    alert(err);
+                                })}
+                        />
+                        <Button
+                            small
+                            label="Inspect strings/comments"
+                            on:click={() => getProject(false)
+                                .then(() => {
+                                    unorderedStrings = '';
+                                    for (const sprite of projectJson.targets) {
+                                        unorderedStrings += sprite.name + '\n';
+                                        for (const scalar of Object.values(sprite.variables))
+                                            unorderedStrings += scalar[0] + ': ' + scalar[1] + '\n';
+                                        for (const list of Object.values(sprite.lists))
+                                            unorderedStrings += list[0] + ':\n' + list[1].join('\n') + '\n';
+                                        for (const broadcast of Object.values(sprite.broadcasts))
+                                            unorderedStrings += broadcast + '\n';
+                                        for (const customVar of sprite.customVars)
+                                            unorderedStrings += customVar.name + '\n';
+                                        for (const block of Object.values(sprite.blocks)) {
+                                            if (!block.fields?.TEXT) continue;
+                                            unorderedStrings += block.fields.TEXT.value + '\n';
+                                        }
+                                        for (const comment of Object.values(sprite.comments))
+                                            unorderedStrings += comment.text + '\n';
+                                        for (const costume of sprite.costumes)
+                                            unorderedStrings += costume.name + '\n';
+                                        for (const sound of sprite.sounds)
+                                            unorderedStrings += sound.name + '\n';
+                                    }
+                                    projectContentView = 'strings'
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                    alert(err);
+                                })}
+                        />
+                        <Button
+                            small
+                            label="Inspect assets"
+                            on:click={() => getProject(true)
+                                .then(async () => {
+                                    const promises = [];
+                                    let i = 0;
+                                    const assets = projectJson.targets.reduce((c,v) => c + v.costumes.length + v.sounds.length, 0);
+                                    projectFileLoading = true;
+                                    progressLabel = `Loading ${assets} assets`;
+                                    totalProgress = 0;
+                                    for (const sprite of projectJson.targets) {
+                                        for (const costume of sprite.costumes) {
+                                            costume.link = `https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/${selectedProjectId}_${costume.md5ext}`;
+                                            promises.push(fetch(costume.link)
+                                                .then(req => req.arrayBuffer())
+                                                .then(res => new Blob([res], { type: 'image/svg+xml' }))
+                                                .then(blob => {
+                                                    costume.link = URL.createObjectURL(blob);
+                                                    totalProgress = ++i / assets;
+                                                }));
+                                        }
+                                        for (const sound of sprite.sounds)
+                                            sound.paused = true;
+                                    }
+                                    await Promise.all(promises);
+                                    projectContentView = 'assets';
+                                    projectFileLoading = false;
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                    alert(err);
+                                })}
+                        />
+                    </div>
+                    {#if projectFileLoading}
+                        <div class="file-loading-status">
+                            <span>{progressLabel}</span>
+                            <progress min="0.000" max="1.000" value={totalProgress}></progress>
+                        </div>
+                    {/if}
+                    {#if projectContentView === 'extensions'}
+                        <div class="extensions-view">
+                            <select class="user-selector" on:change={e => fetch(e.target.value)
+                                .then(req => req.text())
+                                .then(res => {
+                                    editor.setValue(res);
+                                    editor.setReadOnly(true);
+                                    editor.session.setMode('ace/mode/javascript');
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                    alert(err);
+                                })}
+                            >
+                                <option value="">(Making a selection will load the url)</option>
+                                {#each Object.entries(projectJson.extensionURLs) as [extId, url]}
+                                    <option value={url}>{extId} <em>({url})</em></option>
+                                {/each}
+                            </select>
+                            <div bind:this={codeArea}></div>
+                        </div>
+                    {:else if projectContentView === 'strings'}
+                        <code class="strings-listout">
+                            {unorderedStrings}
+                        </code>
+                    {:else if projectContentView === 'assets'}
+                        <Button
+                            label="Apply censoring"
+                            on:click={async () => {
+                                try {
+                                    const zip = new JSZip();
+                                    const promises = [];
+                                    for (const sprite of projectJson.targets) {
+                                        for (const costume of sprite.costumes) {
+                                            if (!costume.replace) {
+                                                promises.push(fetch(`https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/${selectedProjectId}_${costume.md5ext}`)
+                                                    .then(req => req.blob())
+                                                    .then(res => zip.file(costume.md5ext, res)));
+                                                continue;
+                                            }
+                                            costume.rotationCenterX = 32;
+                                            costume.rotationCenterY = 32;
+                                            costume.bitmapResolution = 1;
+                                            costume.dataFormat = "svg";
+                                            costume.md5ext = `${costume.assetId}.svg`;
+                                            zip.file(costume.md5ext, censorCostume);
+                                        }
+                                        for (const sound of sprite.sounds) {
+                                            if (!sound.replace) {
+                                                promises.push(fetch(`https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/${selectedProjectId}_${sound.md5ext}`)
+                                                    .then(req => req.blob())
+                                                    .then(res => zip.file(sound.md5ext, res)));
+                                                continue;
+                                            }
+                                            sound.dataFormat = "mp3";
+                                            sound.format = "mp3";
+                                            sound.md5ext = `${sound.assetId}.mp3`;
+                                            zip.file(sound.md5ext, censorAudio);
+                                        }
+                                    }
+                                    await Promise.all(promises);
+                                    zip.file('project.json', JSON.stringify(projectJson));
+
+                                    await ProjectClient.updateProject(selectedProjectId, {
+                                        project: await zip.generateAsync({ type: 'blob' }),
+                                        newMeta: {
+                                            title: projectTitle,
+                                            instructions: projectInstructions,
+                                            notes: projectNotes
+                                        }
+                                    });
+                                    projectContentView = null;
+                                } catch (err) {
+                                    console.error(err);
+                                    alert(err);
+                                }
+                            }}
+                        />
+                        {#each projectJson.targets as sprite}
+                            <details open>
+                                <summary>{sprite.name}</summary>
+                                {#each sprite.costumes as costume}
+                                    <button class="project-costume-asset" on:click={() => costume.replace = !costume.replace}>
+                                        <img
+                                            src={costume.link}
+                                            alt={costume.name}
+                                        >
+                                        <div>
+                                            <input type="checkbox" bind:checked={costume.replace} name="costume-select">
+                                            <label for="costume-select">{costume.name}</label>
+                                        </div>
+                                    </button>
+                                {/each}
+                                <br>
+                                {#each sprite.sounds as sound}
+                                    <button class="project-sound-asset" on:click={() => sound.replace = !sound.replace}>
+                                        {#if sound.paused}
+                                            <button on:click={e => { e.stopPropagation(); sound.audio.play(); }}>
+                                                <img
+                                                    src="/stage_controls/gradient/play.svg"
+                                                    alt="Play"
+                                                >
+                                            </button>
+                                        {:else}
+                                            <button on:click={e => { e.stopPropagation(); sound.audio.pause(); }}>
+                                                <img
+                                                    src="/stage_controls/gradient/pause.svg"
+                                                    alt="Pause"
+                                                >
+                                            </button>
+                                        {/if}
+                                        <audio
+                                            bind:this={sound.audio}
+                                            bind:paused={sound.paused}
+                                            src="https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/{selectedProjectId}_{sound.md5ext}"
+                                            alt={sound.name}
+                                        />
+                                        <div>
+                                            <input type="checkbox" bind:checked={sound.replace} name="sound-select">
+                                            <label for="sound-select">{sound.name}</label>
+                                        </div>
+                                    </button>
+                                {/each}
+                            </details>
+                        {/each}
+                    {/if}
                 {/if}
             </div>
         </div>
@@ -2078,6 +2326,81 @@
     }
     .rejection-message img {
         height: 24px;
+    }
+    .file-loading-status {
+        width: 100%;
+        margin-top: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .file-loading-status progress {
+        border-radius: 0;
+        height: 16px;
+        width: 360px;
+        margin: 3px 0px;
+    }
+    .extensions-view {
+        display: grid;
+        grid-template-rows: max-content 1fr;
+        gap: 4px;
+        height: 40%;
+        margin: 4px;
+    } 
+    .strings-listout {
+        white-space: pre;
+        word-break: break-all;
+    }
+    .project-costume-asset {
+        margin: 4px;
+        padding: 4px;
+        border: rgba(0, 0, 0, 0.25) 1px solid;
+        border-radius: 4px;
+        background: white;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    :global(body.dark-mode) .project-costume-asset {
+        border: rgba(255, 255, 255, 0.35) 1px solid;
+        background: #111;
+        color: white;
+    }
+    .project-costume-asset img {
+        width: 128px;
+        height: 128px;
+        object-fit: contain;
+    }
+    .project-sound-asset {
+        margin: 4px;
+        padding: 4px;
+        border: rgba(0, 0, 0, 0.25) 1px solid;
+        border-radius: 4px;
+        background: white;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    :global(body.dark-mode) .project-sound-asset {
+        border: rgba(255, 255, 255, 0.35) 1px solid;
+        background: #111;
+        color: white;
+    }
+    .project-sound-asset img {
+        width: 32px;
+        height: 32px;
+    }
+    .project-sound-asset > button {
+        border: none;
+        background: none;
+        padding: none;
+        margin: none;
+        width: 128px;
+        height: 128px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
     }
 
     .projects-control {

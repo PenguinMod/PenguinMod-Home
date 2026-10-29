@@ -27,6 +27,7 @@
         style="text-decoration: none; {style}"
     >
         <button
+            style="width: 100%"
             class={(highlighted ? "button button-highlight" : "button") +
                 (color ? ` ${color}` : "") +
                 (small ? " button-regular" : "")}
