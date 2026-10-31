@@ -907,9 +907,9 @@
                             <div bind:this={codeArea}></div>
                         </div>
                     {:else if projectContentView === 'strings'}
-                        <div class="strings-listout">
-                            <div bind:this={codeArea}></div>
-                        </div>
+                        <code class="strings-listout">
+                            {unorderedStrings}
+                        </code>
                     {:else if projectContentView === 'assets'}
                         <Button
                             label="Apply censoring"
@@ -2694,7 +2694,7 @@
         margin: 4px;
     } 
     .strings-listout {
-        display: grid;
+        white-space: pre;
         height: 40%;
         margin: 4px;
     } 
