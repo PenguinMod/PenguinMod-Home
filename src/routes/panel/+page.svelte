@@ -277,6 +277,10 @@
     let profileProjects = [];
     let bioChanged = false;
     let sourceBio = '';
+    let bulkUsernames = [];
+    let bulkUserBadges = [];
+    let bulkIsRemove = false;
+    let addBulkBadgesOpen = false;
     function onSelectedUserChange(username) {
         if (!browser) return;
         if (!loggedIn) return;
@@ -1312,9 +1316,8 @@
                                     <button
                                         class="permited-user-profile-button"
                                         on:click={() => {
-                                            profileBadges.splice(idx, 1)
-                                            ProjectClient.setUserBadges(selectedUsername, profileBadges)
-                                                .then(() => profileBadges = profileBadges)
+                                            ProjectClient.setUserBadges(selectedUsername, profileBadges.filter((_,i) => i !== idx))
+                                                .then(() => { profileBadges.splice(idx, 1); profileBadges = profileBadges; })
                                                 .catch(err => {
                                                     console.error(err);
                                                     alert(err);
@@ -1343,7 +1346,11 @@
                             {/each}
                             <button
                                 class="add-profile-badge"
-                                on:click={() => addBadgesSelectorOpen = true}
+                                on:click={e => {
+                                    if (e.layerX > 32 || e.layerX < 0) return;
+                                    if (e.layerY > 32 || e.layerY < 0) return;
+                                    addBadgesSelectorOpen = true
+                                }}
                             >
                                 <img src="/account/add.svg" alt="Add Badge">
                                 <div
@@ -1372,7 +1379,6 @@
                                                         'en'
                                                     )}
                                                     on:change={e => {
-                                                        console.log(selectedAddingBadges);
                                                         if (e.target.checked) return selectedAddingBadges.push(badge);
                                                         selectedAddingBadges = selectedAddingBadges.filter(toAdd => toAdd !== badge);
                                                     }}
@@ -1383,9 +1389,13 @@
                                     <Button
                                         small
                                         on:click={() => {
-                                            profileBadges.push(...selectedAddingBadges);
-                                            ProjectClient.setUserBadges(selectedUsername, profileBadges)
-                                                .then(() => { profileBadges = profileBadges; addBadgesSelectorOpen = false; })
+                                            ProjectClient.setUserBadges(selectedUsername, [...profileBadges, ...selectedAddingBadges])
+                                                .then(() => {
+                                                    profileBadges.push(...selectedAddingBadges);
+                                                    profileBadges = profileBadges;
+                                                    addBadgesSelectorOpen = false;
+                                                    selectedAddingBadges = [];
+                                                })
                                                 .catch(err => {
                                                     console.error(err);
                                                     alert(err);
@@ -1575,7 +1585,7 @@
                         {/if}
                     </details>
                 {/if}
-                <div class="misc-member">
+                <div class="misc-member" style="height: revert; padding-bottom: 10px">
                     Permitted Users
                     <strong class="title">Admins</strong>
                     <div class="permited-users-grid">
@@ -1660,6 +1670,149 @@
                         >
                             <img src="/account/add.svg" alt="Add User">
                         </button>
+                    </div>
+                </div>
+                <div class="misc-member">
+                    Bulk badges
+                    <div class="permited-users-grid">
+                        {#each bulkUsernames as user}
+                            <div class="permited-user-tile">
+                                <button
+                                    class="permited-user-profile-button"
+                                    on:click={() => { bulkUsernames.splice(bulkUsernames.indexOf(user), 1); bulkUsernames = bulkUsernames; }}
+                                >
+                                    <img
+                                        class="permited-user-profile"
+                                        src="{PUBLIC_API_URL}/api/v1/users/getpfp?username={user}"
+                                        alt={user}
+                                    />
+                                    <div class="profile-section-image-edit">
+                                        <img src="/account/remove.svg" alt="Remove Perms" />
+                                    </div>
+                                </button>
+                                <span>{user}</span>
+                            </div>
+                        {/each}
+                        <button
+                            class="add-permited-user"
+                            on:click={() => {
+                                const username = prompt('Please enter usernames below. Use commas to seperate usernames.', selectedUsername);
+                                if (!username) return;
+                                const usernames = username.split(/,\s*/gi);
+                                bulkUsernames.push(...usernames); bulkUsernames = bulkUsernames;
+                            }}
+                        >
+                            <img src="/account/add.svg" alt="Add User">
+                        </button>
+                    </div>
+                    <div class="permited-users-grid" style="padding: 5px 0px">
+                        {#each bulkUserBadges as badge, idx}
+                            {#if ProfileBadges[badge]}
+                                <button
+                                    class="permited-user-profile-button"
+                                    on:click={() => { bulkUserBadges.splice(idx, 1); bulkUserBadges = bulkUserBadges; }}
+                                >
+                                    <img
+                                        class="profile-badge"
+                                        src={`/badges/${ProfileBadges[badge]}.png`}
+                                        alt="Badge"
+                                    />
+                                    <div class="profile-section-image-edit">
+                                        <img 
+                                            src="/account/remove.svg" 
+                                            alt="Remove Badge {TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    currentLang
+                                                ) || TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    'en'
+                                                )}"
+                                        />
+                                    </div>
+                                </button>
+                            {/if}
+                        {/each}
+                        <button
+                            class="add-profile-badge"
+                            style="margin: 0"
+                            on:click={e => {
+                                if (e.layerX > 32 || e.layerX < 0) return;
+                                if (e.layerY > 32 || e.layerY < 0) return;
+                                addBulkBadgesOpen = true
+                            }}
+                        >
+                            <img src="/account/add.svg" alt="Add Badge">
+                            <div
+                                class="pop-under centered"
+                                style="z-index: 20000;{addBulkBadgesOpen ? '' : 'display:none;'}"
+                            >
+                                <div class="full-badge-list">
+                                    {#each Object.keys(ProfileBadges) as badge}
+                                        {#if !bulkUserBadges.includes(badge)}
+                                            <input
+                                                type="checkbox"
+                                                class="profile-badge-selector"
+                                                style="background-image: url('/badges/{ProfileBadges[badge]}.png')"
+                                                alt={TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    currentLang
+                                                ) || TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    'en'
+                                                )}
+                                                title={TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    currentLang
+                                                ) || TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    'en'
+                                                )}
+                                                on:change={e => {
+                                                    if (e.target.checked) return selectedAddingBadges.push(badge);
+                                                    selectedAddingBadges = selectedAddingBadges.filter(toAdd => toAdd !== badge);
+                                                }}
+                                            />
+                                        {/if}
+                                    {/each}
+                                </div>
+                                <Button
+                                    small
+                                    on:click={async e => {
+                                        e.stopPropagation();
+                                        bulkUserBadges.push(...selectedAddingBadges);
+                                        bulkUserBadges = bulkUserBadges;
+                                        selectedAddingBadges = [];
+                                        addBulkBadgesOpen = false;
+                                    }}
+                                    label="Add"
+                                />
+                                <Button
+                                    small
+                                    on:click={async e => {
+                                        e.stopPropagation();
+                                        addBulkBadgesOpen = false;
+                                    }}
+                                    label="Cancel"
+                                />
+                            </div>
+                        </button>
+                    </div>
+                    <div>
+                        <input type="checkbox" bind:checked={bulkIsRemove} name="bulk-removes">
+                        <label for="bulk-removes">Remove these badges</label>
+                        <Button
+                            small
+                            label="Apply changes"
+                            on:click={() => ProjectClient.setUserBadges(bulkUsernames, bulkUserBadges, bulkIsRemove)
+                                .then(() => {
+                                    bulkUsernames = [];
+                                    bulkUserBadges = [];
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                    alert(err);
+                                })}
+                        />
                     </div>
                 </div>
             </div>
@@ -1856,7 +2009,7 @@
         position: absolute;
         top: 36px;
         left: 0;
-        width: 128px;
+        width: 256px;
         padding: 8px 16px;
         border: solid 1px rgba(255, 255, 255, .3);
         border-radius: 8px 0px 8px 8px;
@@ -1865,6 +2018,10 @@
         transform-origin: middle right;
         transform: translateX(calc(-100% + 16px));
         z-index: 5000;
+    }
+    .pop-under.centered {
+        border-radius: 8px 8px 8px 8px;
+        transform: translateX(calc(-50% + 16px));
     }
     .front-card-page {
         background: rgba(0, 0, 0, 0.5);
@@ -2146,8 +2303,8 @@
         height: 24px;
     }
     .profile-badge-selector {
-        width: 24px;
-        height: 24px;
+        width: 32px;
+        height: 32px;
         margin: 0;
         appearance: none;
         background-size: contain;
