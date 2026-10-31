@@ -86,7 +86,7 @@
         outline: revert;
         border-color: rgba(0, 195, 255, 0.35);
         justify-content: center;
-        color: black;
+        color: white;
         display: inline-flex;
     }
     .button:focus {
@@ -103,6 +103,9 @@
         border: 1px solid rgba(0, 0, 0, 0.35);
         color: black;
         font-weight: normal;
+    }
+    :global(body.dark-mode) .button-regular {
+        color: black;
     }
     :global(body.dark-mode) .button-toggled {
         outline-color: rgba(255, 255, 255, 0.1) !important;
