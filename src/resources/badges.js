@@ -13,6 +13,8 @@ export default {
     partner: "partner",
 
     // event
+    // penguinmodanniversary4
+    penguinmodanniversary4: "penguinmodanniversary4",
     // penguinmodanniversary3
     penguinmodanniversary3: "penguinmodanniversary3",
     penguinmodanniversary3qualifiers: "penguinmodanniversary3qualifiers",
@@ -38,7 +40,7 @@ export default {
     extensions: "extension_developer",
     bugreport: "vulnerability_report",
     betatesterbugreporter: "bugreportbeta",
-    betatester: "betatester",
+    // betatester: "betatester", // Should have been unused since only bug reporters should've gotten badges (and they get the betatesterbugreporter badge instead)
     birthday: "birthday",
 
     // auto

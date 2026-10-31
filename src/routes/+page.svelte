@@ -745,21 +745,26 @@
                 <div class="category-news">
                     <div class="category-news-content">
                         <h2 style="margin-block:4px;">
-                            The Retro Remix PenguinJam has ended!
+                            Retro Remix PenguinJam has been ranked!
                         </h2>
                         <div style="width:100%">
                             <p>
-                                Time's up everyone, the Retro Remix PenguinJam has ended!
-                                <br />
-                                Thanks for submitting your projects for the 4th Anniversary of PenguinMod!
+                                All of the projects in the Retro Remix PenguinJam have been ranked!
                                 <br />
                                 <br />
-                                We're going to start ranking your projects now.
-                                Please wait until we are done with ranking!
+                                Thanks to everyone who participated!
                                 <br />
                                 <br />
+                                If you got a bad score, that's not a bad thing! It means there's room to
+                                improve and you can do better next time around to try and get a higher score.
+                            </p>
+                            <p style="margin-block-start:4px;">
+                                <a href="https://projects.penguinmod.com/6973390909">4th Anniversary Retro Remix PenguinJam Official Rankings</a>
+                            </p>
+                            <p>
                                 <i>
-                                    Missed the celebration?
+                                    Missed the 4th anniversary celebration?
+                                    <br/>
                                     <a href="https://www.youtube.com/watch?v=AVIaR7Fn9d4">
                                         Watch everything we announced here!
                                     </a>
