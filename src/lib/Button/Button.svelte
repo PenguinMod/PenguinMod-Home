@@ -24,13 +24,13 @@
     <a
         href={link}
         target={noredirect ? "_blank" : "_self"}
-        style="text-decoration: none; {style}"
+        style="text-decoration: none;"
     >
         <button
-            style="width: 100%"
             class={(highlighted ? "button button-highlight" : "button") +
                 (color ? ` ${color}` : "") +
                 (small ? " button-regular" : "")}
+            {style}
             on:click={event}
         >
             {#if icon}
