@@ -677,7 +677,7 @@
                             small
                             color="red"
                             label="Remove thumbnail"
-                            on:click={() => ProjectClient.removeProjectThumbnail(selectedProjectId, false)
+                            on:click={() => !confirm("Remove thumbnail?") ? null : ProjectClient.removeProjectThumbnail(selectedProjectId, false)
                                 .then(() => selectedProjectId = selectedProjectId)
                                 .catch(err => {
                                     console.error(err);
@@ -762,30 +762,46 @@
                             small
                             label="Inspect strings/comments"
                             on:click={() => getProject(false)
-                                .then(() => {
+                                .then(async () => {
                                     unorderedStrings = '';
                                     for (const sprite of projectJson.targets) {
-                                        unorderedStrings += sprite.name + '\n';
+                                        unorderedStrings += sprite.name + ':\n';
+                                        unorderedStrings += '  Variables:\n';
                                         for (const scalar of Object.values(sprite.variables))
-                                            unorderedStrings += scalar[0] + ': ' + scalar[1] + '\n';
+                                            unorderedStrings += '    ' + scalar[0] + ': ' + scalar[1] + '\n';
+                                        unorderedStrings += '  Lists:\n';
                                         for (const list of Object.values(sprite.lists))
-                                            unorderedStrings += list[0] + ':\n' + list[1].join('\n') + '\n';
+                                            unorderedStrings += '    ' + list[0] + ':\n' + list[1].map(item => '      - ' + item).join('\n') + '\n';
+                                        unorderedStrings += '  Broadcasts:\n';
                                         for (const broadcast of Object.values(sprite.broadcasts))
-                                            unorderedStrings += broadcast + '\n';
+                                            unorderedStrings += '    - ' + broadcast + '\n';
+                                        unorderedStrings += '  Custom Variables:\n';
                                         for (const customVar of sprite.customVars)
-                                            unorderedStrings += customVar.name + '\n';
+                                            unorderedStrings += '    - ' + customVar.name + '\n';
+                                        unorderedStrings += '  Text:\n';
                                         for (const block of Object.values(sprite.blocks)) {
                                             if (!block.fields?.TEXT) continue;
-                                            unorderedStrings += block.fields.TEXT.value + '\n';
+                                            unorderedStrings += '    - ' + block.fields.TEXT.value + '\n';
                                         }
+                                        unorderedStrings += '  Comments:\n';
                                         for (const comment of Object.values(sprite.comments))
-                                            unorderedStrings += comment.text + '\n';
+                                            unorderedStrings += '    - ' + comment.text + '\n';
+                                        unorderedStrings += '  Costumes:\n';
                                         for (const costume of sprite.costumes)
-                                            unorderedStrings += costume.name + '\n';
+                                            unorderedStrings += '    - ' + costume.name + '\n';
+                                        unorderedStrings += '  Sounds:\n';
                                         for (const sound of sprite.sounds)
-                                            unorderedStrings += sound.name + '\n';
+                                            unorderedStrings += '    - ' + sound.name + '\n';
                                     }
-                                    projectContentView = 'strings'
+
+                                    // try to display this Nicer (the button can be clicked again if it doesnt resolve in time)
+                                    projectContentView = 'strings';
+                                    await new Promise((resolve) => setTimeout(() => resolve(), 1));
+                                    queueMicrotask(() => {
+                                        editor.setValue(unorderedStrings);
+                                        editor.setReadOnly(true);
+                                        editor.session.setMode('ace/mode/yaml');
+                                    });
                                 })
                                 .catch(err => {
                                     console.error(err);
@@ -835,17 +851,26 @@
                     {/if}
                     {#if projectContentView === 'extensions'}
                         <div class="extensions-view">
-                            <select class="user-selector" on:change={e => fetch(e.target.value)
-                                .then(req => req.text())
-                                .then(res => {
-                                    editor.setValue(res);
+                            <select class="user-selector" on:change={e => {
+                                if (!e.target.value) {
+                                    editor.setValue("");
                                     editor.setReadOnly(true);
                                     editor.session.setMode('ace/mode/javascript');
-                                })
-                                .catch(err => {
-                                    console.error(err);
-                                    alert(err);
-                                })}
+                                    return;
+                                }
+
+                                fetch(e.target.value)
+                                    .then(req => req.text())
+                                    .then(res => {
+                                        editor.setValue(res);
+                                        editor.setReadOnly(true);
+                                        editor.session.setMode('ace/mode/javascript');
+                                    })
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert(err);
+                                    })
+                            }}
                             >
                                 <option value="">(Making a selection will load the url)</option>
                                 {#each Object.entries(projectJson.extensionURLs) as [extId, url]}
@@ -855,9 +880,9 @@
                             <div bind:this={codeArea}></div>
                         </div>
                     {:else if projectContentView === 'strings'}
-                        <code class="strings-listout">
-                            {unorderedStrings}
-                        </code>
+                        <div class="strings-listout">
+                            <div bind:this={codeArea}></div>
+                        </div>
                     {:else if projectContentView === 'assets'}
                         <Button
                             label="Apply censoring"
@@ -1371,7 +1396,7 @@
                             {#if !userWatchlisted}
                                 <Button
                                     color="orange"
-                                    label="Watchlist"
+                                    label="Add to Watchlist"
                                     on:click={ProjectClient.putOnWatchlist(selectedUsername, true)
                                         .then(() => userWatchlisted = true)
                                         .catch(err => {
@@ -1381,7 +1406,7 @@
                                 />
                             {:else}
                                 <Button
-                                    label="Unwatchlist"
+                                    label="Remove from Watchlist"
                                     on:click={ProjectClient.putOnWatchlist(selectedUsername, false)
                                         .then(() => userWatchlisted = true)
                                         .catch(err => {
@@ -1517,7 +1542,7 @@
                                 <Button
                                     label="IP Ban"
                                     color="red"
-                                    on:click={() => ProjectClient.ipBanUser(selectedUsername, true)
+                                    on:click={() => !confirm("IP Ban this user? This may cause problems on large networks (like schools)") ? null : ProjectClient.ipBanUser(selectedUsername, true)
                                         .then(() => userIPBanned = true)
                                         .catch(err => {
                                             console.error(err);
@@ -1527,7 +1552,7 @@
                                 <Button
                                     label="Delete Account"
                                     color="red"
-                                    on:click={() => ProjectClient.deleteUserAccount(selectedUsername, banReason)
+                                    on:click={() => !confirm("PERMANENTLY DELETE THIS ACCOUNT?") ? null : ProjectClient.deleteUserAccount(selectedUsername, banReason)
                                         .then(() => selectedUsername = '')
                                         .catch(err => {
                                             console.error(err);
@@ -1969,9 +1994,15 @@
         background-color: #00c3ff22;
         border-radius: 10px;
         padding: 5px;
+        color: black;
+    }
+    .featured-project:visited {
+        color: black;
+    }
+    :global(body.dark-mode) .featured-project,
+    :global(body.dark-mode) .featured-project:visited {
         color: white;
     }
-    .featured-project:visited { color: white; }
     .featured-project img {
         aspect-ratio: 4 / 3;
         background-color: white;
@@ -2000,7 +2031,7 @@
         flex-direction: row;
         align-items: center;
         width: calc(100% - 8px);
-        height: 44px;
+        min-height: 44px;
         cursor: pointer;
     }
     .reports-user-button:active {
@@ -2350,7 +2381,7 @@
     .project-title-editable {
         background: none;
         border: none;
-        color: white;
+        color: black;
         font-weight: bold;
         font-size: larger;
         box-sizing: border-box;
@@ -2361,6 +2392,9 @@
         background: revert;
         border: revert;
         color: revert;
+    }
+    :global(body.dark-mode) .project-title-editable {
+        color: white;
     }
     .rejection-message {
         height: 24px;
@@ -2394,9 +2428,10 @@
         margin: 4px;
     } 
     .strings-listout {
-        white-space: pre;
-        word-break: break-all;
-    }
+        display: grid;
+        height: 40%;
+        margin: 4px;
+    } 
     .project-costume-asset {
         margin: 4px;
         padding: 4px;
