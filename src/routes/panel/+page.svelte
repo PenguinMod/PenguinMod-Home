@@ -79,6 +79,7 @@
             editor.setTheme('ace/theme/dawn');
     }
     async function onCodeAreaChanged(codeArea) {
+        if (!browser) return;
         if (!globalThis.window) return;
         ace = await import('brace');
         await import('brace/mode/yaml');
@@ -198,6 +199,7 @@
     let projectContentView = null;
     let unorderedStrings = '';
     function onSelectedProjectChanged(project) {
+        if (!browser) return;
         replacementThumbnail = null;
         replacementThumbnailUrl = null;
         reloadProject = !reloadProject;
@@ -222,6 +224,7 @@
             .catch(() => projectRejected = projectRejectionHard = true);
     }
     async function getProject() {
+        if (!browser) return;
         projectFileLoading = true;
         totalProgress = 0;
         progressLabel = 'Loading project JSON...';
@@ -275,6 +278,7 @@
     let bioChanged = false;
     let sourceBio = '';
     function onSelectedUserChange(username) {
+        if (!browser) return;
         if (!loggedIn) return;
 
         profileBadges = [];
@@ -317,6 +321,7 @@
 
     /* --- Preloaders --- */
     function onTabChange(tab) {
+        if (!browser) return;
         switch (tab) {
         case 'projects':
             projectReportsLoaded = false;
