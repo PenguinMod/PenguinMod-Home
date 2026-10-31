@@ -35,6 +35,18 @@
             Number(unix),
         ).toLocaleTimeString()}`;
     }
+    function toTrackTime(length) {
+        if (isNaN(length)) return `--:--`;
+        const minutes = String(Math.floor(length / 60) % 60).padStart(2, '0');
+        const seconds = String(Math.floor(length % 60)).padStart(2, '0'); 
+        const subSeconds = String(length % 1).slice(1, 4)
+        let out = `${minutes}:${seconds}`;
+        if (seconds >= 120) {
+            const hours = Math.floor(length / 60 / 60);
+            out = `${hours}:${out}`;
+        }
+        return out;
+    }
 
     let censorCostume;
     let censorAudio;
@@ -198,6 +210,7 @@
     let projectJson = null;
     let projectContentView = null;
     let unorderedStrings = '';
+    let soundPlaybackVolume = 1;
     function onSelectedProjectChanged(project) {
         if (!browser) return;
         replacementThumbnail = null;
@@ -840,7 +853,7 @@
                                                 .then(req => req.arrayBuffer())
                                                 .then(res => new Blob([res], { type: FileTypes.mimeTypePairs[BlobAndDataUrl.fileTypeFromDataArray(res)] }))
                                                 .then(async (blob) => {
-                                                    costume.link = await BlobAndDataUrl.blobToDataURL(blob);
+                                                    costume.link = URL.createObjectURL(blob);
                                                     totalProgress = ++i / assets;
                                                 }));
                                         }
@@ -968,27 +981,99 @@
                                 <br>
                                 {#each sprite.sounds as sound}
                                     <button class="project-sound-asset" on:click={() => sound.replace = !sound.replace}>
-                                        {#if sound.paused}
-                                            <button on:click={e => { e.stopPropagation(); sound.audio.play(); }}>
+                                        <audio
+                                            bind:this={sound.audio}
+                                            bind:paused={sound.paused}
+                                            bind:volume={soundPlaybackVolume}
+                                            on:pause={() => clearInterval(sound.frameLoop)}
+                                            on:loadedmetadata={() => sound.paused = true}
+                                            src="https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/{selectedProjectId}_{sound.md5ext}"
+                                            alt={sound.name}
+                                            controls
+                                            style="height: 0px; width: 0px"
+                                        />
+                                        <button
+                                            on:click={e => {
+                                                e.stopPropagation();
+                                                if (sound.paused) {
+                                                    sound.playProgress.style.transition = 'none';
+                                                    sound.frameLoop = setInterval(() => {
+                                                        sound.playProgress.style.width = `${100 * (sound.audio?.currentTime / sound.audio?.duration) || 0}%`;
+                                                        sound.playTimes.innerText = `${toTrackTime(sound.audio?.currentTime)} / ${toTrackTime(sound.audio?.duration)}`;
+                                                        sound.playProgress.style.transition = '';
+                                                    }, 1000 / 30);
+                                                    sound.audio.play();
+                                                    sound.audio.focus();
+                                                } else {
+                                                    sound.audio.pause();
+                                                } 
+                                            }}
+                                        >
+                                            {#if sound.paused}
                                                 <img
                                                     src="/stage_controls/gradient/play.svg"
                                                     alt="Play"
                                                 >
-                                            </button>
-                                        {:else}
-                                            <button on:click={e => { e.stopPropagation(); sound.audio.pause(); }}>
+                                            {:else}
                                                 <img
                                                     src="/stage_controls/gradient/pause.svg"
                                                     alt="Pause"
                                                 >
-                                            </button>
-                                        {/if}
-                                        <audio
-                                            bind:this={sound.audio}
-                                            bind:paused={sound.paused}
-                                            src="https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/{selectedProjectId}_{sound.md5ext}"
-                                            alt={sound.name}
-                                        />
+                                            {/if}
+                                            <div class="project-sound-controls">
+                                                <div
+                                                    class="volume-slider"
+                                                    bind:this={sound.volumeBar}
+                                                    title="Volume slider"
+                                                    on:mousedown={e => {
+                                                        if (e.buttons ^ 0b1) return;
+                                                        sound.volumeBar.style.left = '0';
+                                                        const onMove = e => {
+                                                            if (e.buttons ^ 0b1) return;
+                                                            if (!sound.volumeBar) return;
+                                                            const rect = sound.volumeBar.getBoundingClientRect();
+                                                            soundPlaybackVolume = Math.max(Math.min(1- ((e.clientY - rect.top) / rect.height), 1), 0);
+                                                        }; onMove(e);
+                                                        const onUp = () => {
+                                                            sound.volumeBar.style.left = '';
+                                                            document.removeEventListener('mousemove', onMove);
+                                                            document.removeEventListener('mouseup', onUp);
+                                                        }
+                                                        document.addEventListener('mouseup', onUp);
+                                                        document.addEventListener('mousemove', onMove);
+                                                    }}
+                                                >
+                                                    <div class="volume-slider-progress" style="height: {soundPlaybackVolume * 100}%"></div>
+                                                </div>
+                                                <div class="sound-length" bind:this={sound.playTimes}>{toTrackTime(sound.audio?.currentTime)} / {toTrackTime(sound.audio?.duration)}</div>
+                                                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                                <div
+                                                    class="sound-progress"
+                                                    bind:this={sound.progress}
+                                                    on:click={e => e.stopPropagation()}
+                                                    on:mousedown={e => {
+                                                        if (e.buttons ^ 0b1) return;
+                                                        sound.progress.style.left = '0';
+                                                        const onMove = e => {
+                                                            if (e.buttons ^ 0b1) return;
+                                                            if (!sound.progress) return;
+                                                            const rect = sound.progress.getBoundingClientRect();
+                                                            const pos = Math.max(Math.min((e.clientX - rect.left) / rect.width, 1), 0);
+                                                            sound.audio.currentTime = pos * sound.audio.duration;
+                                                        }; onMove(e);
+                                                        const onUp = () => {
+                                                            document.removeEventListener('mousemove', onMove);
+                                                            document.removeEventListener('mouseup', onUp);
+                                                            return false;
+                                                        }
+                                                        document.addEventListener('mouseup', onUp);
+                                                        document.addEventListener('mousemove', onMove);
+                                                    }}
+                                                >
+                                                    <div bind:this={sound.playProgress} style="width: {100 * (sound.audio?.currentTime / sound.audio?.duration) || 0}%"></div>
+                                                </div>
+                                            </div>
+                                        </button>
                                         <div>
                                             <input type="checkbox" bind:checked={sound.replace} name="sound-select">
                                             <label for="sound-select">{sound.name}</label>
@@ -1064,7 +1149,7 @@
             {/if}
             <div class="misc-members">
                 <div class="misc-member">
-                    Broadcast Messages
+                    <strong>Broadcast Messages</strong>
                     <div>
                         <input type="checkbox" name="updateTOS" bind:checked={broadcastTOSChange}>
                         <label for="updateTOS">Terms of Service</label>
@@ -1586,7 +1671,7 @@
                     </details>
                 {/if}
                 <div class="misc-member" style="height: revert; padding-bottom: 10px">
-                    Permitted Users
+                    <strong>Permitted Users</strong>
                     <strong class="title">Admins</strong>
                     <div class="permited-users-grid">
                         {#each adminsList as permitted}
@@ -1673,7 +1758,8 @@
                     </div>
                 </div>
                 <div class="misc-member">
-                    Bulk badges
+                    <strong>Bulk badges</strong>
+                    <div style="height: 10px"></div>
                     <div class="permited-users-grid">
                         {#each bulkUsernames as user}
                             <div class="permited-user-tile">
@@ -1706,96 +1792,98 @@
                         </button>
                     </div>
                     <div class="permited-users-grid" style="padding: 5px 0px">
-                        {#each bulkUserBadges as badge, idx}
-                            {#if ProfileBadges[badge]}
-                                <button
-                                    class="permited-user-profile-button"
-                                    on:click={() => { bulkUserBadges.splice(idx, 1); bulkUserBadges = bulkUserBadges; }}
-                                >
-                                    <img
-                                        class="profile-badge"
-                                        src={`/badges/${ProfileBadges[badge]}.png`}
-                                        alt="Badge"
-                                    />
-                                    <div class="profile-section-image-edit">
-                                        <img 
-                                            src="/account/remove.svg" 
-                                            alt="Remove Badge {TranslationHandler.text(
-                                                    `profile.badge.${badge}`,
-                                                    currentLang
-                                                ) || TranslationHandler.text(
-                                                    `profile.badge.${badge}`,
-                                                    'en'
-                                                )}"
+                        <div class="badge-group-outlining">
+                            {#each bulkUserBadges as badge, idx}
+                                {#if ProfileBadges[badge]}
+                                    <button
+                                        class="permited-user-profile-button"
+                                        on:click={() => { bulkUserBadges.splice(idx, 1); bulkUserBadges = bulkUserBadges; }}
+                                    >
+                                        <img
+                                            class="profile-badge"
+                                            src={`/badges/${ProfileBadges[badge]}.png`}
+                                            alt="Badge"
                                         />
-                                    </div>
-                                </button>
-                            {/if}
-                        {/each}
-                        <button
-                            class="add-profile-badge"
-                            style="margin: 0"
-                            on:click={e => {
-                                if (e.layerX > 32 || e.layerX < 0) return;
-                                if (e.layerY > 32 || e.layerY < 0) return;
-                                addBulkBadgesOpen = true
-                            }}
-                        >
-                            <img src="/account/add.svg" alt="Add Badge">
-                            <div
-                                class="pop-under centered"
-                                style="z-index: 20000;{addBulkBadgesOpen ? '' : 'display:none;'}"
-                            >
-                                <div class="full-badge-list">
-                                    {#each Object.keys(ProfileBadges) as badge}
-                                        {#if !bulkUserBadges.includes(badge)}
-                                            <input
-                                                type="checkbox"
-                                                class="profile-badge-selector"
-                                                style="background-image: url('/badges/{ProfileBadges[badge]}.png')"
-                                                alt={TranslationHandler.text(
-                                                    `profile.badge.${badge}`,
-                                                    currentLang
-                                                ) || TranslationHandler.text(
-                                                    `profile.badge.${badge}`,
-                                                    'en'
-                                                )}
-                                                title={TranslationHandler.text(
-                                                    `profile.badge.${badge}`,
-                                                    currentLang
-                                                ) || TranslationHandler.text(
-                                                    `profile.badge.${badge}`,
-                                                    'en'
-                                                )}
-                                                on:change={e => {
-                                                    if (e.target.checked) return selectedAddingBadges.push(badge);
-                                                    selectedAddingBadges = selectedAddingBadges.filter(toAdd => toAdd !== badge);
-                                                }}
+                                        <div class="profile-section-image-edit">
+                                            <img 
+                                                src="/account/remove.svg" 
+                                                alt="Remove Badge {TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        currentLang
+                                                    ) || TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        'en'
+                                                    )}"
                                             />
-                                        {/if}
-                                    {/each}
+                                        </div>
+                                    </button>
+                                {/if}
+                            {/each}
+                            <button
+                                class="add-profile-badge"
+                                style="margin: 0"
+                                on:click={e => {
+                                    if (e.layerX > 32 || e.layerX < 0) return;
+                                    if (e.layerY > 32 || e.layerY < 0) return;
+                                    addBulkBadgesOpen = true
+                                }}
+                            >
+                                <img src="/account/add.svg" alt="Add Badge">
+                                <div
+                                    class="pop-under centered"
+                                    style="z-index: 20000;{addBulkBadgesOpen ? '' : 'display:none;'}"
+                                >
+                                    <div class="full-badge-list">
+                                        {#each Object.keys(ProfileBadges) as badge}
+                                            {#if !bulkUserBadges.includes(badge)}
+                                                <input
+                                                    type="checkbox"
+                                                    class="profile-badge-selector"
+                                                    style="background-image: url('/badges/{ProfileBadges[badge]}.png')"
+                                                    alt={TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        currentLang
+                                                    ) || TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        'en'
+                                                    )}
+                                                    title={TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        currentLang
+                                                    ) || TranslationHandler.text(
+                                                        `profile.badge.${badge}`,
+                                                        'en'
+                                                    )}
+                                                    on:change={e => {
+                                                        if (e.target.checked) return selectedAddingBadges.push(badge);
+                                                        selectedAddingBadges = selectedAddingBadges.filter(toAdd => toAdd !== badge);
+                                                    }}
+                                                />
+                                            {/if}
+                                        {/each}
+                                    </div>
+                                    <Button
+                                        small
+                                        on:click={async e => {
+                                            e.stopPropagation();
+                                            bulkUserBadges.push(...selectedAddingBadges);
+                                            bulkUserBadges = bulkUserBadges;
+                                            selectedAddingBadges = [];
+                                            addBulkBadgesOpen = false;
+                                        }}
+                                        label="Add"
+                                    />
+                                    <Button
+                                        small
+                                        on:click={async e => {
+                                            e.stopPropagation();
+                                            addBulkBadgesOpen = false;
+                                        }}
+                                        label="Cancel"
+                                    />
                                 </div>
-                                <Button
-                                    small
-                                    on:click={async e => {
-                                        e.stopPropagation();
-                                        bulkUserBadges.push(...selectedAddingBadges);
-                                        bulkUserBadges = bulkUserBadges;
-                                        selectedAddingBadges = [];
-                                        addBulkBadgesOpen = false;
-                                    }}
-                                    label="Add"
-                                />
-                                <Button
-                                    small
-                                    on:click={async e => {
-                                        e.stopPropagation();
-                                        addBulkBadgesOpen = false;
-                                    }}
-                                    label="Cancel"
-                                />
-                            </div>
-                        </button>
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <input type="checkbox" bind:checked={bulkIsRemove} name="bulk-removes">
@@ -1823,7 +1911,7 @@
             <div class="card-chunk" style="grid-column: 2;">
                 <div class="misc-members">
                     <div class="misc-member">
-                        User IP Lookup
+                        <strong>User IP Lookup</strong>
                         <div class="text-controlable">
                             <div class="text-box-wrapper">
                                 <div class="inputs-inline">
@@ -1885,7 +1973,7 @@
                         </div>
                     </div>
                     <div class="misc-member">
-                        Profanity List
+                        <strong>Profanity List</strong>
                         <div class="code-controlable" style="height: 400px;">
                             <div style="width: 100%; height: 100%">
                                 <div class="code-box" bind:this={codeArea}></div>
@@ -2458,7 +2546,12 @@
         flex-direction: column;
         flex-grow: 2;
     }
-
+    .badge-group-outlining {
+        margin: 4px;
+        background: rgba(0,0,0,.15);
+        border-radius: 6px;
+        padding: 4px;
+    }
 
     .change-username-field {
         font-size: 40px;
@@ -2645,6 +2738,7 @@
         height: 32px;
     }
     .project-sound-asset > button {
+        position: relative;
         border: none;
         background: none;
         padding: none;
@@ -2655,6 +2749,53 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
+    }
+    .project-sound-controls {
+        overflow: hidden;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 128px;
+        height: 128px;
+        display: grid;
+        gap: 2px;
+        grid-template-columns: calc(100% - 14px) 12px;
+        grid-template-rows: calc(calc(100% - 1rem) - 12px) 1rem 8px;
+    }
+
+    .project-sound-controls:hover .volume-slider { left: 0; }
+    .volume-slider {
+        transition: left .25s ease-out;
+        position: relative;
+        left: 100%;
+        grid-column: 2;
+        box-sizing: border-box;
+        border-radius: 2px 0px 0px 2px;
+        overflow: hidden;
+    }
+    .volume-slider-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #00a2ff70;
+    }
+    .sound-length {
+        text-align: left;
+        color: black;
+        grid-column: 1 / 3;
+        padding-left: 4px;
+    }
+    :global(body.dark-mode) .sound-length { color: white; }
+    .sound-progress {
+        grid-row: 3;
+        grid-column: 1 / 3;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .sound-progress div {
+        background-color: #00c3ff7c;
+        height: 100%;
     }
 
     .projects-control {
