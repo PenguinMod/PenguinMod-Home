@@ -81,6 +81,7 @@
     async function onCodeAreaChanged(codeArea) {
         if (!globalThis.window) return;
         ace = await import('brace');
+        await import('brace/mode/yaml');
         await import('brace/mode/json');
         await import('brace/mode/javascript');
         await import('brace/theme/twilight');
@@ -184,6 +185,7 @@
     let selectedProjectReport = null;
     let selectedProjectId = linkedState.get('project');
     let replacementThumbnail = null;
+    let replacementThumbnailUrl = null;
     let projectFeatured = false;
     let projectCanFeature = true;
     let projectRejected = false;
@@ -197,6 +199,7 @@
     let unorderedStrings = '';
     function onSelectedProjectChanged(project) {
         replacementThumbnail = null;
+        replacementThumbnailUrl = null;
         reloadProject = !reloadProject;
         projectContentView = null;
         projectJson = null;
@@ -628,13 +631,14 @@
                                     const onceSelected = async () => {
                                         fileSelector.removeEventListener('change', onceSelected);
                                         replacementThumbnail = fileSelector.files[0];
+                                        replacementThumbnailUrl = await BlobAndDataUrl.blobToDataURL(replacementThumbnail);
                                     }
                                     fileSelector.addEventListener('change', onceSelected);
                                 }}
                             >
                                 <img
-                                    src={replacementThumbnail
-                                        ? URL.createObjectURL(replacementThumbnail)
+                                    src={replacementThumbnailUrl
+                                        ? replacementThumbnailUrl
                                         : `${PUBLIC_API_URL}/api/v1/projects/getproject?projectID=${selectedProjectId}&requestType=thumbnail`}
                                     alt={projectTitle}
                                 />
@@ -694,6 +698,7 @@
                             small
                             label="Goto project page"
                             noredirect
+                            style="width:100%"
                             link="{PUBLIC_STUDIO_URL}/#{selectedProjectId}"
                         />
                         {#if projectFeatured}
@@ -824,9 +829,9 @@
                                             costume.link = `https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/${selectedProjectId}_${costume.md5ext}`;
                                             promises.push(fetch(costume.link)
                                                 .then(req => req.arrayBuffer())
-                                                .then(res => new Blob([res], { type: 'image/svg+xml' }))
-                                                .then(blob => {
-                                                    costume.link = URL.createObjectURL(blob);
+                                                .then(res => new Blob([res], { type: FileTypes.mimeTypePairs[BlobAndDataUrl.fileTypeFromDataArray(res)] }))
+                                                .then(async (blob) => {
+                                                    costume.link = await BlobAndDataUrl.blobToDataURL(blob);
                                                     totalProgress = ++i / assets;
                                                 }));
                                         }
@@ -1417,7 +1422,7 @@
                             {/if}
                         </div>
                     </div>
-                    <div class="profile-featured-wrapper">
+                    <div class={`profile-featured-wrapper${!(featuredProjectId && featuredProjectId !== -1) ? " profile-featured-wrapper-empty" : ""}`}>
                         <div class="code-controlable">
                             <textarea
                                 class="profile-bio"
@@ -1438,13 +1443,15 @@
                                 />
                             </div>
                         </div>
-                        <a class="featured-project" href="https://studio.penguinmod.com/#{featuredProjectId}">
-                            <img
-                                src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectID=${featuredProjectId}&requestType=thumbnail`}
-                                alt={featuredProjectTitle}
-                            >
-                            <h2>{featuredProjectTitle}</h2>
-                        </a>
+                        {#if featuredProjectId && featuredProjectId !== -1}
+                            <a class="featured-project" href="https://studio.penguinmod.com/#{featuredProjectId}">
+                                <img
+                                    src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectID=${featuredProjectId}&requestType=thumbnail`}
+                                    alt={featuredProjectTitle}
+                                >
+                                <h2>{featuredProjectTitle}</h2>
+                            </a>
+                        {/if}
                     </div>
                     <div class="project-list">
                         {#each profileProjects as project}
@@ -1988,6 +1995,10 @@
         display: grid;
         gap: 10px;
         grid-template-columns: 50% 50%;
+    }
+    .profile-featured-wrapper-empty {
+        grid-template-columns: calc(100% - (2px + 10px + 10px)) 0%;
+        height: 180px;
     }
     .featured-project {
         text-align: center;
