@@ -125,9 +125,11 @@ class Authentication {
 
     static verifyToken(username, token) {
         return new Promise((resolve, reject) => {
-            fetch(
-                `${ProjectApi.OriginApiUrl}/api/v1/users/tokenlogin?username=${username}&token=${token}`,
-            )
+            fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/tokenlogin`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
                 .then((r) =>
                     r
                         .json()
@@ -156,17 +158,12 @@ class Authentication {
     }
     static logout() {
         return new Promise((resolve, reject) => {
-            const username = localStorage.getItem("username");
             const token = localStorage.getItem("token");
             fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/logout`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({
-                    username: username,
-                    token: token,
-                }),
             })
                 .then((res) => {
                     if (!res.ok) return reject("Not OK");
@@ -203,7 +200,12 @@ class Authentication {
         // its stupid but also easy. so i won't be changing it for now.
         if (!j.birthdayEntered || !j.countryEntered || !j.isEmailVerified) {
             const extra = await fetch(
-                `${ProjectApi.OriginApiUrl}/api/v1/users/extrainfostatus?token=${token}`,
+                `${ProjectApi.OriginApiUrl}/api/v1/users/extrainfostatus`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
             ).then((r) => r.json());
 
             j.birthdayEntered = extra.birthdayEntered;
@@ -224,10 +226,9 @@ class Authentication {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    username,
-                    token,
                     old_password: oldPassword,
                     new_password: newPassword,
                 }),
@@ -307,8 +308,8 @@ class Authentication {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
                     },
-                    body: JSON.stringify({ username, token }),
                 },
             )
                 .then((r) =>
@@ -330,8 +331,9 @@ class Authentication {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ username, token, newUsername }),
+                body: JSON.stringify({ newUsername }),
             })
                 .then((r) =>
                     r
@@ -341,7 +343,7 @@ class Authentication {
 
                             // clear userfromcode cache
                             Authentication.usernameFromCode(
-                                username,
+                                newUsername,
                                 token,
                                 true,
                             );
