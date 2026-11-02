@@ -6,6 +6,8 @@
     export let toggled = false;
     export let label = "";
     export let noredirect = false;
+    export let style = '';
+    export let small = false;
 
     // extras
     export let icon = false;
@@ -26,7 +28,9 @@
     >
         <button
             class={(highlighted ? "button button-highlight" : "button") +
-                (color ? ` ${color}` : "")}
+                (color ? ` ${color}` : "") +
+                (small ? " button-regular" : "")}
+            {style}
             on:click={event}
         >
             {#if icon}
@@ -41,7 +45,9 @@
     <button
         class={(highlighted ? "button button-highlight" : "button") +
             (color ? ` ${color}` : "") +
-            (toggled ? " button-toggled" : "")}
+            (toggled ? " button-toggled" : "") +
+            (small ? " button-regular" : "")}
+        {style}
         on:click={event}
     >
         {#if icon}
@@ -63,12 +69,25 @@
         outline-width: 2px;
         outline-style: solid;
         outline-color: rgba(0, 195, 255, 0.35);
+        border-color: rgba(0, 195, 255, 0.35);
         color: white;
         background-color: #00c3ff;
         cursor: pointer;
         display: flex;
         flex-direction: row;
         align-items: center;
+    }
+    .button-regular {
+        margin: revert;
+        padding: revert;
+        border: revert;
+        font: inherit;
+        font-size: 13.333px;
+        outline: revert;
+        border-color: rgba(0, 195, 255, 0.35);
+        justify-content: center;
+        color: white;
+        display: inline-flex;
     }
     .button:focus {
         outline-width: 4px;
@@ -85,6 +104,9 @@
         color: black;
         font-weight: normal;
     }
+    :global(body.dark-mode) .button-regular {
+        color: black;
+    }
     :global(body.dark-mode) .button-toggled {
         outline-color: rgba(255, 255, 255, 0.1) !important;
         border: 1px solid rgba(255, 255, 255, 0.35);
@@ -94,21 +116,30 @@
     .remix {
         background-color: #48ac72;
         outline-color: rgba(72, 172, 114, 0.35);
+        border-color: rgba(72, 172, 114, 0.35);
+        color: white;
     }
     .gray {
         background-color: #797979;
         outline-color: rgba(112, 112, 112, 0.35);
+        border-color: rgba(112, 112, 112, 0.35);
+        color: white;
     }
     .orange {
         background-color: #ffab00;
         outline-color: rgba(255, 171, 0, 0.35);
+        border-color: rgba(255, 171, 0, 0.35);
     }
     .red {
         background-color: #ff5151;
         outline-color: rgba(255, 81, 81, 0.35);
+        border-color: rgba(255, 81, 81, 0.35);
+        color: white;
     }
     .purple {
         background-color: #ab51ff;
         outline-color: rgba(185, 81, 255, 0.35);
+        border-color: rgba(185, 81, 255, 0.35);
+        color: white;
     }
 </style>
