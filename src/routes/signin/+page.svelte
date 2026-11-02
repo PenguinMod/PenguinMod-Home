@@ -20,7 +20,7 @@
     import Language from "../../resources/language.js";
     import TranslationHandler from "../../resources/translations.js";
     import Authentication from "../../resources/authentication.js";
-    
+
     import validateRedirect from "../../resources/validate-redirect.js";
 
     let currentLang = "en";
@@ -115,7 +115,9 @@
                         }
 
                         // redirect
-                        window.location.href = validateRedirect(redir_link ? redir_link : "/");
+                        window.location.href = validateRedirect(
+                            redir_link ? redir_link : "/",
+                        );
                     } else {
                         wrongInfo = true;
                     }
@@ -133,53 +135,8 @@
             });
     };
 
-    function addOAuthEventListener() {
-        window.addEventListener("message", (event) => {
-            if (event.origin !== PUBLIC_API_URL) return;
-
-            if (!event.data) return;
-
-            const { username, token } = event.data;
-
-            localStorage.setItem("username", username);
-            localStorage.setItem("token", token);
-
-            if (embed) {
-                const opener = window.opener || window.parent;
-
-                function post(data) {
-                    opener.postMessage(data, `/`);
-                }
-
-                post();
-
-                window.close();
-                return;
-            }
-
-            location.href = validateRedirect(redir_link ? redir_link : "/");
-        });
-    }
-
     function oauthFrame(method) {
-        let iframe = window.open(
-            `${PUBLIC_API_URL}/api/v1/users/loginoauthaccount?method=${method}`,
-            `Login with ${method}`,
-            "width=500,height=500",
-        );
-
-        if (!iframe) {
-            alert(
-                TranslationHandler.textSafe(
-                    "login.oauth.nopopup",
-                    currentLang,
-                    "Please enable popups to login with {{WEBSITE}}.",
-                ).replace("{{WEBSITE}}", method),
-            );
-            return;
-        }
-
-        addOAuthEventListener();
+        window.location = `${PUBLIC_API_URL}/api/v1/users/loginoauthaccount?method=${method}`;
     }
 
     function googleOAuth() {

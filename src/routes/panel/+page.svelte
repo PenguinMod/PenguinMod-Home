@@ -191,16 +191,6 @@
     };
 
     let unapprovedPage = 1;
-    function openProjectsMenu(type) {
-        // type is assumed to be unapproved because we have nothing else right now
-        unapprovedProjects = [];
-        contentWithReports = [];
-        ProjectClient.getRemovedProjects(unapprovedPage - 1).then(
-            (unapprovedProjs) => {
-                unapprovedProjects = unapprovedProjs;
-            },
-        );
-    }
     function openReportsMenu(type) {
         unapprovedProjects = [];
         contentWithReports = [];
@@ -448,7 +438,10 @@
                                     continue;
                                 }
 
-                                const shouldFetch = await confirm("Do you want to connect to: " + extensionData[extensionId]);
+                                const shouldFetch = await confirm(
+                                    "Do you want to connect to: " +
+                                        extensionData[extensionId],
+                                );
                                 if (!shouldFetch) {
                                     extensionData[extensionId] =
                                         "(Denied connection)";
@@ -958,7 +951,7 @@
             `Are you sure you want to ${verbAdmin} & ${verbApprover} Type "ok" to confirm.`,
         );
         if (promptMessage !== "ok") return;
-        ProjectClient.assingUsersPermisions(
+        ProjectClient.assignUserPermissions(
             userSelectionData.username,
             userSelectionData.admin,
             userSelectionData.approver,
@@ -1259,20 +1252,21 @@
                             <p>
                                 {extensionId}:
                                 {#if inspectMenuDetails.extensionUrls[extensionId]}
-                                    <span><i>
-                                        {String(
-                                            inspectMenuDetails.extensionUrls[
-                                                extensionId
-                                            ],
-                                        ).length > 456
-                                            ? "Extension URL is too long"
-                                            : String(
-                                                  inspectMenuDetails
-                                                      .extensionUrls[
-                                                      extensionId
-                                                  ],
-                                              )}
-                                    </i></span>
+                                    <span
+                                        ><i>
+                                            {String(
+                                                inspectMenuDetails
+                                                    .extensionUrls[extensionId],
+                                            ).length > 456
+                                                ? "Extension URL is too long"
+                                                : String(
+                                                      inspectMenuDetails
+                                                          .extensionUrls[
+                                                          extensionId
+                                                      ],
+                                                  )}
+                                        </i></span
+                                    >
 
                                     <textarea
                                         value={inspectMenuDetails.extensionData[
