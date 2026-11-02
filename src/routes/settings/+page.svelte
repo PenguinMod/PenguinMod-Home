@@ -143,6 +143,7 @@
         loggedInChange(username, privateCode);
     });
 
+    // TODO: don't open a popup for this
     function changePassword() {
         const url = "/changepassword";
         let login;
@@ -156,9 +157,9 @@
                 const username = event.data.username;
                 const _token = event.data.token;
 
-                if (username && token) {
+                if (username && _token) {
                     localStorage.setItem("username", username);
-                    localStorage.setItem("token", token);
+                    localStorage.setItem("token", _token);
                     token = _token;
                     // reload but add page query param set to the current tab
                     location.href = `?page=${encodeURIComponent(currentTab)}`;
@@ -312,44 +313,23 @@
             });
     }
 
-    function addOAuthEventListener() {
-        return new Promise((resolve) => {
-            window.addEventListener("message", (event) => {
-                if (event.origin !== PUBLIC_API_URL) return;
-
-                if (!event.data) return;
-
-                const { username, token } = event.data;
-
-                localStorage.setItem("username", username);
-                localStorage.setItem("token", token);
-
-                resolve();
-            });
-        });
-    }
-
     function oauthFrame(method) {
-        let iframe = window.open(
-            `${PUBLIC_API_URL}/api/v1/users/addoauthmethod?method=${method}&username=${ProjectClient.username}&token=${ProjectClient.token}`,
-            `Sign in with ${method}`,
-            "width=500,height=500",
-        );
+        fetch(`${PUBLIC_API_URL}/api/v1/users/getottcode`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then((res) => res.json())
+            .then((res) => {
+                if (!res.code) {
+                    throw "NoCode";
+                }
 
-        if (!iframe) {
-            alert(
-                TranslationHandler.textSafe(
-                    "login.oauth.nopopup",
-                    currentLang,
-                    "Please enable popups to login with {{WEBSITE}}.",
-                ).replace("{{WEBSITE}}", method),
-            );
-            return;
-        }
-
-        addOAuthEventListener().then(() => {
-            location.href = `?page=${encodeURIComponent(currentTab)}`;
-        });
+                window.location = `${PUBLIC_API_URL}/api/v1/users/addoauthmethod?method=${method}&code=${res.code}`;
+            })
+            .catch((err) => {
+                alert(`Please report this via our contact page: ${err}`);
+            });
     }
     function loginMethodToggled(method, name) {
         if (loginMethods.includes(method)) {

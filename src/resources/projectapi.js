@@ -121,8 +121,12 @@ class ProjectApi {
     }
     static getProfile(user, includeBio) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/profile?target=${encodeURIComponent(user)}${includeBio ? "&bio=true" : ""}&username=${encodeURIComponent(localStorage.getItem("username"))}&token=${encodeURIComponent(localStorage.getItem("token"))}`;
-            fetch(url)
+            const url = `${OriginApiUrl}/api/v1/users/profile?target=${encodeURIComponent(user)}${includeBio ? "&bio=true" : ""}`;
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            })
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
@@ -153,8 +157,12 @@ class ProjectApi {
     static getProjects(page, oldFirst = false, username = "", token = "") {
         return new Promise((resolve, reject) => {
             const reverseParam = oldFirst ? "&reverse=true" : "";
-            const url = `${OriginApiUrl}/api/v1/projects/getprojects?page=${page}${reverseParam}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
-            fetch(url)
+            const url = `${OriginApiUrl}/api/v1/projects/getprojects?page=${page}${reverseParam}`;
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
@@ -186,20 +194,20 @@ class ProjectApi {
         reverse = false,
     ) {
         const query = searchQuery.split(":", 1)[0];
-        let api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(query)}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
+        let api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(query)}&reverse=${reverse}`;
         switch (query) {
             case "user":
                 if (allow_user) {
                     const userQuery = searchQuery.split(":");
                     userQuery.shift();
-                    api = `${OriginApiUrl}/api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
+                    api = `${OriginApiUrl}/api/v1/projects/searchusers?page=${page}&query=${encodeURIComponent(userQuery.join())}`;
                     break;
                 }
             // fallthrough
             case "by":
                 const byQuery = searchQuery.split(":");
                 byQuery.shift();
-                api = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(byQuery.join())}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
+                api = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(byQuery.join())}`;
                 break;
             case "remixes":
                 const projectID = searchQuery.split(":");
@@ -218,19 +226,23 @@ class ProjectApi {
             case "loves":
                 const actual_query = searchQuery.split(":");
                 actual_query.shift();
-                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${encodeURIComponent(query)}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
+                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(actual_query.join())}&type=${encodeURIComponent(query)}`;
                 break;
             case "sort":
                 const actualSorts = searchQuery.split(":");
                 actualSorts.shift();
-                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(query)}&type=${encodeURIComponent(actualSorts.join())}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}&reverse=${reverse}`;
+                api = `${OriginApiUrl}/api/v1/projects/searchprojects?page=${page}&query=${encodeURIComponent(query)}&type=${encodeURIComponent(actualSorts.join())}&reverse=${reverse}`;
                 break;
             default:
                 break;
         }
 
         return new Promise((resolve, reject) => {
-            fetch(api)
+            fetch(api, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
@@ -245,10 +257,6 @@ class ProjectApi {
                     reject(err);
                 });
         });
-    }
-
-    getRemovedProjects() {
-        throw new Error("Unapproved Projects can only be viewed in a client");
     }
 
     /**
@@ -277,8 +285,12 @@ class ProjectApi {
 
     async getFrontPage() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/frontpage?token=${encodeURIComponent(this.token)}`;
-            fetch(url)
+            const url = `${OriginApiUrl}/api/v1/projects/frontpage`;
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     if (res.status === 429) return reject(429);
                     if (!res.ok) {
@@ -333,8 +345,12 @@ class ProjectApi {
 
     static getProjectRemixes(id, page = 0, username, token) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getremixes?projectID=${encodeURIComponent(id)}&page=${page}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
-            fetch(url)
+            const url = `${OriginApiUrl}/api/v1/projects/getremixes?projectID=${encodeURIComponent(id)}&page=${page}`;
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
@@ -384,9 +400,12 @@ class ProjectApi {
     async downloadHardRejectedProject(id) {
         return new Promise(
             ((resolve, reject) => {
-                const params = `project=${encodeURIComponent(id)}&username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
-                const url = `${OriginApiUrl}/api/v1/projects/downloadHardReject?${params}`;
-                fetch(url)
+                const url = `${OriginApiUrl}/api/v1/projects/downloadHardReject?project=${encodeURIComponent(id)}`;
+                fetch(url, {
+                    headers: {
+                        Authorization: `Bearer ${this.token}`,
+                    },
+                })
                     .then((res) => {
                         if (!res.ok) {
                             res.text().then(reject);
@@ -430,8 +449,12 @@ class ProjectApi {
 
     getAllPermitedUsers() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/getmods?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
-            fetch(url)
+            const url = `${OriginApiUrl}/api/v1/users/getmods`;
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
@@ -439,8 +462,12 @@ class ProjectApi {
                     }
                     res.json().then((users) => {
                         const mods = users.mods;
-                        const url = `${OriginApiUrl}/api/v1/users/getadmins?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
-                        fetch(url)
+                        const url = `${OriginApiUrl}/api/v1/users/getadmins`;
+                        fetch(url, {
+                            headers: {
+                                Authorization: `Bearer ${this.token}`,
+                            },
+                        })
                             .then((res) => {
                                 if (!res.ok) {
                                     res.text().then(reject);
@@ -471,8 +498,12 @@ class ProjectApi {
 
     getMyProjects(page) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getmyprojects?page=${page}&username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
-            fetch(url)
+            const url = `${OriginApiUrl}/api/v1/projects/getmyprojects?page=${page}`;
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
@@ -489,8 +520,12 @@ class ProjectApi {
     }
     getUserProjects(user, page) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(user)}&username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
-            fetch(url)
+            const url = `${OriginApiUrl}/api/v1/projects/getprojectsbyauthor?page=${page}&authorUsername=${encodeURIComponent(user)}`;
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
@@ -507,8 +542,12 @@ class ProjectApi {
     }
     getMyFeed(page) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/getMyFeed?page=${page}&username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
-            fetch(url)
+            const url = `${OriginApiUrl}/api/v1/users/getMyFeed?page=${page}`;
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
@@ -526,8 +565,12 @@ class ProjectApi {
     }
     getMyMessages(page) {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/getmessages?page=${page}&username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
-            fetch(url)
+            const url = `${OriginApiUrl}/api/v1/users/getmessages?page=${page}`;
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
@@ -544,8 +587,12 @@ class ProjectApi {
     }
     getMessageCount() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/getmessagecount?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
-            fetch(url)
+            const url = `${OriginApiUrl}/api/v1/users/getmessagecount`;
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
@@ -563,8 +610,12 @@ class ProjectApi {
 
     getUnreadMessageCount() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/getunreadmessagecount?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
-            fetch(url)
+            const url = `${OriginApiUrl}/api/v1/users/getunreadmessagecount`;
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
@@ -606,14 +657,15 @@ class ProjectApi {
     toggleFollowingUser(username, toggle) {
         return new Promise((resolve, reject) => {
             const data = {
-                username: this.username,
-                token: this.token,
                 target: username,
                 toggle,
             };
             const url = `${OriginApiUrl}/api/v1/users/follow`;
             fetch(url, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -635,8 +687,6 @@ class ProjectApi {
     readMessage(id) {
         return new Promise((resolve, reject) => {
             const data = {
-                username: this.username,
-                token: this.token,
                 messageID: id,
             };
             if (typeof id !== "string") {
@@ -645,7 +695,10 @@ class ProjectApi {
             }
             const url = `${OriginApiUrl}/api/v1/users/markMessageAsRead`;
             fetch(url, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -666,14 +719,9 @@ class ProjectApi {
 
     markAllMessagesAsRead() {
         return new Promise((resolve, reject) => {
-            const data = {
-                username: this.username,
-                token: this.token,
-            };
             const url = `${OriginApiUrl}/api/v1/users/markAllMessagesAsRead`;
             fetch(url, {
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
+                headers: { Authorization: `Bearer ${this.token}` },
                 method: "POST",
             })
                 .then((res) => {
@@ -694,14 +742,15 @@ class ProjectApi {
     disputeMessage(id, text) {
         return new Promise((resolve, reject) => {
             const data = {
-                username: this.username,
-                token: this.token,
                 messageID: id,
                 dispute: text,
             };
             const url = `${OriginApiUrl}/api/v1/projects/dispute`;
             fetch(url, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -724,8 +773,12 @@ class ProjectApi {
         if (type !== "project" && type !== "user")
             throw new Error("Invalid reporting type");
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/reports/getReportsByTarget?target=${encodeURIComponent(userOrId)}&username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}&page=${page}`;
-            fetch(url)
+            const url = `${OriginApiUrl}/api/v1/reports/getReportsByTarget?target=${encodeURIComponent(userOrId)}&page=${page}`;
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
@@ -744,8 +797,12 @@ class ProjectApi {
         if (type !== "project" && type !== "user")
             throw new Error("Invalid reporting type");
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/reports/getReports?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}&type=${encodeURIComponent(type)}&page=${page}`;
-            fetch(url)
+            const url = `${OriginApiUrl}/api/v1/reports/getReports?type=${encodeURIComponent(type)}&page=${page}`;
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
@@ -763,13 +820,14 @@ class ProjectApi {
     closeReport(id) {
         return new Promise((resolve, reject) => {
             const data = {
-                username: this.username,
-                token: this.token,
                 reportID: id,
             };
             const url = `${OriginApiUrl}/api/v1/reports/deleteReport`;
             fetch(url, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -789,13 +847,14 @@ class ProjectApi {
     restoreRejectedProject(id) {
         return new Promise((resolve, reject) => {
             const data = {
-                username: this.username,
-                token: this.token,
                 project: id,
             };
             const url = `${OriginApiUrl}/api/v1/projects/restore`;
             fetch(url, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -814,13 +873,14 @@ class ProjectApi {
     deleteRejectedProject(id) {
         return new Promise((resolve, reject) => {
             const data = {
-                username: this.username,
-                token: this.token,
                 projectID: id,
             };
             const url = `${OriginApiUrl}/api/v1/projects/hardDeleteProject`;
             fetch(url, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -838,8 +898,12 @@ class ProjectApi {
     }
     getProfanityFilter() {
         return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/misc/getProfanityList?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
-            fetch(url)
+            const url = `${OriginApiUrl}/api/v1/misc/getProfanityList`;
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     res.json()
                         .then((json) => {
@@ -862,12 +926,13 @@ class ProjectApi {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/misc/setProfanityList`;
             const data = {
-                username: this.username,
-                token: this.token,
                 json: newData,
             };
             fetch(url, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -892,13 +957,14 @@ class ProjectApi {
     setUserBadges(target, badges) {
         return new Promise((resolve, reject) => {
             const data = {
-                username: this.username,
-                token: this.token,
                 badges,
                 target,
             };
             fetch(`${OriginApiUrl}/api/v1/users/setBadges`, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -923,14 +989,15 @@ class ProjectApi {
     setUsersBadges(targets, badges, optIsRemoving) {
         return new Promise((resolve, reject) => {
             const data = {
-                username: this.username,
-                token: this.token,
                 targets,
                 badges,
                 removing: optIsRemoving,
             };
             fetch(`${OriginApiUrl}/api/v1/users/setbadgesmultiple`, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -955,15 +1022,16 @@ class ProjectApi {
     banUser(username, reason, time, toggle) {
         return new Promise((resolve, reject) => {
             const data = {
-                username: this.username,
-                token: this.token,
                 target: username,
                 reason,
                 toggle: toggle,
                 time,
             };
             fetch(`${OriginApiUrl}/api/v1/users/ban`, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -987,8 +1055,6 @@ class ProjectApi {
     }
     reportContent(type, nameOrId, reason) {
         const body = {
-            username: this.username,
-            token: this.token,
             report: reason,
             target: nameOrId,
             type,
@@ -1001,6 +1067,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body: JSON.stringify(body),
             })
@@ -1022,11 +1089,9 @@ class ProjectApi {
                 });
         });
     }
-    assingUsersPermisions(username, admin, approver) {
+    assignUserPermissions(username, admin, approver) {
         return new Promise((resolve, reject) => {
             const body = {
-                username: this.username,
-                token: this.token,
                 target: username,
                 admin,
                 approver,
@@ -1035,6 +1100,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body: JSON.stringify(body),
             })
@@ -1060,14 +1126,13 @@ class ProjectApi {
     setErrorAllGetProjects(enabled) {
         return new Promise((resolve, reject) => {
             const body = JSON.stringify({
-                username: this.username,
-                token: this.token,
                 toggle: enabled,
             });
             fetch(`${OriginApiUrl}/api/v1/projects/toggleviewing`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -1092,14 +1157,13 @@ class ProjectApi {
     setErrorAllUploadProjects(enabled) {
         return new Promise((resolve, reject) => {
             const body = JSON.stringify({
-                username: this.username,
-                token: this.token,
                 toggle: enabled,
             });
             fetch(`${OriginApiUrl}/api/v1/projects/toggleuploading`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -1124,14 +1188,13 @@ class ProjectApi {
     setErrorAccountCreation(enabled) {
         return new Promise((resolve, reject) => {
             const body = JSON.stringify({
-                username: this.username,
-                token: this.token,
                 toggle: enabled,
             });
             fetch(`${OriginApiUrl}/api/v1/projects/toggleaccountcreation`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -1157,8 +1220,6 @@ class ProjectApi {
     deleteProject(id, reason) {
         const body = JSON.stringify({
             projectID: id,
-            username: this.username,
-            token: this.token,
             reason,
         });
 
@@ -1167,6 +1228,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -1192,7 +1254,6 @@ class ProjectApi {
     removeProjectThumbnail(id) {
         const body = JSON.stringify({
             projectID: String(id),
-            token: this.token,
         });
 
         return new Promise((resolve, reject) => {
@@ -1200,6 +1261,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -1224,14 +1286,15 @@ class ProjectApi {
 
     rejectProject(id, reason) {
         const data = {
-            token: this.token,
-            username: this.username,
             project: id,
             message: reason,
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/softreject`, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -1256,14 +1319,15 @@ class ProjectApi {
 
     hardRejectProject(id, reason) {
         const data = {
-            token: this.token,
-            username: this.username,
             project: id,
             message: reason,
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/hardreject`, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -1287,14 +1351,9 @@ class ProjectApi {
     }
 
     attemptRankUp() {
-        const data = {
-            token: this.token,
-            username: this.username,
-        };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/users/requestrankup`, {
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
+                headers: { Authorization: `Bearer ${this.token}` },
                 method: "POST",
             })
                 .then((res) => {
@@ -1325,8 +1384,6 @@ class ProjectApi {
     }
     setBio(text, adminForced, adminTarget) {
         const data = {
-            username: this.username,
-            token: this.token,
             bio: text,
             target: adminTarget,
         };
@@ -1334,7 +1391,10 @@ class ProjectApi {
             fetch(
                 `${OriginApiUrl}/api/v1/users/${adminForced ? "setBioAdmin" : "setBio"}`,
                 {
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${this.token}`,
+                    },
                     body: JSON.stringify(data),
                     method: "POST",
                 },
@@ -1359,14 +1419,15 @@ class ProjectApi {
     }
     setMyFeaturedProject(id, title) {
         const data = {
-            username: this.username,
-            token: this.token,
             project: id,
             title,
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/users/setmyfeaturedproject`, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -1391,14 +1452,15 @@ class ProjectApi {
     }
     filloutSafetyDetails(birthday, country) {
         const data = {
-            username: this.username,
-            token: this.token,
             birthday,
             country,
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/users/filloutSafetyDetails`, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -1422,14 +1484,15 @@ class ProjectApi {
     }
     respondToDispute(messageId, text) {
         const data = {
-            token: this.token,
-            username: this.username,
             disputeID: messageId,
             message: text,
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/modresponse`, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -1453,15 +1516,16 @@ class ProjectApi {
     }
     sendModeratorMessage(target, text, disputable) {
         const data = {
-            token: this.token,
-            username: this.username,
             target,
             message: text,
             disputable,
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/modmessage`, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -1485,13 +1549,14 @@ class ProjectApi {
     }
     deleteModeratorMessage(messageID) {
         const data = {
-            username: this.username,
-            token: this.token,
             messageID,
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/v1/projects/deletemodmessage`, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(data),
                 method: "POST",
             })
@@ -1515,8 +1580,6 @@ class ProjectApi {
     }
     addMessage(type, target, data) {
         const gdata = {
-            token: this.token,
-            username: this.username,
             target,
             message: {
                 ...data,
@@ -1525,7 +1588,10 @@ class ProjectApi {
         };
         return new Promise((resolve, reject) => {
             fetch(`${OriginApiUrl}/api/users/addMessage`, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 body: JSON.stringify(gdata),
                 method: "POST",
             })
@@ -1906,32 +1972,8 @@ class ProjectApi {
         });
     }
 
-    approveProject(id, webhook) {
-        const url = `${OriginApiUrl}/api/projects/approve?token=${encodeURIComponent(this.token)}&approver=${encodeURIComponent(this.username)}&webhook=${encodeURIComponent(webhook)}&id=${encodeURIComponent(id)}`;
-        return new Promise((resolve, reject) => {
-            fetch(url)
-                .then((res) => {
-                    res.json()
-                        .then((json) => {
-                            if (!res.ok) {
-                                reject(json.error);
-                                return;
-                            }
-                            resolve(json.id);
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
-    }
     featureProject(id, value) {
         const body = JSON.stringify({
-            username: this.username,
-            token: this.token,
             projectID: id,
             toggle: value,
         });
@@ -1940,6 +1982,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -1963,7 +2006,6 @@ class ProjectApi {
     }
     setCanBeFeatured(id, value) {
         const body = JSON.stringify({
-            token: this.token,
             projectID: id,
             toggle: value,
         });
@@ -1972,6 +2014,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -2017,12 +2060,13 @@ class ProjectApi {
         const url = `${OriginApiUrl}/api/v1/projects/interactions/${type}Toggle`;
         return new Promise((resolve, reject) => {
             fetch(url, {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
+                },
                 method: "POST",
                 body: JSON.stringify({
                     projectId: id,
-                    username: this.username,
-                    token: this.token,
                     toggle: toggle,
                 }),
             })
@@ -2045,9 +2089,13 @@ class ProjectApi {
         });
     }
     getVoteStates(id) {
-        const url = `${OriginApiUrl}/api/v1/projects/getuserstatewrapper?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}&projectId=${encodeURIComponent(id)}`;
+        const url = `${OriginApiUrl}/api/v1/projects/getuserstatewrapper?projectId=${encodeURIComponent(id)}`;
         return new Promise((resolve, reject) => {
-            fetch(url)
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     res.json()
                         .then((json) => {
@@ -2072,8 +2120,6 @@ class ProjectApi {
 
     setLastPolicyUpdate(policies) {
         const body = JSON.stringify({
-            username: this.username,
-            token: this.token,
             types: policies,
         });
         return new Promise((resolve, reject) => {
@@ -2081,6 +2127,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -2147,12 +2194,8 @@ class ProjectApi {
             fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
-                body: JSON.stringify({
-                    username: this.username,
-                    token: this.token,
-                }),
             })
                 .then((res) => {
                     res.json()
@@ -2177,8 +2220,6 @@ class ProjectApi {
         const url = `${OriginApiUrl}/api/v1/users/privateProfile`;
 
         const body = JSON.stringify({
-            username: this.username,
-            token: this.token,
             privateProfile,
             privateToFollowing,
         });
@@ -2188,6 +2229,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -2215,8 +2257,6 @@ class ProjectApi {
         const url = `${OriginApiUrl}/api/v1/users/banuserip`;
 
         const body = JSON.stringify({
-            username: this.username,
-            token: this.token,
             target: username,
             toggle,
         });
@@ -2226,6 +2266,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -2252,8 +2293,6 @@ class ProjectApi {
         const url = `${OriginApiUrl}/api/v1/users/deleteaccount`;
 
         const body = JSON.stringify({
-            username: this.username,
-            token: this.token,
             target: username,
             reason,
         });
@@ -2263,6 +2302,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -2286,12 +2326,14 @@ class ProjectApi {
     }
 
     getConnectedIPs(username) {
-        const url = `${OriginApiUrl}/api/v1/users/getAllIPs`;
-
-        const query = `?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}&target=${encodeURIComponent(username)}`;
+        const url = `${OriginApiUrl}/api/v1/users/getAllIPs?target=${encodeURIComponent(username)}`;
 
         return new Promise((resolve, reject) => {
-            fetch(url + query)
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     res.json()
                         .then((json) => {
@@ -2312,12 +2354,14 @@ class ProjectApi {
     }
 
     getConnectedUsers(ip) {
-        const url = `${OriginApiUrl}/api/v1/users/getAllAccountsWithIP`;
-
-        const query = `?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}&target=${encodeURIComponent(ip)}`;
+        const url = `${OriginApiUrl}/api/v1/users/getAllAccountsWithIP?target=${encodeURIComponent(ip)}`;
 
         return new Promise((resolve, reject) => {
-            fetch(url + query)
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     res.json()
                         .then((json) => {
@@ -2338,12 +2382,14 @@ class ProjectApi {
     }
 
     getAlts(target_username) {
-        const url = `${OriginApiUrl}/api/v1/users/getAlts`;
-
-        const query = `?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}&target=${encodeURIComponent(target_username)}`;
+        const url = `${OriginApiUrl}/api/v1/users/getAlts?target=${encodeURIComponent(target_username)}`;
 
         return new Promise((resolve, reject) => {
-            fetch(url + query)
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     res.json()
                         .then((json) => {
@@ -2367,8 +2413,6 @@ class ProjectApi {
         const url = `${OriginApiUrl}/api/v1/users/banip`;
 
         const body = JSON.stringify({
-            username: this.username,
-            token: this.token,
             targetIP: ip,
             toggle,
         });
@@ -2378,6 +2422,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -2404,8 +2449,6 @@ class ProjectApi {
         const url = `${OriginApiUrl}/api/v1/users/changeUsername`;
 
         const body = JSON.stringify({
-            username: this.username,
-            token: this.token,
             newUsername: newName,
         });
 
@@ -2414,6 +2457,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -2439,8 +2483,6 @@ class ProjectApi {
         const url = `${OriginApiUrl}/api/v1/users/changeusernameadmin`;
 
         const body = JSON.stringify({
-            username: this.username,
-            token: this.token,
             target: targetUsername,
             newUsername: newName,
         });
@@ -2450,6 +2492,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -2473,11 +2516,12 @@ class ProjectApi {
     }
     setPFP(file) {
         return new Promise((resolve, reject) => {
-            const API_ENDPOINT = `${OriginApiUrl}/api/v1/users/setpfp?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}`;
+            const API_ENDPOINT = `${OriginApiUrl}/api/v1/users/setpfp`;
             const request = new XMLHttpRequest();
             const formData = new FormData();
 
             request.open("POST", API_ENDPOINT, true);
+            request.setRequestHeader("Authorization", `Bearer ${this.token}`);
             request.onload = () => {
                 const response = JSON.parse(request.response);
 
@@ -2525,8 +2569,6 @@ class ProjectApi {
         const url = `${OriginApiUrl}/api/v1/users/setEmail`;
 
         const body = JSON.stringify({
-            username: this.username,
-            token: this.token,
             email,
         });
 
@@ -2535,6 +2577,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -2562,8 +2605,6 @@ class ProjectApi {
         const url = `${OriginApiUrl}/api/v1/users/removeoauthmethod`;
 
         const body = JSON.stringify({
-            username: this.username,
-            token: this.token,
             method,
         });
 
@@ -2572,6 +2613,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -2598,8 +2640,6 @@ class ProjectApi {
         const url = `${OriginApiUrl}/api/v1/users/blockuser`;
 
         const body = JSON.stringify({
-            username: this.username,
-            token: this.token,
             target: user,
             active,
         });
@@ -2609,6 +2649,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -2628,10 +2669,14 @@ class ProjectApi {
     }
 
     checkIfBlocked(user) {
-        const url = `${OriginApiUrl}/api/v1/users/hasblocked?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}&target=${encodeURIComponent(user)}`;
+        const url = `${OriginApiUrl}/api/v1/users/hasblocked?target=${encodeURIComponent(user)}`;
 
         return new Promise((resolve, reject) => {
-            fetch(url)
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     res.json()
                         .then((json) => {
@@ -2650,11 +2695,7 @@ class ProjectApi {
     registerView(projectID) {
         const url = `${OriginApiUrl}/api/v1/projects/interactions/registerView`;
 
-        // ?username=${encodeURIComponent(this.username)}&token=${encodeURIComponent(this.token)}&projectID=${encodeURIComponent(projectID)}
-
         const body = JSON.stringify({
-            username: this.username,
-            token: this.token,
             projectID,
         });
 
@@ -2663,6 +2704,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
@@ -2685,8 +2727,6 @@ class ProjectApi {
         const url = `${OriginApiUrl}/api/v1/users/putonwatchlist`;
 
         const body = JSON.stringify({
-            username: this.username,
-            token: this.token,
             target,
             enabled,
         });
@@ -2696,6 +2736,7 @@ class ProjectApi {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.token}`,
                 },
                 body,
             })
