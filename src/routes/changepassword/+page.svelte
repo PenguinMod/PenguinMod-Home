@@ -110,8 +110,22 @@
     };
 
     function toOAuthPage(method) {
-        const url = `${PUBLIC_API_URL}/api/v1/users/addpasswordtooauth?method=${method}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
-        location.href = url;
+        fetch(`${PUBLIC_API_URL}/api/v1/users/getottcode`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then((res) => res.json())
+            .then((res) => {
+                if (!res.code) {
+                    throw "NoCode";
+                }
+
+                window.location = `${PUBLIC_API_URL}/api/v1/users/addpasswordtooauth?method=${method}&code=${res.code}`;
+            })
+            .catch((err) => {
+                alert(`Please report this via our contact page: ${err}`);
+            });
     }
 
     function googleOAuth() {

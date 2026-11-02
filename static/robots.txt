@@ -15,6 +15,7 @@ Disallow: /guidelines/moderation$
 # Pages only seen when completing a previous action and are broken/useless otherwise
 Disallow: /canceldonation
 Disallow: /oauthchangepasswordintermediate
+Disallow: /exchangeottcode
 Disallow: /redirect
 Disallow: /restore
 Disallow: /successdonation
