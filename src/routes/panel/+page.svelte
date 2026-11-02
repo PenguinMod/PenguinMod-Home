@@ -35,18 +35,6 @@
             Number(unix),
         ).toLocaleTimeString()}`;
     }
-    function toTrackTime(length) {
-        if (isNaN(length)) return `--:--`;
-        const minutes = String(Math.floor(length / 60) % 60).padStart(2, '0');
-        const seconds = String(Math.floor(length % 60)).padStart(2, '0'); 
-        const subSeconds = String(length % 1).slice(1, 4)
-        let out = `${minutes}:${seconds}`;
-        if (seconds >= 120) {
-            const hours = Math.floor(length / 60 / 60);
-            out = `${hours}:${out}`;
-        }
-        return out;
-    }
 
     let censorCostume;
     let censorAudio;
@@ -167,6 +155,7 @@
             if (darkmode === lastDarkMode) return;
             lastDarkMode = darkmode;
             onThemeChange(darkmode);
+            assetIframe.contentWindow.postMessage({ theme: darkmode ? 'dark' : '' }, '*');
         }
         setInterval(loop, 100);
     });
@@ -210,7 +199,9 @@
     let projectJson = null;
     let projectContentView = null;
     let unorderedStrings = '';
-    let soundPlaybackVolume = 1;
+    let assetIframe;
+    let assetsToCensor = [];
+    let resolveCensoringLoad;
     function onSelectedProjectChanged(project) {
         if (!browser) return;
         replacementThumbnail = null;
@@ -249,11 +240,26 @@
             req.send();
             await new Promise((resolve, reject) => { req.onloadend = resolve; req.onerror = reject; });
             projectJson = pmp_protobuf.protobufToJson(new Uint8Array(req.response));
+            projectJson.id = selectedProjectId;
         }
         projectFileLoading = false;
     }
     $: onSelectedProjectChanged(selectedProjectId);
     $: invalidate(linkedState.set('project', selectedProjectId));
+    $: if (browser && assetIframe && !assetIframe?.src) fetch('/asset-preview.html')
+        .then(req => req.blob())
+        .then(res => BlobAndDataUrl.blobToDataURL(res))
+        .then(link => assetIframe.src = link);
+    if (browser) {
+        window.addEventListener('message', ({ data }) => {
+            if (!resolveCensoringLoad) return;
+            if (!data.isAssets) return;
+            assetsToCensor = Object.entries(data.assets)
+                .filter(([md5ext, selected]) => selected)
+                .map(([md5ext]) => md5ext);
+            resolveCensoringLoad();
+        });
+    }
 
     /* --- Messages Category --- */
     let messageTarget = '';
@@ -840,29 +846,8 @@
                             label="Inspect assets"
                             on:click={() => getProject(true)
                                 .then(async () => {
-                                    const promises = [];
-                                    let i = 0;
-                                    const assets = projectJson.targets.reduce((c,v) => c + v.costumes.length + v.sounds.length, 0);
-                                    projectFileLoading = true;
-                                    progressLabel = `Loading ${assets} assets`;
-                                    totalProgress = 0;
-                                    for (const sprite of projectJson.targets) {
-                                        for (const costume of sprite.costumes) {
-                                            costume.link = `https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/${selectedProjectId}_${costume.md5ext}`;
-                                            promises.push(fetch(costume.link)
-                                                .then(req => req.arrayBuffer())
-                                                .then(res => new Blob([res], { type: FileTypes.mimeTypePairs[BlobAndDataUrl.fileTypeFromDataArray(res)] }))
-                                                .then(async (blob) => {
-                                                    costume.link = URL.createObjectURL(blob);
-                                                    totalProgress = ++i / assets;
-                                                }));
-                                        }
-                                        for (const sound of sprite.sounds)
-                                            sound.paused = true;
-                                    }
-                                    await Promise.all(promises);
+                                    assetIframe.contentWindow.postMessage(projectJson, '*');
                                     projectContentView = 'assets';
-                                    projectFileLoading = false;
                                 })
                                 .catch(err => {
                                     console.error(err);
@@ -915,11 +900,13 @@
                             label="Apply censoring"
                             on:click={async () => {
                                 try {
+                                    assetIframe.contentWindow.postMessage({ whatDo: true }, '*');
+                                    await new Promise(resolve => resolveCensoringLoad = resolve);
                                     const zip = new JSZip();
                                     const promises = [];
                                     for (const sprite of projectJson.targets) {
                                         for (const costume of sprite.costumes) {
-                                            if (!costume.replace) {
+                                            if (!assetsToCensor.includes(costume.md5ext)) {
                                                 promises.push(fetch(`https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/${selectedProjectId}_${costume.md5ext}`)
                                                     .then(req => req.blob())
                                                     .then(res => zip.file(costume.md5ext, res)));
@@ -933,7 +920,7 @@
                                             zip.file(costume.md5ext, censorCostume);
                                         }
                                         for (const sound of sprite.sounds) {
-                                            if (!sound.replace) {
+                                            if (!assetsToCensor.includes(sound.md5ext)) {
                                                 promises.push(fetch(`https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/${selectedProjectId}_${sound.md5ext}`)
                                                     .then(req => req.blob())
                                                     .then(res => zip.file(sound.md5ext, res)));
@@ -963,126 +950,18 @@
                                 }
                             }}
                         />
-                        {#each projectJson.targets as sprite}
-                            <details open>
-                                <summary>{sprite.name}</summary>
-                                {#each sprite.costumes as costume}
-                                    <button class="project-costume-asset" on:click={() => costume.replace = !costume.replace}>
-                                        <img
-                                            src={costume.link}
-                                            alt={costume.name}
-                                        >
-                                        <div>
-                                            <input type="checkbox" bind:checked={costume.replace} name="costume-select">
-                                            <label for="costume-select">{costume.name}</label>
-                                        </div>
-                                    </button>
-                                {/each}
-                                <br>
-                                {#each sprite.sounds as sound}
-                                    <button class="project-sound-asset" on:click={() => sound.replace = !sound.replace}>
-                                        <audio
-                                            bind:this={sound.audio}
-                                            bind:paused={sound.paused}
-                                            bind:volume={soundPlaybackVolume}
-                                            on:pause={() => clearInterval(sound.frameLoop)}
-                                            on:loadedmetadata={() => sound.paused = true}
-                                            src="https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/{selectedProjectId}_{sound.md5ext}"
-                                            alt={sound.name}
-                                            controls
-                                            style="height: 0px; width: 0px"
-                                        />
-                                        <button
-                                            on:click={e => {
-                                                e.stopPropagation();
-                                                if (sound.paused) {
-                                                    sound.playProgress.style.transition = 'none';
-                                                    sound.frameLoop = setInterval(() => {
-                                                        sound.playProgress.style.width = `${100 * (sound.audio?.currentTime / sound.audio?.duration) || 0}%`;
-                                                        sound.playTimes.innerText = `${toTrackTime(sound.audio?.currentTime)} / ${toTrackTime(sound.audio?.duration)}`;
-                                                        sound.playProgress.style.transition = '';
-                                                    }, 1000 / 30);
-                                                    sound.audio.play();
-                                                    sound.audio.focus();
-                                                } else {
-                                                    sound.audio.pause();
-                                                } 
-                                            }}
-                                        >
-                                            {#if sound.paused}
-                                                <img
-                                                    src="/stage_controls/gradient/play.svg"
-                                                    alt="Play"
-                                                >
-                                            {:else}
-                                                <img
-                                                    src="/stage_controls/gradient/pause.svg"
-                                                    alt="Pause"
-                                                >
-                                            {/if}
-                                            <div class="project-sound-controls">
-                                                <div
-                                                    class="volume-slider"
-                                                    bind:this={sound.volumeBar}
-                                                    title="Volume slider"
-                                                    on:mousedown={e => {
-                                                        if (e.buttons ^ 0b1) return;
-                                                        sound.volumeBar.style.left = '0';
-                                                        const onMove = e => {
-                                                            if (e.buttons ^ 0b1) return;
-                                                            if (!sound.volumeBar) return;
-                                                            const rect = sound.volumeBar.getBoundingClientRect();
-                                                            soundPlaybackVolume = Math.max(Math.min(1- ((e.clientY - rect.top) / rect.height), 1), 0);
-                                                        }; onMove(e);
-                                                        const onUp = () => {
-                                                            sound.volumeBar.style.left = '';
-                                                            document.removeEventListener('mousemove', onMove);
-                                                            document.removeEventListener('mouseup', onUp);
-                                                        }
-                                                        document.addEventListener('mouseup', onUp);
-                                                        document.addEventListener('mousemove', onMove);
-                                                    }}
-                                                >
-                                                    <div class="volume-slider-progress" style="height: {soundPlaybackVolume * 100}%"></div>
-                                                </div>
-                                                <div class="sound-length" bind:this={sound.playTimes}>{toTrackTime(sound.audio?.currentTime)} / {toTrackTime(sound.audio?.duration)}</div>
-                                                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                                <div
-                                                    class="sound-progress"
-                                                    bind:this={sound.progress}
-                                                    on:click={e => e.stopPropagation()}
-                                                    on:mousedown={e => {
-                                                        if (e.buttons ^ 0b1) return;
-                                                        sound.progress.style.left = '0';
-                                                        const onMove = e => {
-                                                            if (e.buttons ^ 0b1) return;
-                                                            if (!sound.progress) return;
-                                                            const rect = sound.progress.getBoundingClientRect();
-                                                            const pos = Math.max(Math.min((e.clientX - rect.left) / rect.width, 1), 0);
-                                                            sound.audio.currentTime = pos * sound.audio.duration;
-                                                        }; onMove(e);
-                                                        const onUp = () => {
-                                                            document.removeEventListener('mousemove', onMove);
-                                                            document.removeEventListener('mouseup', onUp);
-                                                            return false;
-                                                        }
-                                                        document.addEventListener('mouseup', onUp);
-                                                        document.addEventListener('mousemove', onMove);
-                                                    }}
-                                                >
-                                                    <div bind:this={sound.playProgress} style="width: {100 * (sound.audio?.currentTime / sound.audio?.duration) || 0}%"></div>
-                                                </div>
-                                            </div>
-                                        </button>
-                                        <div>
-                                            <input type="checkbox" bind:checked={sound.replace} name="sound-select">
-                                            <label for="sound-select">{sound.name}</label>
-                                        </div>
-                                    </button>
-                                {/each}
-                            </details>
-                        {/each}
                     {/if}
+                    <!-- svelte-ignore a11y-missing-attribute -->
+                    <iframe
+                        bind:this={assetIframe}
+                        class="asset-preview-iframe"
+                        style={projectContentView === 'assets' ? '' : 'height: 0'}
+                        on:load={e => {
+                            assetIframe = e.target;
+                            const darkmode = String(localStorage.getItem('darkmode') || prefersDarkMode) === 'true';
+                            assetIframe.contentWindow.postMessage({ theme: darkmode ? 'dark' : '' }, '*');
+                        }}
+                    />
                 {/if}
             </div>
         </div>
@@ -2698,104 +2577,10 @@
         height: 40%;
         margin: 4px;
     } 
-    .project-costume-asset {
-        margin: 4px;
-        padding: 4px;
-        border: rgba(0, 0, 0, 0.25) 1px solid;
-        border-radius: 4px;
-        background: white;
-        display: inline-flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    :global(body.dark-mode) .project-costume-asset {
-        border: rgba(255, 255, 255, 0.35) 1px solid;
-        background: #111;
-        color: white;
-    }
-    .project-costume-asset img {
-        width: 128px;
-        height: 128px;
-        object-fit: contain;
-    }
-    .project-sound-asset {
-        margin: 4px;
-        padding: 4px;
-        border: rgba(0, 0, 0, 0.25) 1px solid;
-        border-radius: 4px;
-        background: white;
-        display: inline-flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    :global(body.dark-mode) .project-sound-asset {
-        border: rgba(255, 255, 255, 0.35) 1px solid;
-        background: #111;
-        color: white;
-    }
-    .project-sound-asset img {
-        width: 32px;
-        height: 32px;
-    }
-    .project-sound-asset > button {
-        position: relative;
-        border: none;
-        background: none;
-        padding: none;
-        margin: none;
-        width: 128px;
-        height: 128px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-    }
-    .project-sound-controls {
-        overflow: hidden;
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 128px;
-        height: 128px;
-        display: grid;
-        gap: 2px;
-        grid-template-columns: calc(100% - 14px) 12px;
-        grid-template-rows: calc(calc(100% - 1rem) - 12px) 1rem 8px;
-    }
-
-    .project-sound-controls:hover .volume-slider { left: 0; }
-    .volume-slider {
-        transition: left .25s ease-out;
-        position: relative;
-        left: 100%;
-        grid-column: 2;
-        box-sizing: border-box;
-        border-radius: 2px 0px 0px 2px;
-        overflow: hidden;
-    }
-    .volume-slider-progress {
-        position: absolute;
-        bottom: 0;
-        left: 0;
+    .asset-preview-iframe {
         width: 100%;
-        background-color: #00a2ff70;
-    }
-    .sound-length {
-        text-align: left;
-        color: black;
-        grid-column: 1 / 3;
-        padding-left: 4px;
-    }
-    :global(body.dark-mode) .sound-length { color: white; }
-    .sound-progress {
-        grid-row: 3;
-        grid-column: 1 / 3;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-    .sound-progress div {
-        background-color: #00c3ff7c;
         height: 100%;
+        border: none;
     }
 
     .projects-control {

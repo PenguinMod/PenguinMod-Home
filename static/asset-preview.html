@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+        body.dark-mode { color: white }
+
+        .project-costume-asset {
+            margin: 4px;
+            padding: 4px;
+            border: rgba(0, 0, 0, 0.25) 1px solid;
+            border-radius: 4px;
+            background: white;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        body.dark-mode .project-costume-asset {
+            border: rgba(255, 255, 255, 0.35) 1px solid;
+            background: #111;
+            color: white;
+        }
+        .project-costume-asset img {
+            width: 128px;
+            height: 128px;
+            object-fit: contain;
+        }
+        .project-sound-asset {
+            margin: 4px;
+            padding: 4px;
+            border: rgba(0, 0, 0, 0.25) 1px solid;
+            border-radius: 4px;
+            background: white;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        body.dark-mode .project-sound-asset {
+            border: rgba(255, 255, 255, 0.35) 1px solid;
+            background: #111;
+            color: white;
+        }
+        .project-sound-asset img {
+            width: 32px;
+            height: 32px;
+        }
+        .project-sound-asset > button {
+            position: relative;
+            border: none;
+            background: none;
+            padding: none;
+            margin: none;
+            width: 128px;
+            height: 128px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .project-sound-controls {
+            overflow: hidden;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 128px;
+            height: 128px;
+            display: grid;
+            gap: 2px;
+            grid-template-columns: calc(100% - 14px) 12px;
+            grid-template-rows: calc(calc(100% - 1rem) - 12px) 1rem 8px;
+        }
+
+        .project-sound-controls:hover .volume-slider { left: 0; }
+        .volume-slider {
+            transition: left 250ms ease-out;
+            position: relative;
+            left: 100%;
+            grid-column: 2;
+            box-sizing: border-box;
+            border-radius: 2px 0px 0px 2px;
+            overflow: hidden;
+        }
+        .volume-slider-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #00a2ff70;
+        }
+        .sound-length {
+            text-align: left;
+            color: black;
+            grid-column: 1 / 3;
+            padding-left: 4px;
+        }
+        body.dark-mode .sound-length { color: white; }
+        .sound-progress {
+            grid-row: 3;
+            grid-column: 1 / 3;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .sound-progress div {
+            transition: width 33ms ease-out;
+            background-color: #00c3ff7c;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        function toTrackTime(length) {
+            if (isNaN(length)) return `--:--`;
+            const minutes = String(Math.floor(length / 60) % 60).padStart(2, '0');
+            const seconds = String(Math.floor(length % 60)).padStart(2, '0'); 
+            const subSeconds = String(length % 1).slice(1, 4)
+            let out = `${minutes}:${seconds}`;
+            if (seconds >= 120) {
+                const hours = Math.floor(length / 60 / 60);
+                out = `${hours}:${out}`;
+            }
+            return out;
+        }
+
+        const volumeSliders = [];
+        const audioElements = [];
+        let volume = 1;
+        let projectId = '';
+        const selectedAssets = {};
+        function makeCostume(asset) {
+            const button = document.createElement('button');
+            button.classList.add('project-costume-asset');
+            button.onclick = () => {
+                selectCostume.checked = !selectCostume.checked;
+                selectedAssets[asset.md5ext] = selectCostume.checked;
+            }
+
+            const image = new Image();
+            fetch(`https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/${projectId}_${asset.md5ext}`)
+                .then(req => req.arrayBuffer())
+                .then(res => new Blob([res], { type: 'image/svg+xml' }))
+                .then(blob => URL.createObjectURL(blob))
+                .then(link => image.src = link);
+            button.appendChild(image);
+
+            const wrapper = document.createElement('div');
+
+            const selectCostume = document.createElement('input');
+            selectCostume.type = 'checkbox';
+            selectCostume.name = 'costume-select';
+            selectCostume.onclick = e => e.stopPropagation();
+            selectCostume.onchange = () => selectedAssets[asset.md5ext] = selectCostume.checked;
+            wrapper.appendChild(selectCostume);
+
+            const label = document.createElement('label');
+            label.for = selectCostume.name;
+            label.innerText = asset.name;
+            wrapper.appendChild(label);
+            button.appendChild(wrapper);
+
+            return button;
+        }
+        function makeSound(asset) {
+            let frameLoop;
+            const audio = document.createElement('audio');
+            audio.volume = volume;
+            audio.controls;
+            audio.style.width = audio.style.height = '0';
+            audio.src = `https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/${projectId}_${asset.md5ext}`;
+            audio.onpause = () => {
+                clearInterval(frameLoop);
+                image.src = 'https://penguinmod.com/stage_controls/gradient/play.svg';
+            }
+            audio.onplay = () => {
+                frameLoop = setInterval(() => {
+                    soundLength.innerText = `${toTrackTime(audio.currentTime)} / ${toTrackTime(audio.duration)}`;
+                    playbackProgress.style.width = `${audio.currentTime * 100 / audio.duration}%`;
+                }, 1000 / 30);
+                image.src = 'https://penguinmod.com/stage_controls/gradient/pause.svg';
+            }
+            audio.onloadedmetadata = () => soundLength.innerText = `${toTrackTime(audio.currentTime)} / ${toTrackTime(audio.duration)}`;
+            audioElements.push(audio);
+
+            const button = document.createElement('button');
+            button.classList.add('project-sound-asset');
+            button.onclick = () => {
+                selectSound.checked = !selectSound.checked;
+                selectedAssets[asset.md5ext] = selectCostume.checked;
+            }
+
+            const playPause = document.createElement('button');
+            playPause.onclick = e => {
+                e.stopPropagation();
+                audio.focus();
+                if (!audio.paused) return audio.pause();
+                audio.play();
+            }
+
+            const image = new Image();
+            image.src = 'https://penguinmod.com/stage_controls/gradient/play.svg';
+            playPause.appendChild(image);
+
+            const soundControls = document.createElement('div');
+            soundControls.classList.add('project-sound-controls');
+
+            const volumeSlider = document.createElement('div');
+            volumeSlider.classList.add('volume-slider');
+            volumeSlider.onclick = e => e.stopPropagation();
+            volumeSlider.onmousedown = e => {
+                const rect = volumeSlider.getBoundingClientRect();
+                const mouseMove = e => {
+                    volume = 1- ((e.clientY - rect.top) / rect.height);
+                    volume = Math.max(Math.min(volume, 1), 0);
+
+                    volumeSliders.forEach(el => el.style.height = `${volume * 100}%`);
+                    audioElements.forEach(el => el.volume = volume);
+                }; mouseMove(e);
+                const mouseUp = e => {
+                    document.removeEventListener('mousemove', mouseMove);
+                    document.removeEventListener('mouseup', mouseUp);
+                }
+
+                document.addEventListener('mousemove', mouseMove);
+                document.addEventListener('mouseup', mouseUp);
+            };
+            
+            const volumeProgress = document.createElement('div');
+            volumeProgress.classList.add('volume-slider-progress');
+            volumeProgress.style.height = `${volume * 100}%`;
+            volumeSliders.push(volumeProgress);
+            volumeSlider.appendChild(volumeProgress);
+            soundControls.appendChild(volumeSlider);
+            
+            const soundLength = document.createElement('div');
+            soundLength.classList.add('sound-length');
+            soundLength.innerText = '--:-- / --:--';
+            soundControls.appendChild(soundLength);
+
+            const playbackSlider = document.createElement('div');
+            playbackSlider.classList.add('sound-progress');
+            playbackSlider.onclick = e => e.stopPropagation();
+            playbackSlider.onmousedown = e => {
+                const rect = playbackSlider.getBoundingClientRect();
+                const mouseMove = e => {
+                    const perc = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
+                    audio.currentTime = audio.duration * perc;
+                    playbackProgress.style.width = `${audio.currentTime * 100 / audio.duration}%`;
+                }; mouseMove(e);
+                const mouseUp = e => {
+                    document.removeEventListener('mousemove', mouseMove);
+                    document.removeEventListener('mouseup', mouseUp);
+                }
+
+                document.addEventListener('mousemove', mouseMove);
+                document.addEventListener('mouseup', mouseUp);
+            };
+            
+            const playbackProgress = document.createElement('div');
+            playbackProgress.style.width = `0`;
+            playbackSlider.appendChild(playbackProgress);
+            soundControls.appendChild(playbackSlider);
+            playPause.appendChild(soundControls);
+            button.appendChild(playPause);
+
+            const wrapper = document.createElement('div');
+
+            const selectSound = document.createElement('input');
+
+            selectSound.type = 'checkbox';
+            selectSound.name = 'sound-select';
+            selectSound.onclick = e => e.stopPropagation();
+            selectSound.onchange = () => selectedAssets[asset.md5ext] = selectSound.checked;
+            wrapper.appendChild(selectSound);
+
+            const label = document.createElement('label');
+            label.for = selectSound.name;
+            label.innerText = asset.name;
+            wrapper.appendChild(label);
+            button.appendChild(wrapper);
+
+            return button;
+        }
+        function makeSprite(sprite) {
+            const details = document.createElement('details');
+            details.open = true;
+
+            const summary = document.createElement('summary');
+            summary.innerText = sprite.name;
+
+            sprite.costumes.forEach(asset => details.appendChild(makeCostume(asset)));
+            details.appendChild(document.createElement('br'));
+            sprite.sounds.forEach(asset => details.appendChild(makeSound(asset)));
+
+            return details;
+        }
+
+        window.addEventListener('message', ({ data }) => {
+            if (data.clear) return document.body.innerHTML = '';
+            if (data.theme) {
+                if (data.theme === 'dark')
+                    return document.body.classList.add('dark-mode');
+                document.body.classList.remove('dark-mode');
+                return;
+            }
+            if (data.whatDo) return window.parent.postMessage({ isAssets: true, assets: selectedAssets }, '*');
+            if (!data.targets || !data.id) return; // not a project.json?
+
+            document.body.innerHTML = '';
+            projectId = data.id;
+            data.targets.forEach(sprite => document.body.appendChild(makeSprite(sprite)));
+        })
+    </script>
+</body>
+</html>
