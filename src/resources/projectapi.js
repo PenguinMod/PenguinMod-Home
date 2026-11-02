@@ -28,6 +28,24 @@ class ProjectApi {
     static OriginApiUrl = OriginApiUrl;
     static CachedDonators = {};
 
+    static canUploadProjects() {
+        return fetch(`${OriginApiUrl}/api/v1/projects/canuploadprojects`)
+            .then(async (res) => {
+                // if this api call fails, expect that all others will fail aswell
+                if (!res.ok) return false;
+                return (await res.json()).canUpload;
+            })
+            .catch(() => false);
+    }
+    static canViewProjects() {
+        return fetch(`${OriginApiUrl}/api/v1/projects/canviewprojects`)
+            .then(async (res) => {
+                // if this api call fails, expect that all others will fail aswell
+                if (!res.ok) return false;
+                return (await res.json()).viewing;
+            })
+            .catch(() => false);
+    }
     static getServerInfo(user) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/misc/getStats`;
@@ -1609,6 +1627,7 @@ class ProjectApi {
                 const formData = new FormData();
 
                 request.open("POST", API_ENDPOINT, true);
+                request.setRequestHeader("Authorization", `Bearer ${token}`);
                 request.onload = () => {
                     const response = JSON.parse(request.response);
 
@@ -1620,8 +1639,6 @@ class ProjectApi {
                     resolve(response.id);
                 };
 
-                formData.append("username", username);
-                formData.append("token", token);
                 formData.append("title", title);
                 formData.append("instructions", instructions);
                 formData.append("notes", notes);
@@ -1655,6 +1672,7 @@ class ProjectApi {
                 const formData = new FormData();
 
                 request.open("POST", API_ENDPOINT, true);
+                request.setRequestHeader("Authorization", `Bearer ${token}`);
                 request.onload = () => {
                     const response = JSON.parse(request.response);
 
@@ -1666,8 +1684,6 @@ class ProjectApi {
                     resolve(response.id);
                 };
 
-                formData.append("username", username);
-                formData.append("token", token);
                 formData.append("title", title);
                 formData.append("instructions", instructions);
                 formData.append("notes", notes);
@@ -1928,6 +1944,7 @@ class ProjectApi {
             const formData = new FormData();
 
             request.open("POST", API_ENDPOINT, true);
+            request.setRequestHeader("Authorization", `Bearer ${token}`);
             request.onload = () => {
                 const response = JSON.parse(request.response);
 
@@ -1939,8 +1956,6 @@ class ProjectApi {
                 resolve(response.id);
             };
 
-            formData.append("username", username);
-            formData.append("token", token);
             formData.append("title", title);
             formData.append("instructions", instructions);
             formData.append("notes", notes);
@@ -2527,6 +2542,7 @@ class ProjectApi {
             const formData = new FormData();
 
             request.open("POST", API_ENDPOINT, true);
+            request.setRequestHeader("Authorization", `Bearer ${token}`);
             request.onload = () => {
                 const response = JSON.parse(request.response);
 
@@ -2538,8 +2554,6 @@ class ProjectApi {
                 resolve();
             };
 
-            formData.append("username", this.username);
-            formData.append("token", this.token);
             formData.append("target", target);
             formData.append("picture", new Blob([file]));
 
