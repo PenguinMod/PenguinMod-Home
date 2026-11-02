@@ -164,12 +164,14 @@
             let frameLoop;
             const audio = document.createElement('audio');
             audio.volume = volume;
-            audio.controls;
-            audio.style.width = audio.style.height = '0';
+            audio.controls = true;
+            audio.style.width = audio.style.height = '0%';
             audio.src = `https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/${projectId}_${asset.md5ext}`;
             audio.onpause = () => {
                 clearInterval(frameLoop);
                 image.src = 'https://penguinmod.com/stage_controls/gradient/play.svg';
+                soundLength.innerText = `${toTrackTime(audio.currentTime)} / ${toTrackTime(audio.duration)}`;
+                playbackProgress.style.width = `${audio.currentTime * 100 / audio.duration}%`;
             }
             audio.onplay = () => {
                 frameLoop = setInterval(() => {
@@ -179,7 +181,13 @@
                 image.src = 'https://penguinmod.com/stage_controls/gradient/pause.svg';
             }
             audio.onloadedmetadata = () => soundLength.innerText = `${toTrackTime(audio.currentTime)} / ${toTrackTime(audio.duration)}`;
+            audio.onvolumechange = () => {
+                volume = audio.volume;
+                volumeSliders.forEach(el => el.style.height = `${volume * 100}%`);
+                audioElements.forEach(el => el.volume = volume);
+            }
             audioElements.push(audio);
+            document.body.appendChild(audio);
 
             const button = document.createElement('button');
             button.classList.add('project-sound-asset');
