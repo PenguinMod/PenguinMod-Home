@@ -804,7 +804,7 @@ class ProjectApi {
             const data = {
                 reportID: id,
             };
-            const url = `${OriginApiUrl}/api/v1/reports/deleteReport`;
+            const url = `${OriginApiUrl}/api/v1/reports/resolveReport`;
             fetch(url, {
                 headers: {
                     "Content-Type": "application/json",
