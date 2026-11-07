@@ -29,6 +29,7 @@ import ja from '../translations/ja.json';
 import fa from '../translations/fa.json';
 import nl from '../translations/nl.json';
 import ar from '../translations/ar.json';
+import hu from '../translations/hu.json';
 
 // joke languages
 import test from '../translations/test.json';
@@ -52,6 +53,7 @@ const languages = {
     "fr": fr,                      // French
     "fr-ca": frCa,                 // French (Canada)
     "de": de,                      // German
+    "hu": hu,                      // Hungarian
     "da": da,                      // Danish
     "pl": pl,                      // Polish
     "no": no,                      // Norwegian
