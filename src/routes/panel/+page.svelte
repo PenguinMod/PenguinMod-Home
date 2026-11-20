@@ -22,6 +22,7 @@
     import NavigationMargin from "$lib/NavigationBar/NavMargin.svelte";
     import ClickableProject from "$lib/ClickableProject/Project.svelte";
     import Button from "$lib/Button/Button.svelte";
+    import AccountGraph from "../../lib/AccountGraph/AccountGraph.svelte";
 
     function unixToDisplayDate(unix) {
         return `${new Date(Number(unix)).toDateString()} at ${new Date(
@@ -32,6 +33,7 @@
     let loggedIn = null;
     let projectIdSelection;
     let serverStats = [];
+    let realServerStats = {};
     const selectForReject = browser
         ? $page.url.searchParams.get("reject")
         : null;
@@ -61,13 +63,6 @@
             return stats;
         }
 
-        ProjectApi.getServerInfo()
-            .then((stats) => {
-                serverStats = Flatten(stats);
-            })
-            .catch((err) => {
-                console.error(err);
-            });
         Authentication.usernameFromCode(username, token)
             .then(({ isAdmin, isApprover }) => {
                 if (!isAdmin && !isApprover) {
@@ -76,6 +71,16 @@
                 }
                 ProjectClient.setUsername(username);
                 ProjectClient.setToken(token);
+
+                ProjectClient.getServerInfo()
+                    .then((stats) => {
+                        realServerStats = stats;
+                        serverStats = Flatten(stats);
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                    });
+
                 loggedIn = true;
             })
             .catch(() => {
@@ -1252,8 +1257,8 @@
                             <p>
                                 {extensionId}:
                                 {#if inspectMenuDetails.extensionUrls[extensionId]}
-                                    <span
-                                        ><i>
+                                    <span>
+                                        <i>
                                             {String(
                                                 inspectMenuDetails
                                                     .extensionUrls[extensionId],
@@ -1265,8 +1270,8 @@
                                                           extensionId
                                                       ],
                                                   )}
-                                        </i></span
-                                    >
+                                        </i>
+                                    </span>
 
                                     <textarea
                                         value={inspectMenuDetails.extensionData[
@@ -1610,6 +1615,10 @@
             <div class="card">
                 <h2>Server Stats</h2>
                 <Stats stats_data={serverStats} render={true} />
+
+                {#if realServerStats.accountsOverTime}
+                    <AccountGraph data={realServerStats.accountsOverTime} />
+                {/if}
             </div>
             <br />
 
@@ -1629,13 +1638,17 @@
                 <button
                     on:click={() => {
                         messageReplyInfo.inReplyTab = true;
-                    }}>Reply Menu</button
+                    }}
                 >
+                    Reply Menu
+                </button>
                 <button
                     on:click={() => {
                         messageReplyInfo.inReplyTab = false;
-                    }}>Send Menu</button
+                    }}
                 >
+                    Send Menu
+                </button>
                 {#if messageReplyInfo.inReplyTab}
                     <p>Respond to a project dispute/reply here.</p>
                     <p>
@@ -1774,9 +1787,9 @@
                         <p>{mod.username}</p>
                     {/each}
                 {/if}
-                <Button on:click={() => (showUserPerms = !showUserPerms)}
-                    >{showUserPerms ? "Hide" : "Show"} Permited Users</Button
-                >
+                <Button on:click={() => (showUserPerms = !showUserPerms)}>
+                    {showUserPerms ? "Hide" : "Show"} Permited Users
+                </Button>
                 <p>Type username:</p>
                 <input
                     type="text"
@@ -1815,38 +1828,40 @@
                 <div class="user-action-collumn">
                     <div class="user-action-row">
                         <Button color="red" on:click={banUser}>Ban User</Button>
-                        <Button color="purple" on:click={tempBanUser}
-                            >Temp-Ban User</Button
-                        >
+                        <Button color="purple" on:click={tempBanUser}>
+                            Temp-Ban User
+                        </Button>
                         <Button on:click={unbanUser}>Unban User</Button>
                     </div>
                     <br />
                     <div class="user-action-row">
-                        <Button color="red" on:click={() => ipBanUser(true)}
-                            >IP Ban User</Button
-                        >
-                        <Button on:click={() => ipBanUser(false)}
-                            >Un-IP Ban User</Button
-                        >
+                        <Button color="red" on:click={() => ipBanUser(true)}>
+                            IP Ban User
+                        </Button>
+                        <Button on:click={() => ipBanUser(false)}>
+                            Un-IP Ban User
+                        </Button>
                     </div>
                     <br />
                     <div class="user-action-row">
-                        <Button color="red" on:click={deleteAccount}
-                            >Delete User Account</Button
-                        >
+                        <Button color="red" on:click={deleteAccount}>
+                            Delete User Account
+                        </Button>
                     </div>
                     <br />
                     <div class="user-action-row">
                         <Button
                             color="orange"
                             on:click={() => putOnWatchlist(true)}
-                            >Put on watchlist</Button
                         >
+                            Put on watchlist
+                        </Button>
                         <Button
                             color="blue"
                             on:click={() => putOnWatchlist(false)}
-                            >Take off watchlist</Button
                         >
+                            Take off watchlist
+                        </Button>
                     </div>
                 </div>
                 <br />
@@ -1866,11 +1881,12 @@
                 </label>
                 <br />
                 <br />
-                <Button color="purple" on:click={renameUser}>Rename User</Button
-                >
-                <Button color="purple" on:click={changePfpUser}
-                    >Change User's Profile Picture</Button
-                >
+                <Button color="purple" on:click={renameUser}>
+                    Rename User
+                </Button>
+                <Button color="purple" on:click={changePfpUser}>
+                    Change User's Profile Picture
+                </Button>
                 <br />
                 <br />
                 <label>
@@ -1889,9 +1905,9 @@
                     Grant User Moderator Perms
                 </label>
                 <div class="user-action-row">
-                    <Button color="remix" on:click={setUsersPerms}
-                        >Assign User Perms</Button
-                    >
+                    <Button color="remix" on:click={setUsersPerms}>
+                        Assign User Perms
+                    </Button>
                 </div>
             </div>
 
@@ -1914,14 +1930,15 @@
                 />
 
                 <div class="user-action-row">
-                    <Button on:click={getConnectedIPs}>Get Connected IPs</Button
-                    >
-                    <Button on:click={getConnectedUsers}
-                        >Get Connected Users</Button
-                    >
-                    <Button color="red" on:click={() => banIP(true)}
-                        >Ban IP</Button
-                    >
+                    <Button on:click={getConnectedIPs}>
+                        Get Connected IPs
+                    </Button>
+                    <Button on:click={getConnectedUsers}>
+                        Get Connected Users
+                    </Button>
+                    <Button color="red" on:click={() => banIP(true)}>
+                        Ban IP
+                    </Button>
                     <Button on:click={() => banIP(false)}>Unban IP</Button>
                     <Button on:click={getAlts}>Get alt accounts</Button>
                 </div>
@@ -1933,13 +1950,17 @@
                 <button
                     on:click={() => {
                         userBadgeInfo.isEditingMulti = false;
-                    }}>Specific User</button
+                    }}
                 >
+                    Specific User
+                </button>
                 <button
                     on:click={() => {
                         userBadgeInfo.isEditingMulti = true;
-                    }}>Multiple Users</button
+                    }}
                 >
+                    Multiple Users
+                </button>
 
                 {#if !userBadgeInfo.isEditingMulti}
                     <p>Type username:</p>
@@ -2199,8 +2220,9 @@
                                         <h5>
                                             By: <a
                                                 href={`https://penguinmod.com/profile?user=${content.reporter}`}
-                                                >{content.reporter}</a
                                             >
+                                                {content.reporter}
+                                            </a>
                                         </h5>
                                         <p>
                                             {content.report}
@@ -2214,8 +2236,10 @@
                                         </Button>
                                         <a
                                             href={`https://penguinmod.com/profile?user=${content.target}`}
-                                            target="”_blank”">go to profile</a
+                                            target="”_blank”"
                                         >
+                                            go to profile
+                                        </a>
                                         <h3>View reports by</h3>
                                         {#each reportDetails[content.target] as report}
                                             <details>
@@ -2271,8 +2295,9 @@
                                     <h5>
                                         By: <a
                                             href={`https://penguinmod.com/profile?user=${content.reporter}`}
-                                            >{content.reporter}</a
                                         >
+                                            {content.reporter}
+                                        </a>
                                     </h5>
                                     <p>
                                         {content.report}

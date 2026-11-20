@@ -46,10 +46,14 @@ class ProjectApi {
             })
             .catch(() => false);
     }
-    static getServerInfo(user) {
+    getServerInfo() {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/misc/getStats`;
-            fetch(url)
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
                 .then((res) => {
                     if (!res.ok) {
                         res.text().then(reject);
