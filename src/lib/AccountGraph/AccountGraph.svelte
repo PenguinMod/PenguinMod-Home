@@ -1,5 +1,6 @@
 <script>
     import { onMount } from "svelte";
+    import Button from "../Button/Button.svelte";
 
     export let data = [];
 
@@ -54,9 +55,7 @@
 
         xLabels = [];
         data.forEach((d, i) => {
-            if (d.month.endsWith("-01")) {
-                xLabels.push({ index: i, text: d.month.slice(0, 4) });
-            }
+            xLabels.push({ index: i, text: d.month });
         });
     }
 
@@ -85,21 +84,15 @@
 
 <div class="account-graph">
     <div class="controls">
-        <button
-            class:active={mode === "total"}
-            on:click={() => setMode("total")}
-        >
+        <Button toggled={mode !== "total"} on:click={() => setMode("total")}>
             Total accounts
-        </button>
-        <button
-            class:active={mode === "count"}
-            on:click={() => setMode("count")}
-        >
+        </Button>
+        <Button toggled={mode !== "count"} on:click={() => setMode("count")}>
             New per month
-        </button>
+        </Button>
     </div>
 
-    {#if data.length === 0}
+    {#if !data || data.length === 0}
         <p>No data.</p>
     {:else}
         <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -186,21 +179,6 @@
         display: flex;
         gap: 8px;
         margin-bottom: 8px;
-    }
-
-    .controls button {
-        padding: 4px 12px;
-        border-radius: 6px;
-        border: 1px solid rgba(128, 128, 128, 0.5);
-        background: transparent;
-        color: inherit;
-        cursor: pointer;
-    }
-
-    .controls button.active {
-        background: #00c3ff;
-        color: #000;
-        border-color: #00c3ff;
     }
 
     .grid {
