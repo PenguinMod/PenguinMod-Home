@@ -543,6 +543,7 @@
                             <img
                                 src={`${PUBLIC_API_URL}/api/v1/projects/getproject?projectID=${content.targetID}&requestType=thumbnail`}
                                 alt={content.target}
+                                style="width: revert;"
                             />
                             <div
                                 class="reports-user-content reports-project-content"
