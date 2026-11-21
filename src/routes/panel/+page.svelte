@@ -561,7 +561,7 @@
                                 {:else}
                                     <Button
                                         on:click={() => ProjectClient.closeReport(content.id)
-                                            .then(() => projectReports.splice(selectedProjectReport, 1))
+                                            .then(() => { projectReports.splice(selectedProjectReport, 1); projectReports = projectReports; })
                                             .catch(err => {
                                                 console.error(err);
                                                 alert(err);
@@ -570,7 +570,7 @@
                                         label="Close reports"
                                         small
                                     />
-                                    {#each content.details as report}
+                                    {#each content.details as report, idx}
                                         <details open={report.reporter === content.reporter}>
                                             <summary>
                                                 {report.reporter}
@@ -587,7 +587,7 @@
                                                 {report.report}
                                                 <Button
                                                     on:click={() => ProjectClient.closeReport(report.id)
-                                                        .then(() => projectReports.splice(selectedProjectReport, 1))
+                                                        .then(() => { content.details.splice(idx, 1); content.details = content.details; })
                                                         .catch(err => {
                                                             console.error(err);
                                                             alert(err);
@@ -1113,7 +1113,7 @@
                                 {:else}
                                     <Button
                                         on:click={() => ProjectClient.closeReport(content.id)
-                                            .then(() => userReports.splice(selectedUserReport, 1))
+                                            .then(() => { userReports.splice(selectedUserReport, 1); userReports = userReports; })
                                             .catch(err => {
                                                 console.error(err);
                                                 alert(err);
@@ -1122,7 +1122,7 @@
                                         small
                                         label="Close reports"
                                     />
-                                    {#each content.details as report}
+                                    {#each content.details as report, idx}
                                         <details open={report.reporter === content.reporter}>
                                             <summary>
                                                 {report.reporter}
@@ -1136,7 +1136,7 @@
                                                 {report.report}
                                                 <Button
                                                     on:click={() => ProjectClient.closeReport(report.id)
-                                                        .then(() => userReports.splice(selectedUserReport, 1))
+                                                        .then(() => { content.details.splice(idx, 1); content.details = content.details; })
                                                         .catch(err => {
                                                             console.error(err);
                                                             alert(err);
