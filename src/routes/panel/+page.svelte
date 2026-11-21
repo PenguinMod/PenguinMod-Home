@@ -39,7 +39,7 @@
 
     let censorCostume;
     let censorAudio;
-    let tab = '';
+    let tab = "";
     let admin = false;
     let loggedIn = null;
     /** @type {HTMLInputElement} */
@@ -52,7 +52,7 @@
     function invalidate() {
         if (!browser) return;
         if (!tab) return;
-        
+
         location.hash = `#${tab}`;
         if (linkedState.size > 0) location.hash += `&${linkedState.toString()}`;
     }
@@ -68,38 +68,45 @@
                 stats.push({ name: name, value: Flatten(obj[name]) });
                 continue;
             }
-            stats.push(`${name}: ${obj[name]}`)
+            stats.push(`${name}: ${obj[name]}`);
         }
         return stats;
     }
     function onThemeChange(dark) {
         if (!editor) return;
-        if (dark)
-            editor.setTheme('ace/theme/twilight');
-        else
-            editor.setTheme('ace/theme/dawn');
+        if (dark) editor.setTheme("ace/theme/twilight");
+        else editor.setTheme("ace/theme/dawn");
     }
     async function onCodeAreaChanged(codeArea) {
         if (!browser) return;
         if (!globalThis.window) return;
-        ace = await import('brace');
-        await import('brace/mode/yaml');
-        await import('brace/mode/json');
-        await import('brace/mode/javascript');
-        await import('brace/theme/twilight');
-        await import('brace/theme/dawn'); 
+        ace = await import("brace");
+        await import("brace/mode/yaml");
+        await import("brace/mode/json");
+        await import("brace/mode/javascript");
+        await import("brace/theme/twilight");
+        await import("brace/theme/dawn");
         if (editor) editor.destroy();
         queueMicrotask(() => {
             if (editor) editor.destroy();
             editor = ace.edit(codeArea);
             editor.setOptions({
-                fontSize: "15px", showPrintMargin: false,
-                highlightActiveLine: true, useWorker: false
+                fontSize: "15px",
+                showPrintMargin: false,
+                highlightActiveLine: true,
+                useWorker: false,
             });
-            editor.session.setMode('ace/mode/json');
-            onThemeChange(String(localStorage.getItem('darkmode') || prefersDarkMode) === 'true');
+            editor.session.setMode("ace/mode/json");
+            onThemeChange(
+                String(localStorage.getItem("darkmode") || prefersDarkMode) ===
+                    "true",
+            );
             editor.setValue(profanityFilter);
-            editor.addEventListener('change', () => profanityChanged = editor.getValue() !== profanityFilter);
+            editor.addEventListener(
+                "change",
+                () =>
+                    (profanityChanged = editor.getValue() !== profanityFilter),
+            );
             editor.setReadOnly(false);
         });
     }
@@ -110,8 +117,12 @@
         currentLang = lang;
     });
     onMount(async () => {
-        fetch('/censor/costume.svg').then(req => req.blob()).then(res => censorCostume = res);
-        fetch('/censor/sound.mp3').then(req => req.blob()).then(res => censorAudio = res);
+        fetch("/censor/costume.svg")
+            .then((req) => req.blob())
+            .then((res) => (censorCostume = res));
+        fetch("/censor/sound.mp3")
+            .then((req) => req.blob())
+            .then((res) => (censorAudio = res));
 
         Language.forceUpdate();
         const username = localStorage.getItem("username");
@@ -133,15 +144,18 @@
 
                 loggedIn = true;
 
-                const firstAnd = Math.max(location.hash.indexOf('&'), 0) || null;
-                linkedState = new URLSearchParams(location.hash.slice(firstAnd +1));
-                tab = location.hash.slice(1, firstAnd) || 'projects';
+                const firstAnd =
+                    Math.max(location.hash.indexOf("&"), 0) || null;
+                linkedState = new URLSearchParams(
+                    location.hash.slice(firstAnd + 1),
+                );
+                tab = location.hash.slice(1, firstAnd) || "projects";
 
-                selectedUsername = linkedState.get('username');
-                selectedProjectId = linkedState.get('project');
-                if (linkedState.has('reject')) {
+                selectedUsername = linkedState.get("username");
+                selectedProjectId = linkedState.get("project");
+                if (linkedState.has("reject")) {
                     rejectionPageOpen = true;
-                    selectedProjectId = linkedState.get('reject');
+                    selectedProjectId = linkedState.get("reject");
                 }
             })
             .catch(() => {
@@ -151,15 +165,20 @@
 
         let lastDarkMode = null;
         const loop = () => {
-            const darkmode = isEmbed ?
-                linkedState.get('dark')
-                : String(localStorage.getItem('darkmode') || prefersDarkMode) === 'true';
+            const darkmode = isEmbed
+                ? linkedState.get("dark")
+                : String(
+                      localStorage.getItem("darkmode") || prefersDarkMode,
+                  ) === "true";
             if (darkmode === lastDarkMode) return;
             lastDarkMode = darkmode;
             onThemeChange(darkmode);
             if (!assetIframe) return;
-            assetIframe.contentWindow.postMessage({ theme: darkmode ? 'dark' : '' }, '*');
-        }
+            assetIframe.contentWindow.postMessage(
+                { theme: darkmode ? "dark" : "" },
+                "*",
+            );
+        };
         setInterval(loop, 100);
     });
     // we dont need to add an "onAuthenticate" event
@@ -174,21 +193,21 @@
     $: if (loggedIn) invalidate(tab);
 
     /* --- Projects category --- */
-    let rejectionReason = '';
-    let rejectionMode = 'soft';
+    let rejectionReason = "";
+    let rejectionMode = "soft";
     let rejectionPageOpen = false;
     let reloadProject = false;
     let projectReportsLoaded = false;
     let projectReports = [];
     let originalTitle = null;
-    let projectTitle = '';
-    let projectAuthor = '';
+    let projectTitle = "";
+    let projectAuthor = "";
     let originalInstructions = null;
-    let projectInstructions = '';
+    let projectInstructions = "";
     let originalNotes = null;
-    let projectNotes = '';
+    let projectNotes = "";
     let selectedProjectReport = null;
-    let selectedProjectId = linkedState.get('project');
+    let selectedProjectId = linkedState.get("project");
     let replacementThumbnail = null;
     let replacementThumbnailUrl = null;
     let projectFeatured = false;
@@ -197,11 +216,11 @@
     let projectRejectionHard = false;
     let projectExists = false;
     let projectFileLoading = false;
-    let progressLabel = '';
+    let progressLabel = "";
     let totalProgress = 0;
     let projectJson = null;
     let projectContentView = null;
-    let unorderedStrings = '';
+    let unorderedStrings = "";
     let assetIframe;
     let assetsToCensor = [];
     let resolveCensoringLoad;
@@ -214,7 +233,7 @@
         projectJson = null;
         projectExists = false;
         ProjectApi.getProjectMeta(project)
-            .then(project => {
+            .then((project) => {
                 projectTitle = project.title;
                 originalTitle = project.title;
                 projectAuthor = project.author.username;
@@ -228,33 +247,43 @@
                 projectRejectionHard = project.hardRejected;
                 projectExists = true;
             })
-            .catch(() => projectRejected = projectRejectionHard = true);
+            .catch(() => (projectRejected = projectRejectionHard = true));
     }
     async function getProject() {
         if (!browser) return;
         projectFileLoading = true;
         totalProgress = 0;
-        progressLabel = 'Loading project JSON...';
+        progressLabel = "Loading project JSON...";
         if (!projectJson) {
             const req = new XMLHttpRequest();
-            req.responseType = 'arraybuffer';
-            req.onprogress = e => totalProgress = Math.min(e.loaded / e.total, 1);
-            req.open('GET', `${PUBLIC_API_URL}/api/v1/projects/getProject?requestType=protobuf&projectID=${selectedProjectId}`);
+            req.responseType = "arraybuffer";
+            req.onprogress = (e) =>
+                (totalProgress = Math.min(e.loaded / e.total, 1));
+            req.open(
+                "GET",
+                `${PUBLIC_API_URL}/api/v1/projects/getProject?requestType=protobuf&projectID=${selectedProjectId}`,
+            );
             req.send();
-            await new Promise((resolve, reject) => { req.onloadend = resolve; req.onerror = reject; });
-            projectJson = pmp_protobuf.protobufToJson(new Uint8Array(req.response));
+            await new Promise((resolve, reject) => {
+                req.onloadend = resolve;
+                req.onerror = reject;
+            });
+            projectJson = pmp_protobuf.protobufToJson(
+                new Uint8Array(req.response),
+            );
             projectJson.id = selectedProjectId;
         }
         projectFileLoading = false;
     }
     $: onSelectedProjectChanged(selectedProjectId);
-    $: invalidate(linkedState.set('project', selectedProjectId));
-    $: if (browser && assetIframe && !assetIframe?.src) fetch('/asset-preview.html')
-        .then(req => req.blob())
-        .then(res => BlobAndDataUrl.blobToDataURL(res))
-        .then(link => assetIframe.src = link);
+    $: invalidate(linkedState.set("project", selectedProjectId));
+    $: if (browser && assetIframe && !assetIframe?.src)
+        fetch("/asset-preview.html")
+            .then((req) => req.blob())
+            .then((res) => BlobAndDataUrl.blobToDataURL(res))
+            .then((link) => (assetIframe.src = link));
     if (browser) {
-        window.addEventListener('message', ({ data }) => {
+        window.addEventListener("message", ({ data }) => {
             if (!resolveCensoringLoad) return;
             if (!data.isAssets) return;
             assetsToCensor = Object.entries(data.assets)
@@ -265,9 +294,9 @@
     }
 
     /* --- Messages Category --- */
-    let messageTarget = '';
+    let messageTarget = "";
     let messageToUser = true;
-    let messageContent = '';
+    let messageContent = "";
     let messageRepliable = true;
     let broadcastTOSChange = false;
     let broadcastPolicyChange = false;
@@ -277,7 +306,7 @@
     let userReportsLoaded = false;
     let userReports = [];
     let selectedUserReport = null;
-    let selectedUsername = linkedState.get('username');
+    let selectedUsername = linkedState.get("username");
     let changingUsername = false;
     let changingUsernameProcessing = false;
     let newChangedUsername;
@@ -285,8 +314,8 @@
     let reloadPFP = false;
     let adminsList = [];
     let modsList = [];
-    let banReason = '';
-    let remoteBan = '';
+    let banReason = "";
+    let remoteBan = "";
     let banUserOpen = false;
     let userBanTimeout = null;
     let userBanned = false;
@@ -295,12 +324,12 @@
     let profileBadges = [];
     let addBadgesSelectorOpen = false;
     let selectedAddingBadges = [];
-    let bioContent = '';
+    let bioContent = "";
     let featuredProjectId = null;
     let featuredProjectTitle = null;
     let profileProjects = [];
     let bioChanged = false;
-    let sourceBio = '';
+    let sourceBio = "";
     let bulkUsernames = [];
     let bulkUserBadges = [];
     let bulkIsRemove = false;
@@ -311,9 +340,10 @@
 
         profileBadges = [];
         ProjectApi.getProfile(username)
-            .then(profile => {
+            .then((profile) => {
                 userIPBanned = profile.isIPBanned;
-                userBanned = profile.permBanned || (profile.unbanTime > Date.now());
+                userBanned =
+                    profile.permBanned || profile.unbanTime > Date.now();
                 userBanTimeout = new Date(profile.unbanTime);
                 remoteBan = profile.banReason;
                 profileBadges = profile.badges;
@@ -322,24 +352,24 @@
                 featuredProjectId = profile.myFeaturedProject;
                 featuredProjectTitle = null;
                 ProjectApi.getProjectMeta(featuredProjectId)
-                    .then(project => featuredProjectTitle = project.title)
+                    .then((project) => (featuredProjectTitle = project.title))
                     .catch(() => {});
                 ProjectApi.getUserProjects(username, 0)
-                    .then(projects => profileProjects = projects)
+                    .then((projects) => (profileProjects = projects))
                     .catch(() => {});
             })
-            .catch(err => {
+            .catch((err) => {
                 if (err === '{"error":"NotFound"}') return;
                 console.error(err);
                 alert(err);
-            })
+            });
     }
     $: onSelectedUserChange(selectedUsername);
-    $: invalidate(linkedState.set('username', selectedUsername));
+    $: invalidate(linkedState.set("username", selectedUsername));
 
     /* --- Admin category --- */
-    let connections = '';
-    let connectionCheck = '';
+    let connections = "";
+    let connectionCheck = "";
     let isCheckIP = false;
 
     /* --- Misc category --- */
@@ -349,64 +379,79 @@
     let canViewProjects = true;
     let canSignUp = true;
     let profanityLoaded = false;
-    let profanityFilter = '';
+    let profanityFilter = "";
     let profanityChanged = false;
 
     /* --- Preloaders --- */
     function onTabChange(tab) {
         if (!browser) return;
         switch (tab) {
-        case 'projects':
-            projectReportsLoaded = false;
-            selectedProjectReport = null;
-            ProjectClient.getTypeWithReports('project', 0)
-                .then(reports => {
-                    projectReportsLoaded = true;
-                    projectReports = reports;
-                })
-                .catch(err => console.error(err));
-            break;
-        case 'messages':
-            if (messageToUser) messageTarget = selectedUsername;
-            break;
-        case 'users':
-            addBadgesSelectorOpen = false;
-            userReportsLoaded = false;
-            selectedUserReport = null;
-            ProjectClient.getTypeWithReports('user', 0)
-                .then(reports => {
-                    userReportsLoaded = true;
-                    userReports = reports;
-                })
-                .catch(err => console.error(err));
-            ProjectClient.getAllPermitedUsers()
-                .then(lists => {
-                    adminsList = lists.admins.map(permit => permit.username);
-                    modsList = lists.mods.map(permit => permit.username);
-                })
-                .catch(err => console.error(err));
-            break;
-        case 'misc': 
-            // steal the selected username 
-            connectionCheck = selectedUsername;
-            ProjectClient.getServerInfo()
-                .then(stats => serverStats = Flatten(rawServerStats = stats))
-                .catch(err => console.error(err));
-            
-            ProjectApi.canUploadProjects()
-                .then(can => canUploadProjects = can);
-            ProjectApi.canViewProjects()
-                .then(can => canViewProjects = can);
-            
-            if (profanityLoaded) {
-                ProjectClient.getProfanityFilter()
-                    .then(json => editor.setValue(profanityFilter = JSON.stringify(json, null, 4)))
-                    .catch(err => {
-                        console.error(err);
-                        alert(err);
-                    });
-            }
-            break;
+            case "projects":
+                projectReportsLoaded = false;
+                selectedProjectReport = null;
+                ProjectClient.getTypeWithReports("project", 0)
+                    .then((reports) => {
+                        projectReportsLoaded = true;
+                        projectReports = reports;
+                    })
+                    .catch((err) => console.error(err));
+                break;
+            case "messages":
+                if (messageToUser) messageTarget = selectedUsername;
+                break;
+            case "users":
+                addBadgesSelectorOpen = false;
+                userReportsLoaded = false;
+                selectedUserReport = null;
+                ProjectClient.getTypeWithReports("user", 0)
+                    .then((reports) => {
+                        userReportsLoaded = true;
+                        userReports = reports;
+                    })
+                    .catch((err) => console.error(err));
+                ProjectClient.getAllPermitedUsers()
+                    .then((lists) => {
+                        adminsList = lists.admins.map(
+                            (permit) => permit.username,
+                        );
+                        modsList = lists.mods.map((permit) => permit.username);
+                    })
+                    .catch((err) => console.error(err));
+                break;
+            case "misc":
+                // steal the selected username
+                connectionCheck = selectedUsername;
+                ProjectClient.getServerInfo()
+                    .then(
+                        (stats) =>
+                            (serverStats = Flatten((rawServerStats = stats))),
+                    )
+                    .catch((err) => console.error(err));
+
+                ProjectApi.canUploadProjects().then(
+                    (can) => (canUploadProjects = can),
+                );
+                ProjectApi.canViewProjects().then(
+                    (can) => (canViewProjects = can),
+                );
+
+                if (profanityLoaded) {
+                    ProjectClient.getProfanityFilter()
+                        .then((json) =>
+                            editor.setValue(
+                                (profanityFilter = JSON.stringify(
+                                    json,
+                                    null,
+                                    4,
+                                )),
+                            ),
+                        )
+                        .catch((err) => {
+                            console.error(err);
+                            alert(err);
+                        });
+                }
+                break;
         }
     }
     $: onTabChange(tab);
@@ -467,16 +512,36 @@
                     autofocus
                 />
 
-                <br>
-                <input type="radio" bind:group={rejectionMode} value="soft" id="soft-reject" name="reject-type"/>
+                <br />
+                <input
+                    type="radio"
+                    bind:group={rejectionMode}
+                    value="soft"
+                    id="soft-reject"
+                    name="reject-type"
+                />
                 <label for="soft-reject">Soft reject</label>
-                <input type="radio" bind:group={rejectionMode} value="hard" id="hard-reject" name="reject-type"/>
+                <input
+                    type="radio"
+                    bind:group={rejectionMode}
+                    value="hard"
+                    id="hard-reject"
+                    name="reject-type"
+                />
                 <label for="hard-reject" style="color:red">Hard reject</label>
-                <input type="radio" bind:group={rejectionMode} value="delete" id="delete-project" name="reject-type"/>
-                <label for="delete-project" style="color:red">Delete project</label>
+                <input
+                    type="radio"
+                    bind:group={rejectionMode}
+                    value="delete"
+                    id="delete-project"
+                    name="reject-type"
+                />
+                <label for="delete-project" style="color:red">
+                    Delete project
+                </label>
                 <h2><b>Quick-Reject</b></h2>
                 <QuickRejectComponent
-                    on:select={arg => rejectionReason = arg.detail}
+                    on:select={(arg) => (rejectionReason = arg.detail)}
                 />
             </div>
             <div style="display:flex;flex-direction:row;padding:1em">
@@ -486,16 +551,31 @@
                     on:click={() => {
                         let promise;
                         switch (rejectionMode) {
-                        case 'delete': promise = ProjectClient.deleteProject(selectedProjectId, rejectionReason); break;
-                        case 'hard': promise = ProjectClient.hardRejectProject(selectedProjectId, rejectionReason); break;
-                        case 'soft': promise = ProjectClient.rejectProject(selectedProjectId, rejectionReason); break;
+                            case "delete":
+                                promise = ProjectClient.deleteProject(
+                                    selectedProjectId,
+                                    rejectionReason,
+                                );
+                                break;
+                            case "hard":
+                                promise = ProjectClient.hardRejectProject(
+                                    selectedProjectId,
+                                    rejectionReason,
+                                );
+                                break;
+                            case "soft":
+                                promise = ProjectClient.rejectProject(
+                                    selectedProjectId,
+                                    rejectionReason,
+                                );
+                                break;
                         }
                         promise
                             .then(() => {
                                 rejectionPageOpen = false;
                                 onSelectedProjectChanged(selectedProjectId);
                             })
-                            .catch(err => {
+                            .catch((err) => {
                                 console.error(err);
                                 alert(err);
                             });
@@ -503,23 +583,37 @@
                 />
                 <Button
                     label="Cancel"
-                    on:click={() => rejectionPageOpen = false}
+                    on:click={() => (rejectionPageOpen = false)}
                 />
             </div>
         </div>
     </div>
 
-    <input type="file" hidden bind:this={fileSelector}>
+    <input type="file" hidden bind:this={fileSelector} />
 
     <div class="section-category-toggles">
         <div class="category-toggle-section">
-            <button active={tab === 'projects'} on:click={() => tab = 'projects'}>Projects</button>
-            <button active={tab === 'messages'} on:click={() => tab = 'messages'}>Messages</button>
-            <button active={tab === 'users'} on:click={() => tab = 'users'}>Users</button>
-            <button active={tab === 'misc'} on:click={() => tab = 'misc'}>Misc</button>
+            <button
+                active={tab === "projects"}
+                on:click={() => (tab = "projects")}
+            >
+                Projects
+            </button>
+            <button
+                active={tab === "messages"}
+                on:click={() => (tab = "messages")}
+            >
+                Messages
+            </button>
+            <button active={tab === "users"} on:click={() => (tab = "users")}>
+                Users
+            </button>
+            <button active={tab === "misc"} on:click={() => (tab = "misc")}>
+                Misc
+            </button>
         </div>
     </div>
-    {#if tab === 'projects'}
+    {#if tab === "projects"}
         <div class="projects-control">
             <div class="card-chunk" style="grid-column: 1;">
                 {#if projectReportsLoaded}
@@ -527,14 +621,21 @@
                         <button
                             class="reports-user-button reports-project-button"
                             on:click={() => {
-                                if (selectedProjectReport === idx) return selectedProjectReport = null;
+                                if (selectedProjectReport === idx)
+                                    return (selectedProjectReport = null);
                                 selectedProjectId = content.targetID;
                                 selectedProjectReport = idx;
                                 selectedUsername = content.author;
                                 if (content.details) return;
-                                ProjectClient.getReports('project', content.targetID)
-                                    .then(details => content.details = details)
-                                    .catch(err => {
+                                ProjectClient.getReports(
+                                    "project",
+                                    content.targetID,
+                                )
+                                    .then(
+                                        (details) =>
+                                            (content.details = details),
+                                    )
+                                    .catch((err) => {
                                         console.warn(err);
                                         content.details = [content];
                                     });
@@ -562,24 +663,38 @@
                                     <LoadingSpinner />
                                 {:else}
                                     <Button
-                                        on:click={() => ProjectClient.closeReport(content.id)
-                                            .then(() => { projectReports.splice(selectedProjectReport, 1); projectReports = projectReports; })
-                                            .catch(err => {
-                                                console.error(err);
-                                                alert(err);
-                                            })}
+                                        on:click={() =>
+                                            ProjectClient.closeReport(
+                                                content.id,
+                                            )
+                                                .then(() => {
+                                                    projectReports.splice(
+                                                        selectedProjectReport,
+                                                        1,
+                                                    );
+                                                    projectReports =
+                                                        projectReports;
+                                                })
+                                                .catch((err) => {
+                                                    console.error(err);
+                                                    alert(err);
+                                                })}
                                         color="red"
                                         label="Close reports"
                                         small
                                     />
                                     {#each content.details as report, idx}
-                                        <details open={report.reporter === content.reporter}>
+                                        <details
+                                            open={report.reporter ===
+                                                content.reporter}
+                                        >
                                             <summary>
                                                 {report.reporter}
                                                 <Button
                                                     on:click={() => {
-                                                        tab = 'users';
-                                                        selectedUsername = report.reporter;
+                                                        tab = "users";
+                                                        selectedUsername =
+                                                            report.reporter;
                                                     }}
                                                     label="Select user"
                                                     small
@@ -588,12 +703,24 @@
                                             <p style="white-space:pre-wrap">
                                                 {report.report}
                                                 <Button
-                                                    on:click={() => ProjectClient.closeReport(report.id)
-                                                        .then(() => { content.details.splice(idx, 1); content.details = content.details; })
-                                                        .catch(err => {
-                                                            console.error(err);
-                                                            alert(err);
-                                                        })}
+                                                    on:click={() =>
+                                                        ProjectClient.closeReport(
+                                                            report.id,
+                                                        )
+                                                            .then(() => {
+                                                                content.details.splice(
+                                                                    idx,
+                                                                    1,
+                                                                );
+                                                                content.details =
+                                                                    content.details;
+                                                            })
+                                                            .catch((err) => {
+                                                                console.error(
+                                                                    err,
+                                                                );
+                                                                alert(err);
+                                                            })}
                                                     color="red"
                                                     label="Close report"
                                                     small
@@ -607,7 +734,7 @@
                     {/each}
                 {:else}
                     <LoadingSpinner></LoadingSpinner>
-                {/if }
+                {/if}
             </div>
             <div class="card-chunk" style="grid-column: 2;">
                 <input
@@ -615,40 +742,63 @@
                     type="text"
                     placeholder="Project ID"
                     bind:value={selectedProjectId}
-                >
+                />
                 {#if projectRejected}
                     <div class="rejection-message">
                         {#if !projectRejectionHard}
-                            <img src="/account/status_warn.svg" alt="Project Soft Rejected">
+                            <img
+                                src="/account/status_warn.svg"
+                                alt="Project Soft Rejected"
+                            />
                             <span>Project is currently soft rejected.</span>
                             <Button
-                                color="red" small
-                                on:click={() => ProjectClient.restoreRejectedProject(selectedProjectId)
-                                    .then(() => projectRejected = false)
-                                    .catch(err => {
-                                        console.error(err);
-                                        alert(err);
-                                    })}
+                                color="red"
+                                small
+                                on:click={() =>
+                                    ProjectClient.restoreRejectedProject(
+                                        selectedProjectId,
+                                    )
+                                        .then(() => (projectRejected = false))
+                                        .catch((err) => {
+                                            console.error(err);
+                                            alert(err);
+                                        })}
                                 label="Unreject"
                             />
                         {:else}
-                            <img src="/account/status_banned.svg" alt="Project Hard Rejected">
-                            <span>Project cant be found. Maybe its hard rejected?</span>
+                            <img
+                                src="/account/status_banned.svg"
+                                alt="Project Hard Rejected"
+                            />
+                            <span>
+                                Project cant be found. Maybe its hard rejected?
+                            </span>
                             <Button
                                 small
                                 label="Download project"
-                                on:click={() => ProjectClient.downloadHardRejectedProject(selectedProjectId)
-                                    .then(data => FileSaver.saveAs(new Blob([data]), `Project_${selectedProjectId}.pmp`))
-                                    .catch(err => {
-                                        console.error(err);
-                                        alert(err);
-                                    })}
+                                on:click={() =>
+                                    ProjectClient.downloadHardRejectedProject(
+                                        selectedProjectId,
+                                    )
+                                        .then((data) =>
+                                            FileSaver.saveAs(
+                                                new Blob([data]),
+                                                `Project_${selectedProjectId}.pmp`,
+                                            ),
+                                        )
+                                        .catch((err) => {
+                                            console.error(err);
+                                            alert(err);
+                                        })}
                             />
                         {/if}
                     </div>
                 {/if}
                 {#if projectExists}
-                    <div class="yet-another-selected-project-wrapper" project-rejected={projectRejected}>
+                    <div
+                        class="yet-another-selected-project-wrapper"
+                        project-rejected={projectRejected}
+                    >
                         <div class="selected-project">
                             <div class="project-header">
                                 <img
@@ -656,8 +806,20 @@
                                     alt={projectAuthor}
                                 />
                                 <div class="project-header-text">
-                                    <input class="project-title-editable" type="text" bind:value={projectTitle}>
-                                    <button class="href-button" on:click={() => { tab = 'users'; selectedUsername = projectAuthor; }}>{projectAuthor}</button>
+                                    <input
+                                        class="project-title-editable"
+                                        type="text"
+                                        bind:value={projectTitle}
+                                    />
+                                    <button
+                                        class="href-button"
+                                        on:click={() => {
+                                            tab = "users";
+                                            selectedUsername = projectAuthor;
+                                        }}
+                                    >
+                                        {projectAuthor}
+                                    </button>
                                 </div>
                             </div>
                             <button
@@ -668,11 +830,21 @@
                                     fileSelector.click();
 
                                     const onceSelected = async () => {
-                                        fileSelector.removeEventListener('change', onceSelected);
-                                        replacementThumbnail = fileSelector.files[0];
-                                        replacementThumbnailUrl = await BlobAndDataUrl.blobToDataURL(replacementThumbnail);
-                                    }
-                                    fileSelector.addEventListener('change', onceSelected);
+                                        fileSelector.removeEventListener(
+                                            "change",
+                                            onceSelected,
+                                        );
+                                        replacementThumbnail =
+                                            fileSelector.files[0];
+                                        replacementThumbnailUrl =
+                                            await BlobAndDataUrl.blobToDataURL(
+                                                replacementThumbnail,
+                                            );
+                                    };
+                                    fileSelector.addEventListener(
+                                        "change",
+                                        onceSelected,
+                                    );
                                 }}
                             >
                                 <img
@@ -682,56 +854,85 @@
                                     alt={projectTitle}
                                 />
                                 <div class="profile-section-image-edit">
-                                    <img src="/pencil.png" alt="Change Thumbnail" />
+                                    <img
+                                        src="/pencil.png"
+                                        alt="Change Thumbnail"
+                                    />
                                 </div>
                             </button>
                         </div>
                         <div class="project-texts">
                             <Button
-                                color={(originalTitle !== projectTitle || originalInstructions !== projectInstructions || originalNotes !== projectNotes || replacementThumbnail) || 'gray'}
-                                on:click={() => ProjectClient.updateProject(selectedProjectId, {
-                                    image: replacementThumbnail,
-                                    newMeta: {
-                                        title: projectTitle,
-                                        instructions: projectInstructions,
-                                        notes: projectNotes
-                                    }
-                                })
-                                    .then(() => onSelectedProjectChanged(selectedProjectId))
-                                    .catch(err => {
-                                        console.error(err);
-                                        alert(err);
-                                    })}
+                                color={originalTitle !== projectTitle ||
+                                    originalInstructions !==
+                                        projectInstructions ||
+                                    originalNotes !== projectNotes ||
+                                    replacementThumbnail ||
+                                    "gray"}
+                                on:click={() =>
+                                    ProjectClient.updateProject(
+                                        selectedProjectId,
+                                        {
+                                            image: replacementThumbnail,
+                                            newMeta: {
+                                                title: projectTitle,
+                                                instructions:
+                                                    projectInstructions,
+                                                notes: projectNotes,
+                                            },
+                                        },
+                                    )
+                                        .then(() =>
+                                            onSelectedProjectChanged(
+                                                selectedProjectId,
+                                            ),
+                                        )
+                                        .catch((err) => {
+                                            console.error(err);
+                                            alert(err);
+                                        })}
                                 small
                                 label="Save changes"
                             />
                             <div class="project-text-field">
                                 <h3>Instructions</h3>
-                                <textarea bind:value={projectInstructions}/>
+                                <textarea bind:value={projectInstructions} />
                             </div>
                             <div class="project-text-field">
                                 <h3>Notes & Credits</h3>
-                                <textarea bind:value={projectNotes}/>
+                                <textarea bind:value={projectNotes} />
                             </div>
                         </div>
                     </div>
-                    <div style="display:grid;grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 2px; margin-top: 2px;">
+                    <div
+                        style="display:grid;grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 2px; margin-top: 2px;"
+                    >
                         <Button
                             small
                             color="red"
                             label="Remove thumbnail"
-                            on:click={() => !confirm("Remove thumbnail?") ? null : ProjectClient.removeProjectThumbnail(selectedProjectId, false)
-                                .then(() => selectedProjectId = selectedProjectId)
-                                .catch(err => {
-                                    console.error(err);
-                                    alert(err);
-                                })}
+                            on:click={() =>
+                                !confirm("Remove thumbnail?")
+                                    ? null
+                                    : ProjectClient.removeProjectThumbnail(
+                                          selectedProjectId,
+                                          false,
+                                      )
+                                          .then(
+                                              () =>
+                                                  (selectedProjectId =
+                                                      selectedProjectId),
+                                          )
+                                          .catch((err) => {
+                                              console.error(err);
+                                              alert(err);
+                                          })}
                         />
                         <Button
                             small
                             color="red"
                             label="Remove project"
-                            on:click={() => rejectionPageOpen = true}
+                            on:click={() => (rejectionPageOpen = true)}
                         />
                         <Button
                             small
@@ -745,24 +946,32 @@
                                 small
                                 color="red"
                                 label="Unfeature"
-                                on:click={() => ProjectClient.featureProject(selectedProjectId, false)
-                                    .then(() => projectFeatured = false)
-                                    .catch(err => {
-                                        console.error(err);
-                                        alert(err);
-                                    })}
+                                on:click={() =>
+                                    ProjectClient.featureProject(
+                                        selectedProjectId,
+                                        false,
+                                    )
+                                        .then(() => (projectFeatured = false))
+                                        .catch((err) => {
+                                            console.error(err);
+                                            alert(err);
+                                        })}
                             />
                         {:else}
                             <Button
                                 small
                                 color="orange"
                                 label="Feature"
-                                on:click={() => ProjectClient.featureProject(selectedProjectId, true)
-                                    .then(() => projectFeatured = true)
-                                    .catch(err => {
-                                        console.error(err);
-                                        alert(err);
-                                    })}
+                                on:click={() =>
+                                    ProjectClient.featureProject(
+                                        selectedProjectId,
+                                        true,
+                                    )
+                                        .then(() => (projectFeatured = true))
+                                        .catch((err) => {
+                                            console.error(err);
+                                            alert(err);
+                                        })}
                             />
                         {/if}
                         {#if projectCanFeature}
@@ -770,157 +979,262 @@
                                 small
                                 color="red"
                                 label="Block featuring"
-                                on:click={() => ProjectClient.setCanBeFeatured(selectedProjectId, false)
-                                    .then(() => projectCanFeature = false)
-                                    .catch(err => {
-                                        console.error(err);
-                                        alert(err);
-                                    })}
+                                on:click={() =>
+                                    ProjectClient.setCanBeFeatured(
+                                        selectedProjectId,
+                                        false,
+                                    )
+                                        .then(() => (projectCanFeature = false))
+                                        .catch((err) => {
+                                            console.error(err);
+                                            alert(err);
+                                        })}
                             />
                         {:else}
                             <Button
                                 small
                                 color="remix"
                                 label="Allow featuring"
-                                on:click={() => ProjectClient.setCanBeFeatured(selectedProjectId, true)
-                                    .then(() => projectCanFeature = true)
-                                    .catch(err => {
-                                        console.error(err);
-                                        alert(err);
-                                    })}
+                                on:click={() =>
+                                    ProjectClient.setCanBeFeatured(
+                                        selectedProjectId,
+                                        true,
+                                    )
+                                        .then(() => (projectCanFeature = true))
+                                        .catch((err) => {
+                                            console.error(err);
+                                            alert(err);
+                                        })}
                             />
                         {/if}
                     </div>
-                    <div style="display:grid;grid-template-columns: 1fr 1fr 1fr; gap: 2px; margin-top: 2px;">
+                    <div
+                        style="display:grid;grid-template-columns: 1fr 1fr 1fr; gap: 2px; margin-top: 2px;"
+                    >
                         <Button
                             small
                             label="Inspect extensions"
-                            on:click={() => getProject(false)
-                                .then(() => projectContentView = 'extensions')
-                                .catch(err => {
-                                    console.error(err);
-                                    alert(err);
-                                })}
+                            on:click={() =>
+                                getProject(false)
+                                    .then(
+                                        () =>
+                                            (projectContentView = "extensions"),
+                                    )
+                                    .catch((err) => {
+                                        console.error(err);
+                                        alert(err);
+                                    })}
                         />
                         <Button
                             small
                             label="Inspect strings/comments"
-                            on:click={() => getProject(false)
-                                .then(async () => {
-                                    unorderedStrings = '';
-                                    for (const sprite of projectJson.targets) {
-                                        unorderedStrings += sprite.name + ':\n';
-                                        unorderedStrings += '  Variables:\n';
-                                        for (const scalar of Object.values(sprite.variables))
-                                            unorderedStrings += '    ' + scalar[0] + ': ' + scalar[1] + '\n';
-                                        unorderedStrings += '  Lists:\n';
-                                        for (const list of Object.values(sprite.lists))
-                                            unorderedStrings += '    ' + list[0] + ':\n' + list[1].map(item => '      - ' + item).join('\n') + '\n';
-                                        unorderedStrings += '  Broadcasts:\n';
-                                        for (const broadcast of Object.values(sprite.broadcasts))
-                                            unorderedStrings += '    - ' + broadcast + '\n';
-                                        unorderedStrings += '  Custom Variables:\n';
-                                        for (const customVar of sprite.customVars)
-                                            unorderedStrings += '    - ' + customVar.name + '\n';
-                                        unorderedStrings += '  Text:\n';
-                                        for (const block of Object.values(sprite.blocks)) {
-                                            if (!block.fields?.TEXT) continue;
-                                            unorderedStrings += '    - ' + block.fields.TEXT.value + '\n';
+                            on:click={() =>
+                                getProject(false)
+                                    .then(async () => {
+                                        unorderedStrings = "";
+                                        for (const sprite of projectJson.targets) {
+                                            unorderedStrings +=
+                                                sprite.name + ":\n";
+                                            unorderedStrings +=
+                                                "  Variables:\n";
+                                            for (const scalar of Object.values(
+                                                sprite.variables,
+                                            ))
+                                                unorderedStrings +=
+                                                    "    " +
+                                                    scalar[0] +
+                                                    ": " +
+                                                    scalar[1] +
+                                                    "\n";
+                                            unorderedStrings += "  Lists:\n";
+                                            for (const list of Object.values(
+                                                sprite.lists,
+                                            ))
+                                                unorderedStrings +=
+                                                    "    " +
+                                                    list[0] +
+                                                    ":\n" +
+                                                    list[1]
+                                                        .map(
+                                                            (item) =>
+                                                                "      - " +
+                                                                item,
+                                                        )
+                                                        .join("\n") +
+                                                    "\n";
+                                            unorderedStrings +=
+                                                "  Broadcasts:\n";
+                                            for (const broadcast of Object.values(
+                                                sprite.broadcasts,
+                                            ))
+                                                unorderedStrings +=
+                                                    "    - " + broadcast + "\n";
+                                            unorderedStrings +=
+                                                "  Custom Variables:\n";
+                                            for (const customVar of sprite.customVars)
+                                                unorderedStrings +=
+                                                    "    - " +
+                                                    customVar.name +
+                                                    "\n";
+                                            unorderedStrings += "  Text:\n";
+                                            for (const block of Object.values(
+                                                sprite.blocks,
+                                            )) {
+                                                if (!block.fields?.TEXT)
+                                                    continue;
+                                                unorderedStrings +=
+                                                    "    - " +
+                                                    block.fields.TEXT.value +
+                                                    "\n";
+                                            }
+                                            unorderedStrings += "  Comments:\n";
+                                            for (const comment of Object.values(
+                                                sprite.comments,
+                                            ))
+                                                unorderedStrings +=
+                                                    "    - " +
+                                                    comment.text +
+                                                    "\n";
+                                            unorderedStrings += "  Costumes:\n";
+                                            for (const costume of sprite.costumes)
+                                                unorderedStrings +=
+                                                    "    - " +
+                                                    costume.name +
+                                                    "\n";
+                                            unorderedStrings += "  Sounds:\n";
+                                            for (const sound of sprite.sounds)
+                                                unorderedStrings +=
+                                                    "    - " +
+                                                    sound.name +
+                                                    "\n";
                                         }
-                                        unorderedStrings += '  Comments:\n';
-                                        for (const comment of Object.values(sprite.comments))
-                                            unorderedStrings += '    - ' + comment.text + '\n';
-                                        unorderedStrings += '  Costumes:\n';
-                                        for (const costume of sprite.costumes)
-                                            unorderedStrings += '    - ' + costume.name + '\n';
-                                        unorderedStrings += '  Sounds:\n';
-                                        for (const sound of sprite.sounds)
-                                            unorderedStrings += '    - ' + sound.name + '\n';
-                                    }
 
-                                    // try to display this Nicer (the button can be clicked again if it doesnt resolve in time)
-                                    projectContentView = 'strings';
-                                    await new Promise((resolve) => setTimeout(() => resolve(), 1));
-                                    queueMicrotask(() => {
-                                        editor.setValue(unorderedStrings);
-                                        editor.setReadOnly(true);
-                                        editor.session.setMode('ace/mode/yaml');
-                                    });
-                                })
-                                .catch(err => {
-                                    console.error(err);
-                                    alert(err);
-                                })}
+                                        // try to display this Nicer (the button can be clicked again if it doesnt resolve in time)
+                                        projectContentView = "strings";
+                                        await new Promise((resolve) =>
+                                            setTimeout(() => resolve(), 1),
+                                        );
+                                        queueMicrotask(() => {
+                                            editor.setValue(unorderedStrings);
+                                            editor.setReadOnly(true);
+                                            editor.session.setMode(
+                                                "ace/mode/yaml",
+                                            );
+                                        });
+                                    })
+                                    .catch((err) => {
+                                        console.error(err);
+                                        alert(err);
+                                    })}
                         />
                         <Button
                             small
                             label="Inspect assets"
-                            on:click={() => getProject(true)
-                                .then(async () => {
-                                    assetIframe.contentWindow.postMessage(projectJson, '*');
-                                    projectContentView = 'assets';
-                                })
-                                .catch(err => {
-                                    console.error(err);
-                                    alert(err);
-                                })}
+                            on:click={() =>
+                                getProject(true)
+                                    .then(async () => {
+                                        assetIframe.contentWindow.postMessage(
+                                            projectJson,
+                                            "*",
+                                        );
+                                        projectContentView = "assets";
+                                    })
+                                    .catch((err) => {
+                                        console.error(err);
+                                        alert(err);
+                                    })}
                         />
                     </div>
                     {#if projectFileLoading}
                         <div class="file-loading-status">
                             <span>{progressLabel}</span>
-                            <progress min="0.000" max="1.000" value={totalProgress}></progress>
+                            <progress
+                                min="0.000"
+                                max="1.000"
+                                value={totalProgress}
+                            ></progress>
                         </div>
                     {/if}
-                    {#if projectContentView === 'extensions'}
+                    {#if projectContentView === "extensions"}
                         <div class="extensions-view">
-                            <select class="user-selector" on:change={e => {
-                                if (!e.target.value) {
-                                    editor.setValue("");
-                                    editor.setReadOnly(true);
-                                    editor.session.setMode('ace/mode/javascript');
-                                    return;
-                                }
-
-                                fetch(e.target.value)
-                                    .then(req => req.text())
-                                    .then(res => {
-                                        editor.setValue(res);
+                            <select
+                                class="user-selector"
+                                on:change={(e) => {
+                                    if (!e.target.value) {
+                                        editor.setValue("");
                                         editor.setReadOnly(true);
-                                        editor.session.setMode('ace/mode/javascript');
-                                    })
-                                    .catch(err => {
-                                        console.error(err);
-                                        alert(err);
-                                    })
-                            }}
+                                        editor.session.setMode(
+                                            "ace/mode/javascript",
+                                        );
+                                        return;
+                                    }
+
+                                    fetch(e.target.value)
+                                        .then((req) => req.text())
+                                        .then((res) => {
+                                            editor.setValue(res);
+                                            editor.setReadOnly(true);
+                                            editor.session.setMode(
+                                                "ace/mode/javascript",
+                                            );
+                                        })
+                                        .catch((err) => {
+                                            console.error(err);
+                                            alert(err);
+                                        });
+                                }}
                             >
-                                <option value="">(Making a selection will load the url)</option>
+                                <option value="">
+                                    (Making a selection will load the url)
+                                </option>
                                 {#each Object.entries(projectJson.extensionURLs) as [extId, url]}
-                                    <option value={url}>{extId} <em>({url})</em></option>
+                                    <option value={url}>
+                                        {extId} <em>({url})</em>
+                                    </option>
                                 {/each}
                             </select>
                             <div bind:this={codeArea}></div>
                         </div>
-                    {:else if projectContentView === 'strings'}
+                    {:else if projectContentView === "strings"}
                         <code class="strings-listout">
                             {unorderedStrings}
                         </code>
-                    {:else if projectContentView === 'assets'}
+                    {:else if projectContentView === "assets"}
                         <Button
                             label="Apply censoring"
                             on:click={async () => {
                                 try {
-                                    assetIframe.contentWindow.postMessage({ whatDo: true }, '*');
-                                    await new Promise(resolve => resolveCensoringLoad = resolve);
+                                    assetIframe.contentWindow.postMessage(
+                                        { whatDo: true },
+                                        "*",
+                                    );
+                                    await new Promise(
+                                        (resolve) =>
+                                            (resolveCensoringLoad = resolve),
+                                    );
                                     const zip = new JSZip();
                                     const promises = [];
                                     for (const sprite of projectJson.targets) {
                                         for (const costume of sprite.costumes) {
-                                            if (!assetsToCensor.includes(costume.md5ext)) {
-                                                promises.push(fetch(`https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/${selectedProjectId}_${costume.md5ext}`)
-                                                    .then(req => req.blob())
-                                                    .then(res => zip.file(costume.md5ext, res)));
+                                            if (
+                                                !assetsToCensor.includes(
+                                                    costume.md5ext,
+                                                )
+                                            ) {
+                                                promises.push(
+                                                    fetch(
+                                                        `https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/${selectedProjectId}_${costume.md5ext}`,
+                                                    )
+                                                        .then((req) =>
+                                                            req.blob(),
+                                                        )
+                                                        .then((res) =>
+                                                            zip.file(
+                                                                costume.md5ext,
+                                                                res,
+                                                            ),
+                                                        ),
+                                                );
                                                 continue;
                                             }
                                             costume.rotationCenterX = 32;
@@ -928,13 +1242,31 @@
                                             costume.bitmapResolution = 1;
                                             costume.dataFormat = "svg";
                                             costume.md5ext = `${costume.assetId}.svg`;
-                                            zip.file(costume.md5ext, censorCostume);
+                                            zip.file(
+                                                costume.md5ext,
+                                                censorCostume,
+                                            );
                                         }
                                         for (const sound of sprite.sounds) {
-                                            if (!assetsToCensor.includes(sound.md5ext)) {
-                                                promises.push(fetch(`https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/${selectedProjectId}_${sound.md5ext}`)
-                                                    .then(req => req.blob())
-                                                    .then(res => zip.file(sound.md5ext, res)));
+                                            if (
+                                                !assetsToCensor.includes(
+                                                    sound.md5ext,
+                                                )
+                                            ) {
+                                                promises.push(
+                                                    fetch(
+                                                        `https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/${selectedProjectId}_${sound.md5ext}`,
+                                                    )
+                                                        .then((req) =>
+                                                            req.blob(),
+                                                        )
+                                                        .then((res) =>
+                                                            zip.file(
+                                                                sound.md5ext,
+                                                                res,
+                                                            ),
+                                                        ),
+                                                );
                                                 continue;
                                             }
                                             sound.dataFormat = "mp3";
@@ -944,16 +1276,25 @@
                                         }
                                     }
                                     await Promise.all(promises);
-                                    zip.file('project.json', JSON.stringify(projectJson));
+                                    zip.file(
+                                        "project.json",
+                                        JSON.stringify(projectJson),
+                                    );
 
-                                    await ProjectClient.updateProject(selectedProjectId, {
-                                        project: await zip.generateAsync({ type: 'blob' }),
-                                        newMeta: {
-                                            title: projectTitle,
-                                            instructions: projectInstructions,
-                                            notes: projectNotes
-                                        }
-                                    });
+                                    await ProjectClient.updateProject(
+                                        selectedProjectId,
+                                        {
+                                            project: await zip.generateAsync({
+                                                type: "blob",
+                                            }),
+                                            newMeta: {
+                                                title: projectTitle,
+                                                instructions:
+                                                    projectInstructions,
+                                                notes: projectNotes,
+                                            },
+                                        },
+                                    );
                                     projectContentView = null;
                                 } catch (err) {
                                     console.error(err);
@@ -966,26 +1307,39 @@
                     <iframe
                         bind:this={assetIframe}
                         class="asset-preview-iframe"
-                        style={projectContentView === 'assets' ? '' : 'height: 0'}
-                        on:load={e => {
+                        style={projectContentView === "assets"
+                            ? ""
+                            : "height: 0"}
+                        on:load={(e) => {
                             assetIframe = e.target;
-                            const darkmode = String(localStorage.getItem('darkmode') || prefersDarkMode) === 'true';
-                            assetIframe.contentWindow.postMessage({ theme: darkmode ? 'dark' : '' }, '*');
+                            const darkmode =
+                                String(
+                                    localStorage.getItem("darkmode") ||
+                                        prefersDarkMode,
+                                ) === "true";
+                            assetIframe.contentWindow.postMessage(
+                                { theme: darkmode ? "dark" : "" },
+                                "*",
+                            );
                         }}
                     />
                 {/if}
             </div>
         </div>
-    {:else if tab === 'messages'}
+    {:else if tab === "messages"}
         <div class="card-chunk">
             <div class="inputs-inline">
-                <input 
-                    placeholder={messageToUser ? "Username" : "Message ID"} 
-                    type="text" 
+                <input
+                    placeholder={messageToUser ? "Username" : "Message ID"}
+                    type="text"
                     bind:value={messageTarget}
-                >
+                />
                 <div>
-                    <input type="checkbox" name="checkIp" bind:checked={messageToUser}>
+                    <input
+                        type="checkbox"
+                        name="checkIp"
+                        bind:checked={messageToUser}
+                    />
                     <label for="checkIp">Send Directly</label>
                 </div>
             </div>
@@ -999,7 +1353,11 @@
                     <div style="display: flex; flex-direction: column;">
                         {#if messageToUser}
                             <div style="width: max-content">
-                                <input type="checkbox" name="canReply" bind:checked={messageRepliable}>
+                                <input
+                                    type="checkbox"
+                                    name="canReply"
+                                    bind:checked={messageRepliable}
+                                />
                                 <label for="canReply">Allow Replies</label>
                             </div>
                         {/if}
@@ -1008,31 +1366,42 @@
                             style="width: 100%; height: 100%"
                             on:click={() => {
                                 const promise = messageToUser
-                                    ? ProjectClient.sendModeratorMessage(messageTarget, messageContent, messageRepliable)
-                                    : ProjectClient.respondToDispute(messageTarget, messageContent);
+                                    ? ProjectClient.sendModeratorMessage(
+                                          messageTarget,
+                                          messageContent,
+                                          messageRepliable,
+                                      )
+                                    : ProjectClient.respondToDispute(
+                                          messageTarget,
+                                          messageContent,
+                                      );
                                 promise
-                                    .then(() => alert('Message Sent!'))
-                                    .catch(err => {
+                                    .then(() => alert("Message Sent!"))
+                                    .catch((err) => {
                                         console.error(err);
                                         alert(err);
-                                    })
-                            
+                                    });
                             }}
                         />
                     </div>
                 </div>
                 {#if !messageToUser}
-                    <div style="display: flex; flex-direction: column; align-items: center;">
+                    <div
+                        style="display: flex; flex-direction: column; align-items: center;"
+                    >
                         OR
                         <Button
                             color="red"
                             label="Delete Message"
-                            on:click={() => ProjectClient.deleteModeratorMessage(messageTarget)
-                                .then(() => messageTarget = '')
-                                .catch(err => {
-                                    console.error(err);
-                                    alert(err);
-                                })}
+                            on:click={() =>
+                                ProjectClient.deleteModeratorMessage(
+                                    messageTarget,
+                                )
+                                    .then(() => (messageTarget = ""))
+                                    .catch((err) => {
+                                        console.error(err);
+                                        alert(err);
+                                    })}
                         />
                     </div>
                 {/if}
@@ -1041,21 +1410,36 @@
                 <div class="misc-member">
                     <strong>Broadcast Messages</strong>
                     <div>
-                        <input type="checkbox" name="updateTOS" bind:checked={broadcastTOSChange}>
+                        <input
+                            type="checkbox"
+                            name="updateTOS"
+                            bind:checked={broadcastTOSChange}
+                        />
                         <label for="updateTOS">Terms of Service</label>
-                        <input type="checkbox" name="updatePrivacy" bind:checked={broadcastPolicyChange}>
+                        <input
+                            type="checkbox"
+                            name="updatePrivacy"
+                            bind:checked={broadcastPolicyChange}
+                        />
                         <label for="canReply">Privacy Policy</label>
-                        <input type="checkbox" name="updateGuidelines" bind:checked={broadcastGuidelinesChange}>
+                        <input
+                            type="checkbox"
+                            name="updateGuidelines"
+                            bind:checked={broadcastGuidelinesChange}
+                        />
                         <label for="canReply">Uploading Guidelines</label>
                     </div>
                     <div style="display: flex; justify-content: center;">
                         <Button
                             on:click={() => {
                                 const list = [];
-                                if (broadcastTOSChange) list.push('tos');
-                                if (broadcastPolicyChange) list.push('privacyPolicy');
-                                if (broadcastGuidelinesChange) list.push('guidelines');
-                                if (list.length <= 0) return alert('Nothing to send!!');
+                                if (broadcastTOSChange) list.push("tos");
+                                if (broadcastPolicyChange)
+                                    list.push("privacyPolicy");
+                                if (broadcastGuidelinesChange)
+                                    list.push("guidelines");
+                                if (list.length <= 0)
+                                    return alert("Nothing to send!!");
 
                                 ProjectClient.setLastPolicyUpdate(list)
                                     .then(() => {
@@ -1063,10 +1447,10 @@
                                         broadcastPolicyChange = false;
                                         broadcastGuidelinesChange = false;
                                     })
-                                    .catch(err => {
+                                    .catch((err) => {
                                         console.error(err);
                                         alert(err);
-                                    })
+                                    });
                             }}
                             label="Send broadcast"
                         />
@@ -1074,7 +1458,7 @@
                 </div>
             </div>
         </div>
-    {:else if tab === 'users'}
+    {:else if tab === "users"}
         <div class="projects-control">
             <div class="card-chunk" style="grid-column: 1;">
                 {#if !userReportsLoaded}
@@ -1087,13 +1471,16 @@
                             class="reports-user-button"
                             on:click={() => {
                                 if (selectedUserReport === idx)
-                                    return selectedUserReport = null;
+                                    return (selectedUserReport = null);
                                 selectedUserReport = idx;
                                 selectedUsername = content.target;
                                 if (content.details) return;
-                                ProjectClient.getReports('user', content.target)
-                                    .then(details => content.details = details)
-                                    .catch(err => {
+                                ProjectClient.getReports("user", content.target)
+                                    .then(
+                                        (details) =>
+                                            (content.details = details),
+                                    )
+                                    .catch((err) => {
                                         console.error(err);
                                         alert(err);
                                     });
@@ -1104,7 +1491,9 @@
                                 alt={content.target}
                             />
                             <div class="reports-user-content">
-                                <p style="font-weight: bold;">{content.target}</p>
+                                <p style="font-weight: bold;">
+                                    {content.target}
+                                </p>
                                 <p>{content.report}</p>
                             </div>
                         </button>
@@ -1114,35 +1503,61 @@
                                     <LoadingSpinner />
                                 {:else}
                                     <Button
-                                        on:click={() => ProjectClient.closeReport(content.id)
-                                            .then(() => { userReports.splice(selectedUserReport, 1); userReports = userReports; })
-                                            .catch(err => {
-                                                console.error(err);
-                                                alert(err);
-                                            })}
+                                        on:click={() =>
+                                            ProjectClient.closeReport(
+                                                content.id,
+                                            )
+                                                .then(() => {
+                                                    userReports.splice(
+                                                        selectedUserReport,
+                                                        1,
+                                                    );
+                                                    userReports = userReports;
+                                                })
+                                                .catch((err) => {
+                                                    console.error(err);
+                                                    alert(err);
+                                                })}
                                         color="red"
                                         small
                                         label="Close reports"
                                     />
                                     {#each content.details as report, idx}
-                                        <details open={report.reporter === content.reporter}>
+                                        <details
+                                            open={report.reporter ===
+                                                content.reporter}
+                                        >
                                             <summary>
                                                 {report.reporter}
                                                 <Button
                                                     small
-                                                    on:click={() => selectedUsername = report.reporter}
+                                                    on:click={() =>
+                                                        (selectedUsername =
+                                                            report.reporter)}
                                                     label="Select user"
                                                 />
                                             </summary>
                                             <p style="white-space:pre-wrap">
                                                 {report.report}
                                                 <Button
-                                                    on:click={() => ProjectClient.closeReport(report.id)
-                                                        .then(() => { content.details.splice(idx, 1); content.details = content.details; })
-                                                        .catch(err => {
-                                                            console.error(err);
-                                                            alert(err);
-                                                        })}
+                                                    on:click={() =>
+                                                        ProjectClient.closeReport(
+                                                            report.id,
+                                                        )
+                                                            .then(() => {
+                                                                content.details.splice(
+                                                                    idx,
+                                                                    1,
+                                                                );
+                                                                content.details =
+                                                                    content.details;
+                                                            })
+                                                            .catch((err) => {
+                                                                console.error(
+                                                                    err,
+                                                                );
+                                                                alert(err);
+                                                            })}
                                                     color="red"
                                                     small
                                                     label="Close report"
@@ -1162,29 +1577,42 @@
                     type="text"
                     placeholder="Username"
                     bind:value={selectedUsername}
-                >
+                />
                 {#if !selectedUsername}
                     Select a user!!
                 {:else}
                     <div class="profile-section">
-                        <button class="profile-section-image" on:click={() => {
-                            fileSelector.type = "file";
-                            fileSelector.accept = "image/*";
-                            fileSelector.click();
+                        <button
+                            class="profile-section-image"
+                            on:click={() => {
+                                fileSelector.type = "file";
+                                fileSelector.accept = "image/*";
+                                fileSelector.click();
 
-                            const onceSelected = async () => {
-                                fileSelector.removeEventListener('change', onceSelected);
-                                const data = await fileSelector.files[0].arrayBuffer();
+                                const onceSelected = async () => {
+                                    fileSelector.removeEventListener(
+                                        "change",
+                                        onceSelected,
+                                    );
+                                    const data =
+                                        await fileSelector.files[0].arrayBuffer();
 
-                                ProjectClient.setPFPOfUser(selectedUsername, data)
-                                    .then(() => reloadPFP = !reloadPFP)
-                                    .catch(err => {
-                                        console.error(err);
-                                        alert(err);
-                                    });
-                            }
-                            fileSelector.addEventListener('change', onceSelected);
-                        }}>
+                                    ProjectClient.setPFPOfUser(
+                                        selectedUsername,
+                                        data,
+                                    )
+                                        .then(() => (reloadPFP = !reloadPFP))
+                                        .catch((err) => {
+                                            console.error(err);
+                                            alert(err);
+                                        });
+                                };
+                                fileSelector.addEventListener(
+                                    "change",
+                                    onceSelected,
+                                );
+                            }}
+                        >
                             <img
                                 src="{PUBLIC_API_URL}/api/v1/users/getpfp?username={selectedUsername}&reload={reloadPFP}"
                                 alt={selectedUsername}
@@ -1201,7 +1629,8 @@
                                         class="change-username"
                                         on:click={() => {
                                             changingUsername = true;
-                                            newChangedUsername = selectedUsername;
+                                            newChangedUsername =
+                                                selectedUsername;
                                         }}
                                     >
                                         <img
@@ -1223,36 +1652,51 @@
                                     <button
                                         class="change-username"
                                         on:click={() => {
-                                            if (changingUsernameProcessing) return;
-                                            if (newChangedUsername === selectedUsername) {
+                                            if (changingUsernameProcessing)
+                                                return;
+                                            if (
+                                                newChangedUsername ===
+                                                selectedUsername
+                                            ) {
                                                 changingUsername = false;
                                                 return;
                                             }
-                                            if (newChangedUsername.length <= 0) return;
+                                            if (newChangedUsername.length <= 0)
+                                                return;
                                             changingUsernameProcessing = true;
-                                            ProjectClient.setUsernameOfUser(selectedUsername, newChangedUsername)
+                                            ProjectClient.setUsernameOfUser(
+                                                selectedUsername,
+                                                newChangedUsername,
+                                            )
                                                 .then(() => {
-                                                    selectedUsername = newChangedUsername;
+                                                    selectedUsername =
+                                                        newChangedUsername;
                                                     changingUsername = false;
                                                 })
-                                                .catch(err => {
+                                                .catch((err) => {
                                                     switch (err) {
-                                                    case "InvalidLengthUsername":
-                                                        newChangedUsernameError = "username.requirement.length";
-                                                        break;
-                                                    case "InvalidUsername":
-                                                        newChangedUsernameError = "username.requirement.letters";
-                                                        break;
-                                                    case "UsernameTaken":
-                                                        newChangedUsernameError = "account.fields.username.taken";
-                                                        break;
-                                                    default:
-                                                        alert(err);
-                                                        console.error(err);
-                                                        break;
+                                                        case "InvalidLengthUsername":
+                                                            newChangedUsernameError =
+                                                                "username.requirement.length";
+                                                            break;
+                                                        case "InvalidUsername":
+                                                            newChangedUsernameError =
+                                                                "username.requirement.letters";
+                                                            break;
+                                                        case "UsernameTaken":
+                                                            newChangedUsernameError =
+                                                                "account.fields.username.taken";
+                                                            break;
+                                                        default:
+                                                            alert(err);
+                                                            console.error(err);
+                                                            break;
                                                     }
                                                 })
-                                                .finally(() => changingUsernameProcessing = false)
+                                                .finally(
+                                                    () =>
+                                                        (changingUsernameProcessing = false),
+                                                );
                                         }}
                                     >
                                         {#if changingUsernameProcessing}
@@ -1291,12 +1735,24 @@
                                     <button
                                         class="permited-user-profile-button"
                                         on:click={() => {
-                                            ProjectClient.setUserBadges(selectedUsername, profileBadges.filter((_,i) => i !== idx))
-                                                .then(() => { profileBadges.splice(idx, 1); profileBadges = profileBadges; })
-                                                .catch(err => {
+                                            ProjectClient.setUserBadges(
+                                                selectedUsername,
+                                                profileBadges.filter(
+                                                    (_, i) => i !== idx,
+                                                ),
+                                            )
+                                                .then(() => {
+                                                    profileBadges.splice(
+                                                        idx,
+                                                        1,
+                                                    );
+                                                    profileBadges =
+                                                        profileBadges;
+                                                })
+                                                .catch((err) => {
                                                     console.error(err);
                                                     alert(err);
-                                                })
+                                                });
                                         }}
                                     >
                                         <img
@@ -1305,14 +1761,15 @@
                                             alt="Badge"
                                         />
                                         <div class="profile-section-image-edit">
-                                            <img 
-                                                src="/account/remove.svg" 
+                                            <img
+                                                src="/account/remove.svg"
                                                 alt="Remove Badge {TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    currentLang,
+                                                ) ||
+                                                    TranslationHandler.text(
                                                         `profile.badge.${badge}`,
-                                                        currentLang
-                                                    ) || TranslationHandler.text(
-                                                        `profile.badge.${badge}`,
-                                                        'en'
+                                                        'en',
                                                     )}"
                                             />
                                         </div>
@@ -1321,16 +1778,18 @@
                             {/each}
                             <button
                                 class="add-profile-badge"
-                                on:click={e => {
+                                on:click={(e) => {
                                     if (e.layerX > 32 || e.layerX < 0) return;
                                     if (e.layerY > 32 || e.layerY < 0) return;
-                                    addBadgesSelectorOpen = true
+                                    addBadgesSelectorOpen = true;
                                 }}
                             >
-                                <img src="/account/add.svg" alt="Add Badge">
+                                <img src="/account/add.svg" alt="Add Badge" />
                                 <div
                                     class="pop-under"
-                                    style="z-index: 20000;{addBadgesSelectorOpen ? '' : 'display:none;'}"
+                                    style="z-index: 20000;{addBadgesSelectorOpen
+                                        ? ''
+                                        : 'display:none;'}"
                                 >
                                     <div class="full-badge-list">
                                         {#each Object.keys(ProfileBadges) as badge}
@@ -1338,24 +1797,36 @@
                                                 <input
                                                     type="checkbox"
                                                     class="profile-badge-selector"
-                                                    style="background-image: url('/badges/{ProfileBadges[badge]}.png')"
+                                                    style="background-image: url('/badges/{ProfileBadges[
+                                                        badge
+                                                    ]}.png')"
                                                     alt={TranslationHandler.text(
                                                         `profile.badge.${badge}`,
-                                                        currentLang
-                                                    ) || TranslationHandler.text(
-                                                        `profile.badge.${badge}`,
-                                                        'en'
-                                                    )}
+                                                        currentLang,
+                                                    ) ||
+                                                        TranslationHandler.text(
+                                                            `profile.badge.${badge}`,
+                                                            "en",
+                                                        )}
                                                     title={TranslationHandler.text(
                                                         `profile.badge.${badge}`,
-                                                        currentLang
-                                                    ) || TranslationHandler.text(
-                                                        `profile.badge.${badge}`,
-                                                        'en'
-                                                    )}
-                                                    on:change={e => {
-                                                        if (e.target.checked) return selectedAddingBadges.push(badge);
-                                                        selectedAddingBadges = selectedAddingBadges.filter(toAdd => toAdd !== badge);
+                                                        currentLang,
+                                                    ) ||
+                                                        TranslationHandler.text(
+                                                            `profile.badge.${badge}`,
+                                                            "en",
+                                                        )}
+                                                    on:change={(e) => {
+                                                        if (e.target.checked)
+                                                            return selectedAddingBadges.push(
+                                                                badge,
+                                                            );
+                                                        selectedAddingBadges =
+                                                            selectedAddingBadges.filter(
+                                                                (toAdd) =>
+                                                                    toAdd !==
+                                                                    badge,
+                                                            );
                                                     }}
                                                 />
                                             {/if}
@@ -1364,23 +1835,32 @@
                                     <Button
                                         small
                                         on:click={() => {
-                                            ProjectClient.setUserBadges(selectedUsername, [...profileBadges, ...selectedAddingBadges])
+                                            ProjectClient.setUserBadges(
+                                                selectedUsername,
+                                                [
+                                                    ...profileBadges,
+                                                    ...selectedAddingBadges,
+                                                ],
+                                            )
                                                 .then(() => {
-                                                    profileBadges.push(...selectedAddingBadges);
-                                                    profileBadges = profileBadges;
+                                                    profileBadges.push(
+                                                        ...selectedAddingBadges,
+                                                    );
+                                                    profileBadges =
+                                                        profileBadges;
                                                     addBadgesSelectorOpen = false;
                                                     selectedAddingBadges = [];
                                                 })
-                                                .catch(err => {
+                                                .catch((err) => {
                                                     console.error(err);
                                                     alert(err);
-                                                })
+                                                });
                                         }}
                                         label="Add"
                                     />
                                     <Button
                                         small
-                                        on:click={e => {
+                                        on:click={(e) => {
                                             e.stopPropagation();
                                             addBadgesSelectorOpen = false;
                                         }}
@@ -1392,9 +1872,12 @@
                                 <Button
                                     color="orange"
                                     label="Add to Watchlist"
-                                    on:click={ProjectClient.putOnWatchlist(selectedUsername, true)
-                                        .then(() => userWatchlisted = true)
-                                        .catch(err => {
+                                    on:click={ProjectClient.putOnWatchlist(
+                                        selectedUsername,
+                                        true,
+                                    )
+                                        .then(() => (userWatchlisted = true))
+                                        .catch((err) => {
                                             console.error(err);
                                             alert(err);
                                         })}
@@ -1402,9 +1885,12 @@
                             {:else}
                                 <Button
                                     label="Remove from Watchlist"
-                                    on:click={ProjectClient.putOnWatchlist(selectedUsername, false)
-                                        .then(() => userWatchlisted = true)
-                                        .catch(err => {
+                                    on:click={ProjectClient.putOnWatchlist(
+                                        selectedUsername,
+                                        false,
+                                    )
+                                        .then(() => (userWatchlisted = true))
+                                        .catch((err) => {
                                             console.error(err);
                                             alert(err);
                                         })}
@@ -1412,33 +1898,46 @@
                             {/if}
                         </div>
                     </div>
-                    <div class={`profile-featured-wrapper${!(featuredProjectId && featuredProjectId !== -1) ? " profile-featured-wrapper-empty" : ""}`}>
+                    <div
+                        class={`profile-featured-wrapper${!(featuredProjectId && featuredProjectId !== -1) ? " profile-featured-wrapper-empty" : ""}`}
+                    >
                         <div class="code-controlable">
                             <textarea
                                 class="profile-bio"
                                 bind:value={bioContent}
-                                on:input={() => bioChanged = bioContent !== sourceBio}
+                                on:input={() =>
+                                    (bioChanged = bioContent !== sourceBio)}
                             />
                             <div class="save-button">
                                 <Button
-                                    style={!bioChanged ? 'display: none; float: right;' : ''}
+                                    style={!bioChanged
+                                        ? "display: none; float: right;"
+                                        : ""}
                                     small
-                                    on:click={() => ProjectClient.setBio(sourceBio = bioContent, true, selectedUsername)
-                                        .then(() => bioChanged = false)
-                                        .catch(err => {
-                                            console.error(err);
-                                            alert(err);
-                                        })}
+                                    on:click={() =>
+                                        ProjectClient.setBio(
+                                            (sourceBio = bioContent),
+                                            true,
+                                            selectedUsername,
+                                        )
+                                            .then(() => (bioChanged = false))
+                                            .catch((err) => {
+                                                console.error(err);
+                                                alert(err);
+                                            })}
                                     label="Save"
                                 />
                             </div>
                         </div>
                         {#if featuredProjectId && featuredProjectId !== -1}
-                            <a class="featured-project" href="https://studio.penguinmod.com/#{featuredProjectId}">
+                            <a
+                                class="featured-project"
+                                href="https://studio.penguinmod.com/#{featuredProjectId}"
+                            >
                                 <img
                                     src={`${ProjectApi.OriginApiUrl}/api/v1/projects/getproject?projectID=${featuredProjectId}&requestType=thumbnail`}
                                     alt={featuredProjectTitle}
-                                >
+                                />
                                 <h2>{featuredProjectTitle}</h2>
                             </a>
                         {/if}
@@ -1447,7 +1946,10 @@
                         {#each profileProjects as project}
                             <button
                                 class="project-tile"
-                                on:click={() => { tab = 'projects'; selectedProjectId = project.id; }}
+                                on:click={() => {
+                                    tab = "projects";
+                                    selectedProjectId = project.id;
+                                }}
                             >
                                 <img
                                     src={`${LINK.projects}api/v1/projects/getproject?projectID=${project.id}&requestType=thumbnail`}
@@ -1459,7 +1961,9 @@
                                     alt="Project Author"
                                     class="project-author"
                                 />
-                                <span class="project-title">{project.title}</span>
+                                <span class="project-title">
+                                    {project.title}
+                                </span>
                             </button>
                         {/each}
                         <Button
@@ -1474,17 +1978,23 @@
                                 <span>Banned because: {remoteBan}</span>
                                 <Button
                                     label="Un IP ban"
-                                    on:click={() => ProjectClient.ipBanUser(selectedUsername, false)
-                                        .then(() => userIPBanned = false)
-                                        .catch(err => {
-                                            console.error(err);
-                                            alert(err);
-                                        })}
+                                    on:click={() =>
+                                        ProjectClient.ipBanUser(
+                                            selectedUsername,
+                                            false,
+                                        )
+                                            .then(() => (userIPBanned = false))
+                                            .catch((err) => {
+                                                console.error(err);
+                                                alert(err);
+                                            })}
                                 />
                             {:else if userBanned}
                                 <span>Banned because: {remoteBan}</span>
                                 {#if userBanTimeout}
-                                    <div class="ban-time-string">Unbans at: {userBanTimeout.toLocaleString()}</div>
+                                    <div class="ban-time-string">
+                                        Unbans at: {userBanTimeout.toLocaleString()}
+                                    </div>
                                 {/if}
                                 <!-- svelte-ignore a11y-autofocus -->
                                 <textarea
@@ -1493,15 +2003,25 @@
                                     style="width: 100%; margin-top: 1rem; box-sizing: border-box;"
                                     autofocus
                                 />
-                                <div style="display:flex;flex-direction:row;padding:1em;justify-content:center;">
+                                <div
+                                    style="display:flex;flex-direction:row;padding:1em;justify-content:center;"
+                                >
                                     <Button
                                         label="Unban"
-                                        on:click={() => ProjectClient.banUser(selectedUsername, banReason, 0, false)
-                                            .then(() => userBanned = false)
-                                            .catch(err => {
-                                                console.error(err);
-                                                alert(err);
-                                            })}
+                                        on:click={() =>
+                                            ProjectClient.banUser(
+                                                selectedUsername,
+                                                banReason,
+                                                0,
+                                                false,
+                                            )
+                                                .then(
+                                                    () => (userBanned = false),
+                                                )
+                                                .catch((err) => {
+                                                    console.error(err);
+                                                    alert(err);
+                                                })}
                                     />
                                 </div>
                             {:else}
@@ -1512,31 +2032,82 @@
                                     style="width: 100%; box-sizing: border-box;"
                                     autofocus
                                 />
-                                <div style="display:flex;flex-direction:row;padding:1em;justify-content:center;">
+                                <div
+                                    style="display:flex;flex-direction:row;padding:1em;justify-content:center;"
+                                >
                                     <Button
                                         label="Temp Ban"
                                         color="purple"
                                         on:click={() => {
-                                            const time = prompt('For how long should they be banned?', '24h');
+                                            const time = prompt(
+                                                "For how long should they be banned?",
+                                                "24h",
+                                            );
                                             let seconds = 0;
-                                            for (const [_,digits,unit] of time.matchAll(/([0-9]+(?:\.[0-9]+)?)(?:\s*([hmsyd]))?/gi)) {
+                                            for (const [
+                                                _,
+                                                digits,
+                                                unit,
+                                            ] of time.matchAll(
+                                                /([0-9]+(?:\.[0-9]+)?)(?:\s*([hmsyd]))?/gi,
+                                            )) {
                                                 switch (unit.toUpperCase()) {
-                                                case 'Y': seconds += digits * 365 * 24 * 60 * 60; break;
-                                                case 'D': seconds += digits * 24 * 60 * 60; break;
-                                                case 'H': seconds += digits * 60 * 60; break;
-                                                case 'M': seconds += digits * 60; break;
-                                                case 'S': seconds += Number(digits); break;
+                                                    case "Y":
+                                                        seconds +=
+                                                            digits *
+                                                            365 *
+                                                            24 *
+                                                            60 *
+                                                            60;
+                                                        break;
+                                                    case "D":
+                                                        seconds +=
+                                                            digits *
+                                                            24 *
+                                                            60 *
+                                                            60;
+                                                        break;
+                                                    case "H":
+                                                        seconds +=
+                                                            digits * 60 * 60;
+                                                        break;
+                                                    case "M":
+                                                        seconds += digits * 60;
+                                                        break;
+                                                    case "S":
+                                                        seconds +=
+                                                            Number(digits);
+                                                        break;
                                                 }
                                             }
-                                            if (isNaN(seconds)) return alert('Time kinda needs to use valid numbers!');
-                                            if (!isFinite(seconds)) return alert('Just ban them normally! infinite time isnt good.');
-                                            if (seconds === 0) return alert('Are you sure you want to permanently ban them?');
-                                            if (seconds < 0) return alert('Cant ban for negative time!!');
+                                            if (isNaN(seconds))
+                                                return alert(
+                                                    "Time kinda needs to use valid numbers!",
+                                                );
+                                            if (!isFinite(seconds))
+                                                return alert(
+                                                    "Just ban them normally! infinite time isnt good.",
+                                                );
+                                            if (seconds === 0)
+                                                return alert(
+                                                    "Are you sure you want to permanently ban them?",
+                                                );
+                                            if (seconds < 0)
+                                                return alert(
+                                                    "Cant ban for negative time!!",
+                                                );
 
-                                            userBanTimeout = new Date(Date.now() + (seconds * 1000));
-                                            ProjectClient.banUser(selectedUsername, banReason, seconds, true)
-                                                .then(() => userBanned = true)
-                                                .catch(err => {
+                                            userBanTimeout = new Date(
+                                                Date.now() + seconds * 1000,
+                                            );
+                                            ProjectClient.banUser(
+                                                selectedUsername,
+                                                banReason,
+                                                seconds,
+                                                true,
+                                            )
+                                                .then(() => (userBanned = true))
+                                                .catch((err) => {
                                                     console.error(err);
                                                     alert(err);
                                                 });
@@ -1545,45 +2116,74 @@
                                     <Button
                                         label="Ban"
                                         color="red"
-                                        on:click={() => ProjectClient.banUser(selectedUsername, banReason, 0, true)
-                                            .then(() => {
-                                                userBanTimeout = null;
-                                                userBanned = true;
-                                            })
-                                            .catch(err => {
-                                                console.error(err);
-                                                alert(err);
-                                            })}
+                                        on:click={() =>
+                                            ProjectClient.banUser(
+                                                selectedUsername,
+                                                banReason,
+                                                0,
+                                                true,
+                                            )
+                                                .then(() => {
+                                                    userBanTimeout = null;
+                                                    userBanned = true;
+                                                })
+                                                .catch((err) => {
+                                                    console.error(err);
+                                                    alert(err);
+                                                })}
                                     />
                                     <Button
                                         label="IP Ban"
                                         color="red"
-                                        on:click={() => !confirm("IP Ban this user? This may cause problems on large networks (like schools)") ? null : ProjectClient.ipBanUser(selectedUsername, true)
-                                            .then(() => {
-                                                userBanTimeout = null;
-                                                userIPBanned = true;
-                                            })
-                                            .catch(err => {
-                                                console.error(err);
-                                                alert(err);
-                                            })}
+                                        on:click={() =>
+                                            !confirm(
+                                                "IP Ban this user? This may cause problems on large networks (like schools)",
+                                            )
+                                                ? null
+                                                : ProjectClient.ipBanUser(
+                                                      selectedUsername,
+                                                      true,
+                                                  )
+                                                      .then(() => {
+                                                          userBanTimeout = null;
+                                                          userIPBanned = true;
+                                                      })
+                                                      .catch((err) => {
+                                                          console.error(err);
+                                                          alert(err);
+                                                      })}
                                     />
                                     <Button
                                         label="Delete Account"
                                         color="red"
-                                        on:click={() => !confirm("PERMANENTLY DELETE THIS ACCOUNT?") ? null : ProjectClient.deleteUserAccount(selectedUsername, banReason)
-                                            .then(() => selectedUsername = '')
-                                            .catch(err => {
-                                                console.error(err);
-                                                alert(err);
-                                            })}
+                                        on:click={() =>
+                                            !confirm(
+                                                "PERMANENTLY DELETE THIS ACCOUNT?",
+                                            )
+                                                ? null
+                                                : ProjectClient.deleteUserAccount(
+                                                      selectedUsername,
+                                                      banReason,
+                                                  )
+                                                      .then(
+                                                          () =>
+                                                              (selectedUsername =
+                                                                  ""),
+                                                      )
+                                                      .catch((err) => {
+                                                          console.error(err);
+                                                          alert(err);
+                                                      })}
                                     />
                                 </div>
                             {/if}
                         </div>
                     </details>
                 {/if}
-                <div class="misc-member" style="height: revert; padding-bottom: 10px">
+                <div
+                    class="misc-member"
+                    style="height: revert; padding-bottom: 10px"
+                >
                     <strong>Permitted Users</strong>
                     <strong class="title">Admins</strong>
                     <div class="permited-users-grid">
@@ -1591,10 +2191,22 @@
                             <div class="permited-user-tile">
                                 <button
                                     class="permited-user-profile-button"
-                                    on:click={() => 
-                                        ProjectClient.assingUsersPermisions(permitted, false, modsList.includes(permitted))
-                                            .then(() => { adminsList.splice(adminsList.indexOf(permitted), 1); adminsList = adminsList; })
-                                            .catch(err => {
+                                    on:click={() =>
+                                        ProjectClient.assingUsersPermisions(
+                                            permitted,
+                                            false,
+                                            modsList.includes(permitted),
+                                        )
+                                            .then(() => {
+                                                adminsList.splice(
+                                                    adminsList.indexOf(
+                                                        permitted,
+                                                    ),
+                                                    1,
+                                                );
+                                                adminsList = adminsList;
+                                            })
+                                            .catch((err) => {
                                                 console.error(err);
                                                 alert(err);
                                             })}
@@ -1605,7 +2217,10 @@
                                         alt={permitted}
                                     />
                                     <div class="profile-section-image-edit">
-                                        <img src="/account/remove.svg" alt="Remove Perms" />
+                                        <img
+                                            src="/account/remove.svg"
+                                            alt="Remove Perms"
+                                        />
                                     </div>
                                 </button>
                                 <span>{permitted}</span>
@@ -1614,17 +2229,27 @@
                         <button
                             class="add-permited-user"
                             on:click={() => {
-                                const username = prompt('Please enter there username below', selectedUsername);
+                                const username = prompt(
+                                    "Please enter there username below",
+                                    selectedUsername,
+                                );
                                 if (!username) return;
-                                ProjectClient.assingUsersPermisions(username, true, modsList.includes(username))
-                                    .then(() => { adminsList.push(username); adminsList = adminsList; })
-                                    .catch(err => {
+                                ProjectClient.assingUsersPermisions(
+                                    username,
+                                    true,
+                                    modsList.includes(username),
+                                )
+                                    .then(() => {
+                                        adminsList.push(username);
+                                        adminsList = adminsList;
+                                    })
+                                    .catch((err) => {
                                         console.error(err);
                                         alert(err);
                                     });
                             }}
                         >
-                            <img src="/account/add.svg" alt="Add User">
+                            <img src="/account/add.svg" alt="Add User" />
                         </button>
                     </div>
                     <strong class="title">Mods</strong>
@@ -1633,10 +2258,20 @@
                             <div class="permited-user-tile">
                                 <button
                                     class="permited-user-profile-button"
-                                    on:click={() => 
-                                        ProjectClient.assingUsersPermisions(permitted, adminsList.includes(permitted), false)
-                                            .then(() => { modsList.splice(modsList.indexOf(permitted), 1); modsList = modsList; })
-                                            .catch(err => {
+                                    on:click={() =>
+                                        ProjectClient.assingUsersPermisions(
+                                            permitted,
+                                            adminsList.includes(permitted),
+                                            false,
+                                        )
+                                            .then(() => {
+                                                modsList.splice(
+                                                    modsList.indexOf(permitted),
+                                                    1,
+                                                );
+                                                modsList = modsList;
+                                            })
+                                            .catch((err) => {
                                                 console.error(err);
                                                 alert(err);
                                             })}
@@ -1647,7 +2282,10 @@
                                         alt={permitted}
                                     />
                                     <div class="profile-section-image-edit">
-                                        <img src="/account/remove.svg" alt="Remove Perms" />
+                                        <img
+                                            src="/account/remove.svg"
+                                            alt="Remove Perms"
+                                        />
                                     </div>
                                 </button>
                                 <span>{permitted}</span>
@@ -1656,17 +2294,27 @@
                         <button
                             class="add-permited-user"
                             on:click={() => {
-                                const username = prompt('Please enter there username below', selectedUsername);
+                                const username = prompt(
+                                    "Please enter there username below",
+                                    selectedUsername,
+                                );
                                 if (!username) return;
-                                ProjectClient.assingUsersPermisions(username, adminsList.includes(username), true)
-                                    .then(() => { modsList.push(username); modsList = modsList; })
-                                    .catch(err => {
+                                ProjectClient.assingUsersPermisions(
+                                    username,
+                                    adminsList.includes(username),
+                                    true,
+                                )
+                                    .then(() => {
+                                        modsList.push(username);
+                                        modsList = modsList;
+                                    })
+                                    .catch((err) => {
                                         console.error(err);
                                         alert(err);
                                     });
                             }}
                         >
-                            <img src="/account/add.svg" alt="Add User">
+                            <img src="/account/add.svg" alt="Add User" />
                         </button>
                     </div>
                 </div>
@@ -1678,7 +2326,13 @@
                             <div class="permited-user-tile">
                                 <button
                                     class="permited-user-profile-button"
-                                    on:click={() => { bulkUsernames.splice(bulkUsernames.indexOf(user), 1); bulkUsernames = bulkUsernames; }}
+                                    on:click={() => {
+                                        bulkUsernames.splice(
+                                            bulkUsernames.indexOf(user),
+                                            1,
+                                        );
+                                        bulkUsernames = bulkUsernames;
+                                    }}
                                 >
                                     <img
                                         class="permited-user-profile"
@@ -1686,7 +2340,10 @@
                                         alt={user}
                                     />
                                     <div class="profile-section-image-edit">
-                                        <img src="/account/remove.svg" alt="Remove Perms" />
+                                        <img
+                                            src="/account/remove.svg"
+                                            alt="Remove Perms"
+                                        />
                                     </div>
                                 </button>
                                 <span>{user}</span>
@@ -1695,13 +2352,17 @@
                         <button
                             class="add-permited-user"
                             on:click={() => {
-                                const username = prompt('Please enter usernames below. Use commas to seperate usernames.', selectedUsername);
+                                const username = prompt(
+                                    "Please enter usernames below. Use commas to seperate usernames.",
+                                    selectedUsername,
+                                );
                                 if (!username) return;
                                 const usernames = username.split(/,\s*/gi);
-                                bulkUsernames.push(...usernames); bulkUsernames = bulkUsernames;
+                                bulkUsernames.push(...usernames);
+                                bulkUsernames = bulkUsernames;
                             }}
                         >
-                            <img src="/account/add.svg" alt="Add User">
+                            <img src="/account/add.svg" alt="Add User" />
                         </button>
                     </div>
                     <div class="permited-users-grid" style="padding: 5px 0px">
@@ -1710,7 +2371,10 @@
                                 {#if ProfileBadges[badge]}
                                     <button
                                         class="permited-user-profile-button"
-                                        on:click={() => { bulkUserBadges.splice(idx, 1); bulkUserBadges = bulkUserBadges; }}
+                                        on:click={() => {
+                                            bulkUserBadges.splice(idx, 1);
+                                            bulkUserBadges = bulkUserBadges;
+                                        }}
                                     >
                                         <img
                                             class="profile-badge"
@@ -1718,14 +2382,15 @@
                                             alt="Badge"
                                         />
                                         <div class="profile-section-image-edit">
-                                            <img 
-                                                src="/account/remove.svg" 
+                                            <img
+                                                src="/account/remove.svg"
                                                 alt="Remove Badge {TranslationHandler.text(
+                                                    `profile.badge.${badge}`,
+                                                    currentLang,
+                                                ) ||
+                                                    TranslationHandler.text(
                                                         `profile.badge.${badge}`,
-                                                        currentLang
-                                                    ) || TranslationHandler.text(
-                                                        `profile.badge.${badge}`,
-                                                        'en'
+                                                        'en',
                                                     )}"
                                             />
                                         </div>
@@ -1735,16 +2400,18 @@
                             <button
                                 class="add-profile-badge"
                                 style="margin: 0"
-                                on:click={e => {
+                                on:click={(e) => {
                                     if (e.layerX > 32 || e.layerX < 0) return;
                                     if (e.layerY > 32 || e.layerY < 0) return;
-                                    addBulkBadgesOpen = true
+                                    addBulkBadgesOpen = true;
                                 }}
                             >
-                                <img src="/account/add.svg" alt="Add Badge">
+                                <img src="/account/add.svg" alt="Add Badge" />
                                 <div
                                     class="pop-under centered"
-                                    style="z-index: 20000;{addBulkBadgesOpen ? '' : 'display:none;'}"
+                                    style="z-index: 20000;{addBulkBadgesOpen
+                                        ? ''
+                                        : 'display:none;'}"
                                 >
                                     <div class="full-badge-list">
                                         {#each Object.keys(ProfileBadges) as badge}
@@ -1752,24 +2419,36 @@
                                                 <input
                                                     type="checkbox"
                                                     class="profile-badge-selector"
-                                                    style="background-image: url('/badges/{ProfileBadges[badge]}.png')"
+                                                    style="background-image: url('/badges/{ProfileBadges[
+                                                        badge
+                                                    ]}.png')"
                                                     alt={TranslationHandler.text(
                                                         `profile.badge.${badge}`,
-                                                        currentLang
-                                                    ) || TranslationHandler.text(
-                                                        `profile.badge.${badge}`,
-                                                        'en'
-                                                    )}
+                                                        currentLang,
+                                                    ) ||
+                                                        TranslationHandler.text(
+                                                            `profile.badge.${badge}`,
+                                                            "en",
+                                                        )}
                                                     title={TranslationHandler.text(
                                                         `profile.badge.${badge}`,
-                                                        currentLang
-                                                    ) || TranslationHandler.text(
-                                                        `profile.badge.${badge}`,
-                                                        'en'
-                                                    )}
-                                                    on:change={e => {
-                                                        if (e.target.checked) return selectedAddingBadges.push(badge);
-                                                        selectedAddingBadges = selectedAddingBadges.filter(toAdd => toAdd !== badge);
+                                                        currentLang,
+                                                    ) ||
+                                                        TranslationHandler.text(
+                                                            `profile.badge.${badge}`,
+                                                            "en",
+                                                        )}
+                                                    on:change={(e) => {
+                                                        if (e.target.checked)
+                                                            return selectedAddingBadges.push(
+                                                                badge,
+                                                            );
+                                                        selectedAddingBadges =
+                                                            selectedAddingBadges.filter(
+                                                                (toAdd) =>
+                                                                    toAdd !==
+                                                                    badge,
+                                                            );
                                                     }}
                                                 />
                                             {/if}
@@ -1777,9 +2456,11 @@
                                     </div>
                                     <Button
                                         small
-                                        on:click={async e => {
+                                        on:click={async (e) => {
                                             e.stopPropagation();
-                                            bulkUserBadges.push(...selectedAddingBadges);
+                                            bulkUserBadges.push(
+                                                ...selectedAddingBadges,
+                                            );
                                             bulkUserBadges = bulkUserBadges;
                                             selectedAddingBadges = [];
                                             addBulkBadgesOpen = false;
@@ -1788,7 +2469,7 @@
                                     />
                                     <Button
                                         small
-                                        on:click={async e => {
+                                        on:click={async (e) => {
                                             e.stopPropagation();
                                             addBulkBadgesOpen = false;
                                         }}
@@ -1799,26 +2480,35 @@
                         </div>
                     </div>
                     <div>
-                        <input type="checkbox" bind:checked={bulkIsRemove} name="bulk-removes">
+                        <input
+                            type="checkbox"
+                            bind:checked={bulkIsRemove}
+                            name="bulk-removes"
+                        />
                         <label for="bulk-removes">Remove these badges</label>
                         <Button
                             small
                             label="Apply changes"
-                            on:click={() => ProjectClient.setUserBadges(bulkUsernames, bulkUserBadges, bulkIsRemove)
-                                .then(() => {
-                                    bulkUsernames = [];
-                                    bulkUserBadges = [];
-                                })
-                                .catch(err => {
-                                    console.error(err);
-                                    alert(err);
-                                })}
+                            on:click={() =>
+                                ProjectClient.setUserBadges(
+                                    bulkUsernames,
+                                    bulkUserBadges,
+                                    bulkIsRemove,
+                                )
+                                    .then(() => {
+                                        bulkUsernames = [];
+                                        bulkUserBadges = [];
+                                    })
+                                    .catch((err) => {
+                                        console.error(err);
+                                        alert(err);
+                                    })}
                         />
                     </div>
                 </div>
             </div>
         </div>
-    {:else if tab === 'misc'}
+    {:else if tab === "misc"}
         <div class="projects-control">
             <div class="card-chunk" style="grid-column: 1;">
                 <Stats stats_data={serverStats} render={true}></Stats>
@@ -1833,60 +2523,114 @@
                         <div class="text-controlable">
                             <div class="text-box-wrapper">
                                 <div class="inputs-inline">
-                                    <input 
-                                        placeholder={"IP/Username"} 
-                                        type="text" 
+                                    <input
+                                        placeholder={"IP/Username"}
+                                        type="text"
                                         bind:value={connectionCheck}
-                                    >
+                                    />
                                     <div>
-                                        <input type="checkbox" name="checkIp" bind:checked={isCheckIP}>
+                                        <input
+                                            type="checkbox"
+                                            name="checkIp"
+                                            bind:checked={isCheckIP}
+                                        />
                                         <label for="checkIp">Get IPs</label>
                                     </div>
                                 </div>
-                                <div class="text-box-wrapper-wrapper"><textarea class="text-box" bind:value={connections}></textarea></div>
+                                <div class="text-box-wrapper-wrapper">
+                                    <textarea
+                                        class="text-box"
+                                        bind:value={connections}></textarea>
+                                </div>
                             </div>
                             <div>
-                                <Button on:click={() => {
-                                    if (!isCheckIP) {
-                                        ProjectClient.getAlts(connectionCheck)
-                                            .then(user => connections = user.join('\n'))
-                                            .catch(err => {
-                                                console.error(err);
-                                                connections = `Failed to get connections: ${err}`
+                                <Button
+                                    on:click={() => {
+                                        if (!isCheckIP) {
+                                            ProjectClient.getAlts(
+                                                connectionCheck,
+                                            )
+                                                .then(
+                                                    (user) =>
+                                                        (connections =
+                                                            user.join("\n")),
+                                                )
+                                                .catch((err) => {
+                                                    console.error(err);
+                                                    connections = `Failed to get connections: ${err}`;
+                                                });
+                                            return;
+                                        }
+                                        const isIp =
+                                            connectionCheck.includes(":") ||
+                                            connectionCheck.includes(".");
+                                        (isIp
+                                            ? ProjectClient.getConnectedUsers(
+                                                  connectionCheck,
+                                              )
+                                            : ProjectClient.getConnectedIPs(
+                                                  connectionCheck,
+                                              )
+                                        )
+                                            .then((res) => {
+                                                if (res.length <= 0)
+                                                    return (connections =
+                                                        "No connections");
+                                                connections = res
+                                                    .map((ip) =>
+                                                        isIp
+                                                            ? ip.username
+                                                            : `IP: ${ip.ip}, banned: ${ip.banned}, last login: ${unixToDisplayDate(ip.lastLogin)}`,
+                                                    )
+                                                    .join("\n");
                                             })
-                                        return;
-                                    }
-                                    const isIp = connectionCheck.includes(':') || connectionCheck.includes('.');
-                                    (isIp
-                                        ? ProjectClient.getConnectedUsers(connectionCheck)
-                                        : ProjectClient.getConnectedIPs(connectionCheck)
-                                    )
-                                        .then(res => {
-                                            if (res.length <= 0) return connections = 'No connections';
-                                            connections = res
-                                                .map(ip => isIp
-                                                    ? ip.username
-                                                    : `IP: ${ip.ip}, banned: ${ip.banned}, last login: ${unixToDisplayDate(ip.lastLogin)}`)
-                                                .join('\n');
-                                        })
-                                        .catch(err => {
-                                            console.error(err);
-                                            connections = `Failed to get connections: ${err}`
-                                        })
-                                }}>Get Connections</Button>
-                                <br>
-                                <Button on:click={() => ProjectClient.banIP(connectionCheck, true)
-                                    .then(() => alert(`Banned IP ${connectionCheck}`))
-                                    .catch(err => {
-                                        console.error(err);
-                                        alert(err);
-                                    })} color="red">Ban IP</Button>
-                                <Button on:click={() => ProjectClient.banIP(connectionCheck, false)
-                                    .then(() => alert(`Banned IP ${connectionCheck}`))
-                                    .catch(err => {
-                                        console.error(err);
-                                        alert(err);
-                                    })} color="red">Unban IP</Button>
+                                            .catch((err) => {
+                                                console.error(err);
+                                                connections = `Failed to get connections: ${err}`;
+                                            });
+                                    }}
+                                >
+                                    Get Connections
+                                </Button>
+                                <br />
+                                <Button
+                                    on:click={() =>
+                                        ProjectClient.banIP(
+                                            connectionCheck,
+                                            true,
+                                        )
+                                            .then(() =>
+                                                alert(
+                                                    `Banned IP ${connectionCheck}`,
+                                                ),
+                                            )
+                                            .catch((err) => {
+                                                console.error(err);
+                                                alert(err);
+                                            })}
+                                    color="red"
+                                >
+                                    Ban IP
+                                </Button>
+                                <Button
+                                    on:click={() =>
+                                        ProjectClient.banIP(
+                                            connectionCheck,
+                                            false,
+                                        )
+                                            .then(() =>
+                                                alert(
+                                                    `Banned IP ${connectionCheck}`,
+                                                ),
+                                            )
+                                            .catch((err) => {
+                                                console.error(err);
+                                                alert(err);
+                                            })}
+                                    color="red"
+                                >
+                                    Unban IP
+                                </Button>
                             </div>
                         </div>
                     </div>
@@ -1894,83 +2638,125 @@
                         <strong>Profanity List</strong>
                         <div class="code-controlable" style="height: 400px;">
                             <div style="width: 100%; height: 100%">
-                                <div class="code-box" bind:this={codeArea}></div>
+                                <div
+                                    class="code-box"
+                                    bind:this={codeArea}
+                                ></div>
                             </div>
                             <div class="save-button">
                                 <Button
-                                    style={!profanityLoaded ? 'display: none' : ''}
-                                    color={profanityChanged ? '' : 'gray'}
-                                    on:click={() => ProjectClient.setProfanityFilter(profanityFilter = editor.getValue())
-                                        .then(() => { alert('Done'); profanityChanged = false; })
-                                        .catch(err => {
-                                            console.error(err);
-                                            alert(err);
-                                        })}
-                                >Save filter</Button>
-                                <Button 
-                                    style={!profanityLoaded ? '' : 'display: none'}
-                                    on:click={() => ProjectClient.getProfanityFilter()
-                                        .then(filter => {
-                                            profanityFilter = JSON.stringify(filter, null, 4);
-                                            editor.setValue(profanityFilter);
-                                            profanityLoaded = true;
-                                            profanityChanged = false;
-                                        })
-                                        .catch(err => {
-                                            console.error(err);
-                                            alert(err);
-                                        })}
-                                >Load filter</Button>
+                                    style={!profanityLoaded
+                                        ? "display: none"
+                                        : ""}
+                                    color={profanityChanged ? "" : "gray"}
+                                    on:click={() =>
+                                        ProjectClient.setProfanityFilter(
+                                            (profanityFilter =
+                                                editor.getValue()),
+                                        )
+                                            .then(() => {
+                                                alert("Done");
+                                                profanityChanged = false;
+                                            })
+                                            .catch((err) => {
+                                                console.error(err);
+                                                alert(err);
+                                            })}
+                                >
+                                    Save filter
+                                </Button>
+                                <Button
+                                    style={!profanityLoaded
+                                        ? ""
+                                        : "display: none"}
+                                    on:click={() =>
+                                        ProjectClient.getProfanityFilter()
+                                            .then((filter) => {
+                                                profanityFilter =
+                                                    JSON.stringify(
+                                                        filter,
+                                                        null,
+                                                        4,
+                                                    );
+                                                editor.setValue(
+                                                    profanityFilter,
+                                                );
+                                                profanityLoaded = true;
+                                                profanityChanged = false;
+                                            })
+                                            .catch((err) => {
+                                                console.error(err);
+                                                alert(err);
+                                            })}
+                                >
+                                    Load filter
+                                </Button>
                             </div>
                         </div>
                     </div>
                     <div class="misc-member access-toggles">
                         <div class="can-upload-toggle">
-                            <Button 
-                                color={canUploadProjects ? 'red' : 'remix'} 
+                            <Button
+                                color={canUploadProjects ? "red" : "remix"}
                                 on:click={() => {
                                     if (!confirm("Are you sure?")) return;
-                                    ProjectClient.setErrorAllUploadProjects(!canUploadProjects)
-                                        .then(() => canUploadProjects = !canUploadProjects)
+                                    ProjectClient.setErrorAllUploadProjects(
+                                        !canUploadProjects,
+                                    )
+                                        .then(
+                                            () =>
+                                                (canUploadProjects =
+                                                    !canUploadProjects),
+                                        )
                                         .catch((err) => {
                                             console.error(err);
                                             alert(err);
                                         });
                                 }}
                             >
-                                {!canUploadProjects ? 'Enable' : 'Dissable'} project uploading
+                                {!canUploadProjects ? "Enable" : "Dissable"} project
+                                uploading
                             </Button>
                         </div>
                         <div class="can-sign-up-toggle">
-                            <Button 
-                                color={canSignUp ? 'red' : 'remix'} 
+                            <Button
+                                color={canSignUp ? "red" : "remix"}
                                 on:click={() => {
                                     if (!confirm("Are you sure?")) return;
-                                    ProjectClient.setErrorAccountCreation(!canSignUp)
-                                        .then(() => canSignUp = !canSignUp)
+                                    ProjectClient.setErrorAccountCreation(
+                                        !canSignUp,
+                                    )
+                                        .then(() => (canSignUp = !canSignUp))
                                         .catch((err) => {
                                             console.error(err);
                                             alert(err);
                                         });
                                 }}
                             >
-                                {!canSignUp ? 'Enable' : 'Dissable'} account creation
+                                {!canSignUp ? "Enable" : "Dissable"} account creation
                             </Button>
                         </div>
                         <div class="can-view-toggle">
-                            <Button 
-                                color={canViewProjects ? 'red' : 'remix'} 
+                            <Button
+                                color={canViewProjects ? "red" : "remix"}
                                 on:click={() => {
                                     if (!confirm("Are you sure?")) return;
-                                    ProjectClient.setErrorAllGetProjects(!canViewProjects)
-                                        .then(() => canViewProjects = !canViewProjects)
+                                    ProjectClient.setErrorAllGetProjects(
+                                        !canViewProjects,
+                                    )
+                                        .then(
+                                            () =>
+                                                (canViewProjects =
+                                                    !canViewProjects),
+                                        )
                                         .catch((err) => {
                                             console.error(err);
                                             alert(err);
                                         });
                                 }}
                             >
-                                {!canViewProjects ? 'Enable' : 'Dissable'} project viewing
+                                {!canViewProjects ? "Enable" : "Dissable"} project
+                                viewing
                             </Button>
                         </div>
                     </div>
@@ -1999,7 +2785,9 @@
         grid-template-columns: minmax(auto, 1fr) max-content;
         margin-bottom: 5px;
     }
-    .title { margin-top: .5rem; }
+    .title {
+        margin-top: 0.5rem;
+    }
     .main {
         position: absolute;
         left: 0px;
@@ -2017,7 +2805,7 @@
         left: 0;
         width: 256px;
         padding: 8px 16px;
-        border: solid 1px rgba(255, 255, 255, .3);
+        border: solid 1px rgba(255, 255, 255, 0.3);
         border-radius: 8px 0px 8px 8px;
         background: rgba(0, 0, 0, 0.5);
         color: white;
@@ -2188,7 +2976,9 @@
         border-radius: 10px;
         height: 180px;
     }
-    .featured-project h2 { margin: 0; }
+    .featured-project h2 {
+        margin: 0;
+    }
     .project-list {
         display: flex;
         flex-direction: row;
@@ -2303,7 +3093,9 @@
         box-sizing: border-box;
         cursor: pointer;
     }
-    :global(body.dark-mode) .add-profile-badge { border: rgba(255, 255, 255, 0.35) 1px solid; }
+    :global(body.dark-mode) .add-profile-badge {
+        border: rgba(255, 255, 255, 0.35) 1px solid;
+    }
     .add-profile-badge img {
         width: 24px;
         height: 24px;
@@ -2322,15 +3114,19 @@
         filter: none;
         border-bottom: rgba(0, 0, 0, 0.25) 1px solid;
     }
-    :global(body.dark-mode) .profile-badge-selector:checked { border-bottom: rgba(255, 255, 255, 0.35) 1px solid; }
+    :global(body.dark-mode) .profile-badge-selector:checked {
+        border-bottom: rgba(255, 255, 255, 0.35) 1px solid;
+    }
     .profile-ban-fields {
         text-align: center;
     }
     .ban-time-string {
         color: darkgrey;
-        font-size: .8rem;
+        font-size: 0.8rem;
     }
-    :global(body.dark-mode) .ban-time-string { color: lightgray; }
+    :global(body.dark-mode) .ban-time-string {
+        color: lightgray;
+    }
 
     .permited-users-grid {
         display: flex;
@@ -2474,7 +3270,7 @@
     }
     .badge-group-outlining {
         margin: 4px;
-        background: rgba(0,0,0,.15);
+        background: rgba(0, 0, 0, 0.15);
         border-radius: 6px;
         padding: 4px;
     }
@@ -2523,7 +3319,7 @@
         width: 100%;
         height: 100%;
     }
-    .yet-another-selected-project-wrapper[project-rejected=true] {
+    .yet-another-selected-project-wrapper[project-rejected="true"] {
         filter: saturate(0) opacity(70%);
         pointer-events: none;
         cursor: pointer;
@@ -2618,12 +3414,12 @@
         gap: 4px;
         height: 40%;
         margin: 4px;
-    } 
+    }
     .strings-listout {
         white-space: pre;
         height: 40%;
         margin: 4px;
-    } 
+    }
     .asset-preview-iframe {
         width: 100%;
         height: 100%;
