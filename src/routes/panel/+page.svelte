@@ -312,6 +312,7 @@
         profileBadges = [];
         ProjectApi.getProfile(username)
             .then(profile => {
+                userIPBanned = profile.isIPBanned;
                 userBanned = profile.permBanned || (profile.unbanTime > Date.now());
                 userBanTimeout = new Date(profile.unbanTime);
                 remoteBan = profile.banReason;
