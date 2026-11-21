@@ -25,6 +25,7 @@
     import Project from "$lib/Project/Project.svelte";
     import Stats from "$lib/statsComponent/stats.svelte";
     import Button from "$lib/Button/Button.svelte";
+    import AccountGraph from "../../lib/AccountGraph/AccountGraph.svelte";
     // translations
     import LocalizedText from "$lib/LocalizedText/Node.svelte";
     import TranslationHandler from "../../resources/translations.js";
@@ -129,6 +130,7 @@
                 }
                 ProjectClient.setUsername(username);
                 ProjectClient.setToken(token);
+
                 loggedIn = true;
 
                 const firstAnd = Math.max(location.hash.indexOf('&'), 0) || null;
@@ -155,6 +157,7 @@
             if (darkmode === lastDarkMode) return;
             lastDarkMode = darkmode;
             onThemeChange(darkmode);
+            if (!assetIframe) return;
             assetIframe.contentWindow.postMessage({ theme: darkmode ? 'dark' : '' }, '*');
         }
         setInterval(loop, 100);
@@ -335,6 +338,7 @@
 
     /* --- Misc category --- */
     let serverStats = [];
+    let rawServerStats = {};
     let canUploadProjects = true;
     let canViewProjects = true;
     let canSignUp = true;
@@ -379,8 +383,8 @@
         case 'misc': 
             // steal the selected username 
             connectionCheck = selectedUsername;
-            ProjectApi.getServerInfo()
-                .then(stats => serverStats = Flatten(stats))
+            ProjectClient.getServerInfo()
+                .then(stats => serverStats = Flatten(rawServerStats = stats))
                 .catch(err => console.error(err));
             
             ProjectApi.canUploadProjects()
@@ -525,8 +529,8 @@
                                 ProjectClient.getReports('project', content.targetID)
                                     .then(details => content.details = details)
                                     .catch(err => {
-                                        console.error(err);
-                                        alert(err);
+                                        console.warn(err);
+                                        content.details = [content];
                                     });
                             }}
                         >
@@ -1786,7 +1790,12 @@
         </div>
     {:else if tab === 'misc'}
         <div class="projects-control">
-            <div class="card-chunk" style="grid-column: 1;"><Stats stats_data={serverStats} render={true}></Stats></div>
+            <div class="card-chunk" style="grid-column: 1;">
+                <Stats stats_data={serverStats} render={true}></Stats>
+                {#if rawServerStats.accountsOverTime}
+                    <AccountGraph data={rawServerStats.accountsOverTime} />
+                {/if}
+            </div>
             <div class="card-chunk" style="grid-column: 2;">
                 <div class="misc-members">
                     <div class="misc-member">
