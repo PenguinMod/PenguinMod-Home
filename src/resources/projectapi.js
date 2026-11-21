@@ -2546,7 +2546,7 @@ class ProjectApi {
             const formData = new FormData();
 
             request.open("POST", API_ENDPOINT, true);
-            request.setRequestHeader("Authorization", `Bearer ${token}`);
+            request.setRequestHeader("Authorization", `Bearer ${this.token}`);
             request.onload = () => {
                 const response = JSON.parse(request.response);
 
