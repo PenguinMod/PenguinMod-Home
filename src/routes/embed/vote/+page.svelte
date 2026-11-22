@@ -201,7 +201,7 @@
         {#if loggedInAdmin}
             <div>
                 <p>
-                    <a href="/panel?reject={projectId}" target="_blank">
+                    <a href="/panel#reject={projectId}" target="_blank">
                         <img
                             src="/notallowed.png"
                             alt="Reject Project"
