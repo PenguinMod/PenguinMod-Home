@@ -13,6 +13,7 @@
     import BlobAndDataUrl from "../../resources/blobanddataurl.js";
     import FileTypes from "./filetypes.js";
     import pmp_protobuf from "pmp-protobuf";
+    import md5 from 'js-md5';
 
     const ProjectClient = new ProjectApi();
 
@@ -42,6 +43,8 @@
 
     let censorCostume;
     let censorAudio;
+    let costumeMd5;
+    let soundMd5;
     let tab = "";
     let admin = false;
     let loggedIn = null;
@@ -121,11 +124,17 @@
     });
     onMount(async () => {
         fetch("/censor/costume.svg")
-            .then((req) => req.blob())
-            .then((res) => (censorCostume = res));
+            .then((req) => req.bytes())
+            .then((res) => {
+                censorCostume = new Blob([res], { type: 'application/octet-stream' });
+                costumeMd5 = md5(res);
+            });
         fetch("/censor/sound.mp3")
-            .then((req) => req.blob())
-            .then((res) => (censorAudio = res));
+            .then((req) => req.bytes())
+            .then((res) => {
+                censorAudio = new Blob([res], { type: 'application/octet-stream' });
+                soundMd5 = md5(res);
+            });
 
         Language.forceUpdate();
         const username = localStorage.getItem("username");
@@ -1308,6 +1317,7 @@
                                             costume.rotationCenterY = 32;
                                             costume.bitmapResolution = 1;
                                             costume.dataFormat = "svg";
+                                            costume.assetId = costumeMd5;
                                             costume.md5ext = `${costume.assetId}.svg`;
                                             zip.file(
                                                 costume.md5ext,
@@ -1338,6 +1348,7 @@
                                             }
                                             sound.dataFormat = "mp3";
                                             sound.format = "mp3";
+                                            sound.assetId = soundMd5;
                                             sound.md5ext = `${sound.assetId}.mp3`;
                                             zip.file(sound.md5ext, censorAudio);
                                         }
