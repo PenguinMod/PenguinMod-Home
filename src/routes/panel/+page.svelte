@@ -212,7 +212,7 @@
     let selectedProjectReport = null;
     let selectedProjectRef = "";
     let selectedProjectId = linkedState.get("project");
-    $: selectedProjectId = selectedProjectRef.split("#").pop();
+    $: selectedProjectId = String(selectedProjectRef).split("#").pop();
     let replacementThumbnail = null;
     let replacementThumbnailUrl = null;
     let projectFeatured = false;
