@@ -135,10 +135,19 @@
                 selectedAssets[asset.md5ext] = selectCostume.checked;
             }
 
+            const type = {
+                'svg': 'image/svg+xml',
+                'png': 'image/png',
+                'jpeg': 'image/jpeg',
+                'jpg': 'image/jpg',
+                'bmp': 'image/bmp',
+                'gif': 'image/gif',
+                'webp': 'image/webp'
+            }[asset.dataFormat] || 'application/octet-stream';
             const image = new Image();
             fetch(`https://asset-cdn.penguinmod.com/file/penguinmod-warm-tier-s2-cf/${projectId}_${asset.md5ext}`)
                 .then(req => req.arrayBuffer())
-                .then(res => new Blob([res], { type: 'image/svg+xml' }))
+                .then(res => new Blob([res], { type }))
                 .then(blob => URL.createObjectURL(blob))
                 .then(link => image.src = link);
             button.appendChild(image);
