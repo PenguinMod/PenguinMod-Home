@@ -1251,7 +1251,12 @@
                                 </option>
                                 {#each Object.entries(projectJson.extensionURLs) as [extId, url]}
                                     <option value={url}>
-                                        {extId} <em>({url})</em>
+                                        {extId}
+                                        {#if !url.startsWith('data:')}
+                                            <em>({url})</em>
+                                        {:else}
+                                            <em>(Data URL)</em>
+                                        {/if}
                                     </option>
                                 {/each}
                             </select>
