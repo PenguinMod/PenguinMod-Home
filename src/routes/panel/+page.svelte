@@ -37,6 +37,9 @@
         ).toLocaleTimeString()}`;
     }
 
+    // note: this was throughout the code without defining it. just defining it here so that shuts up.
+    let prefersDarkMode = false;
+
     let censorCostume;
     let censorAudio;
     let tab = "";
@@ -152,10 +155,10 @@
                 tab = location.hash.slice(1, firstAnd) || "projects";
 
                 selectedUsername = linkedState.get("username");
-                selectedProjectId = linkedState.get("project");
+                selectedProjectRef = linkedState.get("project");
                 if (linkedState.has("reject")) {
                     rejectionPageOpen = true;
-                    selectedProjectId = linkedState.get("reject");
+                    selectedProjectRef = linkedState.get("reject");
                 }
             })
             .catch(() => {
@@ -207,7 +210,9 @@
     let originalNotes = null;
     let projectNotes = "";
     let selectedProjectReport = null;
+    let selectedProjectRef = "";
     let selectedProjectId = linkedState.get("project");
+    $: selectedProjectId = selectedProjectRef.split("#").pop();
     let replacementThumbnail = null;
     let replacementThumbnailUrl = null;
     let projectFeatured = false;
@@ -623,7 +628,7 @@
                             on:click={() => {
                                 if (selectedProjectReport === idx)
                                     return (selectedProjectReport = null);
-                                selectedProjectId = content.targetID;
+                                selectedProjectRef = content.targetID;
                                 selectedProjectReport = idx;
                                 selectedUsername = content.author;
                                 if (content.details) return;
@@ -740,8 +745,8 @@
                 <input
                     class="user-selector"
                     type="text"
-                    placeholder="Project ID"
-                    bind:value={selectedProjectId}
+                    placeholder="Project ID or link"
+                    bind:value={selectedProjectRef}
                 />
                 {#if projectRejected}
                     <div class="rejection-message">
@@ -1948,7 +1953,7 @@
                                 class="project-tile"
                                 on:click={() => {
                                     tab = "projects";
-                                    selectedProjectId = project.id;
+                                    selectedProjectRef = project.id;
                                 }}
                             >
                                 <img
