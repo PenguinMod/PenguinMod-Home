@@ -2371,7 +2371,7 @@
                                 <button
                                     class="permited-user-profile-button"
                                     on:click={() =>
-                                        ProjectClient.assingUsersPermisions(
+                                        ProjectClient.assignUserPermissions(
                                             permitted,
                                             false,
                                             modsList.includes(permitted),
@@ -2413,7 +2413,7 @@
                                     selectedUsername,
                                 );
                                 if (!username) return;
-                                ProjectClient.assingUsersPermisions(
+                                ProjectClient.assignUserPermissions(
                                     username,
                                     true,
                                     modsList.includes(username),
@@ -2438,7 +2438,7 @@
                                 <button
                                     class="permited-user-profile-button"
                                     on:click={() =>
-                                        ProjectClient.assingUsersPermisions(
+                                        ProjectClient.assignUserPermissions(
                                             permitted,
                                             adminsList.includes(permitted),
                                             false,
@@ -2478,7 +2478,7 @@
                                     selectedUsername,
                                 );
                                 if (!username) return;
-                                ProjectClient.assingUsersPermisions(
+                                ProjectClient.assignUserPermissions(
                                     username,
                                     adminsList.includes(username),
                                     true,
