@@ -186,8 +186,8 @@
                 isFollowedByUser = fullProfile.isFollowing;
 
                 let profileFeatured = fullProfile.myFeaturedProject;
-                if (profileFeatured === -1) {
-                    profileFeatured = 0;
+                if (String(profileFeatured) === "-1") {
+                    profileFeatured = "";
                 }
                 if (profileFeatured) {
                     ProjectApi.getProjectMeta(profileFeatured)

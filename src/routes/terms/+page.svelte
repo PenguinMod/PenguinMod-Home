@@ -167,7 +167,7 @@
                 encouraged to review this document periodically for any changes.
             </p><p>
                 PenguinMod will make effort to let users know of any changes to Uploading Guidelines, Terms of Service, or Privacy Policy through
-                the website's messaging system and third-party services PenguinMod may have a precense on.
+                the website's messaging system and third-party services PenguinMod may have a presence on.
             </p><p>
                 By continuing to use PenguinMod, you agree to abide by the most recent version of these terms.
             </p>
