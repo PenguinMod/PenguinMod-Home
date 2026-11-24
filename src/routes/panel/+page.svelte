@@ -13,6 +13,7 @@
     import BlobAndDataUrl from "../../resources/blobanddataurl.js";
     import FileTypes from "./filetypes.js";
     import pmp_protobuf from "pmp-protobuf";
+    import md5 from 'js-md5';
 
     const ProjectClient = new ProjectApi();
 
@@ -42,6 +43,8 @@
 
     let censorCostume;
     let censorAudio;
+    let costumeMd5;
+    let soundMd5;
     let tab = "";
     let admin = false;
     let loggedIn = null;
@@ -121,11 +124,17 @@
     });
     onMount(async () => {
         fetch("/censor/costume.svg")
-            .then((req) => req.blob())
-            .then((res) => (censorCostume = res));
+            .then((req) => req.bytes())
+            .then((res) => {
+                censorCostume = new Blob([res], { type: 'application/octet-stream' });
+                costumeMd5 = md5(res);
+            });
         fetch("/censor/sound.mp3")
-            .then((req) => req.blob())
-            .then((res) => (censorAudio = res));
+            .then((req) => req.bytes())
+            .then((res) => {
+                censorAudio = new Blob([res], { type: 'application/octet-stream' });
+                soundMd5 = md5(res);
+            });
 
         Language.forceUpdate();
         const username = localStorage.getItem("username");
@@ -156,6 +165,7 @@
 
                 selectedUsername = linkedState.get("username");
                 selectedProjectRef = linkedState.get("project");
+                selectedDisputeID = linkedState.get('message');
                 if (linkedState.has("reject")) {
                     rejectionPageOpen = true;
                     selectedProjectRef = linkedState.get("reject");
@@ -281,7 +291,8 @@
         projectFileLoading = false;
     }
     $: onSelectedProjectChanged(selectedProjectId);
-    $: invalidate(linkedState.set("project", selectedProjectId));
+    $: if (selectedProjectId) invalidate(linkedState.set("project", selectedProjectId));
+        else invalidate(linkedState.delete("project"));
     $: if (browser && assetIframe && !assetIframe?.src)
         fetch("/asset-preview.html")
             .then((req) => req.blob())
@@ -306,6 +317,46 @@
     let broadcastTOSChange = false;
     let broadcastPolicyChange = false;
     let broadcastGuidelinesChange = false;
+    let disputeMessages = null;
+    let selectedDisputeID = '';
+    let threadMessages = [];
+    function onSelectedDisputeChange(disputeId) {
+        if (!browser) return;
+        if (!loggedIn) return;
+
+        threadMessages = [];
+        ProjectClient.getMessageThread(disputeId)
+            .then(async messages => {
+                threadMessages = messages;
+                if (!threadMessages) return;
+                if (!disputeMessages) return;
+                const dispute = disputeMessages.find(message => message.id === selectedDisputeID);
+                if (!dispute) {
+                    const username = await ProjectApi.getUsernameById(messages[0].receiver);
+                    disputeMessages.unshift({ ...messages[0], receiver: username });
+                    selectedDisputeID = messages[0].id; // make sure it automatically opens
+                    disputeMessages = disputeMessages;
+                    return;
+                }
+                if (dispute.element) {
+                    // asking the browser to check for us should realisically be better, but firefox wont
+                    // so we have to be able to do it manually
+                    dispute.element.scrollIntoViewIfNeeded?.();
+                    if (!dispute.element.scrollIntoViewIfNeeded) {
+                        const rect = dispute.element.getBoundingClientRect();
+                        if (rect.bottom > window.innerHeight)
+                            dispute.element.scrollIntoView();
+                    }
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(err);
+            });
+    }
+    $: onSelectedDisputeChange(selectedDisputeID);
+    $: if (selectedDisputeID) invalidate(linkedState.set('message', selectedDisputeID))
+        else invalidate(linkedState.delete('message'));
 
     /* --- Users category --- */
     let userReportsLoaded = false;
@@ -370,7 +421,8 @@
             });
     }
     $: onSelectedUserChange(selectedUsername);
-    $: invalidate(linkedState.set("username", selectedUsername));
+    $: if (selectedUsername) invalidate(linkedState.set("username", selectedUsername));
+        else invalidate(linkedState.delete("username"));
 
     /* --- Admin category --- */
     let connections = "";
@@ -403,6 +455,20 @@
                 break;
             case "messages":
                 if (messageToUser) messageTarget = selectedUsername;
+                ProjectClient.getDisputeMessages(0)
+                    .then(async disputes => {
+                        disputeMessages = await Promise.all(disputes.map(async dispute => ({
+                            ...dispute,
+                            receiver: await ProjectApi.getUsernameById(dispute.receiver)
+                        })));
+                        if (!selectedDisputeID) return;
+                        if (!disputeMessages.some(message => message.id === selectedDisputeID))
+                            onSelectedDisputeChange(selectedDisputeID);
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        alert(err);
+                    });
                 break;
             case "users":
                 addBadgesSelectorOpen = false;
@@ -694,7 +760,7 @@
                                                 content.reporter}
                                         >
                                             <summary>
-                                                {report.reporter}
+                                                <span on:click={e => e.preventDefault()}>{report.reporter}</span>
                                                 <Button
                                                     on:click={() => {
                                                         tab = "users";
@@ -1194,7 +1260,12 @@
                                 </option>
                                 {#each Object.entries(projectJson.extensionURLs) as [extId, url]}
                                     <option value={url}>
-                                        {extId} <em>({url})</em>
+                                        {extId}
+                                        {#if !url.startsWith('data:')}
+                                            <em>({url})</em>
+                                        {:else}
+                                            <em>(Data URL)</em>
+                                        {/if}
                                     </option>
                                 {/each}
                             </select>
@@ -1246,6 +1317,7 @@
                                             costume.rotationCenterY = 32;
                                             costume.bitmapResolution = 1;
                                             costume.dataFormat = "svg";
+                                            costume.assetId = costumeMd5;
                                             costume.md5ext = `${costume.assetId}.svg`;
                                             zip.file(
                                                 costume.md5ext,
@@ -1276,6 +1348,7 @@
                                             }
                                             sound.dataFormat = "mp3";
                                             sound.format = "mp3";
+                                            sound.assetId = soundMd5;
                                             sound.md5ext = `${sound.assetId}.mp3`;
                                             zip.file(sound.md5ext, censorAudio);
                                         }
@@ -1335,18 +1408,18 @@
         <div class="card-chunk">
             <div class="inputs-inline">
                 <input
-                    placeholder={messageToUser ? "Username" : "Message ID"}
+                    placeholder={"Username"}
                     type="text"
                     bind:value={messageTarget}
                 />
-                <div>
+                <!-- <div>
                     <input
                         type="checkbox"
                         name="checkIp"
                         bind:checked={messageToUser}
                     />
                     <label for="checkIp">Send Directly</label>
-                </div>
+                </div> -->
             </div>
             {#if messageTarget}
                 <div style="display: flex; flex-direction: row;">
@@ -1356,63 +1429,33 @@
                         style="width: 100%; box-sizing: border-box; min-height: 25%"
                     />
                     <div style="display: flex; flex-direction: column;">
-                        {#if messageToUser}
-                            <div style="width: max-content">
-                                <input
-                                    type="checkbox"
-                                    name="canReply"
-                                    bind:checked={messageRepliable}
-                                />
-                                <label for="canReply">Allow Replies</label>
-                            </div>
-                        {/if}
+                        <div style="width: max-content">
+                            <input
+                                type="checkbox"
+                                name="canReply"
+                                bind:checked={messageRepliable}
+                            />
+                            <label for="canReply">Allow Replies</label>
+                        </div>
                         <Button
                             label="Send"
                             style="width: 100%; height: 100%"
-                            on:click={() => {
-                                const promise = messageToUser
-                                    ? ProjectClient.sendModeratorMessage(
-                                          messageTarget,
-                                          messageContent,
-                                          messageRepliable,
-                                      )
-                                    : ProjectClient.respondToDispute(
-                                          messageTarget,
-                                          messageContent,
-                                      );
-                                promise
-                                    .then(() => alert("Message Sent!"))
-                                    .catch((err) => {
-                                        console.error(err);
-                                        alert(err);
-                                    });
-                            }}
+                            on:click={() => ProjectClient.sendModeratorMessage(
+                                    messageTarget,
+                                    messageContent,
+                                    messageRepliable,
+                                )
+                                .then(() => alert("Message Sent!"))
+                                .catch((err) => {
+                                    console.error(err);
+                                    alert(err);
+                                })}
                         />
                     </div>
                 </div>
-                {#if !messageToUser}
-                    <div
-                        style="display: flex; flex-direction: column; align-items: center;"
-                    >
-                        OR
-                        <Button
-                            color="red"
-                            label="Delete Message"
-                            on:click={() =>
-                                ProjectClient.deleteModeratorMessage(
-                                    messageTarget,
-                                )
-                                    .then(() => (messageTarget = ""))
-                                    .catch((err) => {
-                                        console.error(err);
-                                        alert(err);
-                                    })}
-                        />
-                    </div>
-                {/if}
             {/if}
             <div class="misc-members">
-                <div class="misc-member">
+                <div class="misc-member" style="height: min-content">
                     <strong>Broadcast Messages</strong>
                     <div>
                         <input
@@ -1460,6 +1503,137 @@
                             label="Send broadcast"
                         />
                     </div>
+                </div>
+                <div class="misc-member">
+                    <strong>Recent disputes</strong>
+                    <input
+                        class="user-selector"
+                        type="text"
+                        placeholder="Message ID"
+                        bind:value={selectedDisputeID}
+                    />
+                    {#if disputeMessages}
+                        {#if selectedDisputeID && !threadMessages}
+                            <p>Invalid message ID</p>
+                        {/if}
+                        {#each disputeMessages as dispute}
+                            <button
+                                class="reports-user-button reports-project-button"
+                                on:click={() => {
+                                    if (selectedDisputeID === dispute.id)
+                                        return (selectedDisputeID = '');
+                                    selectedDisputeID = dispute.id;
+                                }}
+                            >
+                                {#if dispute.projectID}
+                                    <img
+                                        src={`${PUBLIC_API_URL}/api/v1/projects/getproject?projectID=${dispute.projectID}&requestType=thumbnail`}
+                                        alt="Project"
+                                        style="width: revert;"
+                                    />
+                                {:else}
+                                    <img
+                                        src={`${PUBLIC_API_URL}/api/v1/users/getpfp?username=${dispute.receiver}`}
+                                        alt={dispute.receiver}
+                                    />
+                                {/if}
+                                <div
+                                    class="reports-user-content reports-project-content"
+                                >
+                                    <p style="font-weight: bold;">
+                                        {dispute.dispute}
+                                    </p>
+                                    <p>
+                                        <!-- Yes, that realy is the structure -->
+                                        {dispute.message.message}
+                                    </p>
+                                </div>
+                            </button>
+                            {#if selectedDisputeID === dispute.id}
+                                <div
+                                    class="reports-generic-details"
+                                    style="text-align: left"
+                                    bind:this={dispute.element}
+                                >
+                                    {#if !threadMessages.length}
+                                        <LoadingSpinner />
+                                    {:else}
+                                        {#each threadMessages as message, idx}
+                                            <fieldset style="margin-top: 3px">
+                                                <legend>
+                                                    {#if message.projectID}
+                                                        <Button
+                                                            small
+                                                            label="Visit project"
+                                                            noredirect
+                                                            link="{PUBLIC_STUDIO_URL}/#{message.projectID}"
+                                                        />
+                                                    {/if}
+                                                    <Button
+                                                        small
+                                                        on:click={() => {
+                                                            tab = "users";
+                                                            selectedUsername = dispute.receiver;
+                                                        }}
+                                                        label="Select user"
+                                                    />
+                                                    <Button
+                                                        color="red" small
+                                                        label="Delete message"
+                                                        on:click={() => ProjectClient.deleteModeratorMessage(messageTarget)
+                                                            .then(() => {
+                                                                threadMessages.splice(idx, 1);
+                                                                threadMessages = threadMessages;
+                                                                if (threadMessages.length <= 0) {
+                                                                    const idx = disputeMessages.findIndex(dispute => dispute.id === message.id);
+                                                                    disputeMessages.splice(idx, 1);
+                                                                    disputeMessages = disputeMessages;
+                                                                }
+                                                            })
+                                                            .catch((err) => {
+                                                                console.error(err);
+                                                                alert(err);
+                                                            })}
+                                                    />
+                                                </legend>
+
+                                                <p>{message.message.message}</p>
+                                                {#if message.dispute}
+                                                    <p>&lt;{dispute.receiver}&gt; {message.dispute}</p>
+                                                {/if}
+                                            </fieldset>
+                                        {/each}
+                                        <div style="display: flex; flex-direction: row; padding: 5px">
+                                            <textarea
+                                                bind:value={messageContent}
+                                                placeholder="Message Content..."
+                                                style="width: 100%; box-sizing: border-box; min-height: 25%"
+                                            />
+                                            <Button
+                                                on:click={() => ProjectClient.respondToDispute(
+                                                        threadMessages.at(-1).id,
+                                                        messageContent
+                                                    )
+                                                    .then(() => {
+                                                        threadMessages.push({
+                                                            message: { message: messageContent }
+                                                        });
+                                                        threadMessages = threadMessages;
+                                                    })
+                                                    .catch((err) => {
+                                                        console.error(err);
+                                                        alert(err);
+                                                    })}
+                                                label="Send"
+                                            />
+                                        </div>
+                                    {/if}
+                                </div>
+                            {/if}
+                        {/each}
+                    {:else}
+                        <LoadingSpinner></LoadingSpinner>
+                    {/if}
                 </div>
             </div>
         </div>
@@ -1533,7 +1707,7 @@
                                                 content.reporter}
                                         >
                                             <summary>
-                                                {report.reporter}
+                                                <span on:click={e => e.preventDefault()}>{report.reporter}</span>
                                                 <Button
                                                     small
                                                     on:click={() =>
@@ -2197,7 +2371,7 @@
                                 <button
                                     class="permited-user-profile-button"
                                     on:click={() =>
-                                        ProjectClient.assingUsersPermisions(
+                                        ProjectClient.assignUserPermissions(
                                             permitted,
                                             false,
                                             modsList.includes(permitted),
@@ -2239,7 +2413,7 @@
                                     selectedUsername,
                                 );
                                 if (!username) return;
-                                ProjectClient.assingUsersPermisions(
+                                ProjectClient.assignUserPermissions(
                                     username,
                                     true,
                                     modsList.includes(username),
@@ -2264,7 +2438,7 @@
                                 <button
                                     class="permited-user-profile-button"
                                     on:click={() =>
-                                        ProjectClient.assingUsersPermisions(
+                                        ProjectClient.assignUserPermissions(
                                             permitted,
                                             adminsList.includes(permitted),
                                             false,
@@ -2304,7 +2478,7 @@
                                     selectedUsername,
                                 );
                                 if (!username) return;
-                                ProjectClient.assingUsersPermisions(
+                                ProjectClient.assignUserPermissions(
                                     username,
                                     adminsList.includes(username),
                                     true,

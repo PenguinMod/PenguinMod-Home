@@ -821,6 +821,50 @@ class ProjectApi {
                 });
         });
     }
+    getDisputeMessages(page) {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/v1/users/getdisputes?page=${page}`;
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((disputes) => {
+                        resolve(disputes.disputes);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+    getMessageThread(id) {
+        return new Promise((resolve, reject) => {
+            const url = `${OriginApiUrl}/api/v1/users/getmessagethread?messageID=${id}`;
+            fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            })
+                .then((res) => {
+                    if (!res.ok) {
+                        res.text().then(reject);
+                        return;
+                    }
+                    res.json().then((thread) => {
+                        resolve(thread.thread);
+                    });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
     closeReport(id) {
         return new Promise((resolve, reject) => {
             const data = {
