@@ -34,12 +34,11 @@
                 const username = localStorage.getItem("username");
                 const token = localStorage.getItem("token");
                 Authentication.usernameFromCode(username, token)
-                    .then(({isAdmin, isApprover}) => {
+                    .then(({ isAdmin, isApprover }) => {
                         loggedIn = true;
                         loggedInAdmin = isAdmin || isApprover;
                         ProjectClient.setUsername(username);
                         ProjectClient.setToken(token);
-                        registerView();
                         vote();
                         return;
                     })
@@ -49,8 +48,9 @@
             });
             return;
         }
-        ProjectClient.toggleVoteProject(projectId, "vote", !userVoted)
-            .catch((err) => alert(String(err)));
+        ProjectClient.toggleVoteProject(projectId, "vote", !userVoted).catch(
+            (err) => alert(String(err)),
+        );
         userVoted = !userVoted;
     }
     function love() {
@@ -59,12 +59,11 @@
                 const username = localStorage.getItem("username");
                 const token = localStorage.getItem("token");
                 Authentication.usernameFromCode(username, token)
-                    .then(({isAdmin, isApprover}) => {
+                    .then(({ isAdmin, isApprover }) => {
                         loggedIn = true;
                         loggedInAdmin = isAdmin || isApprover;
                         ProjectClient.setUsername(username);
                         ProjectClient.setToken(token);
-                        registerView();
                         love();
                         return;
                     })
@@ -74,8 +73,9 @@
             });
             return;
         }
-        ProjectClient.toggleVoteProject(projectId, "love", !userLiked)
-            .catch((err) => alert(String(err)));
+        ProjectClient.toggleVoteProject(projectId, "love", !userLiked).catch(
+            (err) => alert(String(err)),
+        );
         userLiked = !userLiked;
     }
 
@@ -98,7 +98,7 @@
         const params = new URLSearchParams(location.search);
         const projId = String(params.get("id"));
         projectId = projId;
-        
+
         ProjectApi.getProjectMeta(projId)
             .then((meta) => {
                 likes = numberCast(meta.loves);
@@ -113,29 +113,27 @@
 
         const username = localStorage.getItem("username");
         const token = localStorage.getItem("token");
-        
+
         if (!token || !username) {
             loggedIn = false;
             userLiked = false;
             userVoted = false;
             loaded = true;
-            console.log("what", username, token)
+            console.log("what", username, token);
             return;
         }
         Authentication.usernameFromCode(username, token)
             .then(({ isAdmin, isApprover }) => {
-                console.log("suces")
+                console.log("suces");
                 ProjectClient.setToken(token);
                 ProjectClient.setUsername(username);
 
                 updateVoteStates();
                 loggedIn = true;
                 loggedInAdmin = isAdmin || isApprover;
-
-                registerView();
             })
             .catch((e) => {
-                console.log("err", e)
+                console.log("err", e);
                 loggedIn = false;
                 userLiked = false;
                 userVoted = false;
@@ -147,16 +145,13 @@
     Authentication.onAuthentication((username, privateCode) => {
         ProjectClient.setUsername(username);
         ProjectClient.setToken(privateCode);
-        Authentication.usernameFromCode(username, privateCode).then(({ isAdmin, isApprover}) => {
-            loggedIn = true;
-            loggedInAdmin = isAdmin || isApprover;
-        });
+        Authentication.usernameFromCode(username, privateCode).then(
+            ({ isAdmin, isApprover }) => {
+                loggedIn = true;
+                loggedInAdmin = isAdmin || isApprover;
+            },
+        );
     });
-
-    // used for algorithm
-    function registerView() {
-        ProjectClient.registerView(projectId);
-    }
 </script>
 
 <div class="main">
@@ -164,7 +159,7 @@
         <div title="Like this project" class="parent button-text">
             <button class="like" on:click={love}>
                 <img
-                    src="/vote/heart{userLiked ? "" : "_white"}.svg"
+                    src="/vote/heart{userLiked ? '' : '_white'}.svg"
                     alt="Like"
                     class="button-image"
                     draggable="false"
@@ -176,7 +171,7 @@
         <div title="Vote to Feature this project" class="parent button-text">
             <button class="feature" on:click={vote}>
                 <img
-                    src="/vote/feature{userVoted ? "" : "_white"}.svg"
+                    src="/vote/feature{userVoted ? '' : '_white'}.svg"
                     alt="Vote to Feature"
                     class="button-image"
                     draggable="false"
@@ -207,10 +202,10 @@
                             alt="Reject Project"
                             title="Reject Project"
                             height="32"
-                        >
+                        />
                     </a>
                 </p>
-                <br>
+                <br />
                 <p>
                     <a href="/edit?id={projectId}" target="_blank">
                         <img
@@ -218,7 +213,7 @@
                             alt="Edit Project"
                             title="Edit Project"
                             height="32"
-                        >
+                        />
                     </a>
                 </p>
             </div>
