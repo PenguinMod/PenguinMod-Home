@@ -123,26 +123,6 @@ class Authentication {
         });
     }
 
-    static verifyToken(username, token) {
-        return new Promise((resolve, reject) => {
-            fetch(`${ProjectApi.OriginApiUrl}/api/v1/users/tokenlogin`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-                .then((r) =>
-                    r
-                        .json()
-                        .then((j) => {
-                            if (j.error) return reject(j.error);
-                            resolve();
-                        })
-                        .catch(reject),
-                )
-                .catch(reject);
-        });
-    }
-
     static onAuthentication(cb) {
         Authentication.eventListeners.push({ callback: cb, type: "LOGIN" });
     }
