@@ -2202,6 +2202,49 @@
                                                     alert(err);
                                                 })}
                                     />
+                                    <Button
+                                        label="IP Ban"
+                                        color="red"
+                                        on:click={() =>
+                                            !confirm(
+                                                "IP Ban this user? This may cause problems on large networks (like schools)",
+                                            )
+                                                ? null
+                                                : ProjectClient.ipBanUser(
+                                                      selectedUsername,
+                                                      true,
+                                                  )
+                                                      .then(() => {
+                                                          userBanTimeout = null;
+                                                          userIPBanned = true;
+                                                      })
+                                                      .catch((err) => {
+                                                          console.error(err);
+                                                          alert(err);
+                                                      })}
+                                    />
+                                    <Button
+                                        label="Delete Account"
+                                        color="red"
+                                        on:click={() =>
+                                            !confirm(
+                                                "PERMANENTLY DELETE THIS ACCOUNT?",
+                                            )
+                                                ? null
+                                                : ProjectClient.deleteUserAccount(
+                                                      selectedUsername,
+                                                      banReason,
+                                                  )
+                                                      .then(
+                                                          () =>
+                                                              (selectedUsername =
+                                                                  ""),
+                                                      )
+                                                      .catch((err) => {
+                                                          console.error(err);
+                                                          alert(err);
+                                                      })}
+                                    />
                                 </div>
                             {:else}
                                 <!-- svelte-ignore a11y-autofocus -->
