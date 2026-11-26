@@ -162,7 +162,7 @@ class Authentication {
             }
         });
     }
-    static async usernameFromCode(_username, token) {
+    static async usernameFromCode(_username, token, clearCache = false) {
         // name is a misnomer, was just too lazy to change after new api update.
         // doesn't really matter now bc of newhome
         const j = await fetch(
@@ -171,6 +171,7 @@ class Authentication {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
+                cache: clearCache ? "reload" : undefined,
             },
         ).then((r) => r.json());
 

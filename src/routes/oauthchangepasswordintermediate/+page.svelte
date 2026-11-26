@@ -63,7 +63,7 @@
                 throw new Error("Invalid method");
         }
 
-        const { username, token } = await fetch(url, {
+        const { token } = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -73,7 +73,6 @@
         }).then((res) => res.json());
 
         localStorage.setItem("token", token);
-        localStorage.setItem("username", username);
 
         location.href = "/";
     }
