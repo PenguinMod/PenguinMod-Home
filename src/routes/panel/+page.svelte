@@ -332,7 +332,7 @@
                 if (!disputeMessages) return;
                 const dispute = disputeMessages.find(message => message.id === selectedDisputeID);
                 if (!dispute) {
-                    const username = await ProjectApi.getUsernameById(messages[0].receiver);
+                    const username = await ProjectApi.getUsernameById(messages[0].receiver).catch(() => '*Unknown User*');
                     disputeMessages.unshift({ ...messages[0], receiver: username });
                     selectedDisputeID = messages[0].id; // make sure it automatically opens
                     disputeMessages = disputeMessages;
@@ -459,7 +459,7 @@
                     .then(async disputes => {
                         disputeMessages = await Promise.all(disputes.map(async dispute => ({
                             ...dispute,
-                            receiver: await ProjectApi.getUsernameById(dispute.receiver)
+                            receiver: await ProjectApi.getUsernameById(dispute.receiver).catch(() => '*Unknown User*')
                         })));
                         if (!selectedDisputeID) return;
                         if (!disputeMessages.some(message => message.id === selectedDisputeID))
@@ -756,16 +756,16 @@
                                     />
                                     {#each content.details as report, idx}
                                         <details
-                                            open={report.reporter ===
-                                                content.reporter}
+                                            open={report.reporter.username ===
+                                                content.reporter.username}
                                         >
                                             <summary>
-                                                <span on:click={e => e.preventDefault()}>{report.reporter}</span>
+                                                <span on:click={e => e.preventDefault()}>{report.reporter.username}</span>
                                                 <Button
                                                     on:click={() => {
                                                         tab = "users";
                                                         selectedUsername =
-                                                            report.reporter;
+                                                            report.reporter.username;
                                                     }}
                                                     label="Select user"
                                                     small
@@ -1703,16 +1703,16 @@
                                     />
                                     {#each content.details as report, idx}
                                         <details
-                                            open={report.reporter ===
-                                                content.reporter}
+                                            open={report.reporter.username ===
+                                                content.reporter.username}
                                         >
                                             <summary>
-                                                <span on:click={e => e.preventDefault()}>{report.reporter}</span>
+                                                <span on:click={e => e.preventDefault()}>{report.reporter.username}</span>
                                                 <Button
                                                     small
                                                     on:click={() =>
                                                         (selectedUsername =
-                                                            report.reporter)}
+                                                            report.reporter.username)}
                                                     label="Select user"
                                                 />
                                             </summary>
@@ -2155,19 +2155,45 @@
                         <div class="profile-ban-fields">
                             {#if userIPBanned}
                                 <span>Banned because: {remoteBan}</span>
-                                <Button
-                                    label="Un IP ban"
-                                    on:click={() =>
-                                        ProjectClient.ipBanUser(
-                                            selectedUsername,
-                                            false,
-                                        )
-                                            .then(() => (userIPBanned = false))
-                                            .catch((err) => {
-                                                console.error(err);
-                                                alert(err);
-                                            })}
-                                />
+                                <div
+                                    style="display:flex;flex-direction:row;padding:1em;justify-content:center;"
+                                >
+                                    <Button
+                                        label="Un IP ban"
+                                        on:click={() =>
+                                            ProjectClient.ipBanUser(
+                                                selectedUsername,
+                                                false,
+                                            )
+                                                .then(() => (userIPBanned = false))
+                                                .catch((err) => {
+                                                    console.error(err);
+                                                    alert(err);
+                                                })}
+                                    />
+                                    <Button
+                                        label="Delete Account"
+                                        color="red"
+                                        on:click={() =>
+                                            !confirm(
+                                                "PERMANENTLY DELETE THIS ACCOUNT?",
+                                            )
+                                                ? null
+                                                : ProjectClient.deleteUserAccount(
+                                                      selectedUsername,
+                                                      banReason,
+                                                  )
+                                                      .then(
+                                                          () =>
+                                                              (selectedUsername =
+                                                                  ""),
+                                                      )
+                                                      .catch((err) => {
+                                                          console.error(err);
+                                                          alert(err);
+                                                      })}
+                                    />
+                                </div>
                             {:else if userBanned}
                                 <span>Banned because: {remoteBan}</span>
                                 {#if userBanTimeout}
@@ -2201,6 +2227,49 @@
                                                     console.error(err);
                                                     alert(err);
                                                 })}
+                                    />
+                                    <Button
+                                        label="IP Ban"
+                                        color="red"
+                                        on:click={() =>
+                                            !confirm(
+                                                "IP Ban this user? This may cause problems on large networks (like schools)",
+                                            )
+                                                ? null
+                                                : ProjectClient.ipBanUser(
+                                                      selectedUsername,
+                                                      true,
+                                                  )
+                                                      .then(() => {
+                                                          userBanTimeout = null;
+                                                          userIPBanned = true;
+                                                      })
+                                                      .catch((err) => {
+                                                          console.error(err);
+                                                          alert(err);
+                                                      })}
+                                    />
+                                    <Button
+                                        label="Delete Account"
+                                        color="red"
+                                        on:click={() =>
+                                            !confirm(
+                                                "PERMANENTLY DELETE THIS ACCOUNT?",
+                                            )
+                                                ? null
+                                                : ProjectClient.deleteUserAccount(
+                                                      selectedUsername,
+                                                      banReason,
+                                                  )
+                                                      .then(
+                                                          () =>
+                                                              (selectedUsername =
+                                                                  ""),
+                                                      )
+                                                      .catch((err) => {
+                                                          console.error(err);
+                                                          alert(err);
+                                                      })}
                                     />
                                 </div>
                             {:else}
