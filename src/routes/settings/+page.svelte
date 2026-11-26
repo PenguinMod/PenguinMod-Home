@@ -246,6 +246,8 @@
     let newChangedUsername = "";
     const setNewUsername = async () => {
         await ProjectClient.setNewUsername(newChangedUsername);
+        // clear cache
+        await Authentication.usernameFromCode(undefined, token, true);
         localStorage.setItem("username", newChangedUsername.toLowerCase());
         location.href = "?verified=true";
     };

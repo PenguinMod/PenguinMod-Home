@@ -87,24 +87,6 @@ class ProjectApi {
                 });
         });
     }
-    static getUserBadges(user) {
-        return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/getBadges?username=${encodeURIComponent(user)}`;
-            fetch(url)
-                .then((res) => {
-                    if (!res.ok) {
-                        res.text().then(reject);
-                        return;
-                    }
-                    res.json().then((badges) => {
-                        resolve(badges.badges);
-                    });
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
-    }
     static getFollowerCount(user) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/users/meta/getfollowercount?username=${encodeURIComponent(user)}`;
@@ -151,7 +133,7 @@ class ProjectApi {
         }
         let badges;
         try {
-            badges = await ProjectApi.getUserBadges(user);
+            badges = (await ProjectApi.getProfile(user)).badges;
         } catch {
             return false;
         }
@@ -1970,12 +1952,11 @@ class ProjectApi {
     }
 
     uploadProject(data) {
-        const username = this.username;
         const token = this.token;
         const title = data.title;
         const instructions = data.instructions;
         const notes = data.notes;
-        const remix = data.remix || 0;
+        const remix = data.remix;
 
         return new Promise(async (resolve, reject) => {
             const { protobuf, assets } = await this.handleProjectFile(
