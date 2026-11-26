@@ -2155,19 +2155,45 @@
                         <div class="profile-ban-fields">
                             {#if userIPBanned}
                                 <span>Banned because: {remoteBan}</span>
-                                <Button
-                                    label="Un IP ban"
-                                    on:click={() =>
-                                        ProjectClient.ipBanUser(
-                                            selectedUsername,
-                                            false,
-                                        )
-                                            .then(() => (userIPBanned = false))
-                                            .catch((err) => {
-                                                console.error(err);
-                                                alert(err);
-                                            })}
-                                />
+                                <div
+                                    style="display:flex;flex-direction:row;padding:1em;justify-content:center;"
+                                >
+                                    <Button
+                                        label="Un IP ban"
+                                        on:click={() =>
+                                            ProjectClient.ipBanUser(
+                                                selectedUsername,
+                                                false,
+                                            )
+                                                .then(() => (userIPBanned = false))
+                                                .catch((err) => {
+                                                    console.error(err);
+                                                    alert(err);
+                                                })}
+                                    />
+                                    <Button
+                                        label="Delete Account"
+                                        color="red"
+                                        on:click={() =>
+                                            !confirm(
+                                                "PERMANENTLY DELETE THIS ACCOUNT?",
+                                            )
+                                                ? null
+                                                : ProjectClient.deleteUserAccount(
+                                                      selectedUsername,
+                                                      banReason,
+                                                  )
+                                                      .then(
+                                                          () =>
+                                                              (selectedUsername =
+                                                                  ""),
+                                                      )
+                                                      .catch((err) => {
+                                                          console.error(err);
+                                                          alert(err);
+                                                      })}
+                                    />
+                                </div>
                             {:else if userBanned}
                                 <span>Banned because: {remoteBan}</span>
                                 {#if userBanTimeout}
