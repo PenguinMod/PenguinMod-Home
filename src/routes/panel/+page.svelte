@@ -2960,7 +2960,7 @@
                                         });
                                 }}
                             >
-                                {!canUploadProjects ? "Enable" : "Dissable"} project
+                                {!canUploadProjects ? "Enable" : "Disable"} project
                                 uploading
                             </Button>
                         </div>
@@ -2979,7 +2979,7 @@
                                         });
                                 }}
                             >
-                                {!canSignUp ? "Enable" : "Dissable"} account creation
+                                {!canSignUp ? "Enable" : "Disable"} account creation
                             </Button>
                         </div>
                         <div class="can-view-toggle">
@@ -3001,7 +3001,7 @@
                                         });
                                 }}
                             >
-                                {!canViewProjects ? "Enable" : "Dissable"} project
+                                {!canViewProjects ? "Enable" : "Disable"} project
                                 viewing
                             </Button>
                         </div>
