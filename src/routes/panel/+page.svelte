@@ -332,7 +332,7 @@
                 if (!disputeMessages) return;
                 const dispute = disputeMessages.find(message => message.id === selectedDisputeID);
                 if (!dispute) {
-                    const username = await ProjectApi.getUsernameById(messages[0].receiver);
+                    const username = await ProjectApi.getUsernameById(messages[0].receiver).catch(() => '*Unknown User*');
                     disputeMessages.unshift({ ...messages[0], receiver: username });
                     selectedDisputeID = messages[0].id; // make sure it automatically opens
                     disputeMessages = disputeMessages;
@@ -756,16 +756,16 @@
                                     />
                                     {#each content.details as report, idx}
                                         <details
-                                            open={report.reporter ===
-                                                content.reporter}
+                                            open={report.reporter.username ===
+                                                content.reporter.username}
                                         >
                                             <summary>
-                                                <span on:click={e => e.preventDefault()}>{report.reporter}</span>
+                                                <span on:click={e => e.preventDefault()}>{report.reporter.username}</span>
                                                 <Button
                                                     on:click={() => {
                                                         tab = "users";
                                                         selectedUsername =
-                                                            report.reporter;
+                                                            report.reporter.username;
                                                     }}
                                                     label="Select user"
                                                     small
@@ -1703,16 +1703,16 @@
                                     />
                                     {#each content.details as report, idx}
                                         <details
-                                            open={report.reporter ===
-                                                content.reporter}
+                                            open={report.reporter.username ===
+                                                content.reporter.username}
                                         >
                                             <summary>
-                                                <span on:click={e => e.preventDefault()}>{report.reporter}</span>
+                                                <span on:click={e => e.preventDefault()}>{report.reporter.username}</span>
                                                 <Button
                                                     small
                                                     on:click={() =>
                                                         (selectedUsername =
-                                                            report.reporter)}
+                                                            report.reporter.username)}
                                                     label="Select user"
                                                 />
                                             </summary>
