@@ -2306,25 +2306,25 @@
                                                             365 *
                                                             24 *
                                                             60 *
-                                                            60;
+                                                            60 * 1000;
                                                         break;
                                                     case "D":
                                                         seconds +=
                                                             digits *
                                                             24 *
                                                             60 *
-                                                            60;
+                                                            60 * 1000;
                                                         break;
                                                     case "H":
                                                         seconds +=
-                                                            digits * 60 * 60;
+                                                            digits * 60 * 60 * 1000;
                                                         break;
                                                     case "M":
-                                                        seconds += digits * 60;
+                                                        seconds += digits * 60 * 1000;
                                                         break;
                                                     case "S":
                                                         seconds +=
-                                                            Number(digits);
+                                                            Number(digits) * 1000;
                                                         break;
                                                 }
                                             }
@@ -2345,14 +2345,12 @@
                                                     "Cant ban for negative time!!",
                                                 );
 
-                                            userBanTimeout = new Date(
-                                                Date.now() + seconds * 1000,
-                                            );
+                                            userBanTimeout = new Date(Date.now() + seconds);
                                             ProjectClient.banUser(
                                                 selectedUsername,
                                                 banReason,
                                                 seconds,
-                                                true,
+                                                true
                                             )
                                                 .then(() => (userBanned = true))
                                                 .catch((err) => {
