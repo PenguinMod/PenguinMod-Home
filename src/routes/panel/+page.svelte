@@ -459,7 +459,7 @@
                     .then(async disputes => {
                         disputeMessages = await Promise.all(disputes.map(async dispute => ({
                             ...dispute,
-                            receiver: await ProjectApi.getUsernameById(dispute.receiver)
+                            receiver: await ProjectApi.getUsernameById(dispute.receiver).catch(() => '*Unknown User*')
                         })));
                         if (!selectedDisputeID) return;
                         if (!disputeMessages.some(message => message.id === selectedDisputeID))
