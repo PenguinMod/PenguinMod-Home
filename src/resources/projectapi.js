@@ -1952,12 +1952,11 @@ class ProjectApi {
     }
 
     uploadProject(data) {
-        const username = this.username;
         const token = this.token;
         const title = data.title;
         const instructions = data.instructions;
         const notes = data.notes;
-        const remix = data.remix || 0;
+        const remix = data.remix;
 
         return new Promise(async (resolve, reject) => {
             const { protobuf, assets } = await this.handleProjectFile(
