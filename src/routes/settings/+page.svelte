@@ -205,7 +205,7 @@
 
         ProjectClient.updatePrivateProfile(
             privateProfile,
-            privateToNonFollowers,
+            !privateToNonFollowers,
         );
     }
 

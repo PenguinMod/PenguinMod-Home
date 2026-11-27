@@ -87,24 +87,6 @@ class ProjectApi {
                 });
         });
     }
-    static getFollowerCount(user) {
-        return new Promise((resolve, reject) => {
-            const url = `${OriginApiUrl}/api/v1/users/meta/getfollowercount?username=${encodeURIComponent(user)}`;
-            fetch(url)
-                .then((res) => {
-                    if (!res.ok) {
-                        res.text().then(reject);
-                        return;
-                    }
-                    res.text().then((count) => {
-                        resolve(Number(count));
-                    });
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
-    }
     static getProfile(user, includeBio) {
         return new Promise((resolve, reject) => {
             const url = `${OriginApiUrl}/api/v1/users/profile?target=${encodeURIComponent(user)}${includeBio ? "&bio=true" : ""}`;
@@ -140,7 +122,7 @@ class ProjectApi {
         ProjectApi.CachedDonators[user] = badges.includes("donator");
         return badges.includes("donator");
     }
-    static getProjects(page, oldFirst = false, username = "", token = "") {
+    static getProjects(page, oldFirst = false, token = "") {
         return new Promise((resolve, reject) => {
             const reverseParam = oldFirst ? "&reverse=true" : "";
             const url = `${OriginApiUrl}/api/v1/projects/getprojects?page=${page}${reverseParam}`;
