@@ -400,7 +400,7 @@
                 userIPBanned = profile.isIPBanned;
                 userBanned =
                     profile.permBanned || profile.unbanTime > Date.now();
-                userBanTimeout = new Date(profile.unbanTime);
+                userBanTimeout = profile.unbanTime > Date.now() && new Date(profile.unbanTime);
                 remoteBan = profile.banReason;
                 profileBadges = profile.badges;
                 bioContent = profile.bio;
